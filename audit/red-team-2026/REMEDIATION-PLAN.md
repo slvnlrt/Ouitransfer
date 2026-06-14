@@ -95,14 +95,14 @@ After de-duplication of cross-corroborated findings: see batches below.
 - [x] A6-06 (Low) `MAX_PENDING_QUEUE_DEPTH=10000` cap (drop non-critical w/ logged warn; priority-1 critical exempt); cleanup now prunes terminal `failed` rows (fixed 7-day window) alongside `sent` (`cleanupTerminalJobs`).
 - [x] A6-07 (Low) central `isCanonicalHttpOrigin` + validators in `config/config-validation.ts`: `appUrl` (http(s) origin, no path/query/fragment/userinfo/CRLF), `smtpFromEmail` (email), CRLF-strip + length-cap `smtpFromName`/`appName`. `ldap/app-url.ts` now delegates to the shared helper (A5-13 consolidation). Plain-text email renderer routes `cta.url`/`unsubscribeUrl` through a scheme allowlist (`safeTextUrl`).
 
-## R6 — Web frontend (apps/web)
-- [ ] A7-01 (High) validate `footerUrl` `^https?://` (reject javascript:/data:/vbscript://) at config-write API + render; add `rel="noopener noreferrer"` to all `target=_blank`
-- [ ] A7-02 (Med) CSP add `object-src 'none'`, `frame-src 'self' blob:`, `worker-src 'self' blob:`, `manifest-src 'self'`
-- [ ] A7-03 (Med) nonce-based CSP: drop `script-src 'unsafe-inline'` via per-request nonce + strict-dynamic
-- [ ] A7-04 (Med) reject `*` in `CSP_STORAGE_ORIGINS`; document storage-origin-only; split img-src/connect-src minimally
-- [ ] A7-05 (Med) `getBaseUrl()` validate host against canonical `APP_URL`; only honor X-Forwarded-* from trusted proxy
-- [ ] A7-06 (Low) add `noopener,noreferrer` to all `window.open`
-- [ ] A7-08 (Low) drop free-form `message` URL param in login toast; map `error` codes to i18n only
+## R6 — Web frontend (apps/web) ✅
+- [x] A7-01 (High) validate `footerUrl` `^https?://` (reject javascript:/data:/vbscript://) at config-write API + render; add `rel="noopener noreferrer"` to all `target=_blank` — server `footerUrlValidator` (`isSafeHttpLinkUrl`) + render-time `safeHttpUrlOrHash` (`utils/safe-url.ts`) on both footers; `rel` added to both footer `<Link>`s (`add-provider-form.tsx` already had it)
+- [x] A7-02 (Med) CSP add `object-src 'none'`, `frame-src 'self' blob:`, `worker-src 'self' blob:`, `manifest-src 'self'` — added in `proxy.ts buildPageCsp`
+- [x] A7-03 (Med) nonce-based CSP: drop `script-src 'unsafe-inline'` via per-request nonce + strict-dynamic — `script-src 'nonce-<n>' 'strict-dynamic' 'self'`; nonce generated in `proxy.ts`, forwarded via request `Content-Security-Policy` + `x-nonce` headers; Next auto-nonces App-Router scripts; `next build` smoke OK (proxy recognized as Middleware, all routes dynamic). `style-src 'unsafe-inline'` kept (documented trade-off: Next/Tailwind inline styles + inline `style=` attrs are not nonceable)
+- [x] A7-04 (Med) reject `*` in `CSP_STORAGE_ORIGINS`; document storage-origin-only; split img-src/connect-src minimally — `env.ts` refine now rejects any `*`; documented storage-origin-only; `img-src`/`connect-src` each carry only the storage origin
+- [x] A7-05 (Med) `getBaseUrl()` validate host against canonical `APP_URL`; only honor X-Forwarded-* from trusted proxy — `APP_URL` used verbatim when set (host headers ignored); otherwise client `X-Forwarded-Host` ignored, connection `host` used
+- [x] A7-06 (Low) add `noopener,noreferrer` to all `window.open` — share-details-links-section, reverse-share-details-modal, audit-log-export
+- [x] A7-08 (Low) drop free-form `message` URL param in login toast; map `error` codes to i18n only — `use-login.ts` no longer reads `messageParam`
 
 ## R7 — Infrastructure, config, dependencies, logging (infra/docker/env/app.ts)
 - [ ] A8-01 (Crit) remove `:-default` for JWT/CSRF/COOKIE/S3 secrets in compose (`${VAR:?required}`); env.ts denylist known `dev-*` placeholders + low-entropy + refuse boot in prod. **R3a dependency:** `ENCRYPTION_SECRET` is now a REQUIRED env var (min 32) — add it to docker-compose with `${ENCRYPTION_SECRET:?required}` (no fallback), distinct from the other secrets.
