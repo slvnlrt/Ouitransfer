@@ -15,7 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { useDashboardMetrics } from "@/contexts/dashboard-metrics-context";
 import { useSystemStatus } from "@/hooks/use-system-status";
 import type { AdminStats200 } from "@/http/endpoints/admin/types";
-import type { CheckHealth200, DiskSpaceInfo, EmailHealthStatus } from "@/http/endpoints/app/types";
+import type { DiskSpaceInfo, EmailHealthStatus, HealthStatus200 } from "@/http/endpoints/app/types";
 import type { EmailStats } from "@/http/endpoints/notifications/types";
 import { formatStorageSize } from "@/utils/format-storage-size";
 
@@ -200,21 +200,16 @@ function MetricCell({ value, label }: { value: string; label: string }) {
 
 // ── Bar User View ────────────────────────────────────────────────────────────
 
-function BarUserView({
-  diskSpace,
-  emailStatus,
-}: {
-  diskSpace: DiskSpaceInfo | null;
-  emailStatus?: EmailHealthStatus;
-}) {
+function BarUserView({ diskSpace }: { diskSpace: DiskSpaceInfo | null }) {
   const t = useTranslations("dashboard.systemStatus");
   const { fileCount, activeShareCount } = useDashboardMetrics();
 
   const hasQuota = diskSpace && diskSpace.diskAvailableGB !== -1 && diskSpace.diskSizeGB > 0;
   const hasMetrics = fileCount !== undefined || activeShareCount !== undefined;
-  const showNotifications = emailStatus === "degraded" || emailStatus === "down";
+  // A8-11: regular users no longer receive the email subsystem status (it is part
+  // of the admin-only per-subsystem breakdown), so there is no notification line.
 
-  if (!hasQuota && !hasMetrics && !showNotifications) return null;
+  if (!hasQuota && !hasMetrics) return null;
 
   return (
     <div className="flex flex-col sm:flex-row items-stretch gap-4">
@@ -254,34 +249,6 @@ function BarUserView({
           )}
         </div>
       )}
-
-      {/* Divider before notifications line (when other content precedes it) */}
-      {showNotifications && (hasQuota || hasMetrics || (diskSpace && !hasQuota)) && (
-        <>
-          <div className="hidden sm:block w-px bg-border/60 self-stretch" />
-          <div className="sm:hidden h-px bg-border/60 w-full" />
-        </>
-      )}
-
-      {/* Notifications disruption indicator */}
-      {showNotifications && (
-        <div className="flex items-center gap-1.5 text-xs">
-          {emailStatus === "down" ? (
-            <>
-              <XCircle className="size-3.5 text-red-600 dark:text-red-400" aria-hidden="true" />
-              <span className="text-red-600 dark:text-red-400">{t("email.userOffline")}</span>
-            </>
-          ) : (
-            <>
-              <AlertTriangle
-                className="size-3.5 text-amber-600 dark:text-amber-400"
-                aria-hidden="true"
-              />
-              <span className="text-amber-600 dark:text-amber-400">{t("email.userDisrupted")}</span>
-            </>
-          )}
-        </div>
-      )}
     </div>
   );
 }
@@ -316,7 +283,7 @@ function BarAdminView({
   emailStats,
   emailStatsError,
 }: {
-  healthData: CheckHealth200 | null;
+  healthData: HealthStatus200 | null;
   diskSpace: DiskSpaceInfo | null;
   adminStats: AdminStats200 | null;
   adminStatsError: string | null;
@@ -631,9 +598,9 @@ export function SystemStatusBar() {
 
     // Email subsystem is excluded from the server aggregate on purpose; surface it
     // client-side by bumping a healthy dot to degraded (never to unhealthy).
-    const emailStatus = status.isAdmin
-      ? status.healthData?.checks.email
-      : status.healthStatus?.email;
+    // A8-11: email status is part of the admin-only per-subsystem breakdown, so
+    // only admins can reflect it in the dot. Regular users see the coarse liveness.
+    const emailStatus = status.isAdmin ? status.healthData?.checks.email : undefined;
     if ((emailStatus === "degraded" || emailStatus === "down") && overallStatus === "healthy") {
       overallStatus = "degraded";
     }
@@ -668,7 +635,7 @@ export function SystemStatusBar() {
                 emailStatsError={status.emailStatsError}
               />
             ) : (
-              <BarUserView diskSpace={status.diskSpace} emailStatus={status.healthStatus?.email} />
+              <BarUserView diskSpace={status.diskSpace} />
             )}
           </ExpandedPanel>
         </div>

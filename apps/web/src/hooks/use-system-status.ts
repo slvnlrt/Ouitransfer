@@ -16,13 +16,13 @@ import { parseApiError } from "@/utils/api-error";
 type DashboardError = "network_error" | "server_error" | "fetch_error" | null;
 
 export interface UseSystemStatusResult {
-  // User view
-  healthStatus: HealthStatus200 | null;
+  // User view — coarse public liveness (no subsystem breakdown)
+  healthStatus: CheckHealth200 | null;
   healthStatusLoading: boolean;
   healthStatusError: DashboardError;
 
-  // Admin view
-  healthData: CheckHealth200 | null;
+  // Admin view — detailed per-subsystem health
+  healthData: HealthStatus200 | null;
   healthLoading: boolean;
   healthError: boolean;
 
@@ -52,22 +52,24 @@ export function useSystemStatus(options?: { isExpanded?: boolean }): UseSystemSt
   const POLL_BACKGROUND = 300_000; // 5 min when collapsed
   const pollInterval = isExpanded ? POLL_ACTIVE : POLL_BACKGROUND;
 
-  // Simplified health status (regular users only)
+  // Public liveness probe — coarse aggregate (regular users only). A8-11: regular
+  // users no longer receive the per-subsystem breakdown; this only drives the
+  // status dot.
   const healthStatusQuery = useQuery({
     queryKey: queryKeys.app.healthStatus(),
     queryFn: async () => {
-      const res = await getHealthStatus();
+      const res = await checkHealth();
       return res.data;
     },
     refetchInterval: pollInterval,
     enabled: !isAdmin,
   });
 
-  // Detailed health (admin only)
+  // Detailed per-subsystem health (admin only — A8-11 admin-gated endpoint).
   const healthQuery = useQuery({
     queryKey: queryKeys.app.health(),
     queryFn: async () => {
-      const res = await checkHealth();
+      const res = await getHealthStatus();
       return res.data;
     },
     refetchInterval: pollInterval,

@@ -53,16 +53,16 @@ export const removeLogo = (options?: AxiosRequestConfig): Promise<RemoveLogoResu
 };
 
 /**
- * Returns the health status of the API
- * @summary Check API Health
+ * Public liveness probe — coarse aggregate only (no per-subsystem breakdown).
+ * @summary Check API liveness
  */
 export const checkHealth = (options?: AxiosRequestConfig): Promise<CheckHealthResult> => {
   return apiInstance.get(`/api/health`, options);
 };
 
 /**
- * Get simplified system health status (no auth required)
- * @summary Get system health status
+ * Detailed per-subsystem health (database/storage/email). ADMIN ONLY (A8-11).
+ * @summary Get detailed system health status (admin)
  */
 export const getHealthStatus = (options?: AxiosRequestConfig): Promise<HealthStatusResult> => {
   return apiInstance.get(`/api/health/status`, options);

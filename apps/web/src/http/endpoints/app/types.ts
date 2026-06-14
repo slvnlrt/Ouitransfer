@@ -19,15 +19,15 @@ export interface DiskSpaceInfo {
 
 export type EmailHealthStatus = "ok" | "disabled" | "degraded" | "down";
 
+/**
+ * Public liveness probe response (GET /health). A8-11: coarse aggregate only —
+ * the per-subsystem breakdown is NOT exposed unauthenticated. HTTP status is 200
+ * when alive, 503 when the database is down.
+ */
 export interface CheckHealth200 {
   status: "healthy" | "degraded";
   timestamp: string;
   uptime: number;
-  checks: {
-    database: "ok" | "error";
-    storage: "ok" | "error" | "not_configured";
-    email: EmailHealthStatus;
-  };
 }
 
 export interface CheckUploadAllowed200 extends DiskSpaceInfo {
@@ -59,9 +59,20 @@ export interface UploadLogoBody {
   file?: unknown;
 }
 
+/**
+ * Detailed health response (GET /health/status). A8-11: ADMIN-ONLY — exposes the
+ * per-subsystem breakdown (which backend is degraded), so it requires an
+ * authenticated admin.
+ */
 export interface HealthStatus200 {
   status: "healthy" | "degraded" | "unhealthy";
-  email: EmailHealthStatus;
+  timestamp: string;
+  uptime: number;
+  checks: {
+    database: "ok" | "error";
+    storage: "ok" | "error" | "not_configured";
+    email: EmailHealthStatus;
+  };
 }
 
 export type HealthStatusResult = AxiosResponse<HealthStatus200>;
