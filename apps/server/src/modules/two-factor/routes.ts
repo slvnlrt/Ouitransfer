@@ -1,12 +1,15 @@
 import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { z } from "zod";
 
 import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
-import { UnauthorizedError } from "../../utils/app-error.js";
+import { AppError, UnauthorizedError } from "../../utils/app-error.js";
+import { getClientInfo } from "../../utils/auth-cookies.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
+import { is2faVerifyLocked, recordLoginAttempt } from "../auth/login-attempts.service.js";
 import { getConfigValue } from "../config/service.js";
 import { TwoFactorService } from "./service.js";
 
@@ -80,6 +83,7 @@ export const twoFactorRoutes: FastifyPluginAsyncZod = async (app) => {
       body: z.object({
         token: z.string().trim().min(6).describe("TOTP token"),
         secret: z.string().min(1).describe("Base32 encoded secret"),
+        password: z.string().min(1).describe("Current account password (re-authentication)"),
       }),
       response: {
         200: z.object({
@@ -100,6 +104,7 @@ export const twoFactorRoutes: FastifyPluginAsyncZod = async (app) => {
         userId,
         request.body.token,
         request.body.secret,
+        request.body.password,
       );
 
       // Audit 2FA enable (fire-and-forget)
@@ -149,9 +154,58 @@ export const twoFactorRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new UnauthorizedError();
       }
 
-      const result = await twoFactorService.verifyToken(userId, request.body.token);
+      // Resolve the email to key the lockout on (A1-02).
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true },
+      });
+      if (!user) {
+        throw new UnauthorizedError();
+      }
 
-      return reply.send(result);
+      const { ipAddress, userAgent } = getClientInfo(request);
+
+      // Dedicated low-threshold 2FA lockout pre-check — brakes online TOTP /
+      // backup-code brute force on the standalone step-up endpoint.
+      const lockStatus = await is2faVerifyLocked(user.email, ipAddress || "unknown");
+      if (lockStatus.locked) {
+        logAuditEvent({
+          userId,
+          action: "TWO_FACTOR_VERIFY_LOCKED",
+          ipAddress,
+          userAgent,
+          targetType: "user",
+          targetId: userId,
+        }).catch((err) => getLogger().error({ err }, "Audit log write failed"));
+        throw new AppError(
+          403,
+          `Too many failed verification attempts. Try again in ${lockStatus.remainingMinutes} minutes.`,
+          ErrorCodes.ACCOUNT_LOCKED,
+          { remainingMinutes: lockStatus.remainingMinutes },
+        );
+      }
+
+      let result: Awaited<ReturnType<TwoFactorService["verifyToken"]>>;
+      try {
+        result = await twoFactorService.verifyToken(userId, request.body.token);
+      } catch (err) {
+        // Count the failure toward the lockout and audit it.
+        await recordLoginAttempt(user.email, ipAddress || "unknown", false);
+        logAuditEvent({
+          userId,
+          action: "TWO_FACTOR_VERIFY_FAILURE",
+          ipAddress,
+          userAgent,
+          targetType: "user",
+          targetId: userId,
+        }).catch((auditErr) => getLogger().error({ err: auditErr }, "Audit log write failed"));
+        throw err;
+      }
+
+      // Success resets the failure counter.
+      await recordLoginAttempt(user.email, ipAddress || "unknown", true);
+
+      return reply.send({ success: result.success, method: result.method });
     },
   });
 
@@ -210,7 +264,15 @@ export const twoFactorRoutes: FastifyPluginAsyncZod = async (app) => {
       tags: ["Two-Factor Authentication"],
       operationId: "generateBackupCodes",
       summary: "Generate Backup Codes",
-      description: "Generate new backup codes for 2FA",
+      description: "Generate new backup codes for 2FA (requires re-authentication)",
+      body: z.object({
+        password: z.string().min(1).describe("Current account password (re-authentication)"),
+        totpCode: z
+          .string()
+          .trim()
+          .min(6)
+          .describe("Current TOTP verification code or backup code (step-up)"),
+      }),
       response: {
         200: z.object({
           backupCodes: z.array(z.string()).describe("New backup codes"),
@@ -225,7 +287,11 @@ export const twoFactorRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new UnauthorizedError();
       }
 
-      const codes = await twoFactorService.generateNewBackupCodes(userId);
+      const codes = await twoFactorService.generateNewBackupCodes(
+        userId,
+        request.body.password,
+        request.body.totpCode,
+      );
 
       // Audit backup codes regeneration (fire-and-forget)
       logAuditEvent({

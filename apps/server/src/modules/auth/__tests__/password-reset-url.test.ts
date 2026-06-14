@@ -81,6 +81,8 @@ vi.mock("../trusted-device.service.js", () => ({
 
 vi.mock("../login-attempts.service.js", () => ({
   isAccountLocked: vi.fn().mockResolvedValue({ locked: false }),
+  is2faVerifyLocked: vi.fn().mockResolvedValue({ locked: false }),
+  isIpThrottled: vi.fn().mockResolvedValue({ throttled: false }),
   recordLoginAttempt: vi.fn(),
 }));
 
