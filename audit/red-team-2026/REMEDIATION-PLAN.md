@@ -105,19 +105,20 @@ After de-duplication of cross-corroborated findings: see batches below.
 - [x] A7-08 (Low) drop free-form `message` URL param in login toast; map `error` codes to i18n only — `use-login.ts` no longer reads `messageParam`
 
 ## R7 — Infrastructure, config, dependencies, logging (infra/docker/env/app.ts)
-- [ ] A8-01 (Crit) remove `:-default` for JWT/CSRF/COOKIE/S3 secrets in compose (`${VAR:?required}`); env.ts denylist known `dev-*` placeholders + low-entropy + refuse boot in prod. **R3a dependency:** `ENCRYPTION_SECRET` is now a REQUIRED env var (min 32) — add it to docker-compose with `${ENCRYPTION_SECRET:?required}` (no fallback), distinct from the other secrets.
-- [ ] A8-03 (High) RustFS: required creds (no fallback), `RUSTFS_CONSOLE_ENABLE: false` default, bind `127.0.0.1:9000` for local; document reverse-proxy path
-- [ ] A8-04 (High→Med) genericize non-AppError Fastify 4xx messages (use `http4xxMessage`)
-- [ ] A8-05 (High→Med) Pino `redact` for authorization/cookie/password/secret/token/bindPassword/clientSecret/smtpPass + serializers
-- [ ] A8-06 (Med) CORS: do not auto-allow missing/null origin with credentials
-- [ ] A8-07 (Med) gate `/swagger` + `/docs` behind admin (or disallow in prod); keep strict CSP for API JSON regardless of docs
-- [ ] A8-08 (Med) trustProxy: prefer CIDR; never expose `3333` with permissive trustProxy in default compose; doc
-- [ ] A8-09 (Med) container hardening: `no-new-privileges`, `cap_drop: ALL`, `read_only`+tmpfs where feasible, `USER ouitransfer` in server-runner; eliminate root window
-- [ ] A8-10 (Med) pin image tags to immutable versions/digests (Renovate-managed)
-- [ ] A8-11 (Med→Low) minimal unauth liveness; move per-subsystem health detail behind admin
-- [ ] A8-13 (Low) HSTS `preload`
-- [ ] A8-15 (Low) Renovate: exclude security-critical deps from automerge
-- [ ] A8-12 (Low) moot after X-Real-IP fix; normalize stored IPs
+- [x] A8-01 (Crit) removed `:-default` for JWT/CSRF/COOKIE/S3 secrets in compose (now `${VAR:?required}`); `env.ts` `superRefine` denylists the EXACT shipped placeholders (`dev-jwt-secret-do-not-use-in-production!!`, CSRF/COOKIE equivalents, `ouitransfer` for S3) + a Shannon-entropy/distinct-char gate, applied ONLY under `NODE_ENV=production` (dev `.env.development` + test-seeded secrets boot unchanged). `ENCRYPTION_SECRET` is now REQUIRED in compose (`${ENCRYPTION_SECRET:?required}`) + distinct-from-JWT refine. Tests: `env-secret-gate.test.ts`.
+- [x] A8-03 (High) RustFS: required creds (no fallback), `RUSTFS_CONSOLE_ENABLE: "false"` default, bound `127.0.0.1:9000` for local; documented reverse-proxy bucket path (Traefik example) for remote browsers.
+- [x] A8-04 (High→Med) `error-handler.ts` now returns `http4xxMessage(statusCode)` for non-AppError Fastify 4xx (never forwards `fastifyError.message`); AppError/Zod/JWT/Prisma mapping intact. Tests updated in `error-handler.test.ts`.
+- [x] A8-05 (High→Med) Pino `redact` (authorization/cookie/x-csrf-token headers + `*.password|secret|token|bindPassword|clientSecret|smtpPass|twoFactorSecret|backupCodes` + top-level forms) with `[REDACTED]` censor + `req` serializer stripping sensitive headers; config in `utils/log-redaction.ts` (separate module so logger mocks don't break it). Tests in `server-config.test.ts`.
+- [x] A8-06 (Med) CORS: no-Origin → no ACAO grant (not 403'd); `Origin: null` and unlisted origins → 403; only exact allow-listed origins reflected. Tests in `server-config.test.ts`.
+- [x] A8-07 (Med) `/swagger` + `/docs` gated behind admin auth in production (encapsulated `onRequest` admin guard); strict `default-src 'none'` CSP always applied to API JSON, relaxed docs CSP scoped via `onSend` to the `/swagger` `/docs` prefixes only; `ENABLE_API_DOCS=true` documented as not-for-internet-facing. Tests in `server-config.test.ts`.
+- [x] A8-08 (Med) trustProxy: default compose keeps `loopback` while publishing 3333 (documented); Traefik example documents `true` is safe only with no host port + prefer a CIDR; A8-08 security note added to `parse-trust-proxy.ts` + env examples.
+- [x] A8-09 (Med) container hardening: `no-new-privileges:true` + `cap_drop: [ALL]` on all four services; `read_only: true` + tmpfs on web/docs; `USER ouitransfer` in the server-runner Dockerfile stage + `/app/server` pre-owned so the named volume inherits non-root ownership (no root window); `server-start.sh` documents the root path is bind-mount-only.
+- [x] A8-10 (Med) pinned all image tags to immutable versions (`rustfs/rustfs:1.0.0`, `ghcr.io/slvnlrt/ouitransfer-*:0.1.0`) in active + Traefik-example services; Renovate manages bumps.
+- [x] A8-11 (Med→Low) `/health` = public minimal liveness `200/503` (no subsystem detail); `/health/status` = admin-gated detailed `checks{database,storage,email}` breakdown. Frontend rewired (admin→`/health/status`, user→`/health`; user email indicator removed). Tests: `health.test.ts`, `health-status.integration.test.ts`, web `system-status-bar.test.tsx`.
+- [x] A8-13 (Low) HSTS `preload: true` added to helmet config.
+- [x] A8-15 (Low) `renovate.json`: security-critical deps (`@fastify/jwt`, `jose`, `@fastify/csrf-protection`, `bcryptjs`, `otpauth`, `@fastify/helmet`/`helmet`, `@fastify/rate-limit`, `ldapts`, `nodemailer`) excluded from automerge (manual review; also covers the deferred bcryptjs@3 bump).
+- [x] A8-12 (Low) moot after the R3a X-Real-IP fix; added `normalizeIp()` in `auth-cookies.ts` (strips `::ffff:` IPv4-mapped prefix) for consistent audit IP search/grouping.
+- [x] **Env wiring** — `ENCRYPTION_SECRET` (required) + optional SSRF opt-ins (`S3_ALLOW_PRIVATE_ENDPOINT`/`STORAGE_ALLOWED_HOSTS`/`OAUTH_ALLOW_PRIVATE_ENDPOINT`/`OAUTH_ALLOWED_ENDPOINT_HOSTS`/`LDAP_ALLOW_PRIVATE_HOST`/`LDAP_ALLOWED_HOSTS`) + `APP_URL` (web) documented in `docker-compose.yaml`/`.env.docker.example`/`.env.example`; `APP_URL`/`CSP_STORAGE_ORIGINS` added to Turbo `passThroughEnv`; `docker-compose.ci.yml` + `e2e.yml` set `ENCRYPTION_SECRET` (+ base-file required vars via workflow `env:`). Docs (EN+FR quick-start/manual-installation/architecture/api) updated.
 
 ---
 

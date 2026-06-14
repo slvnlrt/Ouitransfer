@@ -141,7 +141,7 @@ Three mandatory secrets must be configured on the `server` container before depl
 | `JWT_SECRET` | Min 32 chars; signs JWT access tokens |
 | `CSRF_SECRET` | Min 32 chars, distinct from `JWT_SECRET`; HMAC key for CSRF double-submit cookies |
 | `COOKIE_SECRET` | Min 32 chars, distinct from both above; signs session cookies |
-| `ENCRYPTION_SECRET` | Optional (min 32 chars); AES-256-GCM key for encrypting sensitive data (LDAP bind password). Required if LDAP is enabled |
+| `ENCRYPTION_SECRET` | Required (min 32 chars), distinct from the three above; AES-256-GCM key for encrypting sensitive data at rest (2FA TOTP secret, LDAP bind password) |
 
 Generate each secret with:
 

@@ -76,6 +76,10 @@ Lorsque la documentation API est activée (toujours en développement, optionnel
 
 Les deux offrent l'exploration des points de terminaison, des constructeurs de requêtes et une visualisation des réponses générée à partir des schémas Zod.
 
+<Callout type="warn">
+En **production**, ces interfaces sont protégées par une **authentification administrateur** lorsqu'elles sont activées — elles exposent toute la surface de l'API (chaque route et schéma). `ENABLE_API_DOCS=true` n'est **pas** destiné aux déploiements exposés sur Internet ; il est préférable de laisser la documentation désactivée en production.
+</Callout>
+
 ---
 
 ## Référence des points de terminaison
@@ -415,8 +419,8 @@ Pour les détails sur le système de distribution des emails, consultez [Configu
 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
-| GET | `/health` | Public | Vérification complète de l'état de santé (base de données, stockage et sous-système email/notifications) ; `checks` inclut `database`, `storage` et `email` (`ok`/`disabled`/`degraded`/`down`) |
-| GET | `/health/status` | Public | Statut de santé simplifié (`healthy`, `degraded`, `unhealthy`) ; retourne également un champ `email` avec le même enum. Le statut agrégé est basé uniquement sur la base de données + le stockage. |
+| GET | `/health` | Public | Sonde de vivacité. Retourne `200` avec un `{ status, timestamp, uptime }` grossier lorsque le service est vivant, `503` lorsque la base de données est indisponible. Aucun détail par sous-système n'est exposé sans authentification. |
+| GET | `/health/status` | Admin | État de santé détaillé par sous-système : `checks` inclut `database`, `storage` et `email` (`ok`/`disabled`/`degraded`/`down`). Réservé aux administrateurs afin que le détail (quel backend est dégradé) ne soit pas exposé publiquement. |
 
 ---
 

@@ -141,7 +141,7 @@ Trois secrets obligatoires doivent être configurés sur le conteneur `server` a
 | `JWT_SECRET` | Min 32 caractères; signe les jetons d'accès JWT |
 | `CSRF_SECRET` | Min 32 caractères, distinct de `JWT_SECRET`; clé HMAC pour les cookies CSRF double-submit |
 | `COOKIE_SECRET` | Min 32 caractères, distinct des deux précédents; signe les cookies de session |
-| `ENCRYPTION_SECRET` | Facultatif (min 32 caractères); clé AES-256-GCM pour le chiffrement des données sensibles (mot de passe de liaison LDAP). Requis si LDAP est activé |
+| `ENCRYPTION_SECRET` | Requis (min 32 caractères), distinct des trois précédents ; clé AES-256-GCM pour le chiffrement des données sensibles au repos (secret TOTP 2FA, mot de passe de liaison LDAP) |
 
 Générez chaque secret avec :
 

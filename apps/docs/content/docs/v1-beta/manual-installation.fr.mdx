@@ -64,7 +64,7 @@ cp .env.example .env
 
 ### ⚠️ Secrets de sécurité obligatoires
 
-Le serveur **plantera au démarrage** si ces trois variables sont manquantes ou trop courtes. Chacune doit comporter au moins 32 caractères et les trois doivent être distinctes.
+Le serveur **plantera au démarrage** si ces quatre variables sont manquantes ou trop courtes. Chacune doit comporter au moins 32 caractères et les quatre doivent être distinctes. En production, le serveur refuse également de démarrer avec une valeur générique connue ou à faible entropie.
 
 Générez chaque secret avec :
 
@@ -78,6 +78,7 @@ Puis définissez-les dans votre `.env` :
 JWT_SECRET=<output of openssl rand -hex 32>
 CSRF_SECRET=<output of openssl rand -hex 32>
 COOKIE_SECRET=<output of openssl rand -hex 32>
+ENCRYPTION_SECRET=<output of openssl rand -hex 32>
 ```
 
 ### Configuration du stockage
@@ -133,10 +134,10 @@ API_BASE_URL=http://localhost:3333
 # Langue d'interface par défaut
 NEXT_PUBLIC_DEFAULT_LANGUAGE=en-US
 
-# Clé de chiffrement pour les données sensibles au repos (requis pour LDAP)
-# ENCRYPTION_SECRET=<output of openssl rand -hex 32>
-
-# Paramètre de proxy de confiance (requis derrière un proxy inverse)
+# Paramètre de proxy de confiance. SÉCURITÉ : ne définissez "true" (ou un CIDR de
+# proxy) que lorsque le serveur n'est PAS directement joignable (le proxy inverse
+# est la seule entrée) ; sinon un client peut falsifier X-Forwarded-For et
+# contourner les limites de débit. La valeur par défaut "loopback" est sûre.
 # TRUST_PROXY=loopback
 
 # Activer la documentation API en production (Scalar + Swagger)
