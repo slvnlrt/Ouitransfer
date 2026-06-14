@@ -22,9 +22,10 @@ model User {
   updatedAt DateTime @updatedAt
 
   twoFactorEnabled     Boolean @default(false)
-  twoFactorSecret      String?
-  twoFactorBackupCodes String?
+  twoFactorSecret      String? // AES-256-GCM encrypted at rest (see utils/encryption.ts, purpose "totp-secret")
+  twoFactorBackupCodes String? // JSON array of HMAC-SHA256 hashes — never the plaintext codes
   twoFactorVerified    Boolean @default(false)
+  lastTotpStep         Int? // Highest TOTP time-step already consumed — rejects replay within the validity window (RFC 6238 §5.2)
 
   maxFileSizeOverride     BigInt? // Per-user max file size override (bytes). null=inherit, 0=unlimited.
   maxTotalStorageOverride BigInt? // Per-user max total storage override (bytes). null=inherit, 0=unlimited.
@@ -459,7 +460,10 @@ model TrustedDevice {
   id         String   @id @default(cuid())
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  deviceHash String   @unique
+  // HMAC-SHA256 of a random, server-issued device secret (stored in an httpOnly
+  // cookie on the client). Never derived from spoofable UA/IP. Scoped per-user
+  // via the composite unique below, so identical hashes across users cannot collide.
+  deviceHash String
   deviceName String?
   userAgent  String?
   ipAddress  String?
@@ -468,6 +472,7 @@ model TrustedDevice {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  @@unique([userId, deviceHash])
   @@map("trusted_devices")
 }
 

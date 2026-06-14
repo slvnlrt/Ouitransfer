@@ -9,13 +9,38 @@ import {
   UnauthorizedError,
   ValidationError,
 } from "../../utils/app-error.js";
+import { decryptSecret, encryptSecret } from "../../utils/encryption.js";
 import { getLogger } from "../../utils/logger.js";
 import { timingSafeEqual } from "../../utils/timing-safe.js";
 import { incrementTokenVersion } from "../auth/token-version.js";
 
-interface BackupCode {
-  code: string;
+/** Domain-separation label for the encrypted TOTP secret (see utils/encryption.ts). */
+const TOTP_SECRET_PURPOSE = "totp-secret";
+
+/** TOTP period in seconds (RFC 6238). The current time-step is floor(now/period). */
+const TOTP_PERIOD = 30;
+
+/** Validation window (in steps) on either side of the current step. */
+const TOTP_WINDOW = 1;
+
+/**
+ * A backup code as persisted in the DB. The plaintext code is never stored —
+ * only an HMAC-SHA256 hash, so a DB leak does not yield usable second factors.
+ */
+interface StoredBackupCode {
+  hash: string;
   used: boolean;
+}
+
+/**
+ * Result of a successful TOTP verification, including the consumed time-step so
+ * callers can persist it for replay protection (RFC 6238 §5.2).
+ */
+interface TwoFactorVerificationResult {
+  success: boolean;
+  method: "totp" | "backup";
+  /** The TOTP time-step consumed (only set for method === "totp"). */
+  consumedStep?: number;
 }
 
 export class TwoFactorService {
@@ -42,27 +67,36 @@ export class TwoFactorService {
       label: userEmail,
       algorithm: "SHA1",
       digits: 6,
-      period: 30,
+      period: TOTP_PERIOD,
       secret: secret,
     });
 
     const qrCodeUrl = await QRCode.toDataURL(totp.toString());
 
+    // Generate the backup codes once: return the plaintext to the client (the only
+    // time they are ever visible) and keep the hashes for persistence at enable time.
+    const { plaintext } = this.generateBackupCodes();
+
     return {
       secret: secret.base32,
       qrCode: qrCodeUrl,
       manualEntryKey: secret.base32,
-      backupCodes: this.generateBackupCodes(),
+      backupCodes: plaintext.map((code) => ({ code, used: false })),
     };
   }
 
   /**
-   * Verify setup token and enable 2FA
+   * Verify setup token and enable 2FA.
+   *
+   * Requires the user's current password (A1-05): enabling 2FA is a security-
+   * sensitive change, so a session-riding attacker must not be able to enroll
+   * their own authenticator without knowing the password. This mirrors the
+   * password gate already enforced on {@link disable2FA}.
    */
-  async verifySetup(userId: string, token: string, secret: string) {
+  async verifySetup(userId: string, token: string, secret: string, password: string) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, twoFactorEnabled: true },
+      select: { id: true, password: true, twoFactorEnabled: true },
     });
 
     if (!user) {
@@ -73,28 +107,34 @@ export class TwoFactorService {
       throw new ConflictError("Two-factor authentication is already enabled");
     }
 
+    await this.assertPassword(user.password, password);
+
     const setupTotp = new OTPAuth.TOTP({
       algorithm: "SHA1",
       digits: 6,
-      period: 30,
+      period: TOTP_PERIOD,
       secret: OTPAuth.Secret.fromBase32(secret),
     });
     const normalizedToken = token.replace(/[\s-]/g, "");
-    const verified = setupTotp.validate({ token: normalizedToken, window: 1 }) !== null;
+    const delta = setupTotp.validate({ token: normalizedToken, window: TOTP_WINDOW });
 
-    if (!verified) {
+    if (delta === null) {
       throw new UnauthorizedError("Invalid verification code");
     }
 
-    const backupCodes = this.generateBackupCodes();
+    const { plaintext, stored } = this.generateBackupCodes();
+    const consumedStep = this.currentStep() + delta;
 
     await prisma.user.update({
       where: { id: userId },
       data: {
         twoFactorEnabled: true,
-        twoFactorSecret: secret,
-        twoFactorBackupCodes: JSON.stringify(backupCodes),
+        // Encrypt the TOTP secret at rest — a DB leak must not expose the seed.
+        twoFactorSecret: encryptSecret(secret, TOTP_SECRET_PURPOSE),
+        twoFactorBackupCodes: JSON.stringify(stored),
         twoFactorVerified: true,
+        // Consume the step used during setup so it cannot be replayed at login.
+        lastTotpStep: consumedStep,
       },
     });
 
@@ -103,14 +143,18 @@ export class TwoFactorService {
 
     return {
       success: true,
-      backupCodes: backupCodes.map((bc) => bc.code),
+      backupCodes: plaintext,
     };
   }
 
   /**
-   * Verify a 2FA token during login
+   * Verify a 2FA token during login.
+   *
+   * Rejects replay of a TOTP step that has already been consumed (≤ lastTotpStep)
+   * and consumes the step on success. Backup codes are matched against stored
+   * HMAC hashes and marked used.
    */
-  async verifyToken(userId: string, token: string) {
+  async verifyToken(userId: string, token: string): Promise<TwoFactorVerificationResult> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -118,6 +162,7 @@ export class TwoFactorService {
         twoFactorEnabled: true,
         twoFactorSecret: true,
         twoFactorBackupCodes: true,
+        lastTotpStep: true,
       },
     });
 
@@ -129,29 +174,51 @@ export class TwoFactorService {
       throw new ValidationError("Two-factor authentication is not enabled");
     }
 
+    const secret = decryptSecret(user.twoFactorSecret, TOTP_SECRET_PURPOSE);
     const loginTotp = new OTPAuth.TOTP({
       algorithm: "SHA1",
       digits: 6,
-      period: 30,
-      secret: OTPAuth.Secret.fromBase32(user.twoFactorSecret),
+      period: TOTP_PERIOD,
+      secret: OTPAuth.Secret.fromBase32(secret),
     });
     const normalizedToken = token.replace(/[\s-]/g, "");
-    const verified = loginTotp.validate({ token: normalizedToken, window: 1 }) !== null;
+    const delta = loginTotp.validate({ token: normalizedToken, window: TOTP_WINDOW });
 
-    if (verified) {
-      return { success: true, method: "totp" as const };
+    if (delta !== null) {
+      const matchedStep = this.currentStep() + delta;
+
+      // Replay protection (RFC 6238 §5.2): reject any step at or below the last
+      // successfully consumed step — a captured code cannot be reused.
+      if (user.lastTotpStep !== null && matchedStep <= user.lastTotpStep) {
+        throw new UnauthorizedError("Invalid verification code");
+      }
+
+      // Atomically consume the step. The conditional update closes the TOCTOU race:
+      // two concurrent requests presenting the same step — only one advances the
+      // stored step, the other's update matches zero rows and is rejected.
+      const consumed = await prisma.user.updateMany({
+        where: {
+          id: userId,
+          OR: [{ lastTotpStep: null }, { lastTotpStep: { lt: matchedStep } }],
+        },
+        data: { lastTotpStep: matchedStep },
+      });
+
+      if (consumed.count === 0) {
+        throw new UnauthorizedError("Invalid verification code");
+      }
+
+      return { success: true, method: "totp", consumedStep: matchedStep };
     }
 
     if (user.twoFactorBackupCodes) {
-      const backupCodes: BackupCode[] = JSON.parse(user.twoFactorBackupCodes);
-      // Timing note: Array.findIndex short-circuits on the first match, introducing
-      // a theoretical timing side-channel based on which position in the list matches.
-      // This is accepted because backup codes are high-entropy (64-bit random) single-use
-      // values. An attacker cannot exploit the position timing to enumerate codes within
-      // the 15-minute lockout window — the search space is too large and each code is
-      // invalidated on use. The timingSafeEqual comparison itself remains constant-time.
+      const backupCodes: StoredBackupCode[] = JSON.parse(user.twoFactorBackupCodes);
+      const candidateHash = this.hashBackupCode(normalizedToken);
+      // timingSafeEqual compares the candidate hash against each stored hash in
+      // constant time. The stored values are hashes (not the codes themselves),
+      // so even a DB leak does not reveal usable codes.
       const backupCodeIndex = backupCodes.findIndex(
-        (bc) => !bc.used && timingSafeEqual(bc.code, token),
+        (bc) => !bc.used && timingSafeEqual(bc.hash, candidateHash),
       );
 
       if (backupCodeIndex !== -1) {
@@ -164,7 +231,7 @@ export class TwoFactorService {
           },
         });
 
-        return { success: true, method: "backup" as const };
+        return { success: true, method: "backup" };
       }
     }
 
@@ -185,6 +252,7 @@ export class TwoFactorService {
         twoFactorEnabled: true,
         twoFactorSecret: true,
         twoFactorBackupCodes: true,
+        lastTotpStep: true,
       },
     });
 
@@ -196,57 +264,14 @@ export class TwoFactorService {
       throw new ValidationError("Two-factor authentication is not enabled");
     }
 
-    if (!user.password) {
-      throw new ValidationError("Password verification required");
-    }
-
-    let isValidPassword = false;
-    try {
-      isValidPassword = await bcrypt.compare(password, user.password);
-    } catch (error) {
-      getLogger().error({ err: error }, "bcrypt.compare error");
-      throw new UnauthorizedError("Password verification failed");
-    }
-    if (!isValidPassword) {
-      throw new UnauthorizedError("Invalid password");
-    }
+    await this.assertPassword(user.password, password);
 
     if (!user.twoFactorSecret) {
       throw new ValidationError("Two-factor secret not found");
     }
 
-    // Verify TOTP code — follow the same pattern as verifyToken
-    const disableTotp = new OTPAuth.TOTP({
-      algorithm: "SHA1",
-      digits: 6,
-      period: 30,
-      secret: OTPAuth.Secret.fromBase32(user.twoFactorSecret),
-    });
-    const normalizedCode = totpCode.replace(/[\s-]/g, "");
-    const totpVerified = disableTotp.validate({ token: normalizedCode, window: 1 }) !== null;
-
-    if (!totpVerified) {
-      // TOTP code is invalid — try backup code as a fallback
-      if (!user.twoFactorBackupCodes) {
-        throw new UnauthorizedError("Invalid verification code");
-      }
-
-      const backupCodes: BackupCode[] = JSON.parse(user.twoFactorBackupCodes);
-      const backupCodeIndex = backupCodes.findIndex(
-        (bc) => !bc.used && timingSafeEqual(bc.code, normalizedCode),
-      );
-
-      if (backupCodeIndex === -1) {
-        throw new UnauthorizedError("Invalid verification code");
-      }
-
-      // Mark backup code as used
-      backupCodes[backupCodeIndex].used = true;
-      await prisma.user.update({
-        where: { id: userId },
-        data: { twoFactorBackupCodes: JSON.stringify(backupCodes) },
-      });
-    }
+    // Require a valid current TOTP code or unused backup code (step-up).
+    this.assertSecondFactor(user, totpCode);
 
     await prisma.user.update({
       where: { id: userId },
@@ -255,6 +280,7 @@ export class TwoFactorService {
         twoFactorSecret: null,
         twoFactorBackupCodes: null,
         twoFactorVerified: false,
+        lastTotpStep: null,
       },
     });
 
@@ -265,12 +291,23 @@ export class TwoFactorService {
   }
 
   /**
-   * Generate new backup codes
+   * Generate new backup codes.
+   *
+   * Requires recent re-authentication — password AND a current TOTP/backup code
+   * step-up (A1-05) — mirroring {@link disable2FA}, so a session-riding attacker
+   * cannot silently rotate (and exfiltrate) the victim's backup codes.
    */
-  async generateNewBackupCodes(userId: string) {
+  async generateNewBackupCodes(userId: string, password: string, totpCode: string) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, twoFactorEnabled: true },
+      select: {
+        id: true,
+        password: true,
+        twoFactorEnabled: true,
+        twoFactorSecret: true,
+        twoFactorBackupCodes: true,
+        lastTotpStep: true,
+      },
     });
 
     if (!user) {
@@ -281,16 +318,24 @@ export class TwoFactorService {
       throw new ValidationError("Two-factor authentication is not enabled");
     }
 
-    const backupCodes = this.generateBackupCodes();
+    await this.assertPassword(user.password, password);
+
+    if (!user.twoFactorSecret) {
+      throw new ValidationError("Two-factor secret not found");
+    }
+
+    this.assertSecondFactor(user, totpCode);
+
+    const { plaintext, stored } = this.generateBackupCodes();
 
     await prisma.user.update({
       where: { id: userId },
       data: {
-        twoFactorBackupCodes: JSON.stringify(backupCodes),
+        twoFactorBackupCodes: JSON.stringify(stored),
       },
     });
 
-    return backupCodes.map((bc) => bc.code);
+    return plaintext;
   }
 
   /**
@@ -313,7 +358,7 @@ export class TwoFactorService {
 
     let availableBackupCodes = 0;
     if (user.twoFactorBackupCodes) {
-      const backupCodes: BackupCode[] = JSON.parse(user.twoFactorBackupCodes);
+      const backupCodes: StoredBackupCode[] = JSON.parse(user.twoFactorBackupCodes);
       availableBackupCodes = backupCodes.filter((bc) => !bc.used).length;
     }
 
@@ -325,20 +370,120 @@ export class TwoFactorService {
   }
 
   /**
-   * Generate backup codes
+   * Verify the user's password (step-up re-authentication). Throws if the
+   * account has no password (external auth) or the password is wrong.
    */
-  private generateBackupCodes(): BackupCode[] {
-    const codes: BackupCode[] = [];
+  private async assertPassword(passwordHash: string | null, password: string): Promise<void> {
+    if (!passwordHash) {
+      throw new ValidationError("Password verification required");
+    }
+    let isValidPassword = false;
+    try {
+      isValidPassword = await bcrypt.compare(password, passwordHash);
+    } catch (error) {
+      getLogger().error({ err: error }, "bcrypt.compare error");
+      throw new UnauthorizedError("Password verification failed");
+    }
+    if (!isValidPassword) {
+      throw new UnauthorizedError("Invalid password");
+    }
+  }
 
-    for (let i = 0; i < 10; i++) {
-      const code = crypto.randomBytes(4).toString("hex").toUpperCase();
-      codes.push({
-        code: code.match(/.{1,4}/g)?.join("-") || code,
-        used: false,
-      });
+  /**
+   * Verify a current TOTP code (with replay protection) or, failing that, an
+   * unused backup code. Throws `UnauthorizedError` when neither matches.
+   *
+   * NOTE: this is a re-authentication gate (disable / regenerate backup codes),
+   * NOT the login path, so it does not consume the TOTP step or mark the backup
+   * code used — the caller's subsequent action (disabling 2FA / rotating codes)
+   * invalidates the relevant material anyway.
+   */
+  private assertSecondFactor(
+    user: {
+      twoFactorSecret: string | null;
+      twoFactorBackupCodes: string | null;
+      lastTotpStep: number | null;
+    },
+    code: string,
+  ): void {
+    if (!user.twoFactorSecret) {
+      throw new ValidationError("Two-factor secret not found");
     }
 
-    return codes;
+    const secret = decryptSecret(user.twoFactorSecret, TOTP_SECRET_PURPOSE);
+    const totp = new OTPAuth.TOTP({
+      algorithm: "SHA1",
+      digits: 6,
+      period: TOTP_PERIOD,
+      secret: OTPAuth.Secret.fromBase32(secret),
+    });
+    const normalizedCode = code.replace(/[\s-]/g, "");
+    const delta = totp.validate({ token: normalizedCode, window: TOTP_WINDOW });
+    let totpVerified = delta !== null;
+
+    // Reject a TOTP step that has already been consumed (replay protection).
+    if (totpVerified) {
+      const matchedStep = this.currentStep() + (delta as number);
+      if (user.lastTotpStep !== null && matchedStep <= user.lastTotpStep) {
+        totpVerified = false;
+      }
+    }
+
+    if (totpVerified) {
+      return;
+    }
+
+    // Fall back to an unused backup code.
+    if (!user.twoFactorBackupCodes) {
+      throw new UnauthorizedError("Invalid verification code");
+    }
+    const backupCodes: StoredBackupCode[] = JSON.parse(user.twoFactorBackupCodes);
+    const candidateHash = this.hashBackupCode(normalizedCode);
+    const matched = backupCodes.some((bc) => !bc.used && timingSafeEqual(bc.hash, candidateHash));
+    if (!matched) {
+      throw new UnauthorizedError("Invalid verification code");
+    }
+  }
+
+  /** The current TOTP time-step (floor of unix-seconds / period). */
+  private currentStep(): number {
+    return Math.floor(Date.now() / 1000 / TOTP_PERIOD);
+  }
+
+  /**
+   * HMAC-SHA256 a normalized backup code, keyed by ENCRYPTION_SECRET. Used so
+   * that backup codes are stored as keyed hashes (not plaintext) and matched by
+   * comparing hashes. The code is uppercased and stripped of separators first so
+   * user-entered formatting (spaces/dashes/case) does not affect matching.
+   */
+  private hashBackupCode(code: string): string {
+    const secret = process.env.ENCRYPTION_SECRET;
+    if (!secret) {
+      throw new Error("ENCRYPTION_SECRET environment variable is required to hash backup codes");
+    }
+    const normalized = code.replace(/[\s-]/g, "").toUpperCase();
+    return crypto.createHmac("sha256", secret).update(normalized).digest("hex");
+  }
+
+  /**
+   * Generate backup codes.
+   *
+   * Each code carries 80 bits of entropy (`crypto.randomBytes(10)`), formatted as
+   * groups of 4 uppercase hex chars. Returns both the plaintext (shown to the user
+   * exactly once) and the persisted form (HMAC hashes only).
+   */
+  private generateBackupCodes(): { plaintext: string[]; stored: StoredBackupCode[] } {
+    const plaintext: string[] = [];
+    const stored: StoredBackupCode[] = [];
+
+    for (let i = 0; i < 10; i++) {
+      const raw = crypto.randomBytes(10).toString("hex").toUpperCase();
+      const code = raw.match(/.{1,4}/g)?.join("-") || raw;
+      plaintext.push(code);
+      stored.push({ hash: this.hashBackupCode(code), used: false });
+    }
+
+    return { plaintext, stored };
   }
 
   /**
