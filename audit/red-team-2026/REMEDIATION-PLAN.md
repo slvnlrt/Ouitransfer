@@ -73,19 +73,19 @@ After de-duplication of cross-corroborated findings: see batches below.
 - [x] A1-15 / A1-16 / A2-08 / A2-09 / A2-10 (Info) A1-16: `PASSWORD_RESET_REQUEST` audit no longer stores the raw email for unknown accounts (only `userId`+email when a real reset issued). A1-15 (AJV vs Zod), A2-08 (isAdmin JWT claim propagation), A2-09/A2-10 (intentional public metadata; reconciled with R2 opaque file token) annotated in code.
 
 ## R4 — Federated identity: OAuth/OIDC & LDAP (server: auth-providers/ldap)
-- [ ] A5-01 (Crit) verify OIDC `id_token` (JWKS, alg allowlist, iss/aud/exp/iat/nonce); userinfo only for non-OIDC over verified channel
-- [ ] A5-02 (Crit) no auto-link by email; require verified-email claim + explicit authenticated link; add `emailVerified` column
-- [ ] A5-03 (Crit) server-only `state` in httpOnly cookie bound to session; single-use (delete on lookup); `expiresAt<now` reject
-- [ ] A5-04 / A6-01 (High) compute OAuth callback/redirect base from trusted `appUrl`; never accept client `redirect_uri`; relative-only post-login return
-- [ ] A5-05 / A3-07 / A5-11 (High/Med) SSRF guard: allowlist/deny private+link-local+loopback+metadata for discovery/token/userinfo/github-email/ldap host + ldap test; reject http issuer; generic error text
-- [ ] A5-06 (High) always PKCE S256 regardless of provider type
-- [ ] A5-07 (High) require LDAPS/StartTLS for non-loopback; reject remote `ldap://`; `tlsSkipVerify` dev-only + forbidden when enabled for non-private
-- [ ] A5-08 (Med) validate/normalize LDAP attribute strings on ingest (length, strip control chars)
-- [ ] A5-09 (Med) pending-state in signed cookie (also fixes multi-instance) — folded into A5-03
-- [ ] A5-10 (Med) log status+redacted marker only; never raw IdP bodies
-- [ ] A5-12 (Low) bind external identity to immutable subject only
-- [ ] A5-13 (Low) validate `appUrl` canonical origin for LDAP welcome links
-- [ ] A5-14 (Info) HKDF/scrypt+salt for encryption key derivation; enforce min secret length
+- [x] A5-01 (Crit) verify OIDC `id_token` (JWKS, alg allowlist, iss/aud/exp/iat/nonce); userinfo only for non-OIDC over verified channel — R4a
+- [x] A5-02 (Crit) no auto-link by email; require verified-email claim + explicit authenticated link; add `emailVerified` column — R4a
+- [x] A5-03 (Crit) server-only `state` in httpOnly cookie bound to session; single-use (delete on lookup); `expiresAt<now` reject — R4a
+- [x] A5-04 / A6-01 (High) compute OAuth callback/redirect base from trusted `appUrl`; never accept client `redirect_uri`; relative-only post-login return — R4a
+- [~] A5-05 / A3-07 / A5-11 (High/Med) SSRF guard: allowlist/deny private+link-local+loopback+metadata for discovery/token/userinfo/github-email/ldap host + ldap test; reject http issuer; generic error text — **OAuth portion done in R4a** (discovery/token/userinfo/github-email/JWKS); **LDAP host + ldap test → R4b**
+- [x] A5-06 (High) always PKCE S256 regardless of provider type — R4a
+- [ ] A5-07 (High) require LDAPS/StartTLS for non-loopback; reject remote `ldap://`; `tlsSkipVerify` dev-only + forbidden when enabled for non-private — R4b
+- [ ] A5-08 (Med) validate/normalize LDAP attribute strings on ingest (length, strip control chars) — R4b
+- [x] A5-09 (Med) pending-state in signed cookie (also fixes multi-instance) — folded into A5-03 — R4a
+- [x] A5-10 (Med) log status+redacted marker only; never raw IdP bodies — R4a
+- [x] A5-12 (Low) bind external identity to immutable subject only — R4a
+- [ ] A5-13 (Low) validate `appUrl` canonical origin for LDAP welcome links — R4b
+- [x] A5-14 (Info) HKDF/scrypt+salt for encryption key derivation; enforce min secret length — **done in R3a** (`utils/encryption.ts` HKDF-SHA256 + per-record salt; `env.ts` enforces `ENCRYPTION_SECRET` min 32)
 
 ## R5 — Email, invites, notifications (server: email/invite/notification + config-validation)
 - [ ] A6-02 / A6-08 (Med/Low) per-route IP rate limit on `/register-with-invite`, `GET /invite-tokens/:token`, `/notifications/unsubscribe`
