@@ -30,8 +30,13 @@ export function useTwoFactor() {
   const [isBackupCodesModalOpen, setIsBackupCodesModalOpen] = useState(false);
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [verificationCode, setVerificationCode] = useState("");
+  const [setupPassword, setSetupPassword] = useState("");
   const [disablePassword, setDisablePassword] = useState("");
   const [disableTotpCode, setDisableTotpCode] = useState("");
+  // Re-auth inputs for regenerating backup codes (A1-05 step-up).
+  const [isRegenModalOpen, setIsRegenModalOpen] = useState(false);
+  const [regenPassword, setRegenPassword] = useState("");
+  const [regenTotpCode, setRegenTotpCode] = useState("");
 
   // ── Query: 2FA status ───────────────────────────────────────────────
   const statusQuery = useQuery({
@@ -71,9 +76,13 @@ export function useTwoFactor() {
       if (!setupData || !verificationCode) {
         throw new Error("missing_input");
       }
+      if (!setupPassword) {
+        throw new Error("missing_password");
+      }
       const response = await verifyTwoFactorSetup({
         token: verificationCode,
         secret: setupData.secret,
+        password: setupPassword,
       });
       return response.data;
     },
@@ -83,6 +92,7 @@ export function useTwoFactor() {
         setIsSetupModalOpen(false);
         setIsBackupCodesModalOpen(true);
         setVerificationCode("");
+        setSetupPassword("");
         toast.success(t("twoFactor.messages.enabledSuccess"));
         queryClient.invalidateQueries({ queryKey: queryKeys.auth.twoFactor.status() });
       }
@@ -90,6 +100,10 @@ export function useTwoFactor() {
     onError: (error: unknown) => {
       if (error instanceof Error && error.message === "missing_input") {
         toast.error(t("twoFactor.messages.enterVerificationCode"));
+        return;
+      }
+      if (error instanceof Error && error.message === "missing_password") {
+        toast.error(t("twoFactor.messages.enterPassword"));
         return;
       }
       logger.error("Failed to verify 2FA setup", {
@@ -152,19 +166,41 @@ export function useTwoFactor() {
     },
   });
 
-  // ── Mutation: generate new backup codes ─────────────────────────────
+  // ── Mutation: generate new backup codes (requires re-auth) ──────────
   const generateCodesMutation = useMutation({
     mutationFn: async () => {
-      const response = await generateBackupCodes();
+      if (!regenPassword) {
+        throw new Error("missing_password");
+      }
+      if (!regenTotpCode) {
+        throw new Error("missing_totp");
+      }
+      const response = await generateBackupCodes({
+        password: regenPassword,
+        totpCode: regenTotpCode,
+      });
       return response.data;
     },
     onSuccess: (data) => {
       setBackupCodes(data.backupCodes);
+      setIsRegenModalOpen(false);
+      setRegenPassword("");
+      setRegenTotpCode("");
       setIsBackupCodesModalOpen(true);
       toast.success(t("twoFactor.messages.backupCodesGenerated"));
       queryClient.invalidateQueries({ queryKey: queryKeys.auth.twoFactor.status() });
     },
     onError: (error: unknown) => {
+      if (error instanceof Error && error.message === "missing_password") {
+        toast.error(t("twoFactor.messages.enterPassword"));
+        return;
+      }
+      if (error instanceof Error && error.message === "missing_totp") {
+        toast.error(t("twoFactor.messages.enterVerificationCode"));
+        return;
+      }
+      // Clear the TOTP code on error so the user can enter a fresh code.
+      setRegenTotpCode("");
       logger.error("Failed to generate backup codes", {
         err: error instanceof Error ? error.message : String(error),
       });
@@ -212,7 +248,9 @@ export function useTwoFactor() {
   const startSetup = () => startSetupMutation.mutate();
   const verifySetup = () => verifyMutation.mutate();
   const disable2FA = () => disableMutation.mutate();
-  const generateNewBackupCodes = () => generateCodesMutation.mutate();
+  // Opens the re-auth modal; the actual request runs after re-authentication.
+  const generateNewBackupCodes = () => setIsRegenModalOpen(true);
+  const confirmGenerateNewBackupCodes = () => generateCodesMutation.mutate();
 
   const loadStatus = async () => {
     await queryClient.invalidateQueries({ queryKey: queryKeys.auth.twoFactor.status() });
@@ -224,24 +262,33 @@ export function useTwoFactor() {
     setupData,
     backupCodes,
     verificationCode,
+    setupPassword,
     disablePassword,
     disableTotpCode,
+    regenPassword,
+    regenTotpCode,
 
     isSetupModalOpen,
     isDisableModalOpen,
     isBackupCodesModalOpen,
+    isRegenModalOpen,
 
     setVerificationCode,
+    setSetupPassword,
     setDisablePassword,
     setDisableTotpCode,
+    setRegenPassword,
+    setRegenTotpCode,
     setIsSetupModalOpen,
     setIsDisableModalOpen,
     setIsBackupCodesModalOpen,
+    setIsRegenModalOpen,
 
     startSetup,
     verifySetup,
     disable2FA,
     generateNewBackupCodes,
+    confirmGenerateNewBackupCodes,
     downloadBackupCodes,
     copyBackupCodes,
     loadStatus,
