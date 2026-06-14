@@ -25,6 +25,10 @@ vi.mock("../shared/prisma.js", () => ({
     },
     shareAlias: { findUnique: vi.fn().mockResolvedValue(null) },
     shareSecurity: { findUnique: vi.fn() },
+    loginAttempt: {
+      findMany: vi.fn().mockResolvedValue([]),
+      create: vi.fn().mockResolvedValue({}),
+    },
   },
 }));
 

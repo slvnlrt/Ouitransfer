@@ -35,6 +35,8 @@ const {
   mockShareSecurityCreate,
   mockShareUpdateMany,
   mockFileFirst,
+  mockFileFindUnique,
+  mockLoginAttemptFindMany,
   mockEmailSend,
   mockUserCount,
   mockUserFindUnique,
@@ -52,6 +54,8 @@ const {
   mockShareSecurityCreate: vi.fn(),
   mockShareUpdateMany: vi.fn(),
   mockFileFirst: vi.fn(),
+  mockFileFindUnique: vi.fn(),
+  mockLoginAttemptFindMany: vi.fn().mockResolvedValue([]),
   mockEmailSend: vi.fn().mockResolvedValue({ enqueued: false }),
   mockUserCount: vi.fn().mockResolvedValue(1),
   mockUserFindUnique: vi.fn().mockResolvedValue(null),
@@ -91,10 +95,15 @@ vi.mock("../../../shared/prisma.js", () => ({
     },
     file: {
       findFirst: mockFileFirst,
+      findUnique: mockFileFindUnique,
       findMany: vi.fn().mockResolvedValue([]),
     },
     folder: {
       findMany: vi.fn().mockResolvedValue([]),
+    },
+    loginAttempt: {
+      findMany: mockLoginAttemptFindMany,
+      create: vi.fn().mockResolvedValue({}),
     },
     notificationPreference: {
       findUnique: vi.fn().mockResolvedValue(null),
@@ -173,10 +182,13 @@ import { logAuditEvent } from "../../audit/service.js";
 const CREATOR_ID = "creator-user-1";
 const VISITOR_ID = "visitor-user-1";
 const SHARE_ID = "share-1";
-const ALIAS = "myshare";
+const ALIAS = "myshare1";
 const SECURITY_ID = "security-1";
 const FILE_ID = "file-1";
 const OBJECT_NAME = `${CREATOR_ID}/test-object.txt`;
+// Opaque per-share file token = the download handle a share visitor uses (R2 contract).
+// Minted in beforeAll, after JWT_SECRET is stubbed (the HKDF key derives from it).
+let SHARE_FILE_TOKEN: string;
 
 function makeShare(overrides: Record<string, unknown> = {}) {
   return {
@@ -245,6 +257,9 @@ describe("Visitor Tracking — integration", () => {
     app.register(shareRoutes);
     app.register(fileRoutes);
     await app.ready();
+
+    const { mintShareFileToken } = await import("../share-file-token.js");
+    SHARE_FILE_TOKEN = mintShareFileToken(SHARE_ID, FILE_ID);
   });
 
   afterAll(async () => {
@@ -473,6 +488,8 @@ describe("Visitor Tracking — integration", () => {
           expiration: null,
           views: 0,
           maxViews: null,
+          isActive: true,
+          deactivationReason: null,
           files: [],
           folders: [],
           recipients: [],
@@ -515,25 +532,32 @@ describe("Visitor Tracking — integration", () => {
       updatedAt: new Date("2024-01-01"),
     };
 
+    // Share returned by share.findFirst — serves BOTH the access resolver (needs
+    // security/lifecycle/creator.isActive) AND trackShareDownload (needs creator + alias). The
+    // creator differs from the visitor so the download is tracked (not skipped as owner).
     const shareWithFile = {
       id: SHARE_ID,
       name: "Test Share",
       creatorId: CREATOR_ID,
       notifyOnDownload: false,
+      isActive: true,
+      deactivationReason: null,
+      expiration: null,
+      maxViews: null,
+      views: 0,
+      security: { password: null },
       creator: { email: "creator@example.com", locale: "en", isActive: true },
+      alias: null,
     };
 
     beforeEach(() => {
-      mockFileFirst.mockResolvedValue(fileRecord);
-      // checkFileAccess: share has no password → access granted
-      vi.mocked(prisma.share.findMany).mockResolvedValue([
-        { id: SHARE_ID, security: { password: null } } as never,
-      ]);
+      // Token path: the file is resolved by id, the bound share by share.findFirst.
+      mockFileFindUnique.mockResolvedValue(fileRecord);
+      mockShareFindFirst.mockResolvedValue(shareWithFile);
       // FileService is mocked at the hoisted level (vi.mock) — no vi.doMock needed
     });
 
-    it("creates ShareVisit with action 'download' when shareId is provided and user is not owner", async () => {
-      mockShareFindFirst.mockResolvedValue(shareWithFile);
+    it("creates ShareVisit with action 'download' for a token download by a non-owner", async () => {
       // jwtVerify for isOwner check: anonymous visitor, no JWT
 
       const { csrfToken, csrfCookie } = await getCsrf();
@@ -546,8 +570,7 @@ describe("Visitor Tracking — integration", () => {
           "x-csrf-token": csrfToken,
         },
         payload: {
-          objectName: OBJECT_NAME,
-          shareId: SHARE_ID,
+          objectName: SHARE_FILE_TOKEN,
         },
       });
 
@@ -574,14 +597,18 @@ describe("Visitor Tracking — integration", () => {
       });
     });
 
-    it("does NOT create ShareVisit when shareId is not provided", async () => {
+    it("does NOT create ShareVisit for an owner raw-key download (no share binding)", async () => {
+      // Raw objectName + owner JWT → owner path, shareId undefined → no tracking.
+      mockFileFirst.mockResolvedValue(fileRecord);
+
       const { csrfToken, csrfCookie } = await getCsrf();
+      const token = signToken(CREATOR_ID);
       const _res = await app.inject({
         method: "POST",
         url: "/files/download-url",
         headers: {
           "content-type": "application/json",
-          cookie: `_csrf=${csrfCookie}`,
+          cookie: `_csrf=${csrfCookie}; token=${token}`,
           "x-csrf-token": csrfToken,
         },
         payload: {
@@ -591,17 +618,17 @@ describe("Visitor Tracking — integration", () => {
 
       await new Promise((r) => setTimeout(r, 10));
 
-      // Regardless of download URL success, no share visit should be created without shareId
+      // Owner raw-key download has no shareId → no share visit / no share update.
       expect(mockShareVisitCreate).not.toHaveBeenCalled();
       expect(mockShareUpdate).not.toHaveBeenCalled();
     });
 
-    it("does NOT create ShareVisit when shareId is provided but file does not belong to share", async () => {
-      // findFirst returns null — file not in share
+    it("returns 404 when the token's file no longer belongs to the bound share", async () => {
+      // share.findFirst returns null — the bound share no longer links the file.
       mockShareFindFirst.mockResolvedValue(null);
 
       const { csrfToken, csrfCookie } = await getCsrf();
-      const _res = await app.inject({
+      const res = await app.inject({
         method: "POST",
         url: "/files/download-url",
         headers: {
@@ -610,13 +637,12 @@ describe("Visitor Tracking — integration", () => {
           "x-csrf-token": csrfToken,
         },
         payload: {
-          objectName: OBJECT_NAME,
-          shareId: "wrong-share-id",
+          objectName: SHARE_FILE_TOKEN,
         },
       });
 
+      expect(res.statusCode).toBe(404);
       await new Promise((r) => setTimeout(r, 10));
-
       expect(mockShareVisitCreate).not.toHaveBeenCalled();
     });
   });
@@ -642,12 +668,19 @@ describe("Visitor Tracking — integration", () => {
       updatedAt: new Date("2024-01-01"),
     };
 
-    // Includes alias so trackShareDownload + audit enrichment can resolve the cookie.
+    // Includes alias so trackShareDownload + audit enrichment can resolve the cookie, plus the
+    // security/lifecycle/creator fields the access resolver reads (single share.findFirst mock).
     const shareWithFileAndAlias = {
       id: SHARE_ID,
       name: "Test Share",
       creatorId: CREATOR_ID,
       notifyOnDownload: false,
+      isActive: true,
+      deactivationReason: null,
+      expiration: null,
+      maxViews: null,
+      views: 0,
+      security: { password: null },
       creator: { email: "creator@example.com", locale: "en", isActive: true },
       alias: { alias: ALIAS },
     };
@@ -658,10 +691,7 @@ describe("Visitor Tracking — integration", () => {
     }
 
     beforeEach(() => {
-      mockFileFirst.mockResolvedValue(fileRecord);
-      vi.mocked(prisma.share.findMany).mockResolvedValue([
-        { id: SHARE_ID, security: { password: null } } as never,
-      ]);
+      mockFileFindUnique.mockResolvedValue(fileRecord);
       mockShareFindFirst.mockResolvedValue(shareWithFileAndAlias);
       mockShareAliasFindUnique.mockResolvedValue({ alias: ALIAS });
     });
@@ -688,7 +718,7 @@ describe("Visitor Tracking — integration", () => {
           cookie: `_csrf=${csrfCookie}; sv_${ALIAS}=${svCookie}`,
           "x-csrf-token": csrfToken,
         },
-        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+        payload: { objectName: SHARE_FILE_TOKEN },
       });
 
       expect(res.statusCode).toBe(200);
@@ -730,7 +760,7 @@ describe("Visitor Tracking — integration", () => {
           cookie: `_csrf=${csrfCookie}; sv_${ALIAS}=${svCookie}`,
           "x-csrf-token": csrfToken,
         },
-        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+        payload: { objectName: SHARE_FILE_TOKEN },
       });
 
       expect(res.statusCode).toBe(200);
@@ -743,10 +773,9 @@ describe("Visitor Tracking — integration", () => {
           identificationSource: "self_declared",
         }),
       });
-      expect(mockShareRecipientUpdate).toHaveBeenCalledWith({
-        where: { id: RECIPIENT_ID },
-        data: { downloadCount: { increment: 1 }, lastDownloadedAt: expect.any(Date) },
-      });
+      // A4-09: a self-declared (spoofable) match links the visit for the comfort label but must
+      // NOT mutate authoritative per-recipient download stats — only token-verified arrivals do.
+      expect(mockShareRecipientUpdate).not.toHaveBeenCalled();
     });
 
     it("spoof-labeling: anonymous visitor typing a known recipient's email is 'self_declared', never 'token'", async () => {
@@ -768,7 +797,7 @@ describe("Visitor Tracking — integration", () => {
           cookie: `_csrf=${csrfCookie}; sv_${ALIAS}=${svCookie}`,
           "x-csrf-token": csrfToken,
         },
-        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+        payload: { objectName: SHARE_FILE_TOKEN },
       });
 
       expect(res.statusCode).toBe(200);
@@ -793,7 +822,7 @@ describe("Visitor Tracking — integration", () => {
           cookie: `_csrf=${csrfCookie}`,
           "x-csrf-token": csrfToken,
         },
-        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+        payload: { objectName: SHARE_FILE_TOKEN },
       });
 
       expect(res.statusCode).toBe(200);
@@ -828,7 +857,7 @@ describe("Visitor Tracking — integration", () => {
           cookie: `_csrf=${csrfCookie}; sv_${ALIAS}=${svCookie}`,
           "x-csrf-token": csrfToken,
         },
-        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+        payload: { objectName: SHARE_FILE_TOKEN },
       });
 
       expect(res.statusCode).toBe(200);
@@ -848,15 +877,10 @@ describe("Visitor Tracking — integration", () => {
       );
     });
 
-    it("owner download (private file, no share match): trackShareDownload skips the owner", async () => {
-      // To exercise the owner-skip branch we must reach checkFileAccess's JWT fallback, which
-      // only runs when no passwordless share grants access. Use a password-protected share so the
-      // owner is authorized via JWT ownership (request.user populated) rather than the share.
-      vi.mocked(prisma.share.findMany).mockResolvedValue([
-        { id: SHARE_ID, security: { password: "hashed" } } as never,
-      ]);
-      // trackShareDownload re-reads the share with the file; owner === creator.
-      mockShareFindFirst.mockResolvedValue(shareWithFileAndAlias);
+    it("owner raw-key download (no share binding): trackShareDownload is never invoked", async () => {
+      // The owner downloads their own file by RAW objectName + JWT (the dashboard flow). The raw
+      // path resolves via file.findFirst and has no shareId, so trackShareDownload never runs.
+      mockFileFirst.mockResolvedValue(fileRecord);
       mockShareRecipientFindUnique.mockResolvedValue(null);
 
       const { csrfToken, csrfCookie } = await getCsrf();
@@ -870,7 +894,7 @@ describe("Visitor Tracking — integration", () => {
           cookie: `_csrf=${csrfCookie}; token=${token}`,
           "x-csrf-token": csrfToken,
         },
-        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+        payload: { objectName: OBJECT_NAME },
       });
 
       expect(res.statusCode).toBe(200);
@@ -1474,15 +1498,18 @@ describe("Visitor Tracking — integration", () => {
       name: "Test Share",
       creatorId: CREATOR_ID,
       notifyOnDownload: false,
+      isActive: true,
+      deactivationReason: null,
+      expiration: null,
+      maxViews: null,
+      views: 0,
+      security: { password: null },
       creator: { email: "creator@example.com", locale: "en", isActive: true },
       alias: { alias: ALIAS },
     };
 
     beforeEach(() => {
-      mockFileFirst.mockResolvedValue(fileRecord);
-      vi.mocked(prisma.share.findMany).mockResolvedValue([
-        { id: SHARE_ID, security: { password: null } } as never,
-      ]);
+      mockFileFindUnique.mockResolvedValue(fileRecord);
       mockShareFindFirst.mockResolvedValue(shareWithFile);
       mockShareAliasFindUnique.mockResolvedValue({ alias: ALIAS });
       mockShareRecipientFindUnique.mockResolvedValue(null);
@@ -1505,7 +1532,7 @@ describe("Visitor Tracking — integration", () => {
           cookie: `_csrf=${csrfCookie}; token=${token}`,
           "x-csrf-token": csrfToken,
         },
-        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+        payload: { objectName: SHARE_FILE_TOKEN },
       });
 
       expect(res.statusCode).toBe(200);
@@ -1525,12 +1552,10 @@ describe("Visitor Tracking — integration", () => {
       });
     });
 
-    it("owner download still does NOT create visit (owner-skip path unchanged)", async () => {
-      // checkFileAccess: use password-protected share so owner is authorized via JWT
-      vi.mocked(prisma.share.findMany).mockResolvedValue([
-        { id: SHARE_ID, security: { password: "hashed" } } as never,
-      ]);
-
+    it("owner downloading via a share token does NOT create a visit (owner-skip path)", async () => {
+      // The owner opens their own share's token while logged in. The token grants access; the
+      // optional JWT then populates request.user = CREATOR_ID == share.creatorId, so
+      // trackShareDownload returns early (owner self-downloads are never tracked).
       const { csrfToken, csrfCookie } = await getCsrf();
       const token = signToken(CREATOR_ID);
 
@@ -1542,7 +1567,7 @@ describe("Visitor Tracking — integration", () => {
           cookie: `_csrf=${csrfCookie}; token=${token}`,
           "x-csrf-token": csrfToken,
         },
-        payload: { objectName: OBJECT_NAME, shareId: SHARE_ID },
+        payload: { objectName: SHARE_FILE_TOKEN },
       });
 
       expect(res.statusCode).toBe(200);

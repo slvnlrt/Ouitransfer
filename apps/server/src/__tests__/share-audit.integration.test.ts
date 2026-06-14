@@ -28,6 +28,10 @@ vi.mock("../shared/prisma.js", () => ({
     shareVisit: {
       create: vi.fn().mockResolvedValue({ id: "visit-1" }),
     },
+    loginAttempt: {
+      findMany: vi.fn().mockResolvedValue([]),
+      create: vi.fn().mockResolvedValue({}),
+    },
     auditLog: { create: mockAuditCreate },
   },
 }));

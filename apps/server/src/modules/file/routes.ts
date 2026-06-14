@@ -1185,6 +1185,17 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         ancestorFolderIds,
       } = await resolveDownloadTarget(key, password, request);
 
+      // Optional JWT extraction: the token path grants access without verifying a JWT. Attempt it
+      // now (best-effort) so request.user is populated for download tracking (authenticated_user
+      // identity) and the FILE_DOWNLOAD audit userId — anonymous visitors simply have no JWT.
+      if (!request.user) {
+        try {
+          await request.jwtVerify();
+        } catch (_err) {
+          request.log.debug("Optional JWT verification skipped — anonymous share download");
+        }
+      }
+
       const fileName = fileRecord.name;
       const expires = env.PRESIGNED_GET_URL_EXPIRATION;
 
@@ -1290,6 +1301,15 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         shareId,
         ancestorFolderIds,
       } = await resolveDownloadTarget(key, password, request);
+
+      // Optional JWT extraction for tracking/audit identity (see download-url handler).
+      if (!request.user) {
+        try {
+          await request.jwtVerify();
+        } catch (_err) {
+          request.log.debug("Optional JWT verification skipped — anonymous share download");
+        }
+      }
 
       // Enrich the FILE_DOWNLOAD audit with the resolved recipient + source for share downloads.
       const auditRecipient = shareId
