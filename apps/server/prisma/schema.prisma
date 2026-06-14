@@ -16,6 +16,7 @@ model User {
   password  String?
   image     String?
   isAdmin   Boolean  @default(false)
+  emailVerified Boolean @default(false) // True once the address is proven owned (verified-email claim from a federated IdP, or a future local-verification flow). A federated identity is NEVER auto-linked to a pre-existing account unless the IdP asserts email_verified for the SAME address (A5-02).
   isActive  Boolean  @default(true)
   deactivatedAt DateTime? // Set when the account is deactivated; cleared on reactivation. Drives delayed file cleanup.
   createdAt DateTime @default(now())

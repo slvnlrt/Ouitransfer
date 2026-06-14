@@ -139,7 +139,9 @@ const githubConfig: ProviderConfig = {
     responseFormat: "json",
   },
   fieldMappings: {
-    id: ["id", "login"],
+    // A5-12: bind identity to the immutable numeric `id` ONLY. `login` is a
+    // mutable, recyclable username and must never be the external subject.
+    id: ["id"],
     email: ["email"],
     name: ["name", "login"],
     firstName: ["name"],
@@ -286,7 +288,11 @@ const genericProviderTemplate: ProviderConfig = {
   },
 
   fieldMappings: {
-    id: ["sub", "id", "user_id", "uid", "userid", "account_id"],
+    // A5-12: identity binds to an immutable subject claim only — `sub` (OIDC) and
+    // a small set of stable provider-specific id claims. Mutable usernames
+    // (`login`, `username`, etc.) are deliberately excluded so a recycled username
+    // can never collide with an existing external-id linkage.
+    id: ["sub", "user_id", "uid", "account_id"],
     email: ["email", "mail", "email_address", "preferred_email", "primary_email"],
     name: [
       "name",

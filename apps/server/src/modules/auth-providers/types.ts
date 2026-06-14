@@ -38,6 +38,18 @@ export interface ProviderEndpoints {
   authorizationEndpoint: string;
   tokenEndpoint: string;
   userInfoEndpoint: string;
+  /**
+   * OIDC `jwks_uri` (from discovery) — the URL of the provider's public signing
+   * keys, used to verify the id_token (A5-01). Absent for non-OIDC oauth2
+   * providers and for manually-configured endpoints without discovery.
+   */
+  jwksUri?: string;
+  /**
+   * The issuer (`iss`) the provider claims in its discovery document. When
+   * present this is the value the id_token `iss` MUST equal; otherwise the
+   * configured `issuerUrl` is used.
+   */
+  issuer?: string;
 }
 
 export interface ProviderUserInfo {
@@ -47,7 +59,15 @@ export interface ProviderUserInfo {
   firstName?: string;
   lastName?: string;
   avatar?: string;
-  [key: string]: string | undefined;
+  /**
+   * Whether the IdP proved the user owns `email`:
+   *   - OIDC: the `email_verified` claim from the VERIFIED id_token.
+   *   - oauth2 (e.g. GitHub): only true when the provider's email endpoint marks
+   *     the address verified.
+   * Gates auto-linking to a pre-existing local account (A5-02).
+   */
+  emailVerified?: boolean;
+  [key: string]: string | boolean | undefined;
 }
 
 export interface TokenResponse {
@@ -59,23 +79,7 @@ export interface TokenResponse {
   scope?: string;
 }
 
-export interface RequestContext {
-  protocol: string;
-  host: string;
-  headers: Record<string, string | string[] | undefined>;
-}
-
 /**
  * Alias for the Prisma-generated AuthProvider type.
- * Kept for backward compatibility with existing imports.
  */
 export type AuthProviderModel = AuthProvider;
-
-export interface PendingState {
-  codeVerifier: string;
-  redirectUrl: string;
-  expiresAt: number;
-  providerId: string;
-}
-
-export type RequestContextService = Pick<RequestContext, "protocol" | "host">;

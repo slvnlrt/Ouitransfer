@@ -1,52 +1,39 @@
 import { prisma } from "../../shared/prisma.js";
-import { NotFoundError, UnauthorizedError } from "../../utils/app-error.js";
+import { NotFoundError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
+import { getAppUrl } from "../email/url-builder.js";
 import type {
   CreateAuthProviderInput,
   UpdateAuthProviderInput,
   UpdateOfficialProviderInput,
 } from "./dto.js";
+import { getOAuthCallbackUrl } from "./oauth-callback-url.js";
 import { OAuthFlowService } from "./oauth-flow.service.js";
+import type { OAuthFlowState } from "./oauth-state.js";
 import { providersConfig } from "./providers.config.js";
-import type {
-  AuthProviderModel,
-  PendingState,
-  ProviderConfig,
-  RequestContextService,
-} from "./types.js";
+import type { AuthProviderModel, ProviderConfig } from "./types.js";
 import { UserLinkingService } from "./user-linking.service.js";
 
-const STATE_EXPIRY_TIME = 600000; // 10 minutes
-const CLEANUP_INTERVAL = 5 * 60 * 1000; // 5 minutes
 const DEFAULT_PROVIDER_TYPE = "oidc";
 
 const ERROR_MESSAGES = {
   PROVIDER_NOT_FOUND: "Provider not found or disabled",
   CONFIG_NOT_FOUND: "Configuration not found for provider",
-  INVALID_STATE: "Invalid or expired state",
 } as const;
 
+/**
+ * Material the route needs to set the browser-bound flow cookie after the
+ * authorization URL is built (A5-03). The `state`, `nonce`, `codeVerifier`, and
+ * `returnPath` are all generated server-side.
+ */
+export interface AuthorizationResult {
+  authUrl: string;
+  flowState: OAuthFlowState;
+}
+
 export class AuthProvidersService {
-  private pendingStates = new Map<string, PendingState>();
   private oauthFlow = new OAuthFlowService();
   private userLinking = new UserLinkingService();
-
-  constructor() {
-    setInterval(() => this.cleanupExpiredStates(), CLEANUP_INTERVAL);
-  }
-
-  private createPendingState(
-    providerId: string,
-    codeVerifier: string,
-    redirectUrl: string,
-  ): PendingState {
-    return {
-      codeVerifier,
-      redirectUrl,
-      expiresAt: Date.now() + STATE_EXPIRY_TIME,
-      providerId,
-    };
-  }
 
   private validateProvider(provider: AuthProviderModel | null, providerName: string): void {
     if (!provider?.enabled) {
@@ -64,17 +51,7 @@ export class AuthProvidersService {
     return providerName in providersConfig.officialProviders;
   }
 
-  private validateAndGetPendingState(state: string): PendingState {
-    const pendingState = this.pendingStates.get(state);
-
-    if (!pendingState) {
-      throw new UnauthorizedError(ERROR_MESSAGES.INVALID_STATE);
-    }
-
-    return pendingState;
-  }
-
-  async getEnabledProviders(requestContext?: RequestContextService) {
+  async getEnabledProviders() {
     const providers = await prisma.authProvider.findMany({
       where: { enabled: true },
       orderBy: { sortOrder: "asc" },
@@ -90,20 +67,24 @@ export class AuthProvidersService {
       },
     });
 
-    return providers.map((provider) => {
-      const authUrl = this.generateAuthUrl(provider, requestContext);
+    // A6-01: the public authorize URL is built from the trusted `appUrl`, never
+    // from the request Host. Resolved once for the whole list.
+    const appOrigin = await this.resolveAppOrigin();
 
-      return {
-        id: provider.id,
-        name: provider.name,
-        displayName: provider.displayName || provider.name,
-        type: provider.type,
-        icon: provider.icon || "generic",
-        authUrl,
-        isOfficial: this.isOfficial(provider.name),
-        sortOrder: provider.sortOrder,
-      };
-    });
+    return providers.map((provider) => ({
+      id: provider.id,
+      name: provider.name,
+      displayName: provider.displayName || provider.name,
+      type: provider.type,
+      icon: provider.icon || "generic",
+      authUrl: `${appOrigin}/api/auth/providers/${provider.name}/authorize`,
+      isOfficial: this.isOfficial(provider.name),
+      sortOrder: provider.sortOrder,
+    }));
+  }
+
+  private async resolveAppOrigin(): Promise<string> {
+    return new URL(await getAppUrl()).origin;
   }
 
   private static readonly SAFE_PROVIDER_SELECT = {
@@ -192,20 +173,19 @@ export class AuthProvidersService {
     });
   }
 
-  private generateAuthUrl(
-    provider: Pick<AuthProviderModel, "name">,
-    requestContext?: RequestContextService,
-  ) {
-    const baseUrl = this.oauthFlow.buildBaseUrl(requestContext);
-    return `${baseUrl}/api/auth/providers/${provider.name}/authorize`;
-  }
-
+  /**
+   * Build the IdP authorization URL and the browser-bound flow state.
+   *
+   * The `state`, `nonce`, and PKCE verifier are generated server-side (A5-03) and
+   * the OAuth `redirect_uri` is the fixed, appUrl-derived callback (A5-04 / A6-01).
+   * No client `state`/`redirect_uri` is accepted; the only client influence is the
+   * optional post-login `returnPath`, which is sanitised to a relative path by the
+   * caller before being passed in.
+   */
   async getAuthorizationUrl(
     providerName: string,
-    state?: string,
-    redirectUri?: string,
-    requestContext?: RequestContextService,
-  ) {
+    returnPath: string,
+  ): Promise<AuthorizationResult> {
     const provider = await this.getProviderByName(providerName);
     this.validateProvider(provider, providerName);
     const validatedProvider = provider!;
@@ -213,42 +193,44 @@ export class AuthProvidersService {
     const config = this.oauthFlow.getProviderConfig(validatedProvider);
     this.validateConfig(config, providerName);
 
-    const finalState = state || this.oauthFlow.generateState();
-    const baseUrl = this.oauthFlow.buildBaseUrl(requestContext);
-    const callbackUrl = redirectUri || `${baseUrl}/api/auth/providers/${providerName}/callback`;
+    const state = this.oauthFlow.generateState();
+    const nonce = this.oauthFlow.generateNonce();
+    const { codeVerifier, codeChallenge } = this.oauthFlow.setupPkce();
 
-    const { codeVerifier, codeChallenge } = this.oauthFlow.setupPkceIfNeeded(validatedProvider);
-
-    const pendingState = this.createPendingState(
-      validatedProvider.id,
-      codeVerifier || "",
-      redirectUri || `${baseUrl}/dashboard`,
-    );
-    this.pendingStates.set(finalState, pendingState);
+    // Server-fixed callback URL (identical at authorize-time and token-time).
+    const callbackUrl = await getOAuthCallbackUrl(providerName);
 
     const endpoints = await this.oauthFlow.resolveEndpoints(validatedProvider, config);
 
-    const finalAuthUrl = await this.oauthFlow.buildAuthorizationUrl(
+    const authUrl = await this.oauthFlow.buildAuthorizationUrl(
       validatedProvider,
       endpoints,
       callbackUrl,
-      finalState,
+      state,
       codeChallenge,
+      nonce,
       providerName,
     );
 
-    return finalAuthUrl;
+    return {
+      authUrl,
+      flowState: {
+        providerName,
+        state,
+        nonce,
+        codeVerifier,
+        returnPath,
+      },
+    };
   }
 
-  async handleCallback(
-    providerName: string,
-    code: string,
-    state: string,
-    requestContext?: RequestContextService,
-  ) {
+  /**
+   * Complete the callback using the already-consumed, browser-bound flow state.
+   * The caller (route) is responsible for reading + verifying + single-using the
+   * flow cookie (A5-03) and passing the validated state here.
+   */
+  async handleCallback(providerName: string, code: string, flowState: OAuthFlowState) {
     try {
-      const pendingState = this.validateAndGetPendingState(state);
-
       const provider = await this.getProviderByName(providerName);
       this.validateProvider(provider, providerName);
       const validatedProvider = provider!;
@@ -256,25 +238,29 @@ export class AuthProvidersService {
       const config = this.oauthFlow.getProviderConfig(validatedProvider);
       this.validateConfig(config, providerName);
 
-      const authResult = await this.performTokenExchange(
+      const { tokens, endpoints } = await this.performTokenExchange(
         validatedProvider,
         config,
         code,
-        pendingState.codeVerifier,
-        requestContext,
+        flowState.codeVerifier,
+        providerName,
       );
 
-      const userInfo = await this.oauthFlow.processUserInfo(
-        authResult.userInfo,
-        authResult.tokens,
+      // A5-01: OIDC identity comes from the VERIFIED id_token (nonce-bound);
+      // oauth2 falls back to the SSRF-guarded userinfo endpoint.
+      const userInfo = await this.oauthFlow.resolveIdentity(
+        validatedProvider,
         config,
+        tokens,
+        endpoints,
+        flowState.nonce,
       );
       const user = await this.userLinking.findOrCreateUser(userInfo, validatedProvider);
 
       return {
         user,
         isNewUser: false,
-        redirectUrl: pendingState.redirectUrl,
+        returnPath: flowState.returnPath,
       };
     } catch (error) {
       getLogger().error({ err: error }, "Error in handleCallback");
@@ -287,14 +273,13 @@ export class AuthProvidersService {
     config: ProviderConfig,
     code: string,
     codeVerifier: string,
-    requestContext?: RequestContextService,
+    providerName: string,
   ) {
     const endpoints = await this.oauthFlow.resolveEndpoints(provider, config);
     const authMethod = this.oauthFlow.getAuthMethod(config);
 
-    const baseUrl = this.oauthFlow.buildBaseUrl(requestContext);
-    const callbackUrl =
-      provider.redirectUri || `${baseUrl}/api/auth/providers/${provider.name}/callback`;
+    // Same server-fixed callback URL as authorize-time (A5-04).
+    const callbackUrl = await getOAuthCallbackUrl(providerName);
 
     const tokens = await this.oauthFlow.executeTokenRequest(
       provider,
@@ -304,21 +289,8 @@ export class AuthProvidersService {
       authMethod,
       endpoints,
     );
-    const rawUserInfo = await this.oauthFlow.fetchUserInfo(tokens, endpoints);
 
-    return {
-      userInfo: rawUserInfo,
-      tokens,
-    };
-  }
-
-  private cleanupExpiredStates() {
-    const now = Date.now();
-    for (const [state, data] of this.pendingStates.entries()) {
-      if (data.expiresAt < now) {
-        this.pendingStates.delete(state);
-      }
-    }
+    return { tokens, endpoints };
   }
 
   async updateProvidersOrder(providersOrder: { id: string; sortOrder: number }[]) {

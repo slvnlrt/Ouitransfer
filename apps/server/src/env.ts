@@ -62,6 +62,17 @@ const envSchema = z.object({
     .transform((v) => v.toLowerCase()),
   ENABLE_API_DOCS: z.union([z.literal("true"), z.literal("false")]).optional(),
   OAUTH_ALLOWED_REDIRECT_HOSTS: z.string().optional(),
+  // SSRF escape hatch for self-hosted IdPs (A5-05 OAuth): when "true", allow OIDC
+  // discovery/token/userinfo/JWKS fetches to target a private/loopback/link-local
+  // host (e.g. an internal Keycloak/Authentik on a trusted network). Cloud metadata
+  // endpoints (169.254.169.254 etc.) remain blocked regardless. Defaults to "false".
+  OAUTH_ALLOW_PRIVATE_ENDPOINT: z
+    .union([z.literal("true"), z.literal("false")])
+    .optional()
+    .default("false"),
+  // Optional comma-separated exact-host allowlist that opts specific IdP hosts back
+  // in even when private ranges are otherwise rejected (A5-05 OAuth).
+  OAUTH_ALLOWED_ENDPOINT_HOSTS: z.string().optional(),
 });
 
 const refinedEnvSchema = envSchema
