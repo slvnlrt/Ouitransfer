@@ -11,6 +11,10 @@ export const ErrorCodes = {
   FORBIDDEN: "FORBIDDEN",
   ACCOUNT_LOCKED: "ACCOUNT_LOCKED",
   AUTHENTICATION_ERROR: "AUTHENTICATION_ERROR",
+  // The requested change (demote / deactivate / delete) would remove the last
+  // remaining active admin, or an admin attempted to lock themselves out of
+  // their own account in the same request (A2-02).
+  LAST_ADMIN: "LAST_ADMIN",
 
   // Validation
   VALIDATION_ERROR: "VALIDATION_ERROR",

@@ -12,6 +12,7 @@ import {
 } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
+import { BCRYPT_COST } from "../auth/password-policy.js";
 import type { EmailPayloads } from "../email/catalog.js";
 import { emailService } from "../email/service.js";
 import { buildShareLink, buildShareManageUrl } from "../email/url-builder.js";
@@ -231,7 +232,7 @@ export class ShareService {
 
     const security = await prisma.shareSecurity.create({
       data: {
-        password: password ? await bcrypt.hash(password, 10) : null,
+        password: password ? await bcrypt.hash(password, BCRYPT_COST) : null,
       },
     });
 
@@ -566,7 +567,7 @@ export class ShareService {
 
     if (password) {
       await this.shareRepository.updateShareSecurity(share.securityId, {
-        password: await bcrypt.hash(password, 10),
+        password: await bcrypt.hash(password, BCRYPT_COST),
       });
     }
 
@@ -812,7 +813,7 @@ export class ShareService {
     }
 
     await this.shareRepository.updateShareSecurity(share.security.id, {
-      password: password ? await bcrypt.hash(password, 10) : null,
+      password: password ? await bcrypt.hash(password, BCRYPT_COST) : null,
     });
 
     const updated = await this.shareRepository.findShareById(shareId);

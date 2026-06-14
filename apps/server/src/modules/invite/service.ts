@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../../shared/prisma.js";
 import { AppError, NotFoundError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
+import { BCRYPT_COST } from "../auth/password-policy.js";
 import { emailService } from "../email/service.js";
 import { buildInviteRegistrationUrl } from "../email/url-builder.js";
 
@@ -170,7 +171,7 @@ export class InviteService {
       }
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const hashedPassword = await bcrypt.hash(data.password, BCRYPT_COST);
     const result = await prisma.$transaction(async (tx) => {
       // Atomically claim the token: the conditional `where` means only the
       // first concurrent request whose update still matches (unused, unexpired)

@@ -13,6 +13,18 @@ export const REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
  *
  * The browser only sends this cookie to the refresh endpoint, preventing
  * inadvertent exposure on other API calls.
+ *
+ * PROXY CONTRACT (A1-14): cookie `path` attributes are matched by the BROWSER
+ * against the BROWSER-facing URL, which is always prefixed with `/api`. The web
+ * layer (Edge Middleware in dev, Traefik in prod) rewrites `/api/*` → the
+ * server's un-prefixed `/*`, so the Fastify route is registered at
+ * `/auth/refresh` while the cookie is correctly scoped to the browser path
+ * `/api/auth/refresh`. The mismatch is intentional and load-bearing: it confines
+ * the cookie to exactly the one endpoint that needs it. If the `/api` proxy
+ * prefix ever changes, THIS constant must change with it (and stay in sync with
+ * `TRUSTED_DEVICE_COOKIE_PATH` below, which follows the same rule). The
+ * server-relative `CSRF_EXEMPT_ROUTES` entry (`/auth/refresh`) is the un-proxied
+ * form — they describe the same endpoint from the two sides of the proxy.
  */
 export const REFRESH_TOKEN_COOKIE_PATH = "/api/auth/refresh";
 

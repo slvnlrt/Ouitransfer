@@ -57,10 +57,15 @@ export function setAuthCookies(reply: FastifyReply, tokens: AuthTokens): void {
   });
 
   // Refresh-token cookie — 7-day maxAge, NOT signed, scoped to the refresh endpoint.
+  // sameSite is "strict" (A1-13): unlike the access-token cookie, the refresh
+  // cookie is never needed on a cross-site top-level navigation (e.g. the OIDC
+  // callback issues a fresh pair server-side), so it is only ever sent to the
+  // same-site refresh endpoint. "strict" removes it from every cross-site
+  // context, shrinking the CSRF surface of the (CSRF-exempt) refresh route.
   reply.setCookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refreshToken, {
     httpOnly: true,
     secure: isSecure,
-    sameSite: "lax",
+    sameSite: "strict",
     path: REFRESH_TOKEN_COOKIE_PATH,
     maxAge: REFRESH_TOKEN_MAX_AGE,
     signed: false,

@@ -1,15 +1,15 @@
 import type { FastifyRequest } from "fastify";
 
-import { ValidationError } from "../../utils/app-error.js";
-import { getConfigValue } from "../config/service.js";
+import { assertPasswordPolicy } from "../auth/password-policy.js";
 
+/**
+ * Enforce the full password policy (min length, max bytes, complexity) on any
+ * route body that carries a `password`. Delegates to {@link assertPasswordPolicy}
+ * so the middleware and the Zod route schemas share one source of truth.
+ */
 export async function validatePasswordMiddleware(request: FastifyRequest) {
   const body = request.body as { password?: string };
   if (!body.password) return;
 
-  const minLength = Number(await getConfigValue("passwordMinLength"));
-
-  if (body.password.length < minLength) {
-    throw new ValidationError(`Password must be at least ${minLength} characters long`);
-  }
+  await assertPasswordPolicy(body.password);
 }

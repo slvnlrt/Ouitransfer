@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 
 import { prisma } from "../../shared/prisma.js";
+import { BCRYPT_COST } from "../auth/password-policy.js";
 import type { DeactivationReason } from "../share/lifecycle.js";
 import type { CreateReverseShareInput, UpdateReverseShareInput } from "./dto.js";
 
@@ -337,7 +338,7 @@ export class ReverseShareRepository {
   }
 
   private async hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, 10);
+    return bcrypt.hash(password, BCRYPT_COST);
   }
 
   async comparePassword(password: string, hashedPassword: string): Promise<boolean> {

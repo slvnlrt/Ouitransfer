@@ -13,6 +13,7 @@ import { decryptSecret, encryptSecret } from "../../utils/encryption.js";
 import { getLogger } from "../../utils/logger.js";
 import { timingSafeEqual } from "../../utils/timing-safe.js";
 import { incrementTokenVersion } from "../auth/token-version.js";
+import { TrustedDeviceService } from "../auth/trusted-device.service.js";
 
 /** Domain-separation label for the encrypted TOTP secret (see utils/encryption.ts). */
 const TOTP_SECRET_PURPOSE = "totp-secret";
@@ -44,6 +45,8 @@ interface TwoFactorVerificationResult {
 }
 
 export class TwoFactorService {
+  private trustedDeviceService = new TrustedDeviceService();
+
   /**
    * Generate a new 2FA secret and QR code for setup
    */
@@ -286,6 +289,12 @@ export class TwoFactorService {
 
     // Invalidate existing sessions — 2FA status change is a privilege escalation event
     await incrementTokenVersion(userId);
+
+    // A1-09: revoke trusted devices when 2FA is disabled. Trusted-device records
+    // only exist to let a device skip the 2FA prompt; once 2FA is off they are
+    // meaningless, and leaving them would let an attacker-trusted device retain a
+    // 2FA bypass if the victim later re-enables 2FA.
+    await this.trustedDeviceService.removeAllTrustedDevices(userId);
 
     return { success: true };
   }

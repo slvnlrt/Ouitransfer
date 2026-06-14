@@ -26,30 +26,28 @@ import {
 } from "./dto.js";
 import { revokeAllUserTokens, rotateRefreshToken } from "./refresh-token.service.js";
 import { AuthService } from "./service.js";
+import { incrementTokenVersion } from "./token-version.js";
 
 /** Body size limit for auth endpoints — payloads are small JSON only. */
 const AUTH_BODY_LIMIT = 64 * 1024; // 64 KB
 
 const authService = new AuthService();
 
-const createPasswordSchema = async () => {
-  const minLength = Number(await getConfigValue("passwordMinLength"));
-  return z
-    .string()
-    .min(minLength, `Password must be at least ${minLength} characters`)
-    .describe("User password");
-};
-
 const jwtPreValidation = createJwtPreValidation();
 
 export const authRoutes: FastifyPluginAsyncZod = async (app) => {
-  const passwordSchema = await createPasswordSchema();
+  // The LOGIN schema deliberately does NOT apply the password policy
+  // (complexity / max-length). Login must accept whatever the user previously
+  // set as their password; enforcing the policy here would lock out accounts
+  // whose passwords predate a policy tightening, and would also leak the policy
+  // to unauthenticated clients. The policy is enforced only where a NEW password
+  // is chosen (register / reset / admin update — via createPasswordSchema).
   const loginSchema = z.object({
     emailOrUsername: z
       .string()
       .min(1, "Email or username is required")
       .describe("User email or username"),
-    password: passwordSchema,
+    password: z.string().min(1, "Password is required").describe("User password"),
   });
 
   // ── POST /auth/login ──────────────────────────────────────────
@@ -269,11 +267,15 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
 
       clearAuthCookies(reply);
 
-      // Revoke all refresh tokens for this user so stolen tokens cannot be reused
+      // A1-12: revocation is awaited (not fire-and-forget). If it fails, surface
+      // the error rather than reporting a successful logout while tokens stay
+      // valid for 7 days. Bumping tokenVersion immediately invalidates the
+      // current short-lived access token too (a copy of the JWT stops working at
+      // once instead of lingering until its 15-min exp) — important for
+      // shared-device logout.
       if (userId) {
-        revokeAllUserTokens(userId).catch((err) =>
-          getLogger().error({ err }, "Failed to revoke refresh tokens on logout"),
-        );
+        await revokeAllUserTokens(userId);
+        await incrementTokenVersion(userId);
       }
 
       // Audit logout (fire-and-forget)
@@ -317,15 +319,22 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const { email } = request.body;
-      await authService.requestPasswordReset(email);
+      const { userId } = await authService.requestPasswordReset(email);
 
-      // Audit password reset request (fire-and-forget)
-      // No userId — intentionally omitted to avoid confirming user existence
+      // Audit password reset request (fire-and-forget).
+      // A1-16: only record the submitted email when it maps to a real account
+      // for which a reset was actually issued (we have a userId). For unknown
+      // emails we store neither the userId nor the raw email — this avoids
+      // persisting arbitrary attacker-submitted addresses in the audit log and
+      // keeps the event from acting as an enumeration aid for log readers.
       logAuditEvent({
+        userId,
         action: "PASSWORD_RESET_REQUEST",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
-        metadata: { email: request.body.email },
+        targetType: userId ? "user" : undefined,
+        targetId: userId,
+        metadata: userId ? { email } : undefined,
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
       return reply.send({

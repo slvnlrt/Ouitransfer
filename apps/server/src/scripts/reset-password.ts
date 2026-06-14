@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import * as readline from "node:readline";
 import bcrypt from "bcryptjs";
+import { BCRYPT_COST } from "../modules/auth/password-policy.js";
 import { prisma } from "../shared/prisma.js";
 
 function createReadlineInterface() {
@@ -126,7 +127,7 @@ async function resetUserPassword() {
     }
 
     console.log("\n🔄 Hashing password...");
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, BCRYPT_COST);
 
     console.log("💾 Updating password in database...");
     await prisma.user.update({

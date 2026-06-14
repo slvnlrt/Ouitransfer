@@ -8,6 +8,10 @@ vi.mock("../../../shared/prisma.js", () => ({
       findUnique: vi.fn(),
       update: vi.fn(),
     },
+    // disable2FA revokes trusted devices (A1-09) via TrustedDeviceService.
+    trustedDevice: {
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
+    },
   },
 }));
 

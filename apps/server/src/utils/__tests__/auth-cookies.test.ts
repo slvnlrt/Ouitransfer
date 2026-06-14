@@ -107,7 +107,8 @@ describe("setAuthCookies (SECURE_SITE=true)", () => {
     expect(refreshCall?.options).toMatchObject({
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      // A1-13: refresh cookie is sameSite "strict" (never needed cross-site).
+      sameSite: "strict",
       path: "/api/auth/refresh",
       maxAge: 7 * 24 * 60 * 60,
       signed: false,
