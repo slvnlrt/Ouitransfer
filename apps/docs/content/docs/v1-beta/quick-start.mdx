@@ -140,9 +140,11 @@ services:
     volumes:
       - storage_data:/data
     ports:
-      # Local-only: the S3 API must be browser-reachable for uploads. For remote
-      # browsers, front it with a reverse-proxied bucket path instead of 0.0.0.0.
-      - "127.0.0.1:9000:9000"
+      # The S3 API must be browser-reachable for uploads, so it is published here
+      # (works for browsers on your LAN). For an INTERNET-FACING deployment, do not
+      # expose :9000 directly — bind it to 127.0.0.1 and front it with a
+      # reverse-proxied bucket path (see Reverse Proxy Configuration).
+      - "9000:9000"
     healthcheck:
       test: ["CMD-SHELL", "curl -fs http://localhost:9000/health || exit 1"]
       interval: 10s

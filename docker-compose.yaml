@@ -34,11 +34,10 @@
 services:
   # ─── S3-Compatible Object Storage ──────────────────────────────────────────
   storage:
-    # A8-10: pin to an immutable version tag (Renovate bumps it). Avoid `latest` —
-    # especially for storage — so deployments are reproducible and a poisoned
-    # upstream tag is not pulled automatically. Replace with the digest
-    # (rustfs/rustfs:1.0.0@sha256:...) when one is published for full integrity.
-    image: rustfs/rustfs:1.0.0
+    # Using the rolling `latest` tag. For reproducible / supply-chain-hardened
+    # deployments, pin to an immutable version tag or digest
+    # (rustfs/rustfs@sha256:...) and let Renovate bump it (cf. audit A8-10).
+    image: rustfs/rustfs:latest
     container_name: ouitransfer-storage
     environment:
       RUSTFS_VOLUMES: /data
@@ -52,14 +51,14 @@ services:
     volumes:
       - storage_data:/data
     ports:
-      # A8-03: bind to loopback only. The S3 API must be browser-reachable for
-      # presigned uploads, but on any non-localhost deployment direct :9000
-      # exposure (with object storage behind it) is a data-breach surface — serve
-      # it through a reverse-proxied bucket path instead (see the Traefik example
-      # at the bottom of this file). For browser uploads from another machine,
-      # front it with the reverse proxy; do NOT change this to 0.0.0.0:9000.
-      - "127.0.0.1:9000:9000"    # S3 API — local-only; reverse-proxy for remote browsers
-      # - "127.0.0.1:9001:9001"  # Storage console (only if RUSTFS_CONSOLE_ENABLE=true)
+      # The S3 API must be browser-reachable for presigned uploads. This default
+      # (local + LAN) compose publishes it on all interfaces so browsers on other
+      # machines can upload directly. On an INTERNET-FACING deployment, do NOT
+      # expose :9000 directly (object storage behind it is a data-breach surface) —
+      # serve it through a reverse-proxied bucket path and bind to 127.0.0.1
+      # instead (see the Traefik example at the bottom of this file).
+      - "9000:9000"              # S3 API — exposed for direct browser uploads (reverse-proxy + 127.0.0.1 for internet-facing)
+      # - "9001:9001"            # Storage console (only if RUSTFS_CONSOLE_ENABLE=true)
     healthcheck:
       test: ["CMD-SHELL", "curl -fs http://localhost:9000/health || exit 1"]
       interval: 10s
@@ -75,8 +74,8 @@ services:
 
   # ─── Fastify API Server ────────────────────────────────────────────────────
   server:
-    # A8-10: pinned tag (Renovate-managed). See note on the storage image.
-    image: ghcr.io/slvnlrt/ouitransfer-server:0.1.0
+    # Rolling `latest` tag. Pin to a version/digest for reproducible deploys (A8-10).
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
     # Uncomment to build locally instead of pulling:
     # build:
     #   context: .
@@ -172,7 +171,7 @@ services:
   # ─── Next.js Web Frontend ──────────────────────────────────────────────────
   web:
     # A8-10: pinned tag (Renovate-managed).
-    image: ghcr.io/slvnlrt/ouitransfer-web:0.1.0
+    image: ghcr.io/slvnlrt/ouitransfer-web:latest
     # Uncomment to build locally instead of pulling:
     # build:
     #   context: .
@@ -215,7 +214,7 @@ services:
   # "PRODUCTION EXAMPLE" section at the bottom of this file.
   docs:
     # A8-10: pinned tag (Renovate-managed).
-    image: ghcr.io/slvnlrt/ouitransfer-docs:0.1.0
+    image: ghcr.io/slvnlrt/ouitransfer-docs:latest
     # Uncomment to build locally instead of pulling:
     # build:
     #   context: .
@@ -289,7 +288,7 @@ volumes:
 # ------------------------------------------------------------------------------
 # services:
 #   storage:
-#     image: rustfs/rustfs:1.0.0
+#     image: rustfs/rustfs:latest
 #     container_name: ouitransfer-storage
 #     restart: unless-stopped
 #     # Start as root only to fix bind-mount ownership, then drop to the rustfs
@@ -330,7 +329,7 @@ volumes:
 #       - "traefik.http.services.ouitransfer-storage-svc.loadbalancer.server.port=9000"
 #
 #   server:
-#     image: ghcr.io/slvnlrt/ouitransfer-server:0.1.0
+#     image: ghcr.io/slvnlrt/ouitransfer-server:latest
 #     container_name: ouitransfer-server
 #     restart: unless-stopped
 #     environment:
@@ -383,7 +382,7 @@ volumes:
 #       - "traefik.http.services.ouitransfer-api-svc.loadbalancer.server.port=3333"
 #
 #   web:
-#     image: ghcr.io/slvnlrt/ouitransfer-web:0.1.0
+#     image: ghcr.io/slvnlrt/ouitransfer-web:latest
 #     container_name: ouitransfer-web
 #     restart: unless-stopped
 #     environment:
@@ -408,7 +407,7 @@ volumes:
 #       - "traefik.http.services.ouitransfer-web-svc.loadbalancer.server.port=5487"
 #
 #   docs:
-#     image: ghcr.io/slvnlrt/ouitransfer-docs:0.1.0
+#     image: ghcr.io/slvnlrt/ouitransfer-docs:latest
 #     container_name: ouitransfer-docs
 #     restart: unless-stopped
 #     deploy:

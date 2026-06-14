@@ -53,10 +53,27 @@ Plan: `audit/red-team-2026/REMEDIATION-PLAN.md` (80 tracked items, all checked).
 ## New required env var
 `ENCRYPTION_SECRET` (≥32, distinct) — now required (encrypts TOTP secrets + LDAP bind password).
 Optional SSRF opt-ins documented: `S3_ALLOW_PRIVATE_ENDPOINT`, `OAUTH_ALLOW_PRIVATE_ENDPOINT`,
-`LDAP_ALLOW_PRIVATE_HOST` (+ `*_ALLOWED_HOSTS`), and web `APP_URL` for canonical metadata.
+`STORAGE_ALLOWED_HOSTS` / `OAUTH_ALLOWED_ENDPOINT_HOSTS` / `LDAP_ALLOWED_HOSTS`, and web `APP_URL`
+for canonical metadata.
+
+## Owner-requested adjustments (post-remediation review)
+Several remediations were product/ops decisions; the owner reviewed and adjusted them:
+- **`/health/status`**: relaxed from admin-only to **authenticated** (any logged-in user) — keeps the
+  unauthenticated-probe vector closed while restoring the user-facing email/notifications indicator.
+- **LDAP transport**: **no longer forces LDAPS/StartTLS** — the admin decides; cleartext/`tlsSkipVerify`
+  are warned, not blocked. Egress now blocks only cloud-metadata (private DCs work by default);
+  `LDAP_ALLOW_PRIVATE_HOST` removed, `LDAP_ALLOWED_HOSTS` kept as optional lockdown.
+- **API docs (`/swagger`,`/docs`)**: **admin gate removed** — they remain off by default and gated
+  by the `ENABLE_API_DOCS` opt-in (the operator's choice); strict API-JSON CSP + scoped docs CSP kept.
+- **Image tags**: **reverted to `:latest`** (placeholder version tags were unpublished; maintainer
+  preference). Pin to a version/digest for reproducible deploys when releases are cut.
+- **RustFS port**: default compose publishes `9000:9000` again (LAN browser uploads); internet-facing
+  deployments bind `127.0.0.1` + reverse-proxy (Traefik example).
+- **Kept after review**: logout-all-sessions, password policy (12 + complexity), email spam caps,
+  alias min length 8, CORS null-origin block, container hardening.
 
 ## Follow-up notes (non-blocking)
-- Image tags pinned to placeholder versions (`rustfs:1.0.0`, `ouitransfer-*:0.1.0`) — confirm against
-  real published release tags before a release; add `@sha256` digests once published.
 - `bcryptjs@3` upgrade intentionally deferred to a dedicated dependency PR (cost-12 hardening applied
   now; Renovate excludes the lib from automerge so the bump is human-reviewed).
+- Pre-existing cross-file test-isolation flake in `storage-ensure-bucket.test.ts` (passes in isolation
+  and on re-run; not introduced by this work) — optional follow-up to reset shared mocks between files.
