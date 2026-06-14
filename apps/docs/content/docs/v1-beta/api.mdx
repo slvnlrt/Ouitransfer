@@ -77,7 +77,7 @@ When API docs are enabled (always in development, opt-in in production via `ENAB
 Both provide endpoint exploration, request builders, and response visualization generated from the Zod schemas.
 
 <Callout type="warn">
-In **production**, these UIs are gated behind **admin authentication** when enabled — they expose the full API surface (every route and schema). `ENABLE_API_DOCS=true` is **not** intended for internet-facing deployments; prefer leaving docs disabled in production.
+These UIs are **off by default** in production and only registered when you opt in with `ENABLE_API_DOCS=true`. When enabled they are reachable **without authentication** and expose the full API surface (every route and schema), so `ENABLE_API_DOCS=true` is **not** intended for internet-facing deployments — prefer leaving docs disabled in production.
 </Callout>
 
 ---
@@ -420,7 +420,7 @@ For details on the email delivery system, see [Configuring SMTP: Email delivery 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
 | GET | `/health` | Public | Liveness probe. Returns `200` with a coarse `{ status, timestamp, uptime }` when alive, `503` when the database is down. No per-subsystem breakdown is exposed unauthenticated. |
-| GET | `/health/status` | Admin | Detailed per-subsystem health: `checks` includes `database`, `storage`, and `email` (`ok`/`disabled`/`degraded`/`down`). Admin-only so the breakdown (which backend is degraded) is not exposed publicly. |
+| GET | `/health/status` | Authenticated | Detailed per-subsystem health: `checks` includes `database`, `storage`, and `email` (`ok`/`disabled`/`degraded`/`down`). Requires any authenticated user, so the breakdown (which backend is degraded) is not exposed unauthenticated. |
 
 ---
 

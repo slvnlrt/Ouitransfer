@@ -52,7 +52,7 @@ This directory tracks all feature development for Ouitransfer (post-refactor pha
 
 | # | Feature | Status | Depends on |
 |---|---------|--------|------------|
-| 11.1 | [Red Team 2026 — full offensive audit + remediation](../audit/red-team-2026/CLOSURE.md) | Done — 108 findings (8 unique Critical) across 8 domains, all remediated in 7 batches (R1–R7); server 1839 + web 397 tests green | — |
+| 11.1 | [Red Team 2026 — full offensive audit + remediation](../audit/red-team-2026/CLOSURE.md) | Done — 108 findings (8 unique Critical) across 8 domains, all remediated in 7 batches (R1–R7) + owner-reviewed adjustments; server 1844 + web 397 tests green | — |
 
 ### Status Legend
 

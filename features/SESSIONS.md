@@ -25,6 +25,25 @@
   code-modifying agents run strictly sequential with hardened git discipline (one R2 stray-branch
   incident resolved cleanly via fast-forward, no work lost). Each batch verified + author-reset +
   pushed before the next.
+- **Phase 3 — Owner review + adjustments.** Walked the remediation with the owner; several items were
+  product/ops decisions and were adjusted (all reflected in `CLOSURE.md` "Owner-requested adjustments"
+  and in the docs):
+  - `/health/status` relaxed admin-only → **authenticated** (keeps the unauthenticated-probe vector
+    closed, restores the user email/notifications indicator). API-doc UIs (`/swagger`, `/docs`) **admin
+    gate removed** — they stay off by default behind the `ENABLE_API_DOCS` opt-in. LDAP transport **no
+    longer forces** LDAPS/StartTLS (admin's choice; cleartext/`tlsSkipVerify` warned, not blocked);
+    egress now blocks only cloud-metadata so private DCs work by default.
+  - Infra: image tags reverted to `:latest` (placeholder version tags were unpublished); RustFS
+    published on `9000:9000` by default for LAN browser uploads (internet-facing → bind `127.0.0.1` +
+    reverse-proxy). Kept after review: logout-all-sessions, password policy, email spam caps, alias
+    min length 8, CORS null-origin block, container hardening.
+  - Docs reconciled to the final state: `api.mdx`/`api.fr.mdx` (health/status auth, docs no-auth),
+    Quick Start (EN/FR) RustFS binding + `:latest`.
+- **Phase 4 — Verification.** Added `setup-bypass-register.integration.test.ts` proving the A2-03
+  zero-user setup window (unauth register only at 0 users → first user admin + auto-login; 401 once a
+  user exists; admin can still create users). Container hardening verified statically (Dockerfile ×
+  Compose: ports >1024 so `cap_drop: ALL` is safe; non-root + `no-new-privileges`; web/docs runtime
+  writes match the declared tmpfs). **Green:** full server suite **1844 tests** (122 files).
 
 ## 2026-06-13 (B-29 — authenticated-visit identity + TD-42 Opus re-review)
 
