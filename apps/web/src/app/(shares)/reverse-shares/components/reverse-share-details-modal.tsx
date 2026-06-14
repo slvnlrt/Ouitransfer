@@ -138,7 +138,7 @@ export function ReverseShareDetailsModal({
   const handleOpenLink = () => {
     if (reverseShare?.alias?.alias) {
       const link = generateReverseShareLink(reverseShare.alias.alias);
-      if (link) window.open(link, "_blank");
+      if (link) window.open(link, "_blank", "noopener,noreferrer");
     }
   };
 
