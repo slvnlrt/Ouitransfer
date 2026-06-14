@@ -60,11 +60,77 @@ async function getTokenPayload(token: string): Promise<TokenPayload | null> {
 }
 
 /**
+ * Generate a cryptographically-random, base64 per-request CSP nonce (A7-03).
+ * Uses the Web Crypto API available in the Edge runtime.
+ */
+function generateNonce(): string {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary);
+}
+
+/**
+ * Build the page-response Content-Security-Policy.
+ *
+ * `script-src` uses a per-request nonce + `'strict-dynamic'` instead of
+ * `'unsafe-inline'` (A7-03): Next.js App Router auto-detects the nonce from the
+ * request `Content-Security-Policy` header (set by the proxy) and stamps its
+ * hydration/bootstrap inline scripts with it, so they execute while any injected
+ * inline script is blocked. `'strict-dynamic'` lets those nonced scripts load
+ * the chunk graph without needing a host allow-list. Browsers that honor a nonce
+ * ignore `'self'` for `script-src`, but it is kept for the rare legacy fallback.
+ *
+ * `style-src` keeps `'unsafe-inline'`: Next.js + Tailwind emit inline `<style>`
+ * tags and inline `style=` attributes (e.g. font-variable definitions, CSS-in-JS
+ * critical styles) that are NOT nonced by the framework, and CSP nonces/hashes
+ * do not cover inline style *attributes* at all. Dropping it would break
+ * rendering. This is the documented, intentional trade-off (the priority per the
+ * audit is `script-src`, which is now nonce-locked).
+ */
+function buildPageCsp(nonce: string): string {
+  const isDev = process.env.NODE_ENV === "development";
+  const storageOrigins = env.CSP_STORAGE_ORIGINS ? ` ${env.CSP_STORAGE_ORIGINS}` : "";
+
+  return [
+    "default-src 'self'",
+    // Scripts: nonce + strict-dynamic (drops 'unsafe-inline', A7-03).
+    // Dev adds 'unsafe-eval' for React Fast Refresh (HMR) — never in production.
+    `script-src 'nonce-${nonce}' 'strict-dynamic' 'self'${isDev ? " 'unsafe-eval'" : ""}`,
+    // Styles: self + inline (required by Next/Tailwind inline styles — see doc above).
+    "style-src 'self' 'unsafe-inline'",
+    // Images: self + blob (preview) + data (QR codes) + storage origin (download/background).
+    `img-src 'self' blob: data:${storageOrigins}`,
+    // Fonts: self.
+    "font-src 'self'",
+    // Connect: self + storage origin (presigned upload endpoint).
+    `connect-src 'self'${storageOrigins}`,
+    // Plugins/embeds: none (A7-02 — close the object-src gap).
+    "object-src 'none'",
+    // Frames: self + blob: for the same-origin PDF preview <iframe src=blob:> (A7-02).
+    "frame-src 'self' blob:",
+    // Workers: self + blob: (web/service workers from blob URLs) (A7-02).
+    "worker-src 'self' blob:",
+    // Web app manifest: self (A7-02).
+    "manifest-src 'self'",
+    // Forms: self.
+    "form-action 'self'",
+    // Framing of this app: none (clickjacking).
+    "frame-ancestors 'none'",
+    // Base URI: self.
+    "base-uri 'self'",
+  ].join("; ");
+}
+
+/**
  * Add security headers to a response.
  * Applied to all responses from the proxy — covers Next.js frontend pages.
  * API responses are separately covered by @fastify/helmet on the server.
+ *
+ * @param csp the precomputed page CSP (carries the per-request nonce, A7-03).
  */
-function addSecurityHeaders(response: NextResponse): NextResponse {
+function addSecurityHeaders(response: NextResponse, csp: string): NextResponse {
   // Prevent MIME-type sniffing
   response.headers.set("X-Content-Type-Options", "nosniff");
 
@@ -82,29 +148,7 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
 
   // CSP — the server already sets a strict CSP via helmet for API responses.
   // This CSP covers the Next.js frontend pages served by the web container.
-  response.headers.set(
-    "Content-Security-Policy",
-    [
-      "default-src 'self'",
-      // Scripts: self + inline for Next.js hydration (required by App Router).
-      // Dev mode adds 'unsafe-eval' for React Fast Refresh (HMR) — blocked in production.
-      `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""}`,
-      // Styles: self + inline for Tailwind/styled components
-      "style-src 'self' 'unsafe-inline'",
-      // Images: self + blob (for preview) + data (for QR codes) + storage origin (for background images)
-      `img-src 'self' blob: data:${env.CSP_STORAGE_ORIGINS ? ` ${env.CSP_STORAGE_ORIGINS}` : ""}`,
-      // Fonts: self
-      "font-src 'self'",
-      // Connect: self + any additional sources (e.g., storage endpoint for presigned URL uploads)
-      `connect-src 'self'${env.CSP_STORAGE_ORIGINS ? ` ${env.CSP_STORAGE_ORIGINS}` : ""}`,
-      // Forms: self
-      "form-action 'self'",
-      // Frames: none
-      "frame-ancestors 'none'",
-      // Base URI: self
-      "base-uri 'self'",
-    ].join("; "),
-  );
+  response.headers.set("Content-Security-Policy", csp);
 
   return response;
 }
@@ -146,15 +190,31 @@ export async function proxy(request: NextRequest) {
     return addApiSecurityHeaders(NextResponse.rewrite(rewriteUrl));
   }
 
+  // Per-request CSP nonce (A7-03). Embedded in the `script-src` directive of the
+  // page-response CSP and forwarded to the app on the request so Next.js App
+  // Router stamps its hydration/bootstrap inline scripts with it.
+  const nonce = generateNonce();
+  const csp = buildPageCsp(nonce);
+
+  // Forward the nonce to the rendered app. `NextResponse.next({ request })`
+  // mutates the *request* headers seen by the route/layout. Next.js auto-detects
+  // the nonce from the request `Content-Security-Policy` header and applies it to
+  // the scripts it injects; `x-nonce` is also exposed for any app code that needs
+  // it directly. (Next.js pattern for nonce-based CSP in the App Router.)
+  const forwardedHeaders = new Headers(request.headers);
+  forwardedHeaders.set("x-nonce", nonce);
+  forwardedHeaders.set("Content-Security-Policy", csp);
+  const nextWithNonce = () => NextResponse.next({ request: { headers: forwardedHeaders } });
+
   const token = request.cookies.get("token")?.value;
   const payload = token ? await getTokenPayload(token) : null;
 
   // Home page: authenticated users go to dashboard
   if (pathname === "/") {
     if (payload) {
-      return addSecurityHeaders(NextResponse.redirect(new URL("/dashboard", request.url)));
+      return addSecurityHeaders(NextResponse.redirect(new URL("/dashboard", request.url)), csp);
     }
-    return addSecurityHeaders(NextResponse.next());
+    return addSecurityHeaders(nextWithNonce(), csp);
   }
 
   // Public paths
@@ -163,30 +223,30 @@ export async function proxy(request: NextRequest) {
     // Unauthenticated-only paths redirect logged-in users to dashboard
     const isUnauthOnly = matchesPath(pathname, unauthenticatedOnlyPaths);
     if (isUnauthOnly && payload) {
-      return addSecurityHeaders(NextResponse.redirect(new URL("/dashboard", request.url)));
+      return addSecurityHeaders(NextResponse.redirect(new URL("/dashboard", request.url)), csp);
     }
-    return addSecurityHeaders(NextResponse.next());
+    return addSecurityHeaders(nextWithNonce(), csp);
   }
 
   // Protected paths: require authentication
   if (!token) {
-    return addSecurityHeaders(NextResponse.redirect(new URL("/login", request.url)));
+    return addSecurityHeaders(NextResponse.redirect(new URL("/login", request.url)), csp);
   }
 
   if (!payload) {
     // Token exists but is invalid/expired — clear it and redirect
     const response = NextResponse.redirect(new URL("/login", request.url));
     response.cookies.delete("token");
-    return addSecurityHeaders(response);
+    return addSecurityHeaders(response, csp);
   }
 
   // Admin-only paths
   const isAdminPath = matchesPath(pathname, adminPaths);
   if (isAdminPath && !payload.isAdmin) {
-    return addSecurityHeaders(NextResponse.redirect(new URL("/dashboard", request.url)));
+    return addSecurityHeaders(NextResponse.redirect(new URL("/dashboard", request.url)), csp);
   }
 
-  return addSecurityHeaders(NextResponse.next());
+  return addSecurityHeaders(nextWithNonce(), csp);
 }
 
 export const config = {
