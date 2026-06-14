@@ -77,15 +77,15 @@ After de-duplication of cross-corroborated findings: see batches below.
 - [x] A5-02 (Crit) no auto-link by email; require verified-email claim + explicit authenticated link; add `emailVerified` column — R4a
 - [x] A5-03 (Crit) server-only `state` in httpOnly cookie bound to session; single-use (delete on lookup); `expiresAt<now` reject — R4a
 - [x] A5-04 / A6-01 (High) compute OAuth callback/redirect base from trusted `appUrl`; never accept client `redirect_uri`; relative-only post-login return — R4a
-- [~] A5-05 / A3-07 / A5-11 (High/Med) SSRF guard: allowlist/deny private+link-local+loopback+metadata for discovery/token/userinfo/github-email/ldap host + ldap test; reject http issuer; generic error text — **OAuth portion done in R4a** (discovery/token/userinfo/github-email/JWKS); **LDAP host + ldap test → R4b**
+- [x] A5-05 / A3-07 / A5-11 (High/Med) SSRF guard: allowlist/deny private+link-local+loopback+metadata for discovery/token/userinfo/github-email/ldap host + ldap test; reject http issuer; generic error text — **OAuth portion done in R4a** (discovery/token/userinfo/github-email/JWKS); **LDAP host + ldap test done in R4b** (`ldap/ldap-ssrf.ts`, `LDAP_ALLOW_PRIVATE_HOST`/`LDAP_ALLOWED_HOSTS`, generic test-failure message)
 - [x] A5-06 (High) always PKCE S256 regardless of provider type — R4a
-- [ ] A5-07 (High) require LDAPS/StartTLS for non-loopback; reject remote `ldap://`; `tlsSkipVerify` dev-only + forbidden when enabled for non-private — R4b
-- [ ] A5-08 (Med) validate/normalize LDAP attribute strings on ingest (length, strip control chars) — R4b
+- [x] A5-07 (High) require LDAPS/StartTLS for non-loopback; reject remote `ldap://`; `tlsSkipVerify` dev-only + forbidden when enabled for non-private — R4b (`ldap/ldap-ssrf.ts` transport policy: `LDAP_CLEARTEXT_REMOTE`/`LDAP_SKIP_VERIFY_REMOTE`)
+- [x] A5-08 (Med) validate/normalize LDAP attribute strings on ingest (length, strip control chars) — R4b (`ldap/sanitize-directory.ts`; applied in `sync.service.ts` parseDisplayName + email ingest)
 - [x] A5-09 (Med) pending-state in signed cookie (also fixes multi-instance) — folded into A5-03 — R4a
 - [x] A5-10 (Med) log status+redacted marker only; never raw IdP bodies — R4a
 - [x] A5-12 (Low) bind external identity to immutable subject only — R4a
-- [ ] A5-13 (Low) validate `appUrl` canonical origin for LDAP welcome links — R4b
-- [x] A5-14 (Info) HKDF/scrypt+salt for encryption key derivation; enforce min secret length — **done in R3a** (`utils/encryption.ts` HKDF-SHA256 + per-record salt; `env.ts` enforces `ENCRYPTION_SECRET` min 32)
+- [x] A5-13 (Low) validate `appUrl` canonical origin for LDAP welcome links — R4b (`ldap/app-url.ts` `assertSafeAppUrl`; canonical-origin DTO refinement; divergence warning vs configured `appUrl`. NOTE: R5 owns the central appUrl validator — consolidate when it lands)
+- [x] A5-14 (Info) HKDF/scrypt+salt for encryption key derivation; enforce min secret length — **done in R3a, confirmed in R4b**: `ldap/encryption.ts` delegates to `utils/encryption.ts` (HKDF-SHA256, per-record 16-byte salt, per-purpose `info="ldap-bind-password"`, AES-256-GCM); `env.ts:52-54` enforces `ENCRYPTION_SECRET` min 32 chars. No unsalted SHA-256 path remains.
 
 ## R5 — Email, invites, notifications (server: email/invite/notification + config-validation)
 - [ ] A6-02 / A6-08 (Med/Low) per-route IP rate limit on `/register-with-invite`, `GET /invite-tokens/:token`, `/notifications/unsubscribe`
