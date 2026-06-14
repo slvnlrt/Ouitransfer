@@ -20,6 +20,9 @@ import {
   REFRESH_TOKEN_COOKIE_NAME,
   REFRESH_TOKEN_COOKIE_PATH,
   REFRESH_TOKEN_MAX_AGE,
+  TRUSTED_DEVICE_COOKIE_NAME,
+  TRUSTED_DEVICE_COOKIE_PATH,
+  TRUSTED_DEVICE_MAX_AGE,
 } from "../config/auth.config.js";
 import { env } from "../env.js";
 import { createRefreshToken } from "../modules/auth/refresh-token.service.js";
@@ -69,10 +72,39 @@ export function setAuthCookies(reply: FastifyReply, tokens: AuthTokens): void {
  *
  * Paths must match those used when the cookies were set, otherwise the
  * browser will not remove them.
+ *
+ * NOTE: the trusted-device cookie is intentionally NOT cleared on logout — it
+ * represents durable, opt-in device trust that should survive a normal logout
+ * (it is cleared when the user removes the device or on its 30-day expiry).
  */
 export function clearAuthCookies(reply: FastifyReply): void {
   reply.clearCookie("token", { path: "/" });
   reply.clearCookie(REFRESH_TOKEN_COOKIE_NAME, { path: REFRESH_TOKEN_COOKIE_PATH });
+}
+
+/**
+ * Read the server-issued trusted-device secret from the request cookies.
+ * Returns `undefined` when absent.
+ */
+export function getTrustedDeviceSecret(request: FastifyRequest): string | undefined {
+  const cookies = request.cookies as Record<string, string | undefined>;
+  return cookies[TRUSTED_DEVICE_COOKIE_NAME];
+}
+
+/**
+ * Set the httpOnly trusted-device cookie holding the server-issued device secret.
+ * Scoped to the auth path and given a 30-day lifetime to match the DB record.
+ */
+export function setTrustedDeviceCookie(reply: FastifyReply, deviceSecret: string): void {
+  const isSecure = env.SECURE_SITE === "true";
+  reply.setCookie(TRUSTED_DEVICE_COOKIE_NAME, deviceSecret, {
+    httpOnly: true,
+    secure: isSecure,
+    sameSite: isSecure ? "lax" : "strict",
+    path: TRUSTED_DEVICE_COOKIE_PATH,
+    maxAge: TRUSTED_DEVICE_MAX_AGE,
+    signed: false,
+  });
 }
 
 /**
@@ -87,19 +119,20 @@ function headerString(value: string | string[] | undefined): string | undefined 
 /**
  * Extract client IP address and user-agent from a Fastify request.
  *
- * Respects `x-real-ip` and `x-user-agent` proxy headers (set by Nginx /
- * Caddy reverse proxies) so that audit logs record the actual client rather
- * than the proxy address.
+ * SECURITY (A1-01 / A8-02): this function deliberately does NOT read the
+ * `x-real-ip` or `x-user-agent` headers. Those are fully client-controlled and
+ * trusting them lets any client forge the audit-log IP and defeat the IP-based
+ * throttle. The IP is taken exclusively from `request.ip`, which Fastify already
+ * derives through the validated `trustProxy` chain (so `X-Forwarded-For` is only
+ * honored when the request arrives from a configured trusted proxy). The
+ * user-agent is taken from the standard `user-agent` header.
  */
 export function getClientInfo(request: FastifyRequest): {
   ipAddress: string;
   userAgent: string;
 } {
-  const realIP = headerString(request.headers["x-real-ip"]);
-  const realUserAgent = headerString(request.headers["x-user-agent"]);
-
-  const userAgent = realUserAgent || headerString(request.headers["user-agent"]) || "";
-  const ipAddress = realIP || request.ip || request.socket.remoteAddress || "";
+  const userAgent = headerString(request.headers["user-agent"]) || "";
+  const ipAddress = request.ip || request.socket.remoteAddress || "";
 
   return { userAgent, ipAddress };
 }
