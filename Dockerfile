@@ -91,6 +91,16 @@ RUN addgroup --system --gid 1001 nodejs \
  && mkdir -p /home/ouitransfer/.npm /home/ouitransfer/.cache \
  && chown -R ouitransfer:nodejs /home/ouitransfer
 
+# A8-09: pre-create the data directory tree owned by the non-root user. Docker
+# pre-populates a NAMED volume from the image content (incl. ownership) on first
+# mount, so the `server_data` volume mounted at /app/server inherits this
+# ouitransfer:nodejs ownership — no root chown is needed at runtime. The entrypoint
+# therefore runs entirely as the non-root `ouitransfer` user (see USER below),
+# eliminating the previous root window. A host bind-mount (Traefik example) is the
+# only case still needing a root pre-chown; that example documents it explicitly.
+RUN mkdir -p /app/server/prisma /app/server/uploads /app/server/temp-uploads \
+ && chown -R ouitransfer:nodejs /app/server
+
 # Application code from pnpm deploy (flat node_modules, no pnpm symlinks)
 WORKDIR /app/ouitransfer-app
 COPY --from=server-builder --chown=ouitransfer:nodejs /app/deploy ./
@@ -99,6 +109,10 @@ COPY --from=server-builder --chown=ouitransfer:nodejs /app/deploy ./
 COPY --chown=ouitransfer:nodejs infra/server-start.sh /app/server-start.sh
 RUN chmod +x /app/server-start.sh
 RUN chmod +x ./reset-password.sh
+
+# A8-09: drop to the non-root user for the entrypoint and the node process. The
+# data volume is pre-owned (above), so no root-time chown is required.
+USER ouitransfer
 
 EXPOSE 3333
 

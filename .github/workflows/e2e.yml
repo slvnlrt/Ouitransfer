@@ -20,6 +20,21 @@ jobs:
       contents: read
       packages: write
       actions: write
+    # Test-only secrets/credentials. The base docker-compose.yaml now requires
+    # these via `${VAR:?...}` (A8-01), and Compose interpolates the BASE file even
+    # when the CI overlay overrides the same keys — so they must exist in the env.
+    # The docker-compose.ci.yml overlay still sets the authoritative runtime values
+    # for the containers; these just satisfy the required-variable interpolation.
+    # High-entropy + distinct so the production placeholder/entropy gate passes.
+    env:
+      S3_ACCESS_KEY: ci-e2e-s3-access-key-7fa3c91e
+      S3_SECRET_KEY: ci-e2e-s3-secret-key-2bd84f60
+      JWT_SECRET: ci-e2e-jwt-secret-minimum-32-characters-long-ok
+      CSRF_SECRET: ci-e2e-csrf-secret-minimum-32-characters-long-ok
+      COOKIE_SECRET: ci-e2e-cookie-secret-minimum-32-characters-long-ok
+      ENCRYPTION_SECRET: ci-e2e-encryption-secret-min-32-characters-long-ok
+      FRONTEND_ORIGIN: http://localhost:5487
+      STORAGE_PUBLIC_URL: http://localhost:9000
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v6

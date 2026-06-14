@@ -20,8 +20,13 @@
 # termination, no host ports. See the fully commented example at the bottom of
 # this file ("PRODUCTION EXAMPLE — reverse proxy").
 #
-# All user-configurable values use ${VAR:-default} syntax. Defaults are localhost
-# values suitable for local development; override them via a .env file.
+# Secrets and credentials are REQUIRED — Compose fails fast (`${VAR:?...}`) if they
+# are unset. There are intentionally NO weak built-in defaults for secrets (a prior
+# version shipped `dev-*` placeholders that silently booted a public-key stack —
+# CVE-class A8-01). Copy `.env.docker.example` to `.env` and generate each secret
+# with `openssl rand -hex 32` before the first `docker compose up`.
+#
+# Non-secret, host-specific values use ${VAR:-default} with localhost defaults.
 #
 # Startup order: storage → server → web (via healthcheck dependencies)
 # ==============================================================================
@@ -29,32 +34,49 @@
 services:
   # ─── S3-Compatible Object Storage ──────────────────────────────────────────
   storage:
-    image: rustfs/rustfs:latest
+    # A8-10: pin to an immutable version tag (Renovate bumps it). Avoid `latest` —
+    # especially for storage — so deployments are reproducible and a poisoned
+    # upstream tag is not pulled automatically. Replace with the digest
+    # (rustfs/rustfs:1.0.0@sha256:...) when one is published for full integrity.
+    image: rustfs/rustfs:1.0.0
     container_name: ouitransfer-storage
     environment:
       RUSTFS_VOLUMES: /data
-      RUSTFS_ACCESS_KEY: "${S3_ACCESS_KEY:-ouitransfer}"
-      RUSTFS_SECRET_KEY: "${S3_SECRET_KEY:-ouitransfer}"
-      RUSTFS_CONSOLE_ENABLE: "true"
+      # A8-01/A8-03: required, no fallback. Same value the server uses.
+      RUSTFS_ACCESS_KEY: "${S3_ACCESS_KEY:?S3_ACCESS_KEY is required}"
+      RUSTFS_SECRET_KEY: "${S3_SECRET_KEY:?S3_SECRET_KEY is required}"
+      # A8-03: admin console OFF by default — it exposed object-store management
+      # to anyone who could reach the host. Enable only for local debugging.
+      RUSTFS_CONSOLE_ENABLE: "false"
       RUSTFS_CORS_ALLOWED_ORIGINS: "${FRONTEND_ORIGIN:-http://localhost:5487}"
     volumes:
       - storage_data:/data
     ports:
-      - "9000:9000"    # S3 API — must be reachable by browsers for file uploads
-      # - "9001:9001"  # Storage console (optional, for debugging)
+      # A8-03: bind to loopback only. The S3 API must be browser-reachable for
+      # presigned uploads, but on any non-localhost deployment direct :9000
+      # exposure (with object storage behind it) is a data-breach surface — serve
+      # it through a reverse-proxied bucket path instead (see the Traefik example
+      # at the bottom of this file). For browser uploads from another machine,
+      # front it with the reverse proxy; do NOT change this to 0.0.0.0:9000.
+      - "127.0.0.1:9000:9000"    # S3 API — local-only; reverse-proxy for remote browsers
+      # - "127.0.0.1:9001:9001"  # Storage console (only if RUSTFS_CONSOLE_ENABLE=true)
     healthcheck:
       test: ["CMD-SHELL", "curl -fs http://localhost:9000/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
+    # A8-09: container hardening.
     security_opt:
       - "no-new-privileges:true"
+    cap_drop:
+      - ALL
     restart: unless-stopped
 
   # ─── Fastify API Server ────────────────────────────────────────────────────
   server:
-    image: ghcr.io/slvnlrt/ouitransfer-server:latest
+    # A8-10: pinned tag (Renovate-managed). See note on the storage image.
+    image: ghcr.io/slvnlrt/ouitransfer-server:0.1.0
     # Uncomment to build locally instead of pulling:
     # build:
     #   context: .
@@ -65,17 +87,25 @@ services:
       S3_ENDPOINT: storage
       S3_PORT: "9000"
       S3_USE_SSL: "false"
-      S3_ACCESS_KEY: "${S3_ACCESS_KEY:-ouitransfer}"
-      S3_SECRET_KEY: "${S3_SECRET_KEY:-ouitransfer}"
+      # A8-01/A8-03: required, no fallback (must match the storage service).
+      S3_ACCESS_KEY: "${S3_ACCESS_KEY:?S3_ACCESS_KEY is required}"
+      S3_SECRET_KEY: "${S3_SECRET_KEY:?S3_SECRET_KEY is required}"
       S3_BUCKET_NAME: ouitransfer-files
       S3_REGION: auto
       S3_FORCE_PATH_STYLE: "true"
       STORAGE_URL: "${STORAGE_PUBLIC_URL:-http://localhost:9000}"
 
       # ── Security ──
-      JWT_SECRET: "${JWT_SECRET:-dev-jwt-secret-do-not-use-in-production!!}"
-      CSRF_SECRET: "${CSRF_SECRET:-dev-csrf-secret-do-not-use-in-production!}"
-      COOKIE_SECRET: "${COOKIE_SECRET:-dev-cookie-secret-not-for-production!}"
+      # A8-01: REQUIRED, no fallback. Generate each with `openssl rand -hex 32`;
+      # all four must be distinct. There are deliberately NO `dev-*` defaults —
+      # Compose fails fast if any is unset, and env.ts refuses to boot in
+      # production on a known placeholder or low-entropy value.
+      JWT_SECRET: "${JWT_SECRET:?JWT_SECRET is required}"
+      CSRF_SECRET: "${CSRF_SECRET:?CSRF_SECRET is required}"
+      COOKIE_SECRET: "${COOKIE_SECRET:?COOKIE_SECRET is required}"
+      # ENCRYPTION_SECRET is now REQUIRED (R3a): master key for encrypting the 2FA
+      # TOTP secret and LDAP bind password at rest. Distinct from the three above.
+      ENCRYPTION_SECRET: "${ENCRYPTION_SECRET:?ENCRYPTION_SECRET is required}"
       # Comma-separated allow-list. Must include EVERY hostname the app is
       # served on — if you expose it on several hosts (e.g. an external domain
       # and an internal .lan host), set FRONTEND_ORIGIN to a comma-separated
@@ -88,7 +118,24 @@ services:
       # SECURE_SITE: "true"                  # Set true when behind HTTPS reverse proxy
       # PRESIGNED_URL_EXPIRATION: "3600"     # Upload URL expiration (seconds)
       # PRESIGNED_GET_URL_EXPIRATION: "900"  # Download URL expiration (seconds)
-      # ENCRYPTION_SECRET: ""               # Required for LDAP — generate with: openssl rand -hex 32
+      #
+      # ── trustProxy (A8-08) ──
+      # The default file publishes the API on a host port (3333) below. Do NOT
+      # set a permissive TRUST_PROXY here: with the port directly reachable, a
+      # client connecting directly with a forged X-Forwarded-For would control
+      # request.ip and bypass per-route rate limits. Leave TRUST_PROXY unset
+      # (defaults to "loopback"). TRUST_PROXY=true (or a proxy CIDR) is ONLY safe
+      # when the server has NO direct host port (reverse-proxy mode — see the
+      # Traefik example, which drops the 3333 port). Prefer a specific CIDR over
+      # "true": e.g. TRUST_PROXY=172.18.0.0/16 (your proxy's docker network).
+      #
+      # ── Self-hosted SSRF opt-ins (default OFF; document, leave commented) ──
+      # S3_ALLOW_PRIVATE_ENDPOINT: "false"   # allow S3_ENDPOINT/STORAGE_URL on a private/loopback host
+      # STORAGE_ALLOWED_HOSTS: ""            # comma-separated exact-host allowlist for storage
+      # OAUTH_ALLOW_PRIVATE_ENDPOINT: "false"  # allow OIDC discovery/token/userinfo on a private host
+      # OAUTH_ALLOWED_ENDPOINT_HOSTS: ""     # comma-separated exact-host allowlist for the IdP
+      # LDAP_ALLOW_PRIVATE_HOST: "false"     # allow the LDAP client to reach a private/loopback host
+      # LDAP_ALLOWED_HOSTS: ""               # comma-separated exact-host allowlist for LDAP
       #
       # ── External S3 (instead of bundled storage) ──
       # To use AWS S3, Backblaze B2, etc. instead of the storage service:
@@ -100,6 +147,8 @@ services:
     volumes:
       - server_data:/app/server
     ports:
+      # A8-08: direct API port. Paired with the default (loopback) TRUST_PROXY
+      # above — do not loosen trustProxy while this port is published.
       - "3333:3333"    # API (optional: only needed for direct API access)
     depends_on:
       storage:
@@ -110,11 +159,21 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+    # A8-09: container hardening. The image runs as the non-root `ouitransfer`
+    # user (USER in the Dockerfile server-runner stage) and the named volume is
+    # pre-owned, so no root window. `read_only` is omitted here because the app
+    # writes to the SQLite DB + uploads under the mounted /app/server volume; the
+    # rest of the rootfs is effectively read-only via the immutable image layers.
+    security_opt:
+      - "no-new-privileges:true"
+    cap_drop:
+      - ALL
     restart: unless-stopped
 
   # ─── Next.js Web Frontend ──────────────────────────────────────────────────
   web:
-    image: ghcr.io/slvnlrt/ouitransfer-web:latest
+    # A8-10: pinned tag (Renovate-managed).
+    image: ghcr.io/slvnlrt/ouitransfer-web:0.1.0
     # Uncomment to build locally instead of pulling:
     # build:
     #   context: .
@@ -122,14 +181,31 @@ services:
     container_name: ouitransfer-web
     environment:
       API_BASE_URL: "http://server:3333"
-      JWT_SECRET: "${JWT_SECRET:-dev-jwt-secret-do-not-use-in-production!!}"
+      # A8-01: required, no fallback (must match the server's JWT_SECRET — the web
+      # tier verifies the same signed token for SSR auth).
+      JWT_SECRET: "${JWT_SECRET:?JWT_SECRET is required}"
       CSP_STORAGE_ORIGINS: "${STORAGE_PUBLIC_URL:-http://localhost:9000}"
+      # APP_URL (R6, optional): canonical public origin used for OpenGraph /
+      # canonical metadata and to validate the request host. Set it to the exact
+      # origin browsers use, e.g. https://files.example.com. Leave unset for local.
+      # APP_URL: "${FRONTEND_ORIGIN}"
       # DEFAULT_LANGUAGE: "en-US"
     ports:
       - "5487:5487"    # Web interface
     depends_on:
       server:
         condition: service_healthy
+    # A8-09: container hardening. The web image already runs as non-root (USER
+    # nextjs). Next.js standalone needs to write its on-disk cache, so we make the
+    # rootfs read-only and provide tmpfs for the writable paths.
+    security_opt:
+      - "no-new-privileges:true"
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/apps/web/.next/cache
     restart: unless-stopped
 
   # ─── Fumadocs Documentation Site ───────────────────────────────────────────
@@ -139,7 +215,8 @@ services:
   # service WITHOUT stripping the prefix (basePath already keeps it) — see the
   # "PRODUCTION EXAMPLE" section at the bottom of this file.
   docs:
-    image: ghcr.io/slvnlrt/ouitransfer-docs:latest
+    # A8-10: pinned tag (Renovate-managed).
+    image: ghcr.io/slvnlrt/ouitransfer-docs:0.1.0
     # Uncomment to build locally instead of pulling:
     # build:
     #   context: .
@@ -153,6 +230,16 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
+    # A8-09: container hardening. Runs as non-root (USER nextjs). Read-only rootfs
+    # with tmpfs for the Next.js cache + /tmp.
+    security_opt:
+      - "no-new-privileges:true"
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/apps/docs/.next/cache
     restart: unless-stopped
 
 volumes:
@@ -194,7 +281,7 @@ volumes:
 #        storage; an unlisted-but-reachable origin gets a 403 — login breaks first).
 #   STORAGE_PUBLIC_URL=https://files.example.com/ouitransfer-files
 #   S3_ACCESS_KEY=...           S3_SECRET_KEY=...            # openssl rand -hex 32
-#   JWT_SECRET=...   CSRF_SECRET=...   COOKIE_SECRET=...     # 3 distinct secrets
+#   JWT_SECRET=...  CSRF_SECRET=...  COOKIE_SECRET=...  ENCRYPTION_SECRET=...  # 4 distinct secrets
 #   STORAGE_DATA_PATH=/srv/ouitransfer/storage
 #   SERVER_DATA_PATH=/srv/ouitransfer/server
 #
@@ -203,7 +290,7 @@ volumes:
 # ------------------------------------------------------------------------------
 # services:
 #   storage:
-#     image: rustfs/rustfs:latest
+#     image: rustfs/rustfs:1.0.0
 #     container_name: ouitransfer-storage
 #     restart: unless-stopped
 #     # Start as root only to fix bind-mount ownership, then drop to the rustfs
@@ -244,7 +331,7 @@ volumes:
 #       - "traefik.http.services.ouitransfer-storage-svc.loadbalancer.server.port=9000"
 #
 #   server:
-#     image: ghcr.io/slvnlrt/ouitransfer-server:latest
+#     image: ghcr.io/slvnlrt/ouitransfer-server:0.1.0
 #     container_name: ouitransfer-server
 #     restart: unless-stopped
 #     environment:
@@ -260,8 +347,13 @@ volumes:
 #       JWT_SECRET: "${JWT_SECRET}"
 #       CSRF_SECRET: "${CSRF_SECRET}"
 #       COOKIE_SECRET: "${COOKIE_SECRET}"
+#       ENCRYPTION_SECRET: "${ENCRYPTION_SECRET}"   # required (R3a) — distinct from the 3 above
 #       CORS_ORIGINS: "${FRONTEND_ORIGIN}"
 #       SECURE_SITE: "true"                       # cookies Secure=true behind HTTPS
+#       # A8-08: TRUST_PROXY=true is SAFE here ONLY because this service publishes
+#       # NO host port — Traefik is the sole ingress, so X-Forwarded-For cannot be
+#       # forged by a direct client. Prefer a specific proxy CIDR over "true" when
+#       # you know it, e.g. TRUST_PROXY: "172.18.0.0/16" (the traefik-net subnet).
 #       TRUST_PROXY: "true"                       # read real client IP / fwd host from Traefik
 #     volumes:
 #       - "${SERVER_DATA_PATH}:/app/server"
@@ -292,7 +384,7 @@ volumes:
 #       - "traefik.http.services.ouitransfer-api-svc.loadbalancer.server.port=3333"
 #
 #   web:
-#     image: ghcr.io/slvnlrt/ouitransfer-web:latest
+#     image: ghcr.io/slvnlrt/ouitransfer-web:0.1.0
 #     container_name: ouitransfer-web
 #     restart: unless-stopped
 #     environment:
@@ -317,7 +409,7 @@ volumes:
 #       - "traefik.http.services.ouitransfer-web-svc.loadbalancer.server.port=5487"
 #
 #   docs:
-#     image: ghcr.io/slvnlrt/ouitransfer-docs:latest
+#     image: ghcr.io/slvnlrt/ouitransfer-docs:0.1.0
 #     container_name: ouitransfer-docs
 #     restart: unless-stopped
 #     deploy:

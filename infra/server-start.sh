@@ -22,7 +22,12 @@ echo "Database: $DATABASE_URL"
 # Create data directories
 mkdir -p /app/server/prisma /app/server/uploads /app/server/temp-uploads
 
-# Fix ownership when running as root
+# A8-09: the image sets `USER ouitransfer` and pre-owns /app/server, so a NAMED
+# volume inherits the non-root ownership and this whole root block is SKIPPED
+# (id -u != 0). The root path below only runs if the container is explicitly
+# started as root (e.g. a host BIND-mount that needs a one-time ownership fix —
+# the Traefik example documents starting as root solely for this). Under the
+# default non-root run there is no root window.
 if [ "$(id -u)" = "0" ]; then
     echo "Setting ownership (UID:$TARGET_UID, GID:$TARGET_GID)..."
 

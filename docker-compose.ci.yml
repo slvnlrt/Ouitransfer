@@ -34,6 +34,9 @@ services:
       JWT_SECRET: ci-e2e-jwt-secret-minimum-32-characters-long-ok
       CSRF_SECRET: ci-e2e-csrf-secret-minimum-32-characters-long-ok
       COOKIE_SECRET: ci-e2e-cookie-secret-minimum-32-characters-long-ok
+      # ENCRYPTION_SECRET is required (R3a). High-entropy, distinct test value so
+      # the production placeholder/entropy gate (A8-01) passes under NODE_ENV=production.
+      ENCRYPTION_SECRET: ci-e2e-encryption-secret-min-32-characters-long-ok
       CORS_ORIGINS: "http://localhost:5487"
 
   web:
