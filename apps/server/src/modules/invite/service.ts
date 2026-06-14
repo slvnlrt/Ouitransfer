@@ -63,9 +63,15 @@ export class InviteService {
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + INVITE_TOKEN_TTL_MINUTES);
 
+    // A6-04: when the admin targets a specific address, bind the token to it
+    // (lowercased) so only that invitee can consume it. A token with no email is an
+    // open/bearer invite by design — whoever holds the link can register.
+    const boundEmail = email ? email.trim().toLowerCase() : null;
+
     const inviteToken = await prisma.inviteToken.create({
       data: {
         token,
+        email: boundEmail,
         expiresAt,
         createdBy: adminUserId,
       },
@@ -154,6 +160,20 @@ export class InviteService {
     const preflight = evaluateInviteToken(preflightToken);
     if (!preflight.valid) {
       throw invalidInviteTokenError(preflight);
+    }
+
+    // A6-04: an email-bound token may only be consumed by the invited address.
+    // Compared case-insensitively. Open/bearer tokens (email === null) skip this.
+    // This runs before bcrypt so a mismatched attempt is rejected cheaply.
+    if (
+      preflightToken.email &&
+      preflightToken.email.toLowerCase() !== data.email.trim().toLowerCase()
+    ) {
+      throw new AppError(
+        403,
+        "This invite link was issued for a different email address",
+        ErrorCodes.INVITE_EMAIL_MISMATCH,
+      );
     }
 
     const existingUser = await prisma.user.findFirst({

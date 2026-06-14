@@ -160,7 +160,13 @@ export async function buildApp() {
     timeWindow: "1 minute",
     // Trust proxy headers for IP detection
     keyGenerator: (request) => request.ip,
+    // Include `statusCode` + `code` so the global error handler (error-handler.ts
+    // step 5) maps the thrown rate-limit error to a 429 response rather than the
+    // generic 500 fallback (the builder output is thrown, not sent directly, when
+    // a custom error handler is registered).
     errorResponseBuilder: (_request, context) => ({
+      statusCode: 429,
+      code: "RATE_LIMITED",
       error: "Too many requests",
       message: `Rate limit exceeded. Try again in ${Math.ceil(context.ttl / 1000)} seconds.`,
       retryAfter: Math.ceil(context.ttl / 1000),

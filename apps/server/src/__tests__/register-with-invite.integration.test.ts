@@ -116,11 +116,17 @@ describe("POST /register-with-invite — structured error codes", () => {
 
   // ── Helper ────────────────────────────────────────────────────────────────
 
+  // Each call uses a fresh source IP so the per-route IP rate limit (A6-02, 5/min)
+  // — which is exercised in its own dedicated test below — does not bleed across
+  // these structured-error-code assertions.
+  let ipCounter = 0;
   async function postRegister(payload: Record<string, unknown>) {
+    ipCounter += 1;
     return app.inject({
       method: "POST",
       url: "/register-with-invite",
       headers: { "content-type": "application/json" },
+      remoteAddress: `10.10.${Math.floor(ipCounter / 256)}.${ipCounter % 256}`,
       payload: JSON.stringify(payload),
     });
   }

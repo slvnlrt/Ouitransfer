@@ -5,10 +5,17 @@ vi.mock("../../../shared/prisma.js", () => ({
   prisma: {
     inviteToken: {
       create: vi.fn(),
+      findUnique: vi.fn(),
+      updateMany: vi.fn(),
     },
     user: {
       findUnique: vi.fn(),
+      findFirst: vi.fn(),
+      create: vi.fn(),
     },
+    // registerWithInvite runs its claim + user create inside a transaction; the
+    // mock just invokes the callback with the same prisma facade.
+    $transaction: vi.fn(),
   },
 }));
 
@@ -16,6 +23,7 @@ vi.mock("../../../shared/prisma.js", () => ({
 vi.mock("../../email/service.js", () => ({
   emailService: {
     send: vi.fn(),
+    sendToAdmins: vi.fn().mockResolvedValue({ enqueued: true }),
   },
 }));
 
@@ -46,6 +54,11 @@ const service = new InviteService();
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(prisma.inviteToken.create).mockResolvedValue({ id: "invite-1" } as never);
+  // Default transaction runner: invoke the callback with the same prisma facade.
+  vi.mocked(prisma.$transaction).mockImplementation(
+    // biome-ignore lint/suspicious/noExplicitAny: test harness — pass the prisma mock through as the tx client
+    async (cb: any) => cb(prisma),
+  );
 });
 
 describe("InviteService.generateInviteToken", () => {
@@ -148,5 +161,102 @@ describe("InviteService.generateInviteToken", () => {
 
     expect(result.token).toMatch(/^[0-9a-f]{64}$/);
     expect(result.emailSent).toBe(false);
+  });
+
+  it("binds the token to the invited email (lowercased) when an address is given (A6-04)", async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      firstName: "Ada",
+      lastName: "Lovelace",
+      locale: "en",
+    } as never);
+    vi.mocked(emailService.send).mockResolvedValue({ enqueued: true });
+
+    await service.generateInviteToken("admin-1", "Newcomer@Example.com");
+
+    const created = vi.mocked(prisma.inviteToken.create).mock.calls[0][0].data;
+    expect(created.email).toBe("newcomer@example.com");
+  });
+
+  it("stores a null email for open/bearer invites (no address) (A6-04)", async () => {
+    await service.generateInviteToken("admin-1");
+
+    const created = vi.mocked(prisma.inviteToken.create).mock.calls[0][0].data;
+    expect(created.email).toBeNull();
+  });
+});
+
+describe("InviteService.registerWithInvite — email binding (A6-04)", () => {
+  const futureExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+  function registrationData(email: string) {
+    return {
+      token: "tok-abc",
+      firstName: "Mallory",
+      lastName: "Example",
+      username: "mallory",
+      email,
+      password: "correct-horse-battery-staple",
+    };
+  }
+
+  it("rejects a mismatched email on an email-bound token before bcrypt (403)", async () => {
+    vi.mocked(prisma.inviteToken.findUnique).mockResolvedValue({
+      id: "invite-1",
+      token: "tok-abc",
+      email: "alice@corp.example",
+      usedAt: null,
+      expiresAt: futureExpiry,
+    } as never);
+
+    await expect(
+      service.registerWithInvite(registrationData("mallory@evil.example")),
+    ).rejects.toThrow(/different email address/i);
+
+    // The claim/user-create transaction must never run for a mismatched email.
+    expect(prisma.inviteToken.updateMany).not.toHaveBeenCalled();
+    expect(prisma.user.create).not.toHaveBeenCalled();
+  });
+
+  it("accepts the bound email case-insensitively", async () => {
+    vi.mocked(prisma.inviteToken.findUnique).mockResolvedValue({
+      id: "invite-1",
+      token: "tok-abc",
+      email: "alice@corp.example",
+      usedAt: null,
+      expiresAt: futureExpiry,
+    } as never);
+    vi.mocked(prisma.user.findFirst).mockResolvedValue(null as never);
+    vi.mocked(prisma.inviteToken.updateMany).mockResolvedValue({ count: 1 } as never);
+    vi.mocked(prisma.user.create).mockResolvedValue({
+      id: "user-1",
+      username: "mallory",
+      email: "alice@corp.example",
+    } as never);
+
+    const result = await service.registerWithInvite(registrationData("Alice@Corp.Example"));
+
+    expect(result.id).toBe("user-1");
+    expect(prisma.user.create).toHaveBeenCalledTimes(1);
+  });
+
+  it("accepts any email for an open/bearer token (email === null)", async () => {
+    vi.mocked(prisma.inviteToken.findUnique).mockResolvedValue({
+      id: "invite-1",
+      token: "tok-abc",
+      email: null,
+      usedAt: null,
+      expiresAt: futureExpiry,
+    } as never);
+    vi.mocked(prisma.user.findFirst).mockResolvedValue(null as never);
+    vi.mocked(prisma.inviteToken.updateMany).mockResolvedValue({ count: 1 } as never);
+    vi.mocked(prisma.user.create).mockResolvedValue({
+      id: "user-2",
+      username: "mallory",
+      email: "anyone@example.com",
+    } as never);
+
+    const result = await service.registerWithInvite(registrationData("anyone@example.com"));
+
+    expect(result.id).toBe("user-2");
   });
 });
