@@ -95,6 +95,9 @@ vi.mock("../modules/file/service.js", () => ({
   FileService: class MockFileService {
     getPresignedPutUrl = vi.fn().mockResolvedValue("https://s3.example.com/presigned");
     getObjectHead = vi.fn().mockResolvedValue(Buffer.from("plain text content"));
+    // A3-08: register HEAD-reconciles the declared size against the real object
+    // size. Echo back the declared size so the happy-path test is not blocked.
+    getObjectSize = vi.fn().mockResolvedValue(BigInt(1024));
     deleteObject = vi.fn().mockResolvedValue(undefined);
   },
 }));
@@ -315,5 +318,98 @@ describe("POST /files — file validation integration (Item 5)", () => {
     expect(body).toHaveProperty("error");
     expect(typeof body.error).toBe("string");
     expect(body.error.length).toBeGreaterThan(0);
+  });
+
+  // ── Test 6 (A3-02): no mimeType + active-content extension → 400 ─────────────
+  // The fail-open hole was: omitting mimeType skipped ALL content validation.
+  // Now the extension denylist runs unconditionally, so a .html with no mimeType
+  // is rejected.
+  it("rejects an active-content extension (.html) even when mimeType is omitted → 400", async () => {
+    const userId = "user-html";
+    const token = signTestToken(userId);
+
+    const csrfRes = await app.inject({ method: "GET", url: "/csrf-token" });
+    const { token: csrfToken } = csrfRes.json();
+    const csrfCookie = csrfRes.cookies.find((c: { name: string }) => c.name === "_csrf");
+
+    const res = await app.inject({
+      method: "POST",
+      url: "/files",
+      headers: {
+        "content-type": "application/json",
+        cookie: `token=${token}; _csrf=${csrfCookie?.value}`,
+        "x-csrf-token": csrfToken,
+      },
+      payload: JSON.stringify({
+        name: "payload.html",
+        extension: "html",
+        // NO mimeType — previously skipped all validation
+        size: 1024,
+        objectName: `${userId}/payload.html`,
+      }),
+    });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  // ── Test 7 (A3-02): no mimeType + dangerous executable extension → 400 ───────
+  it("rejects a dangerous extension (.exe) even when mimeType is omitted → 400", async () => {
+    const userId = "user-exe";
+    const token = signTestToken(userId);
+
+    const csrfRes = await app.inject({ method: "GET", url: "/csrf-token" });
+    const { token: csrfToken } = csrfRes.json();
+    const csrfCookie = csrfRes.cookies.find((c: { name: string }) => c.name === "_csrf");
+
+    const res = await app.inject({
+      method: "POST",
+      url: "/files",
+      headers: {
+        "content-type": "application/json",
+        cookie: `token=${token}; _csrf=${csrfCookie?.value}`,
+        "x-csrf-token": csrfToken,
+      },
+      payload: JSON.stringify({
+        name: "malware.exe",
+        extension: "exe",
+        size: 1024,
+        objectName: `${userId}/malware.exe`,
+      }),
+    });
+
+    expect(res.statusCode).toBe(400);
+  });
+
+  // ── Test 8 (A3-08): declared size != real object size → 400 ─────────────────
+  it("rejects registration when the declared size diverges from the real object size", async () => {
+    const userId = "user-size";
+    const token = signTestToken(userId);
+
+    // The mocked FileService.getObjectSize resolves the REAL object size (1024).
+    // The client declares 1 to dodge quota — the HEAD-reconcile must reject it.
+    const csrfRes = await app.inject({ method: "GET", url: "/csrf-token" });
+    const { token: csrfToken } = csrfRes.json();
+    const csrfCookie = csrfRes.cookies.find((c: { name: string }) => c.name === "_csrf");
+
+    const res = await app.inject({
+      method: "POST",
+      url: "/files",
+      headers: {
+        "content-type": "application/json",
+        cookie: `token=${token}; _csrf=${csrfCookie?.value}`,
+        "x-csrf-token": csrfToken,
+      },
+      payload: JSON.stringify({
+        name: "doc.txt",
+        extension: "txt",
+        mimeType: "text/plain",
+        size: 1, // understated to dodge quota
+        objectName: `${userId}/doc.txt`,
+      }),
+    });
+
+    expect(res.statusCode).toBe(400);
+    const body = res.json();
+    expect(body.error.toLowerCase()).toContain("size");
   });
 });

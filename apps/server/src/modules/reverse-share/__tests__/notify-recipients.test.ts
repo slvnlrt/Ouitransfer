@@ -36,6 +36,8 @@ vi.mock("../../../shared/prisma.js", () => ({
   prisma: {
     user: { findUnique: (...args: unknown[]) => mockPrismaUserFindUnique(...args) },
     reverseShareRecipient: { update: (...args: unknown[]) => mockPrismaRecipientUpdate(...args) },
+    // A6-03 spam-guard reads the user's recent enqueue count; 0 = within quota.
+    emailJob: { count: vi.fn().mockResolvedValue(0) },
   },
 }));
 

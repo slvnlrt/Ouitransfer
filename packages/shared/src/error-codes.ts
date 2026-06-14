@@ -11,9 +11,18 @@ export const ErrorCodes = {
   FORBIDDEN: "FORBIDDEN",
   ACCOUNT_LOCKED: "ACCOUNT_LOCKED",
   AUTHENTICATION_ERROR: "AUTHENTICATION_ERROR",
+  // The requested change (demote / deactivate / delete) would remove the last
+  // remaining active admin, or an admin attempted to lock themselves out of
+  // their own account in the same request (A2-02).
+  LAST_ADMIN: "LAST_ADMIN",
 
   // Validation
   VALIDATION_ERROR: "VALIDATION_ERROR",
+
+  // Abuse / throttling. Raised by application-level anti-spam guards (e.g. the
+  // per-user outbound-email quota / burst cap, A6-03) — distinct from the global
+  // HTTP rate-limit plugin, which does not carry an ErrorCode.
+  RATE_LIMITED: "RATE_LIMITED",
 
   // Resources
   NOT_FOUND: "NOT_FOUND",
@@ -44,6 +53,9 @@ export const ErrorCodes = {
   // Shares
   PASSWORD_REQUIRED: "PASSWORD_REQUIRED",
   INVALID_PASSWORD: "INVALID_PASSWORD",
+  // Too many failed password attempts against a (reverse-)share; the password gate is
+  // temporarily locked (per-share brute-force protection — R2 A4-03).
+  SHARE_LOCKED: "SHARE_LOCKED",
   SHARE_EXPIRED: "SHARE_EXPIRED",
   MAX_VIEWS_REACHED: "MAX_VIEWS_REACHED",
   SHARE_INACTIVE: "SHARE_INACTIVE",
@@ -63,6 +75,9 @@ export const ErrorCodes = {
   // Invites
   INVITE_TOKEN_USED: "INVITE_TOKEN_USED",
   INVITE_TOKEN_EXPIRED: "INVITE_TOKEN_EXPIRED",
+  // The registrant's email does not match the address the email-bound invite was
+  // issued to (A6-04). Open/bearer invites (no bound email) never raise this.
+  INVITE_EMAIL_MISMATCH: "INVITE_EMAIL_MISMATCH",
   USERNAME_EXISTS: "USERNAME_EXISTS",
   EMAIL_EXISTS: "EMAIL_EXISTS",
 } as const;

@@ -17,7 +17,12 @@ const SMALL_BODY_LIMIT = 64 * 1024; // 64 KB
 const appService = new AppService();
 const logoService = new LogoService();
 
-const adminPreValidation = createAdminPreValidation({ allowSetupBypass: true });
+// A2-03: NO setup bypass. Config writes, logo upload, and the SMTP test are
+// powerful admin surfaces (SMTP test can probe internal hosts; config writes can
+// disable password auth or rewrite the app URL). They must require a real admin
+// JWT — the only route allowed to run with zero users is first-user
+// registration, so these are forbidden until an admin exists.
+const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false });
 
 export const appRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({

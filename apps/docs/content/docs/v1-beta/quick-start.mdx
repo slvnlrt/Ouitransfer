@@ -47,13 +47,13 @@ Docker Compose manages the startup order automatically: storage starts first, th
 
 ## Step 1: Generate Your Secrets
 
-OUITRANSFER requires three independent cryptographic secrets. Run this command three separate times and save each output:
+OUITRANSFER requires four independent cryptographic secrets. Run this command four separate times and save each output:
 
 ```bash
 openssl rand -hex 32
 ```
 
-You'll use the three values as `JWT_SECRET`, `CSRF_SECRET`, and `COOKIE_SECRET` in the next step. They **must all be different** from each other.
+You'll use the four values as `JWT_SECRET`, `CSRF_SECRET`, `COOKIE_SECRET`, and `ENCRYPTION_SECRET` in the next step. They **must all be different** from each other. The server refuses to boot in production on a known placeholder or low-entropy value.
 
 <Callout type="warn">
   Do not reuse the same value for multiple secrets. Each must be unique.
@@ -90,10 +90,11 @@ S3_ACCESS_KEY=my-access-key
 S3_SECRET_KEY=my-secret-key
 
 # ── Security Secrets ──────────────────────────────────────────────────────────
-# Paste the three values generated in Step 1.
+# Paste the four values generated in Step 1. All four must be distinct.
 JWT_SECRET=<first openssl output>
 CSRF_SECRET=<second openssl output>
 COOKIE_SECRET=<third openssl output>
+ENCRYPTION_SECRET=<fourth openssl output>
 ```
 
 <Callout type="info">
@@ -134,11 +135,15 @@ services:
       RUSTFS_VOLUMES: /data
       RUSTFS_ACCESS_KEY: "${S3_ACCESS_KEY}"
       RUSTFS_SECRET_KEY: "${S3_SECRET_KEY}"
-      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CONSOLE_ENABLE: "false"   # admin console off by default
       RUSTFS_CORS_ALLOWED_ORIGINS: "${FRONTEND_ORIGIN}"
     volumes:
       - storage_data:/data
     ports:
+      # The S3 API must be browser-reachable for uploads, so it is published here
+      # (works for browsers on your LAN). For an INTERNET-FACING deployment, do not
+      # expose :9000 directly — bind it to 127.0.0.1 and front it with a
+      # reverse-proxied bucket path (see Reverse Proxy Configuration).
       - "9000:9000"
     healthcheck:
       test: ["CMD-SHELL", "curl -fs http://localhost:9000/health || exit 1"]
@@ -165,6 +170,7 @@ services:
       JWT_SECRET: "${JWT_SECRET}"
       CSRF_SECRET: "${CSRF_SECRET}"
       COOKIE_SECRET: "${COOKIE_SECRET}"
+      ENCRYPTION_SECRET: "${ENCRYPTION_SECRET}"
       CORS_ORIGINS: "${FRONTEND_ORIGIN}"
     volumes:
       - server_data:/app/server
@@ -320,6 +326,7 @@ volumes:
 | `JWT_SECRET` | JWT signing key: at least 32 characters. Generate with `openssl rand -hex 32`. |
 | `CSRF_SECRET` | CSRF HMAC key: at least 32 characters, must differ from `JWT_SECRET`. |
 | `COOKIE_SECRET` | Cookie signing key: at least 32 characters, must differ from the other two. |
+| `ENCRYPTION_SECRET` | AES-256-GCM key for encrypting sensitive data at rest (2FA TOTP secret, LDAP bind password): at least 32 characters, must differ from the other three. Generate with `openssl rand -hex 32`. |
 
 ### `.env`: Optional Variables
 
@@ -329,12 +336,11 @@ volumes:
 | `OUITRANSFER_UID` | `1001` | User ID for server container processes. Useful for NAS or bind-mount setups. |
 | `OUITRANSFER_GID` | `1001` | Group ID for server container processes. |
 | `DEFAULT_LANGUAGE` | `en-US` | Default UI language. See [available languages](/docs/v1-beta/available-languages). |
-| `ENCRYPTION_SECRET` | None | AES-256-GCM key for encrypting sensitive data at rest. Required for LDAP. Generate with `openssl rand -hex 32`. |
+| `ENABLE_API_DOCS` | `false` | When `true`, exposes the `/swagger` and `/docs` UIs (publicly reachable — no auth gate). Enabling it serves the full OpenAPI spec, so it is **not recommended for internet-facing deployments**. |
 | `PRESIGNED_URL_EXPIRATION` | `3600` | Upload presigned URL expiry in seconds (default: 1 hour). |
 | `PRESIGNED_GET_URL_EXPIRATION` | `900` | Download presigned URL expiry in seconds (default: 15 min). |
 | `TRUST_PROXY` | `loopback` | Fastify trusted proxy setting. Use `loopback` for direct deployments; set your proxy IP when behind a reverse proxy. |
 | `OAUTH_ALLOWED_REDIRECT_HOSTS` | None | Comma-separated additional redirect hosts for custom OIDC providers. |
-| `ENABLE_API_DOCS` | `false` | Expose API documentation at `/docs` and `/swagger` in production. |
 
 ### Fixed Variables (set in docker-compose.yml)
 

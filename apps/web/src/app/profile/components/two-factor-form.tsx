@@ -59,21 +59,30 @@ export function TwoFactorForm() {
     setupData,
     backupCodes,
     verificationCode,
+    setupPassword,
     disablePassword,
     disableTotpCode,
+    regenPassword,
+    regenTotpCode,
     isSetupModalOpen,
     isDisableModalOpen,
     isBackupCodesModalOpen,
+    isRegenModalOpen,
     setVerificationCode,
+    setSetupPassword,
     setDisablePassword,
     setDisableTotpCode,
+    setRegenPassword,
+    setRegenTotpCode,
     setIsSetupModalOpen,
     setIsDisableModalOpen,
     setIsBackupCodesModalOpen,
+    setIsRegenModalOpen,
     startSetup,
     verifySetup,
     disable2FA,
     generateNewBackupCodes,
+    confirmGenerateNewBackupCodes,
     downloadBackupCodes,
     copyBackupCodes,
   } = useTwoFactor();
@@ -97,12 +106,13 @@ export function TwoFactorForm() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  // Clear verification code when the setup modal is closed
+  // Clear setup inputs when the setup modal is closed
   useEffect(() => {
     if (!isSetupModalOpen) {
       setVerificationCode("");
+      setSetupPassword("");
     }
-  }, [isSetupModalOpen, setVerificationCode]);
+  }, [isSetupModalOpen, setVerificationCode, setSetupPassword]);
 
   // Clear disable-modal inputs when the disable modal is closed
   useEffect(() => {
@@ -111,6 +121,14 @@ export function TwoFactorForm() {
       setDisableTotpCode("");
     }
   }, [isDisableModalOpen, setDisablePassword, setDisableTotpCode]);
+
+  // Clear regenerate-modal inputs when the modal is closed
+  useEffect(() => {
+    if (!isRegenModalOpen) {
+      setRegenPassword("");
+      setRegenTotpCode("");
+    }
+  }, [isRegenModalOpen, setRegenPassword, setRegenTotpCode]);
 
   const getDeviceIcon = (userAgent: string) => {
     if (!userAgent) return MonitorSmartphone;
@@ -407,6 +425,35 @@ export function TwoFactorForm() {
                   {t("twoFactor.setup.verificationCodeDescription")}
                 </span>
               </div>
+
+              {/* Password re-authentication (required to enable 2FA) */}
+              <div>
+                <Label htmlFor="setup-password" className="mb-2">
+                  {t("twoFactor.disable.password")}
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="setup-password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder={t("twoFactor.disable.passwordPlaceholder")}
+                    value={setupPassword}
+                    onChange={(e) => setSetupPassword(e.target.value)}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute end-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <EyeClosed className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
+              </div>
             </div>
           )}
 
@@ -420,7 +467,9 @@ export function TwoFactorForm() {
             </Button>
             <Button
               onClick={verifySetup}
-              disabled={isLoading || !verificationCode || verificationCode.length !== 6}
+              disabled={
+                isLoading || !verificationCode || verificationCode.length !== 6 || !setupPassword
+              }
             >
               {t("twoFactor.setup.verifyAndEnable")}
             </Button>
@@ -496,6 +545,78 @@ export function TwoFactorForm() {
               disabled={isLoading || !disablePassword || !disableTotpCode}
             >
               {t("twoFactor.disable.confirm")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Regenerate Backup Codes — re-authentication modal */}
+      <Dialog open={isRegenModalOpen} onOpenChange={setIsRegenModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <KeyRound className="h-5 w-5" />
+              {t("twoFactor.backupCodes.generateNew")}
+            </DialogTitle>
+            <DialogDescription>{t("twoFactor.disable.description")}</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="regen-password" className="mb-2">
+                {t("twoFactor.disable.password")}
+              </Label>
+              <div className="relative">
+                <Input
+                  id="regen-password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder={t("twoFactor.disable.passwordPlaceholder")}
+                  value={regenPassword}
+                  onChange={(e) => setRegenPassword(e.target.value)}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute end-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <EyeClosed className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="regen-totp-code">{t("twoFactor.disable.totpLabel")}</Label>
+              <Input
+                id="regen-totp-code"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9 -]*"
+                placeholder={t("twoFactor.disable.totpPlaceholder")}
+                value={regenTotpCode}
+                onChange={(e) => setRegenTotpCode(e.target.value)}
+              />
+              <p className="text-sm text-muted-foreground">{t("twoFactor.disable.totpHint")}</p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsRegenModalOpen(false)}
+              disabled={isLoading}
+            >
+              {t("twoFactor.disable.cancel")}
+            </Button>
+            <Button
+              onClick={confirmGenerateNewBackupCodes}
+              disabled={isLoading || !regenPassword || !regenTotpCode}
+            >
+              {t("twoFactor.backupCodes.generateNew")}
             </Button>
           </DialogFooter>
         </DialogContent>

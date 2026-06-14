@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSecureConfigValue } from "@/hooks/use-secure-configs";
+import { safeHttpUrlOrHash } from "@/utils/safe-url";
 
 const version = process.env.NEXT_PUBLIC_APP_VERSION ?? "dev";
 
@@ -25,7 +26,8 @@ export function DefaultFooter() {
 
   const shouldHideVersion = hideVersion === "true";
   const displayText = footerText || "";
-  const displayUrl = footerUrl || "#";
+  // Reject non-http(s) hrefs (javascript:/data:/protocol-relative) at render time (A7-01).
+  const displayUrl = safeHttpUrlOrHash(footerUrl);
 
   return (
     <footer className="w-full flex items-center justify-center py-3 h-16">
@@ -34,6 +36,7 @@ export function DefaultFooter() {
           <TooltipTrigger asChild>
             <Link
               target="_blank"
+              rel="noopener noreferrer"
               className="text-current"
               href={displayUrl}
             >

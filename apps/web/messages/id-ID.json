@@ -1110,9 +1110,11 @@
       "lastNameRequired": "Nama belakang wajib diisi",
       "usernameMinLength": "Nama pengguna harus minimal 3 karakter",
       "invalidEmail": "Email tidak valid",
-      "passwordMinLength": "Kata sandi harus minimal 8 karakter",
+      "passwordMinLength": "Kata sandi harus minimal 12 karakter",
       "success": "Pengguna administrator berhasil dibuat!",
-      "error": "Kesalahan membuat pengguna administrator"
+      "error": "Kesalahan membuat pengguna administrator",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Nama Depan",
@@ -2659,14 +2661,16 @@
     "usernameLength": "Nama pengguna harus minimal 3 karakter",
     "usernameSpaces": "Nama pengguna tidak boleh mengandung spasi",
     "invalidEmail": "Mohon masukkan alamat email yang valid",
-    "passwordLength": "Kata sandi harus minimal 8 karakter",
+    "passwordLength": "Kata sandi harus minimal 12 karakter",
     "passwordsMatch": "Kata sandi harus sama",
     "emailRequired": "Email wajib diisi",
     "emailOrUsernameRequired": "Email atau nama pengguna wajib diisi",
     "passwordRequired": "Kata sandi wajib diisi",
     "passwordMinLength": "Kata sandi harus minimal 6 karakter",
     "nameRequired": "Nama wajib diisi",
-    "required": "Bidang ini wajib diisi"
+    "required": "Bidang ini wajib diisi",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "registerWithInvite": {
     "title": "Buat Akun Anda",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "Nama belakang wajib diisi",
       "usernameMinLength": "Nama pengguna harus minimal 3 karakter",
       "invalidEmail": "Email tidak valid",
-      "passwordMinLength": "Kata sandi harus minimal 8 karakter",
-      "passwordsMatch": "Kata sandi harus sama"
+      "passwordMinLength": "Kata sandi harus minimal 12 karakter",
+      "passwordsMatch": "Kata sandi harus sama",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Akun berhasil dibuat! Mengalihkan ke login...",

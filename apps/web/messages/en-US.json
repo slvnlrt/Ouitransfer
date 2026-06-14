@@ -1213,9 +1213,11 @@
       "lastNameRequired": "Last name is required",
       "usernameMinLength": "Username must be at least 3 characters",
       "invalidEmail": "Invalid email",
-      "passwordMinLength": "Password must be at least 8 characters",
+      "passwordMinLength": "Password must be at least 12 characters",
       "success": "Administrator user created successfully!",
-      "error": "Error creating administrator user"
+      "error": "Error creating administrator user",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "First Name",
@@ -1255,8 +1257,10 @@
       "lastNameRequired": "Last name is required",
       "usernameMinLength": "Username must be at least 3 characters",
       "invalidEmail": "Invalid email",
-      "passwordMinLength": "Password must be at least 8 characters",
-      "passwordsMatch": "Passwords must match"
+      "passwordMinLength": "Password must be at least 12 characters",
+      "passwordsMatch": "Passwords must match",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Account created successfully! Redirecting to login...",
@@ -2857,14 +2861,16 @@
     "usernameLength": "Username must be at least 3 characters long",
     "usernameSpaces": "Username cannot contain spaces",
     "invalidEmail": "Please enter a valid email address",
-    "passwordLength": "Password must be at least 8 characters long",
+    "passwordLength": "Password must be at least 12 characters long",
     "passwordsMatch": "Passwords must match",
     "emailRequired": "Email is required",
     "emailOrUsernameRequired": "Email or username is required",
     "passwordRequired": "Password is required",
     "passwordMinLength": "Password must be at least 6 characters",
     "nameRequired": "Name is required",
-    "required": "This field is required"
+    "required": "This field is required",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "backgroundImages": {
     "empty": "No background images uploaded. Upload images to enable custom backgrounds for WeTransfer-style shares.",

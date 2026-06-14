@@ -10,6 +10,7 @@ import { z } from "zod";
 
 import { getCurrentUser, removeAvatar, updateUser, uploadAvatar } from "@/http/endpoints";
 import type { GetCurrentUser200, User } from "@/http/endpoints/auth/types";
+import { createPasswordPolicySchema } from "@/lib/password-policy";
 import { queryKeys } from "@/lib/query-keys";
 
 const createSchemas = (t: (key: string) => string) => ({
@@ -25,8 +26,12 @@ const createSchemas = (t: (key: string) => string) => ({
 
   passwordSchema: z
     .object({
-      newPassword: z.string().min(8, t("validation.passwordLength")),
-      confirmPassword: z.string().min(8, t("validation.passwordLength")),
+      newPassword: createPasswordPolicySchema({
+        minLength: t("validation.passwordLength"),
+        maxLength: t("validation.passwordMaxLength"),
+        complexity: t("validation.passwordComplexity"),
+      }),
+      confirmPassword: z.string(),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
       message: t("validation.passwordsMatch"),

@@ -1,6 +1,7 @@
 import { AndFilter, Client, EqualityFilter } from "ldapts";
 import { AppError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
+import { assertLdapTargetAllowed } from "./ldap-ssrf.js";
 
 // RFC 4512 §2.5: attributeType = ALPHA *( ALPHA / DIGIT / "-" )
 const LDAP_ATTR_RE = /^[A-Za-z][A-Za-z0-9-]*$/;
@@ -58,6 +59,16 @@ export class LdapClient {
   private client: Client | null = null;
 
   async connect(config: LdapConnectionConfig): Promise<void> {
+    // Egress (SSRF) + transport-confidentiality guard (A5-05, A5-07, A5-11).
+    // Validates the scheme, blocks cloud-metadata hosts (and enforces
+    // LDAP_ALLOWED_HOSTS when set), and warns on weak transport — before any
+    // socket opens. The admin's useTls/tlsSkipVerify/scheme are honored as-is.
+    assertLdapTargetAllowed({
+      serverUrl: config.serverUrl,
+      useTls: config.useTls,
+      tlsSkipVerify: config.tlsSkipVerify,
+    });
+
     this.client = new Client({
       url: config.serverUrl,
       tlsOptions: config.useTls ? { rejectUnauthorized: !config.tlsSkipVerify } : undefined,
@@ -130,10 +141,25 @@ export class LdapClient {
         message: `Connected successfully. Found ${members.length} members in sync group.`,
       };
     } catch (error) {
+      // Surface only our own configuration-validation errors (scheme / SSRF /
+      // transport policy — LDAP_* codes from assertLdapTargetAllowed and the
+      // attribute-name guard). These are safe, actionable config feedback.
+      //
+      // Never surface the raw connection/bind/search error string: it is a
+      // port-scan / topology oracle (A5-11) — distinct failure modes (connection
+      // refused vs. TLS handshake vs. bad credentials) reveal internal network
+      // state. Log it server-side, return a generic message to the caller.
+      if (error instanceof AppError && error.code?.startsWith("LDAP_")) {
+        return { success: false, memberCount: 0, message: error.message };
+      }
+      getLogger().warn(
+        { err: error instanceof Error ? error.message : "unknown" },
+        "LDAP test connection failed",
+      );
       return {
         success: false,
         memberCount: 0,
-        message: error instanceof Error ? error.message : "Unknown error",
+        message: "Connection failed. Check the server URL, credentials, and network reachability.",
       };
     } finally {
       await this.disconnect();

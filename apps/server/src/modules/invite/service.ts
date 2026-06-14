@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../../shared/prisma.js";
 import { AppError, NotFoundError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
+import { BCRYPT_COST } from "../auth/password-policy.js";
 import { emailService } from "../email/service.js";
 import { buildInviteRegistrationUrl } from "../email/url-builder.js";
 
@@ -62,9 +63,15 @@ export class InviteService {
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + INVITE_TOKEN_TTL_MINUTES);
 
+    // A6-04: when the admin targets a specific address, bind the token to it
+    // (lowercased) so only that invitee can consume it. A token with no email is an
+    // open/bearer invite by design — whoever holds the link can register.
+    const boundEmail = email ? email.trim().toLowerCase() : null;
+
     const inviteToken = await prisma.inviteToken.create({
       data: {
         token,
+        email: boundEmail,
         expiresAt,
         createdBy: adminUserId,
       },
@@ -155,6 +162,20 @@ export class InviteService {
       throw invalidInviteTokenError(preflight);
     }
 
+    // A6-04: an email-bound token may only be consumed by the invited address.
+    // Compared case-insensitively. Open/bearer tokens (email === null) skip this.
+    // This runs before bcrypt so a mismatched attempt is rejected cheaply.
+    if (
+      preflightToken.email &&
+      preflightToken.email.toLowerCase() !== data.email.trim().toLowerCase()
+    ) {
+      throw new AppError(
+        403,
+        "This invite link was issued for a different email address",
+        ErrorCodes.INVITE_EMAIL_MISMATCH,
+      );
+    }
+
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [{ username: data.username }, { email: data.email }],
@@ -170,7 +191,7 @@ export class InviteService {
       }
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const hashedPassword = await bcrypt.hash(data.password, BCRYPT_COST);
     const result = await prisma.$transaction(async (tx) => {
       // Atomically claim the token: the conditional `where` means only the
       // first concurrent request whose update still matches (unused, unexpired)

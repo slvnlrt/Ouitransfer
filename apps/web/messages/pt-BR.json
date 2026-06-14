@@ -1110,9 +1110,11 @@
       "lastNameRequired": "Sobrenome é obrigatório",
       "usernameMinLength": "Nome de usuário deve ter no mínimo 3 caracteres",
       "invalidEmail": "Email inválido",
-      "passwordMinLength": "Senha deve ter no mínimo 8 caracteres",
+      "passwordMinLength": "Senha deve ter no mínimo 12 caracteres",
       "success": "Usuário do administrador criado com sucesso!",
-      "error": "Erro a criação de usuário do administrador"
+      "error": "Erro a criação de usuário do administrador",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Nome",
@@ -2680,8 +2682,10 @@
       "lastNameRequired": "Sobrenome é obrigatório",
       "usernameMinLength": "Nome de usuário deve ter pelo menos 3 caracteres",
       "invalidEmail": "E-mail inválido",
-      "passwordMinLength": "Senha deve ter pelo menos 8 caracteres",
-      "passwordsMatch": "As senhas devem coincidir"
+      "passwordMinLength": "Senha deve ter pelo menos 12 caracteres",
+      "passwordsMatch": "As senhas devem coincidir",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Conta criada com sucesso! Redirecionando para o login...",
@@ -2698,7 +2702,7 @@
   },
   "validation": {
     "invalidEmail": "Por favor, insira um endereço de e-mail válido",
-    "passwordLength": "A senha deve ter pelo menos 8 caracteres",
+    "passwordLength": "A senha deve ter pelo menos 12 caracteres",
     "passwordsMatch": "As senhas devem coincidir",
     "emailRequired": "Email é obrigatório",
     "emailOrUsernameRequired": "E-mail ou nome de usuário é obrigatório",
@@ -2709,7 +2713,9 @@
     "firstNameRequired": "O primeiro nome é necessário",
     "lastNameRequired": "O sobrenome é necessário",
     "usernameLength": "O nome de usuário deve ter pelo menos 3 caracteres",
-    "usernameSpaces": "O nome de usuário não pode conter espaços"
+    "usernameSpaces": "O nome de usuário não pode conter espaços",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "filesTree": {
     "noItems": "Nenhum item para exibir"

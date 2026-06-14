@@ -1,5 +1,50 @@
 # Session Log
 
+## 2026-06-14 (Red Team 2026 — full offensive audit + complete remediation)
+
+- **Phase 1 — Red team (8 parallel read-only Opus agents).** Partitioned the attack surface into 8
+  domains (auth/session, access-control, file/storage, sharing/public, OAuth+LDAP, email/invite/SSRF,
+  web frontend, infra/config/deps). Each agent produced a written report in `audit/red-team-2026/`
+  (A1–A8). **108 findings: 10 Critical · 21 High · 34 Medium · 29 Low · 14 Info.**
+- **Phase 2 — Remediation (7 sequential Opus implementer batches R1–R7), full convention applied
+  (Critical→Info, nothing out of scope).** Plan + closure in `audit/red-team-2026/REMEDIATION-PLAN.md`
+  and `CLOSURE.md` (80 tracked items, all checked).
+  - **8 unique Criticals fixed:** reverse-share multipart objectName injection; MIME/magic-byte
+    fail-open; share-download lifecycle bypass; OIDC id_token never verified; OAuth email-link
+    account takeover; OAuth state CSRF/replay; X-Real-IP lockout/rate-limit bypass + audit poisoning;
+    weak default compose signing secrets.
+  - **Highlights:** opaque per-share download token + lifecycle gate; JWKS id_token verification +
+    browser-bound state/nonce/PKCE + `emailVerified`; cookie-secret trusted devices + encrypted TOTP
+    secrets + hashed backup codes + 2FA-verify lockout; SSRF egress guard (S3/OIDC/LDAP); nonce-based
+    web CSP; fail-fast compose secrets + prod placeholder gate + Pino redaction + container hardening.
+  - **Migrations:** `add_last_totp_step`, `trusted_device_per_user_unique`, `add_user_email_verified`,
+    `r5_email_invite_hardening`. **New required env:** `ENCRYPTION_SECRET`.
+  - **Green:** server type-check + 1839 tests; web type-check + 397 tests; Biome; Knip; `next build`;
+    fresh-DB migration apply. (Server baseline was 1642 → +197 tests.)
+- **Process:** read-only audit agents run in parallel (distinct report files, zero git contention);
+  code-modifying agents run strictly sequential with hardened git discipline (one R2 stray-branch
+  incident resolved cleanly via fast-forward, no work lost). Each batch verified + author-reset +
+  pushed before the next.
+- **Phase 3 — Owner review + adjustments.** Walked the remediation with the owner; several items were
+  product/ops decisions and were adjusted (all reflected in `CLOSURE.md` "Owner-requested adjustments"
+  and in the docs):
+  - `/health/status` relaxed admin-only → **authenticated** (keeps the unauthenticated-probe vector
+    closed, restores the user email/notifications indicator). API-doc UIs (`/swagger`, `/docs`) **admin
+    gate removed** — they stay off by default behind the `ENABLE_API_DOCS` opt-in. LDAP transport **no
+    longer forces** LDAPS/StartTLS (admin's choice; cleartext/`tlsSkipVerify` warned, not blocked);
+    egress now blocks only cloud-metadata so private DCs work by default.
+  - Infra: image tags reverted to `:latest` (placeholder version tags were unpublished); RustFS
+    published on `9000:9000` by default for LAN browser uploads (internet-facing → bind `127.0.0.1` +
+    reverse-proxy). Kept after review: logout-all-sessions, password policy, email spam caps, alias
+    min length 8, CORS null-origin block, container hardening.
+  - Docs reconciled to the final state: `api.mdx`/`api.fr.mdx` (health/status auth, docs no-auth),
+    Quick Start (EN/FR) RustFS binding + `:latest`.
+- **Phase 4 — Verification.** Added `setup-bypass-register.integration.test.ts` proving the A2-03
+  zero-user setup window (unauth register only at 0 users → first user admin + auto-login; 401 once a
+  user exists; admin can still create users). Container hardening verified statically (Dockerfile ×
+  Compose: ports >1024 so `cap_drop: ALL` is safe; non-root + `no-new-privileges`; web/docs runtime
+  writes match the declared tmpfs). **Green:** full server suite **1844 tests** (122 files).
+
 ## 2026-06-13 (B-29 — authenticated-visit identity + TD-42 Opus re-review)
 
 - **Model discipline (process fix):** subagents default to Haiku when `model` is omitted — too weak

@@ -24,13 +24,28 @@ const envSchema = z.object({
     .default("http://localhost:3333")
     .transform((url) => url.replace(/\/+$/, "")),
   ALLOWED_IMAGE_HOSTS: z.string().optional(),
+  // CSP_STORAGE_ORIGINS is concatenated into the page CSP `img-src`/`connect-src`
+  // (A7-04). It MUST be the storage origin(s) only — i.e. the S3/RustFS endpoint
+  // that serves presigned download (img) and accepts presigned upload (connect)
+  // requests — never a wildcard. The refine below:
+  //   - requires each space-separated token to be a bare http(s) origin
+  //     (scheme + host[:port], no path/query) — blocks `;`/newline CSP injection,
+  //   - rejects any `*` / wildcard host: a wildcard in `connect-src` would let an
+  //     injected script exfiltrate to arbitrary hosts within the CSP, defeating
+  //     the directive's purpose.
   CSP_STORAGE_ORIGINS: z
     .string()
     .optional()
     .refine(
       (v) =>
-        !v || v.split(/\s+/).every((origin) => /^https?:\/\/[a-z0-9.-]+(:\d+)?$/i.test(origin)),
-      "Must be space-separated origins (e.g., http://storage:9000 https://cdn.example.com)",
+        !v ||
+        v
+          .split(/\s+/)
+          .filter(Boolean)
+          .every(
+            (origin) => !origin.includes("*") && /^https?:\/\/[a-z0-9.-]+(:\d+)?$/i.test(origin),
+          ),
+      "CSP_STORAGE_ORIGINS must be space-separated storage origins with no wildcards (e.g., http://storage:9000 https://cdn.example.com)",
     ),
 });
 

@@ -628,6 +628,106 @@ describe("LDAP integration tests", () => {
 
       expect(res.statusCode).toBe(401);
     });
+
+    // ── SSRF / transport guard on the test endpoint (A5-05, A5-07, A5-11) ──────
+
+    it("rejects an LDAP target pointed at the cloud metadata host (SSRF)", async () => {
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const res = await app.inject({
+        method: "POST",
+        url: "/admin/ldap/test",
+        headers: adminHeaders(csrfToken, csrfCookie),
+        payload: JSON.stringify({ ...validTestPayload, serverUrl: "ldaps://169.254.169.254:636" }),
+      });
+
+      // The route returns 200 with success:false (it never throws the SSRF error
+      // to the client; the guard message is config feedback, not a topology leak).
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      expect(body.success).toBe(false);
+      expect(body.memberCount).toBe(0);
+      expect(body.message).toMatch(/not permitted|metadata/i);
+    });
+
+    it("allows a private/loopback LDAP target by default (admin's internal DC is their choice)", async () => {
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const res = await app.inject({
+        method: "POST",
+        url: "/admin/ldap/test",
+        headers: adminHeaders(csrfToken, csrfCookie),
+        payload: JSON.stringify({ ...validTestPayload, serverUrl: "ldaps://127.0.0.1:636" }),
+      });
+
+      // The guard no longer blocks private hosts — the (mocked) bind succeeds.
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      expect(body.success).toBe(true);
+    });
+
+    it("allows cleartext ldap:// to a remote host but only warns (A5-07: warn, never block)", async () => {
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const res = await app.inject({
+        method: "POST",
+        url: "/admin/ldap/test",
+        headers: adminHeaders(csrfToken, csrfCookie),
+        payload: JSON.stringify({
+          ...validTestPayload,
+          serverUrl: "ldap://ad.corp.local:389",
+          useTls: false,
+        }),
+      });
+
+      // Transport confidentiality is a warning, not a block: the (mocked) bind succeeds.
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      expect(body.success).toBe(true);
+    });
+
+    it("rejects a non-ldap scheme in serverUrl", async () => {
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const res = await app.inject({
+        method: "POST",
+        url: "/admin/ldap/test",
+        headers: adminHeaders(csrfToken, csrfCookie),
+        payload: JSON.stringify({ ...validTestPayload, serverUrl: "http://ad.corp.local" }),
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      expect(body.success).toBe(false);
+      expect(body.message).toMatch(/scheme/i);
+    });
+
+    it("returns a GENERIC message (no raw error) when the bind fails (A5-11 oracle)", async () => {
+      // Make the next ldapts bind reject with a detailed internal error. The
+      // route must NOT surface that text — it would be a port-scan/topology oracle.
+      const ldapts = await import("ldapts");
+      vi.mocked(ldapts.Client).mockImplementationOnce(
+        // biome-ignore lint/suspicious/noExplicitAny: vi mock constructor
+        function (this: any) {
+          this.bind = vi
+            .fn()
+            .mockRejectedValue(new Error("connect ECONNREFUSED 10.1.2.3:636 — internal-dc-07"));
+          this.search = vi.fn().mockResolvedValue({ searchEntries: [] });
+          this.unbind = vi.fn().mockResolvedValue(undefined);
+        } as never,
+      );
+
+      const { csrfToken, csrfCookie } = await getCsrf();
+      const res = await app.inject({
+        method: "POST",
+        url: "/admin/ldap/test",
+        headers: adminHeaders(csrfToken, csrfCookie),
+        payload: JSON.stringify(validTestPayload),
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      expect(body.success).toBe(false);
+      // The raw error (host/IP/internal name) must not leak.
+      expect(body.message).not.toMatch(/ECONNREFUSED|10\.1\.2\.3|internal-dc-07/);
+      expect(body.message).toMatch(/Connection failed/i);
+    });
   });
 
   // ── POST /admin/ldap/sync ─────────────────────────────────────────────────

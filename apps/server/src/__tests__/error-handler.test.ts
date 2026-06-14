@@ -503,12 +503,13 @@ describe("globalErrorHandler — Prisma unknown code (e.g. P9999)", () => {
 // ---------------------------------------------------------------------------
 
 describe("globalErrorHandler — Fastify 4xx errors", () => {
-  it("returns correct status and preserves the Fastify message for 400", () => {
+  it("A8-04: genericizes the message for a 400 (does NOT forward the library message)", () => {
     const request = makeRequest();
     const reply = makeReply();
     const error = {
       statusCode: 400,
-      message: "Bad Request",
+      // A library-internal message that could leak field names / limits.
+      message: "body/file must match exactly one schema in oneOf (internal-field-xyz)",
       code: "FST_ERR_VALIDATION",
     };
 
@@ -518,8 +519,11 @@ describe("globalErrorHandler — Fastify 4xx errors", () => {
 
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.statusCode).toBe(400);
+    // The Fastify error CODE is preserved (useful + non-sensitive)…
     expect(sent.code).toBe("FST_ERR_VALIDATION");
+    // …but the verbatim library message is replaced with the canonical one.
     expect(sent.error).toBe("Bad Request");
+    expect(sent.error).not.toContain("internal-field-xyz");
     expect(sent.timestamp).toEqual(expect.any(String));
   });
 
@@ -542,7 +546,7 @@ describe("globalErrorHandler — Fastify 4xx errors", () => {
     expect(sent.timestamp).toEqual(expect.any(String));
   });
 
-  it("returns 429 with Too Many Requests message", () => {
+  it("A8-04: returns the canonical 'Too Many Requests' message for a 429 (no verbatim forward)", () => {
     const request = makeRequest();
     const reply = makeReply();
     const error = {
@@ -557,7 +561,9 @@ describe("globalErrorHandler — Fastify 4xx errors", () => {
 
     const sent = reply.send.mock.calls[0][0] as ErrorResponse;
     expect(sent.statusCode).toBe(429);
-    expect(sent.error).toBe("Rate limit exceeded, retry in 1 minute");
+    expect(sent.code).toBe("FST_RATE_LIMIT_EXCEEDED");
+    // Canonical message — the verbatim "retry in 1 minute" detail is not forwarded.
+    expect(sent.error).toBe("Too Many Requests");
     expect(sent.timestamp).toEqual(expect.any(String));
   });
 

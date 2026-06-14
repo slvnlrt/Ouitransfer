@@ -14,7 +14,13 @@ export interface ShareFile {
   description: string | null;
   extension: string;
   size: string;
+  /**
+   * Download handle. For NON-OWNER (public) share responses this is an OPAQUE per-share file
+   * token (R2 — A4-08), not the raw storage key; the client passes it back verbatim to the
+   * download endpoints. For owner responses it is the real S3 objectName.
+   */
   objectName: string;
+  /** Owner user id — blank ("") in non-owner responses (R2 — A4-08), the real id for owners. */
   userId: string;
   folderId: string | null;
   createdAt: string;
@@ -25,7 +31,9 @@ export interface ShareFolder {
   id: string;
   name: string;
   description: string | null;
+  /** Empty ("") in non-owner responses (R2 — A4-08). */
   objectName: string;
+  /** Blank ("") in non-owner responses (R2 — A4-08). */
   userId: string;
   parentId: string | null;
   totalSize: string | null;
@@ -290,11 +298,15 @@ export interface IdentifyVisitor200 {
 
 // ── Share metadata (extended) ──────────────────────────────────────────
 export interface ShareMetadata {
+  /** Null for closed (expired/maxed/paused/inactive) shares — the name is withheld (R2 A4-06). */
   name: string | null;
+  /** Null for closed shares (R2 A4-06). */
   description: string | null;
   totalFiles: number;
   totalFolders: number;
   hasPassword: boolean;
+  /** False when the share is paused/deactivated (R2 A4-06). */
+  isActive: boolean;
   isExpired: boolean;
   isMaxViewsReached: boolean;
   nameFieldRequired: "HIDDEN" | "OPTIONAL" | "REQUIRED";

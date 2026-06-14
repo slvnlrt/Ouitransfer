@@ -4,6 +4,7 @@ import type {
   CompleteTwoFactorLoginResult,
   DisableTwoFactorRequest,
   DisableTwoFactorResult,
+  GenerateBackupCodesRequest,
   GenerateBackupCodesResult,
   GetTwoFactorStatusResult,
   TwoFactorSetupRequest,
@@ -30,8 +31,10 @@ export const disableTwoFactor = async (
   return apiInstance.post("/api/auth/2fa/disable", data);
 };
 
-export const generateBackupCodes = async (): Promise<GenerateBackupCodesResult> => {
-  return apiInstance.post("/api/auth/2fa/backup-codes");
+export const generateBackupCodes = async (
+  data: GenerateBackupCodesRequest,
+): Promise<GenerateBackupCodesResult> => {
+  return apiInstance.post("/api/auth/2fa/backup-codes", data);
 };
 
 export const getTwoFactorStatus = async (): Promise<GetTwoFactorStatusResult> => {

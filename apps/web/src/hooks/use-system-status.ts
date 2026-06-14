@@ -3,11 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { useAuth } from "@/contexts/auth-context";
-import { checkHealth, getDiskSpace } from "@/http/endpoints";
+import { getDiskSpace } from "@/http/endpoints";
 import { getAdminStats } from "@/http/endpoints/admin";
 import type { AdminStats200 } from "@/http/endpoints/admin/types";
 import { getHealthStatus } from "@/http/endpoints/app";
-import type { CheckHealth200, DiskSpaceInfo, HealthStatus200 } from "@/http/endpoints/app/types";
+import type { DiskSpaceInfo, HealthStatus200 } from "@/http/endpoints/app/types";
 import { getEmailStats } from "@/http/endpoints/notifications";
 import type { EmailStats } from "@/http/endpoints/notifications/types";
 import { queryKeys } from "@/lib/query-keys";
@@ -16,13 +16,15 @@ import { parseApiError } from "@/utils/api-error";
 type DashboardError = "network_error" | "server_error" | "fetch_error" | null;
 
 export interface UseSystemStatusResult {
-  // User view
+  // User view — detailed per-subsystem health (authenticated, not admin-only).
+  // A8-11: /health/status requires a session, so regular users get the email
+  // subsystem signal too (the endpoint is no longer reachable unauthenticated).
   healthStatus: HealthStatus200 | null;
   healthStatusLoading: boolean;
   healthStatusError: DashboardError;
 
-  // Admin view
-  healthData: CheckHealth200 | null;
+  // Admin view — detailed per-subsystem health
+  healthData: HealthStatus200 | null;
   healthLoading: boolean;
   healthError: boolean;
 
@@ -52,7 +54,10 @@ export function useSystemStatus(options?: { isExpanded?: boolean }): UseSystemSt
   const POLL_BACKGROUND = 300_000; // 5 min when collapsed
   const pollInterval = isExpanded ? POLL_ACTIVE : POLL_BACKGROUND;
 
-  // Simplified health status (regular users only)
+  // Detailed per-subsystem health for regular (non-admin) users. A8-11:
+  // /health/status now requires authentication (any logged-in user), so regular
+  // users get the email subsystem signal that drives the status dot + the
+  // "notifications disrupted" line. It is no longer reachable unauthenticated.
   const healthStatusQuery = useQuery({
     queryKey: queryKeys.app.healthStatus(),
     queryFn: async () => {
@@ -60,14 +65,14 @@ export function useSystemStatus(options?: { isExpanded?: boolean }): UseSystemSt
       return res.data;
     },
     refetchInterval: pollInterval,
-    enabled: !isAdmin,
+    enabled: !!user && !isAdmin,
   });
 
-  // Detailed health (admin only)
+  // Detailed per-subsystem health (admin view — same authenticated endpoint).
   const healthQuery = useQuery({
     queryKey: queryKeys.app.health(),
     queryFn: async () => {
-      const res = await checkHealth();
+      const res = await getHealthStatus();
       return res.data;
     },
     refetchInterval: pollInterval,

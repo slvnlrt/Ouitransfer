@@ -8,7 +8,9 @@ import { AppError, UnauthorizedError } from "../../utils/app-error.js";
 import {
   clearAuthCookies,
   getClientInfo,
+  getTrustedDeviceSecret,
   setAuthCookies,
+  setTrustedDeviceCookie,
   signAndSetCookies,
 } from "../../utils/auth-cookies.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
@@ -24,30 +26,28 @@ import {
 } from "./dto.js";
 import { revokeAllUserTokens, rotateRefreshToken } from "./refresh-token.service.js";
 import { AuthService } from "./service.js";
+import { incrementTokenVersion } from "./token-version.js";
 
 /** Body size limit for auth endpoints — payloads are small JSON only. */
 const AUTH_BODY_LIMIT = 64 * 1024; // 64 KB
 
 const authService = new AuthService();
 
-const createPasswordSchema = async () => {
-  const minLength = Number(await getConfigValue("passwordMinLength"));
-  return z
-    .string()
-    .min(minLength, `Password must be at least ${minLength} characters`)
-    .describe("User password");
-};
-
 const jwtPreValidation = createJwtPreValidation();
 
 export const authRoutes: FastifyPluginAsyncZod = async (app) => {
-  const passwordSchema = await createPasswordSchema();
+  // The LOGIN schema deliberately does NOT apply the password policy
+  // (complexity / max-length). Login must accept whatever the user previously
+  // set as their password; enforcing the policy here would lock out accounts
+  // whose passwords predate a policy tightening, and would also leak the policy
+  // to unauthenticated clients. The policy is enforced only where a NEW password
+  // is chosen (register / reset / admin update — via createPasswordSchema).
   const loginSchema = z.object({
     emailOrUsername: z
       .string()
       .min(1, "Email or username is required")
       .describe("User email or username"),
-    password: passwordSchema,
+    password: z.string().min(1, "Password is required").describe("User password"),
   });
 
   // ── POST /auth/login ──────────────────────────────────────────
@@ -97,10 +97,11 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
     handler: async (request, reply) => {
       const input = request.body;
       const { userAgent, ipAddress } = getClientInfo(request);
+      const deviceSecret = getTrustedDeviceSecret(request);
 
       let result: Awaited<ReturnType<AuthService["login"]>>;
       try {
-        result = await authService.login(input, userAgent, ipAddress);
+        result = await authService.login(input, userAgent, ipAddress, deviceSecret);
       } catch (err) {
         // Audit failed login (fire-and-forget)
         // Use LOGIN_LOCKED for rate-limit lockouts to distinguish from credential failures
@@ -116,7 +117,7 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       if ("requiresTwoFactor" in result) {
-        const challengeToken = await createChallengeToken(result.userId);
+        const challengeToken = await createChallengeToken(result.userId, { ipAddress, userAgent });
         return reply.send({
           requiresTwoFactor: true,
           challengeToken,
@@ -181,20 +182,24 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const input = request.body;
-
-      // Verify the challenge token instead of trusting a raw userId
-      const userId = await verifyChallengeToken(input.challengeToken);
-
       const { userAgent, ipAddress } = getClientInfo(request);
 
-      let user: Awaited<ReturnType<AuthService["completeTwoFactorLogin"]>>;
+      // Verify the challenge token instead of trusting a raw userId. The challenge
+      // is bound to the IP/UA of the password step (A1-11), so a leaked challenge
+      // token cannot be redeemed from a different client.
+      const userId = await verifyChallengeToken(input.challengeToken, { ipAddress, userAgent });
+
+      const deviceSecret = getTrustedDeviceSecret(request);
+
+      let result: Awaited<ReturnType<AuthService["completeTwoFactorLogin"]>>;
       try {
-        user = await authService.completeTwoFactorLogin(
+        result = await authService.completeTwoFactorLogin(
           userId,
           input.token,
           input.rememberDevice,
           userAgent,
           ipAddress,
+          deviceSecret,
         );
       } catch (err) {
         // Audit failed 2FA attempt (fire-and-forget)
@@ -211,7 +216,13 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
         throw err;
       }
 
+      const { user } = result;
       await signAndSetCookies(reply, user, userAgent, ipAddress);
+
+      // A freshly-minted trusted-device secret must be set as the client cookie.
+      if (result.trustedDeviceSecret) {
+        setTrustedDeviceCookie(reply, result.trustedDeviceSecret);
+      }
 
       // Audit successful 2FA login (fire-and-forget)
       logAuditEvent({
@@ -256,11 +267,15 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
 
       clearAuthCookies(reply);
 
-      // Revoke all refresh tokens for this user so stolen tokens cannot be reused
+      // A1-12: revocation is awaited (not fire-and-forget). If it fails, surface
+      // the error rather than reporting a successful logout while tokens stay
+      // valid for 7 days. Bumping tokenVersion immediately invalidates the
+      // current short-lived access token too (a copy of the JWT stops working at
+      // once instead of lingering until its 15-min exp) — important for
+      // shared-device logout.
       if (userId) {
-        revokeAllUserTokens(userId).catch((err) =>
-          getLogger().error({ err }, "Failed to revoke refresh tokens on logout"),
-        );
+        await revokeAllUserTokens(userId);
+        await incrementTokenVersion(userId);
       }
 
       // Audit logout (fire-and-forget)
@@ -304,15 +319,22 @@ export const authRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const { email } = request.body;
-      await authService.requestPasswordReset(email);
+      const { userId } = await authService.requestPasswordReset(email);
 
-      // Audit password reset request (fire-and-forget)
-      // No userId — intentionally omitted to avoid confirming user existence
+      // Audit password reset request (fire-and-forget).
+      // A1-16: only record the submitted email when it maps to a real account
+      // for which a reset was actually issued (we have a userId). For unknown
+      // emails we store neither the userId nor the raw email — this avoids
+      // persisting arbitrary attacker-submitted addresses in the audit log and
+      // keeps the event from acting as an enumeration aid for log readers.
       logAuditEvent({
+        userId,
         action: "PASSWORD_RESET_REQUEST",
         ipAddress: request.ip,
         userAgent: request.headers["user-agent"],
-        metadata: { email: request.body.email },
+        targetType: userId ? "user" : undefined,
+        targetId: userId,
+        metadata: userId ? { email } : undefined,
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
       return reply.send({

@@ -26,6 +26,8 @@ vi.mock("../../../utils/logger.js", () => ({
 
 vi.mock("../login-attempts.service.js", () => ({
   isAccountLocked: vi.fn(),
+  is2faVerifyLocked: vi.fn(),
+  isIpThrottled: vi.fn().mockResolvedValue({ throttled: false }),
   recordLoginAttempt: vi.fn(),
 }));
 

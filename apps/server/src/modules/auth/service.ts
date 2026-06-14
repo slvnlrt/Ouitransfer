@@ -17,17 +17,28 @@ import { TwoFactorService } from "../two-factor/service.js";
 import { UserResponseSchema } from "../user/dto.js";
 import { PrismaUserRepository } from "../user/repository.js";
 import type { LoginInput } from "./dto.js";
-import { isAccountLocked, recordLoginAttempt } from "./login-attempts.service.js";
+import { isAccountLocked, isIpThrottled, recordLoginAttempt } from "./login-attempts.service.js";
+import { BCRYPT_COST } from "./password-policy.js";
 import { revokeAllUserTokens } from "./refresh-token.service.js";
 import { invalidateTokenVersionCache } from "./token-version.js";
 import { TrustedDeviceService } from "./trusted-device.service.js";
+
+/**
+ * Fixed bcrypt hash used as a decoy for the constant-time user-existence mask
+ * (A1-10). When the submitted account does not exist, login still performs a
+ * real bcrypt comparison against this hash so the response latency is
+ * indistinguishable from a wrong-password attempt on an existing account. The
+ * value is a valid cost-12 bcrypt hash of a random string (it can never match a
+ * real password). Generated once at module load to avoid per-request hashing.
+ */
+const DUMMY_PASSWORD_HASH = bcrypt.hashSync(crypto.randomBytes(32).toString("hex"), BCRYPT_COST);
 
 export class AuthService {
   private userRepository = new PrismaUserRepository();
   private twoFactorService = new TwoFactorService();
   private trustedDeviceService = new TrustedDeviceService();
 
-  async login(data: LoginInput, userAgent?: string, ipAddress?: string) {
+  async login(data: LoginInput, _userAgent?: string, ipAddress?: string, deviceSecret?: string) {
     const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
     if (passwordAuthEnabled === "false") {
       throw new ForbiddenError(
@@ -36,6 +47,18 @@ export class AuthService {
     }
 
     const clientIp = ipAddress || "unknown";
+
+    // Per-IP throttle BEFORE the per-email lockout: brakes credential-stuffing
+    // that spreads one guess across many emails from a single source IP (A1-01).
+    const ipThrottle = await isIpThrottled(clientIp);
+    if (ipThrottle.throttled) {
+      throw new AppError(
+        403,
+        `Too many failed login attempts from your network. Try again in ${ipThrottle.remainingMinutes} minutes.`,
+        ErrorCodes.ACCOUNT_LOCKED,
+        { remainingMinutes: ipThrottle.remainingMinutes },
+      );
+    }
 
     // Check account lockout BEFORE any credential validation.
     // Uses the email/username from the request (works for non-existent accounts too).
@@ -50,24 +73,23 @@ export class AuthService {
     }
 
     const user = await this.userRepository.findUserByEmailOrUsername(data.emailOrUsername);
-    if (!user) {
-      await recordLoginAttempt(data.emailOrUsername, clientIp, false);
-      throw new UnauthorizedError("Invalid credentials");
-    }
 
-    if (!user.isActive) {
-      throw new ForbiddenError("Account is inactive. Please contact an administrator.");
-    }
+    // A1-10: always run a bcrypt comparison — against the user's real hash when
+    // it exists, otherwise against a fixed decoy hash. This masks the
+    // user-existence timing oracle (a non-existent account is no longer faster
+    // than a wrong-password attempt) and avoids leaking distinct errors for
+    // inactive / external-auth accounts. All pre-success failures return the
+    // generic "Invalid credentials" so the response cannot distinguish
+    // "no such user" from "valid but inactive/OIDC-only" from "wrong password".
+    const passwordHash = user?.password ?? DUMMY_PASSWORD_HASH;
+    const isPasswordValid = await bcrypt.compare(data.password, passwordHash);
 
-    if (!user.password) {
-      throw new ForbiddenError(
-        "This account uses external authentication. Please use the appropriate login method.",
-      );
-    }
+    // The login succeeds only when the user exists, is active, has a local
+    // password, AND the password matches. Any other combination is funnelled
+    // into the same generic failure below.
+    const canLogin = !!user && user.isActive && !!user.password && isPasswordValid;
 
-    const isValid = await bcrypt.compare(data.password, user.password);
-
-    if (!isValid) {
+    if (!canLogin) {
       await recordLoginAttempt(data.emailOrUsername, clientIp, false);
       throw new UnauthorizedError("Invalid credentials");
     }
@@ -75,18 +97,17 @@ export class AuthService {
     const has2FA = await this.twoFactorService.isEnabled(user.id);
 
     if (has2FA) {
-      if (userAgent && ipAddress) {
-        const isDeviceTrusted = await this.trustedDeviceService.isDeviceTrusted(
-          user.id,
-          userAgent,
-          ipAddress,
-        );
-        if (isDeviceTrusted) {
-          // Trusted device bypass — full login complete, record success
-          await this.trustedDeviceService.updateLastUsed(user.id, userAgent, ipAddress);
-          await recordLoginAttempt(data.emailOrUsername, clientIp, true);
-          return UserResponseSchema.parse(user);
-        }
+      // Trusted-device bypass keyed on the server-issued device secret (cookie),
+      // never on spoofable UA/IP (A1-04).
+      const isDeviceTrusted = await this.trustedDeviceService.isDeviceTrusted(
+        user.id,
+        deviceSecret,
+      );
+      if (isDeviceTrusted && deviceSecret) {
+        // Trusted device bypass — full login complete, record success
+        await this.trustedDeviceService.updateLastUsed(user.id, deviceSecret);
+        await recordLoginAttempt(data.emailOrUsername, clientIp, true);
+        return UserResponseSchema.parse(user);
       }
 
       // 2FA required — defer success recording to completeTwoFactorLogin
@@ -108,6 +129,7 @@ export class AuthService {
     rememberDevice: boolean = false,
     userAgent?: string,
     ipAddress?: string,
+    deviceSecret?: string,
   ) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -122,6 +144,17 @@ export class AuthService {
     }
 
     const clientIp = ipAddress || "unknown";
+
+    // Per-IP throttle before 2FA verification (A1-01).
+    const ipThrottle = await isIpThrottled(clientIp);
+    if (ipThrottle.throttled) {
+      throw new AppError(
+        403,
+        `Too many failed login attempts from your network. Try again in ${ipThrottle.remainingMinutes} minutes.`,
+        ErrorCodes.ACCOUNT_LOCKED,
+        { remainingMinutes: ipThrottle.remainingMinutes },
+      );
+    }
 
     // Check account lockout before attempting 2FA verification
     const lockStatus = await isAccountLocked(user.email, clientIp);
@@ -144,38 +177,56 @@ export class AuthService {
     // 2FA verified — full login complete
     await recordLoginAttempt(user.email, clientIp, true);
 
-    if (rememberDevice && userAgent && ipAddress) {
-      await this.trustedDeviceService.addTrustedDevice(userId, userAgent, ipAddress);
-    } else if (userAgent && ipAddress) {
-      // Update last used timestamp if this is already a trusted device
-      const isDeviceTrusted = await this.trustedDeviceService.isDeviceTrusted(
-        userId,
-        userAgent,
-        ipAddress,
-      );
+    // Trusted-device handling keyed on the server-issued device secret (A1-04).
+    // `trustedDeviceSecret` is non-null only when a NEW secret must be set as a
+    // cookie by the caller (i.e. the user opted to remember a not-yet-trusted device).
+    let trustedDeviceSecret: string | undefined;
+
+    if (rememberDevice) {
+      // Reuse the existing cookie secret if present, otherwise mint a new one.
+      const secret = deviceSecret || this.trustedDeviceService.generateDeviceSecret();
+      await this.trustedDeviceService.addTrustedDevice(userId, secret, { userAgent, ipAddress });
+      // Only return the secret to be set as a cookie when it is freshly minted.
+      if (!deviceSecret) {
+        trustedDeviceSecret = secret;
+      }
+    } else if (deviceSecret) {
+      // Update last-used timestamp if this device is already trusted.
+      const isDeviceTrusted = await this.trustedDeviceService.isDeviceTrusted(userId, deviceSecret);
       if (isDeviceTrusted) {
-        await this.trustedDeviceService.updateLastUsed(userId, userAgent, ipAddress);
+        await this.trustedDeviceService.updateLastUsed(userId, deviceSecret);
       }
     }
 
-    return UserResponseSchema.parse(user);
+    return { user: UserResponseSchema.parse(user), trustedDeviceSecret };
   }
 
-  async requestPasswordReset(email: string) {
+  /**
+   * Begin a password reset. Always returns the generic shape regardless of
+   * outcome to preserve the no-enumeration contract; the returned `userId` (set
+   * only when a real reset was issued for an existing, eligible account) lets the
+   * route attach a redaction-safe identifier to the audit event instead of the
+   * raw submitted email (A1-16).
+   */
+  async requestPasswordReset(email: string): Promise<{ userId?: string }> {
     // Look up the user first — LDAP users are allowed to reset their password
     // even when passwordAuth is disabled (needed for welcome-email initial setup).
     const user = await this.userRepository.findUserByEmail(email);
     if (!user) {
-      return;
+      return {};
     }
 
+    // A1-06: when password auth is disabled, a non-LDAP user must NOT be treated
+    // differently from a non-existent email. Previously this branch threw
+    // ForbiddenError for existing local accounts while unknown emails returned
+    // 200 — a direct enumeration oracle. Now we silently return (the route still
+    // sends the generic "if an account exists…" 200), so the response is
+    // identical whether or not the email maps to a disabled-auth local user.
     const isLdapUser = !!user.ldapDn;
     if (!isLdapUser) {
       const passwordAuthEnabled = await getConfigValue("passwordAuthEnabled");
       if (passwordAuthEnabled === "false") {
-        throw new ForbiddenError(
-          "Password authentication is disabled. Password reset is not available.",
-        );
+        return {};
       }
     }
 
@@ -208,6 +259,8 @@ export class AuthService {
       // (which fail with a validation error when appUrl is misconfigured)
       // from unregistered emails (which return 200 silently).
     }
+
+    return { userId: user.id };
   }
 
   async resetPassword(token: string, newPassword: string): Promise<{ userId: string }> {
@@ -242,7 +295,7 @@ export class AuthService {
       }
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, BCRYPT_COST);
 
     await prisma.$transaction([
       prisma.user.update({
@@ -262,6 +315,10 @@ export class AuthService {
     invalidateTokenVersionCache(resetRequest.userId);
     // Also revoke all refresh tokens — password was just changed
     await revokeAllUserTokens(resetRequest.userId);
+    // A1-09: revoke trusted devices on password reset. A reset implies the
+    // account may be compromised; a previously-trusted attacker device must no
+    // longer be allowed to skip 2FA after the legitimate owner resets.
+    await this.trustedDeviceService.removeAllTrustedDevices(resetRequest.userId);
 
     return { userId: resetRequest.userId };
   }

@@ -71,7 +71,7 @@ describe("Health endpoint", () => {
     await app.close();
   });
 
-  it("GET /health returns 200 with healthy status", async () => {
+  it("GET /health returns 200 with healthy status (public liveness — no subsystem detail)", async () => {
     const response = await app.inject({
       method: "GET",
       url: "/health",
@@ -83,17 +83,13 @@ describe("Health endpoint", () => {
       status: string;
       timestamp: string;
       uptime: number;
-      checks: { database: string; storage: string };
     }>();
     expect(body.status).toBe("healthy");
     expect(typeof body.timestamp).toBe("string");
     expect(typeof body.uptime).toBe("number");
-    expect(body.checks.database).toBe("ok");
-    // storage is "not_configured" since s3Client is null in test env
-    expect(body.checks.storage).toBe("not_configured");
   });
 
-  it("GET /health response schema includes all expected fields", async () => {
+  it("GET /health exposes ONLY the coarse liveness fields (A8-11 — no per-subsystem breakdown)", async () => {
     const response = await app.inject({
       method: "GET",
       url: "/health",
@@ -101,15 +97,10 @@ describe("Health endpoint", () => {
 
     expect(response.statusCode).toBe(200);
     const body = response.json<Record<string, unknown>>();
-    expect(body).toHaveProperty("status");
-    expect(body).toHaveProperty("timestamp");
-    expect(body).toHaveProperty("uptime");
-    expect(body).toHaveProperty("checks");
-    expect(body.checks).toHaveProperty("database");
-    expect(body.checks).toHaveProperty("storage");
-    expect(body.checks).toHaveProperty("email");
-    // smtpEnabled config key is missing in tests ⇒ email subsystem is "disabled"
-    expect((body.checks as { email: string }).email).toBe("disabled");
+    // Public liveness must NOT leak which backend is degraded.
+    expect(Object.keys(body).sort()).toEqual(["status", "timestamp", "uptime"]);
+    expect(body).not.toHaveProperty("checks");
+    expect(body).not.toHaveProperty("email");
   });
 
   it("GET /health uptime is a non-negative number", async () => {
@@ -167,7 +158,7 @@ describe("Health endpoint — degraded state", () => {
     await app.close();
   });
 
-  it("GET /health returns 200 when database check fails (status field is degraded)", async () => {
+  it("GET /health returns 503 when the database check fails (liveness fails on DB down)", async () => {
     const { prisma } = await import("../shared/prisma.js");
     vi.mocked(prisma.$queryRaw).mockRejectedValueOnce(new Error("DB connection failed"));
 
@@ -176,14 +167,13 @@ describe("Health endpoint — degraded state", () => {
       url: "/health",
     });
 
-    expect(response.statusCode).toBe(200);
+    // DB is the hard liveness dependency → 503 so orchestrators restart the pod.
+    expect(response.statusCode).toBe(503);
 
-    const body = response.json<{
-      status: string;
-      checks: { database: string; storage: string };
-    }>();
+    const body = response.json<{ status: string }>();
     expect(body.status).toBe("degraded");
-    expect(body.checks.database).toBe("error");
+    // No subsystem breakdown is exposed on the public liveness endpoint.
+    expect(body).not.toHaveProperty("checks");
   });
 });
 
@@ -208,7 +198,7 @@ describe("Health endpoint — both DB and storage degraded", () => {
     await app.close();
   });
 
-  it("GET /health returns 200 with both database and storage errors (status field is degraded)", async () => {
+  it("GET /health returns 503 with degraded status when both DB and storage are down", async () => {
     const { prisma } = await import("../shared/prisma.js");
     vi.mocked(prisma.$queryRaw).mockRejectedValueOnce(new Error("DB connection failed"));
     storageState.sendImpl.mockRejectedValueOnce(new Error("S3 connection failed"));
@@ -218,14 +208,11 @@ describe("Health endpoint — both DB and storage degraded", () => {
       url: "/health",
     });
 
-    expect(response.statusCode).toBe(200);
+    // DB down → 503; the public endpoint never enumerates which subsystems failed.
+    expect(response.statusCode).toBe(503);
 
-    const body = response.json<{
-      status: string;
-      checks: { database: string; storage: string };
-    }>();
+    const body = response.json<{ status: string }>();
     expect(body.status).toBe("degraded");
-    expect(body.checks.database).toBe("error");
-    expect(body.checks.storage).toBe("error");
+    expect(body).not.toHaveProperty("checks");
   });
 });

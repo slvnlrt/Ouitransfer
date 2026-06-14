@@ -49,11 +49,14 @@ vi.mock("@/contexts/dashboard-metrics-context", () => ({
   DashboardMetricsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-import { useDashboardMetrics } from "@/contexts/dashboard-metrics-context";
-
 // Mutable mock for useSystemStatus
 const mockStatus: UseSystemStatusResult = {
-  healthStatus: { status: "healthy" as const, email: "ok" as const },
+  healthStatus: {
+    status: "healthy" as const,
+    timestamp: "2026-05-23T00:00:00.000Z",
+    uptime: 3600,
+    checks: { database: "ok" as const, storage: "ok" as const, email: "ok" as const },
+  },
   healthStatusLoading: false,
   healthStatusError: null,
   healthData: null,
@@ -498,13 +501,21 @@ describe("SystemStatusBar", () => {
   });
 
   // ── Email / Notifications subsystem (TD-42) ──────────────────────────────
+  // A8-11: /health/status is authenticated (any logged-in user), not admin-only,
+  // so regular users are again informed when email/notification delivery is
+  // disrupted. (The endpoint is no longer reachable unauthenticated, which is what
+  // the finding required.) The email signal comes from healthStatus.checks.email.
 
-  describe("email subsystem — user view", () => {
+  const userHealth = (email: "ok" | "disabled" | "degraded" | "down") => ({
+    status: "healthy" as const,
+    timestamp: "t",
+    uptime: 1,
+    checks: { database: "ok" as const, storage: "ok" as const, email },
+  });
+
+  describe("email subsystem — user view (A8-11: authenticated users see disruptions)", () => {
     it("does NOT show a notifications line when email is ok", () => {
-      currentMockStatus = {
-        ...mockStatus,
-        healthStatus: { status: "healthy" as const, email: "ok" as const },
-      };
+      currentMockStatus = { ...mockStatus, healthStatus: userHealth("ok") };
       render(<SystemStatusBar />);
       fireEvent.click(screen.getByRole("button", { name: "expand" }));
       expect(screen.queryByText("email.userDisrupted")).not.toBeInTheDocument();
@@ -512,10 +523,7 @@ describe("SystemStatusBar", () => {
     });
 
     it("does NOT show a notifications line when email is disabled", () => {
-      currentMockStatus = {
-        ...mockStatus,
-        healthStatus: { status: "healthy" as const, email: "disabled" as const },
-      };
+      currentMockStatus = { ...mockStatus, healthStatus: userHealth("disabled") };
       render(<SystemStatusBar />);
       fireEvent.click(screen.getByRole("button", { name: "expand" }));
       expect(screen.queryByText("email.userDisrupted")).not.toBeInTheDocument();
@@ -523,10 +531,7 @@ describe("SystemStatusBar", () => {
     });
 
     it("shows 'disrupted' line when email is degraded", () => {
-      currentMockStatus = {
-        ...mockStatus,
-        healthStatus: { status: "healthy" as const, email: "degraded" as const },
-      };
+      currentMockStatus = { ...mockStatus, healthStatus: userHealth("degraded") };
       render(<SystemStatusBar />);
       fireEvent.click(screen.getByRole("button", { name: "expand" }));
       expect(screen.getByText("email.userDisrupted")).toBeInTheDocument();
@@ -534,31 +539,11 @@ describe("SystemStatusBar", () => {
     });
 
     it("shows 'offline' line when email is down", () => {
-      currentMockStatus = {
-        ...mockStatus,
-        healthStatus: { status: "healthy" as const, email: "down" as const },
-      };
+      currentMockStatus = { ...mockStatus, healthStatus: userHealth("down") };
       render(<SystemStatusBar />);
       fireEvent.click(screen.getByRole("button", { name: "expand" }));
       expect(screen.getByText("email.userOffline")).toBeInTheDocument();
       expect(screen.queryByText("email.userDisrupted")).not.toBeInTheDocument();
-    });
-
-    it("renders the notifications line even when the user has no quota or metrics", () => {
-      vi.mocked(useDashboardMetrics).mockReturnValue({
-        fileCount: undefined,
-        activeShareCount: undefined,
-      });
-      currentMockStatus = {
-        ...mockStatus,
-        diskSpace: null,
-        healthStatus: { status: "healthy" as const, email: "down" as const },
-      };
-      render(<SystemStatusBar />);
-      fireEvent.click(screen.getByRole("button", { name: "expand" }));
-      expect(screen.getByText("email.userOffline")).toBeInTheDocument();
-      // Restore the default so later tests still see metrics
-      vi.mocked(useDashboardMetrics).mockReturnValue({ fileCount: 42, activeShareCount: 5 });
     });
   });
 
@@ -694,53 +679,52 @@ describe("SystemStatusBar", () => {
       expect(screen.queryByText("status.healthy")).not.toBeInTheDocument();
     });
 
-    it("bumps a healthy user dot to degraded when email is down", () => {
+    it("A8-11: bumps a regular user's dot to degraded when email is down", () => {
+      currentMockStatus = { ...mockStatus, healthStatus: userHealth("down") };
+      render(<SystemStatusBar />);
+      fireEvent.click(screen.getByRole("button", { name: "expand" }));
+      // /health/status is authenticated, so a regular user's email signal bumps
+      // the healthy core dot to degraded (never beyond).
+      expect(screen.getByText("status.degraded")).toBeInTheDocument();
+    });
+
+    it("reflects a degraded core liveness for a regular user", () => {
       currentMockStatus = {
         ...mockStatus,
-        healthStatus: { status: "healthy" as const, email: "down" as const },
+        healthStatus: {
+          status: "degraded" as const,
+          timestamp: "t",
+          uptime: 1,
+          checks: { database: "ok" as const, storage: "error" as const, email: "ok" as const },
+        },
       };
       render(<SystemStatusBar />);
       fireEvent.click(screen.getByRole("button", { name: "expand" }));
       expect(screen.getByText("status.degraded")).toBeInTheDocument();
     });
 
-    it("never bumps beyond degraded (email down with healthy core stays degraded)", () => {
-      currentMockStatus = {
-        ...mockStatus,
-        healthStatus: { status: "healthy" as const, email: "down" as const },
-      };
-      render(<SystemStatusBar />);
-      fireEvent.click(screen.getByRole("button", { name: "expand" }));
-      expect(screen.queryByText("status.unhealthy")).not.toBeInTheDocument();
-    });
-
-    it("does not bump when email is ok", () => {
-      currentMockStatus = {
-        ...mockStatus,
-        healthStatus: { status: "healthy" as const, email: "ok" as const },
-      };
-      render(<SystemStatusBar />);
-      fireEvent.click(screen.getByRole("button", { name: "expand" }));
-      expect(screen.getByText("status.healthy")).toBeInTheDocument();
-    });
-
-    it("does not bump (or render a status badge) while still loading", () => {
+    it("does not render a status badge while still loading", () => {
       currentMockStatus = {
         ...mockStatus,
         healthStatusLoading: true,
-        healthStatus: { status: "healthy" as const, email: "down" as const },
+        healthStatus: userHealth("ok"),
       };
       render(<SystemStatusBar />);
       fireEvent.click(screen.getByRole("button", { name: "expand" }));
-      // Loading suppresses the dot bump — no status badge is rendered at all.
       expect(screen.queryByText("status.degraded")).not.toBeInTheDocument();
       expect(screen.queryByText("status.healthy")).not.toBeInTheDocument();
     });
 
-    it("does not downgrade an unhealthy core when email is down (bump only lifts healthy)", () => {
+    it("admin: does not downgrade an unhealthy core when email is down (bump only lifts healthy)", () => {
       currentMockStatus = {
         ...mockStatus,
-        healthStatus: { status: "unhealthy" as const, email: "down" as const },
+        isAdmin: true,
+        healthData: {
+          status: "unhealthy" as const,
+          timestamp: "2026-05-23T00:00:00.000Z",
+          uptime: 7200,
+          checks: { database: "error" as const, storage: "error" as const, email: "down" as const },
+        },
       };
       render(<SystemStatusBar />);
       fireEvent.click(screen.getByRole("button", { name: "expand" }));

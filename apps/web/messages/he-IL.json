@@ -1110,9 +1110,11 @@
       "lastNameRequired": "שם משפחה נדרש",
       "usernameMinLength": "שם משתמש חייב להכיל לפחות 3 תווים",
       "invalidEmail": "דוא\"ל לא חוקי",
-      "passwordMinLength": "סיסמה חייבת להכיל לפחות 8 תווים",
+      "passwordMinLength": "סיסמה חייבת להכיל לפחות 12 תווים",
       "success": "משתמש מנהל נוצר בהצלחה!",
-      "error": "שגיאה ביצירת משתמש מנהל"
+      "error": "שגיאה ביצירת משתמש מנהל",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "שם פרטי",
@@ -2659,14 +2661,16 @@
     "usernameLength": "שם משתמש חייב להכיל לפחות 3 תווים",
     "usernameSpaces": "שם משתמש אינו יכול להכיל רווחים",
     "invalidEmail": "אנא הזן כתובת דוא\"ל חוקית",
-    "passwordLength": "סיסמה חייבת להכיל לפחות 8 תווים",
+    "passwordLength": "סיסמה חייבת להכיל לפחות 12 תווים",
     "passwordsMatch": "סיסמאות חייבות להתאים",
     "emailRequired": "דוא\"ל נדרש",
     "emailOrUsernameRequired": "דוא\"ל או שם משתמש נדרש",
     "passwordRequired": "סיסמה נדרשת",
     "passwordMinLength": "סיסמה חייבת להכיל לפחות 6 תווים",
     "nameRequired": "שם נדרש",
-    "required": "שדה זה נדרש"
+    "required": "שדה זה נדרש",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "registerWithInvite": {
     "title": "צור את החשבון שלך",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "שם משפחה נדרש",
       "usernameMinLength": "שם משתמש חייב להכיל לפחות 3 תווים",
       "invalidEmail": "דוא\"ל לא חוקי",
-      "passwordMinLength": "סיסמה חייבת להכיל לפחות 8 תווים",
-      "passwordsMatch": "סיסמאות חייבות להתאים"
+      "passwordMinLength": "סיסמה חייבת להכיל לפחות 12 תווים",
+      "passwordsMatch": "סיסמאות חייבות להתאים",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "החשבון נוצר בהצלחה! מעביר לכניסה...",

@@ -15,7 +15,7 @@ describe("LDAP Encryption", () => {
     const encrypted = encrypt(plaintext);
 
     expect(encrypted).not.toBe(plaintext);
-    expect(encrypted).toContain(":"); // format: iv:tag:ciphertext
+    expect(encrypted.split(":")).toHaveLength(4); // format: salt:iv:tag:ciphertext
 
     const decrypted = decrypt(encrypted);
     expect(decrypted).toBe(plaintext);
@@ -54,8 +54,8 @@ describe("LDAP Encryption", () => {
     const { encrypt, decrypt } = await import("../encryption.js");
     const encrypted = encrypt("test");
     const parts = encrypted.split(":");
-    // Tamper with the ciphertext
-    parts[2] = Buffer.from("tampered").toString("base64");
+    // Tamper with the ciphertext (last component)
+    parts[3] = Buffer.from("tampered").toString("base64url");
     expect(() => decrypt(parts.join(":"))).toThrow();
   });
 

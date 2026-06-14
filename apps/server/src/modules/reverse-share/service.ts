@@ -11,8 +11,13 @@ import {
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
+import { assertEmailQuotaAvailable, assertRecipientCountWithinLimit } from "../email/spam-guard.js";
 import { buildReverseShareUploadLink } from "../email/url-builder.js";
 import { FileService } from "../file/service.js";
+import {
+  isSharePasswordLocked,
+  recordSharePasswordAttempt,
+} from "../share/share-password-attempts.service.js";
 import { assertOwnerActive } from "./assert-owner-active.js";
 import {
   type CreateReverseShareInput,
@@ -320,11 +325,7 @@ export class ReverseShareService {
     };
   }
 
-  async downloadReverseShareFile(
-    fileId: string,
-    creatorId: string,
-    _requestContext?: { protocol: string; host: string },
-  ) {
+  async downloadReverseShareFile(fileId: string, creatorId: string) {
     const file = await this.reverseShareRepository.findFileById(fileId);
     if (!file) {
       throw new NotFoundError("File not found");
@@ -337,18 +338,15 @@ export class ReverseShareService {
     const fileName = file.name;
     const expires = env.PRESIGNED_GET_URL_EXPIRATION;
 
-    // Import storage config to check if using internal or external S3
-    const { isInternalStorage } = await import("../../config/storage.config.js");
-
-    if (isInternalStorage) {
-      // Internal storage: Use frontend proxy (much simpler!)
-      const url = `/api/files/download?objectName=${encodeURIComponent(file.objectName)}`;
-      return { url, expiresIn: expires };
-    } else {
-      // External S3: Use presigned URLs directly (more efficient, no backend proxy)
-      const url = await this.fileService.getPresignedGetUrl(file.objectName, expires, fileName);
-      return { url, expiresIn: expires };
-    }
+    // A3-10: always issue a presigned GET URL (works for both internal and
+    // external storage — the public client uses STORAGE_URL which is
+    // browser-reachable). This replaces the previously dead internal-storage
+    // branch that returned a GET `/api/files/download?objectName=...` URL: that
+    // endpoint is POST-only (so it 404'd), and an objectName-in-querystring GET
+    // would leak the key in logs/referrers. The presigned GET additionally forces
+    // `Content-Disposition: attachment`, neutralizing inline rendering.
+    const url = await this.fileService.getPresignedGetUrl(file.objectName, expires, fileName);
+    return { url, expiresIn: expires };
   }
 
   async deleteReverseShareFile(fileId: string, creatorId: string) {
@@ -373,7 +371,7 @@ export class ReverseShareService {
     return reverseShare?.id ?? null;
   }
 
-  async checkPassword(id: string, password: string) {
+  async checkPassword(id: string, password: string, ipAddress = "unknown") {
     const reverseShare = await this.reverseShareRepository.findById(id);
     if (!reverseShare) {
       throw new NotFoundError("Reverse share not found");
@@ -383,10 +381,33 @@ export class ReverseShareService {
       return { valid: true };
     }
 
+    // Per-share password brute-force protection (R2 — A4-03): this endpoint is an explicit
+    // boolean password oracle, so it is the easiest brute-force target. Lock it out per-share
+    // (keyed by id, so IP rotation cannot bypass) and audit failures.
+    const lock = await isSharePasswordLocked("reverse-share", id, ipAddress);
+    if (lock.locked) {
+      throw new AppError(
+        429,
+        `Too many password attempts. Try again in ${lock.remainingMinutes} minutes.`,
+        ErrorCodes.SHARE_LOCKED,
+        { remainingMinutes: lock.remainingMinutes },
+      );
+    }
+
     const isValid = await this.reverseShareRepository.comparePassword(
       password,
       reverseShare.password,
     );
+    await recordSharePasswordAttempt("reverse-share", id, ipAddress, isValid);
+    if (!isValid) {
+      logAuditEvent({
+        action: "REVERSE_SHARE_PASSWORD_FAILED",
+        ipAddress,
+        targetType: "reverse_share",
+        targetId: id,
+        metadata: { path: "check-password" },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+    }
     return { valid: isValid };
   }
 
@@ -515,20 +536,30 @@ export class ReverseShareService {
       throw new NotFoundError("Reverse share not found");
     }
 
-    // Check if reverse share is expired
-    const isExpired = reverseShare.expiration
-      ? new Date(reverseShare.expiration) < new Date()
-      : false;
+    // Owner-inactive reverse shares are treated as non-existent (R2 — A4-06): mirror the public
+    // upload gate's assertOwnerActive but return a flat 404 from this lightweight endpoint.
+    if (reverseShare.creator && reverseShare.creator.isActive === false) {
+      throw new NotFoundError("Reverse share not found");
+    }
+
+    // Compute expiry from the DATE (A4-14), not only the persisted flag, so a not-yet-swept
+    // expired reverse share still reports closed.
+    const isExpired =
+      (reverseShare.expiration ? new Date(reverseShare.expiration) < new Date() : false) ||
+      (!reverseShare.isActive && reverseShare.deactivationReason === "expired");
 
     // Check if inactive
     const isInactive = !reverseShare.isActive;
+    const isClosed = isExpired || isInactive;
 
     const totalFiles = reverseShare.files?.length || 0;
     const hasPassword = !!reverseShare.password;
 
+    // Withhold name/description for closed reverse shares (R2 — A4-06); the frontend only needs
+    // the closed-state flags to render the right message.
     return {
-      name: reverseShare.name,
-      description: reverseShare.description,
+      name: isClosed ? null : reverseShare.name,
+      description: isClosed ? null : reverseShare.description,
       totalFiles,
       hasPassword,
       isExpired,
@@ -552,6 +583,9 @@ export class ReverseShareService {
       throw new ForbiddenError("Unauthorized to update this reverse share");
     }
 
+    // Anti-spam (A6-03): cap the total recipients attached to a single reverse share.
+    assertRecipientCountWithinLimit((reverseShare.recipients?.length ?? 0) + recipients.length);
+
     try {
       await this.reverseShareRepository.addRecipients(reverseShareId, recipients);
     } catch (error: unknown) {
@@ -561,7 +595,10 @@ export class ReverseShareService {
         "code" in error &&
         (error as { code: string }).code === "P2002"
       ) {
-        throw new ConflictError("One or more recipients already exist on this reverse share");
+        // Generic conflict (R2 — A4-10): do NOT distinguish "already exists" — that turns the
+        // endpoint into a recipient-existence oracle. A generic message reveals nothing about
+        // which/whether a given email is already attached.
+        throw new ConflictError("Unable to add one or more recipients");
       }
       throw error;
     }
@@ -628,6 +665,10 @@ export class ReverseShareService {
     }
     const reverseShareLink = await buildReverseShareUploadLink(reverseShareAlias);
 
+    // Anti-spam (A6-03): bound external invitation emails against the per-user
+    // rolling-24h quota + burst cap, independent of HTTP request count.
+    await assertEmailQuotaAvailable(userId, recipientsToNotify.length);
+
     // Get sender info
     const user = await prisma.user.findUnique({ where: { id: userId } });
     const senderName = user?.firstName
@@ -642,6 +683,7 @@ export class ReverseShareService {
           to: recipient.email,
           locale: user?.locale ?? "en",
           relatedId: reverseShare.id,
+          senderUserId: userId,
           data: {
             senderName,
             reverseShareName: reverseShare.name ?? "File upload request",

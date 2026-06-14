@@ -1,9 +1,11 @@
+import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "../../shared/prisma.js";
-import { ConflictError, NotFoundError } from "../../utils/app-error.js";
+import { AppError, ConflictError, NotFoundError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { redactEmailFromAuditLogs } from "../audit/service.js";
+import { BCRYPT_COST } from "../auth/password-policy.js";
 import { revokeAllUserTokens } from "../auth/refresh-token.service.js";
 import { incrementTokenVersion, invalidateTokenVersionCache } from "../auth/token-version.js";
 import { purgeUserContent } from "../cleanup/service.js";
@@ -26,6 +28,68 @@ type UserWithPassword = {
 export class UserService {
   constructor(private readonly userRepository: IUserRepository = new PrismaUserRepository()) {}
 
+  /**
+   * Last-admin / self-lockout protection (A2-02).
+   *
+   * Refuses an admin-removal action (demote → non-admin, deactivate, or delete)
+   * when it would either:
+   *   1. leave zero active admins (the instance would be permanently unmanageable
+   *      — admin routes require `isAdmin` and the setup bypass only triggers at
+   *      `user.count() === 0`), or
+   *   2. lock the acting admin out of their own account in the same request.
+   *
+   * Only relevant when the TARGET is currently an admin; demoting/deleting a
+   * non-admin can never reduce the admin count below the current admin's own
+   * session, so it is allowed unconditionally.
+   *
+   * @param targetId  The user being changed.
+   * @param action    Human-readable action for the error message.
+   * @param actorUserId  The authenticated admin performing the change (for the
+   *   self-lockout check). Omitted only for the zero-user setup window, where no
+   *   admin exists yet and the guard is moot.
+   */
+  private async assertAdminRemovalAllowed(
+    targetId: string,
+    action: "demote" | "deactivate" | "delete",
+    actorUserId?: string,
+  ): Promise<void> {
+    const target = await this.userRepository.findUserById(targetId);
+    if (!target) {
+      throw new NotFoundError("User not found");
+    }
+
+    // Acting on a non-admin (or already-inactive admin) cannot remove the last
+    // ACTIVE admin, so there is nothing to guard.
+    if (!target.isAdmin || !target.isActive) {
+      return;
+    }
+
+    // Self-lockout: an admin must not deactivate or delete their own account.
+    // (Self-demotion is also blocked by the last-admin count when they are the
+    // only admin; we additionally hard-block self deactivate/delete for clarity.)
+    if (actorUserId && actorUserId === targetId && action !== "demote") {
+      throw new AppError(
+        409,
+        "You cannot deactivate or delete your own admin account.",
+        ErrorCodes.LAST_ADMIN,
+      );
+    }
+
+    // Count OTHER active admins. If none remain, the action would brick admin
+    // access — refuse it.
+    const otherActiveAdmins = await prisma.user.count({
+      where: { isAdmin: true, isActive: true, id: { not: targetId } },
+    });
+
+    if (otherActiveAdmins === 0) {
+      throw new AppError(
+        409,
+        "This action would remove the last active administrator and is not allowed.",
+        ErrorCodes.LAST_ADMIN,
+      );
+    }
+  }
+
   async register(data: RegisterUserInput) {
     const existingUser = await this.userRepository.findUserByEmail(data.email);
     const existingUsername = await this.userRepository.findUserByUsername(data.username);
@@ -41,7 +105,7 @@ export class UserService {
     const usersCount = await prisma.user.count();
     const isFirstUser = usersCount === 0;
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const hashedPassword = await bcrypt.hash(data.password, BCRYPT_COST);
     const user = await this.userRepository.createUser({
       ...data,
       password: hashedPassword,
@@ -88,13 +152,24 @@ export class UserService {
     return UserResponseSchema.parse(user);
   }
 
-  async updateUser(userId: string, data: Partial<UserWithPassword>) {
+  async updateUser(userId: string, data: Partial<UserWithPassword>, actorUserId?: string) {
     const { password, ...rest } = data;
 
     // Fetch old user state to detect isActive transitions
     const oldUser = await this.userRepository.findUserById(userId);
     if (!oldUser) {
       throw new NotFoundError("User not found");
+    }
+
+    // A2-02: guard against removing the last admin (demotion or deactivation via
+    // the bulk update path) and against self-lockout. Run BEFORE any mutation.
+    const isDemotion = data.isAdmin === false && oldUser.isAdmin;
+    const isDeactivation = data.isActive === false && oldUser.isActive;
+    if (isDemotion) {
+      await this.assertAdminRemovalAllowed(userId, "demote", actorUserId);
+    }
+    if (isDeactivation) {
+      await this.assertAdminRemovalAllowed(userId, "deactivate", actorUserId);
     }
 
     const updateData: Omit<Partial<UserWithPassword>, "password"> & {
@@ -105,7 +180,7 @@ export class UserService {
     };
 
     if (password) {
-      updateData.password = await bcrypt.hash(password, 10);
+      updateData.password = await bcrypt.hash(password, BCRYPT_COST);
     }
 
     // Keep deactivatedAt in sync with isActive transitions made via admin edit, so the
@@ -166,7 +241,11 @@ export class UserService {
     return UserResponseSchema.parse(user);
   }
 
-  async deleteUser(id: string) {
+  async deleteUser(id: string, actorUserId?: string) {
+    // A2-02: refuse to delete the last active admin or the acting admin's own
+    // account. Runs before the irreversible purge below.
+    await this.assertAdminRemovalAllowed(id, "delete", actorUserId);
+
     // Full cascade (A8): purge the user's shares, reverse shares, files/folders,
     // and their S3 objects BEFORE removing the user row. This is required for
     // correctness — `Share.creatorId` is `onDelete: SetNull`, so a bare
@@ -242,7 +321,11 @@ export class UserService {
     return UserResponseSchema.parse(user);
   }
 
-  async deactivateUser(id: string) {
+  async deactivateUser(id: string, actorUserId?: string) {
+    // A2-02: refuse to deactivate the last active admin or the acting admin's
+    // own account.
+    await this.assertAdminRemovalAllowed(id, "deactivate", actorUserId);
+
     const user = await this.userRepository.deactivateUser(id);
     // Deactivated user must not be able to use existing sessions
     await incrementTokenVersion(id);

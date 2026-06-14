@@ -75,7 +75,7 @@ import { emailService } from "../../email/service.js";
 
 const JWT_SECRET = "a]test-jwt-secret-32-chars-long!";
 const UNSUBSCRIBE_KEY_LABEL = "unsubscribe";
-const UNSUBSCRIBE_TOKEN_EXPIRY_SECONDS = 90 * 24 * 60 * 60; // 90 days
+const UNSUBSCRIBE_TOKEN_EXPIRY_SECONDS = 30 * 24 * 60 * 60; // 30 days (A6-05)
 
 function deriveKey(label: string): Buffer {
   return crypto.createHmac("sha256", JWT_SECRET).update(label).digest();
@@ -88,10 +88,11 @@ function base64url(input: Buffer | string): string {
 
 /**
  * Creates a valid unsubscribe token using the same algorithm as email/service.ts.
- * Used in tests to generate tokens without exposing the private function.
+ * Used in tests to generate tokens without exposing the private function. Embeds
+ * the `tv` (tokenVersion) claim (A6-05); defaults to 0 to match the user mock.
  */
 function signUnsubscribeToken(
-  payload: { userId: string; type: string },
+  payload: { userId: string; type: string; tokenVersion?: number },
   expiresInSeconds = UNSUBSCRIBE_TOKEN_EXPIRY_SECONDS,
 ): string {
   const key = deriveKey(UNSUBSCRIBE_KEY_LABEL);
@@ -100,7 +101,9 @@ function signUnsubscribeToken(
   const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
   const body = base64url(
     JSON.stringify({
-      ...payload,
+      userId: payload.userId,
+      type: payload.type,
+      tv: payload.tokenVersion ?? 0,
       iat: now,
       exp: now + expiresInSeconds,
     }),
@@ -142,7 +145,12 @@ describe("Notification routes — integration", () => {
     // Re-establish defaults after clearAllMocks (clearAllMocks keeps
     // implementations, so reset findUnique to avoid locale leaking between tests).
     vi.mocked(mockPrisma.user.count).mockResolvedValue(1);
-    vi.mocked(mockPrisma.user.findUnique).mockResolvedValue(null as never);
+    // Default user lookup: an existing user whose tokenVersion (0) matches the
+    // token's `tv` claim (A6-05). Tests that need a revoked token override this.
+    vi.mocked(mockPrisma.user.findUnique).mockResolvedValue({
+      locale: "en",
+      tokenVersion: 0,
+    } as never);
     vi.mocked(mockPrisma.notificationPreference.findMany).mockResolvedValue([]);
     vi.mocked(mockPrisma.notificationPreference.upsert).mockResolvedValue({} as never);
     vi.mocked(mockPrisma.emailJob.count).mockResolvedValue(0);
@@ -423,7 +431,10 @@ describe("Notification routes — integration", () => {
     });
 
     it("renders the confirmation page in the user's locale (French)", async () => {
-      vi.mocked(mockPrisma.user.findUnique).mockResolvedValue({ locale: "fr" } as never);
+      vi.mocked(mockPrisma.user.findUnique).mockResolvedValue({
+        locale: "fr",
+        tokenVersion: 0,
+      } as never);
       const token = signUnsubscribeToken({ userId: "user-1", type: "share_expiring" });
 
       const res = await app.inject({
@@ -496,7 +507,10 @@ describe("Notification routes — integration", () => {
     });
 
     it("renders the success page in the user's locale (French)", async () => {
-      vi.mocked(mockPrisma.user.findUnique).mockResolvedValue({ locale: "fr" } as never);
+      vi.mocked(mockPrisma.user.findUnique).mockResolvedValue({
+        locale: "fr",
+        tokenVersion: 0,
+      } as never);
       const token = signUnsubscribeToken({ userId: "user-1", type: "share_expiring" });
 
       const res = await app.inject({
@@ -639,6 +653,82 @@ describe("Notification routes — integration", () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.headers["content-type"]).toContain("text/html");
+      expect(res.payload).toContain("Invalid or expired unsubscribe link");
+      expect(mockPrisma.notificationPreference.upsert).not.toHaveBeenCalled();
+    });
+
+    it("ignores a token whose tokenVersion was bumped after issue (A6-05 revocation)", async () => {
+      // Token minted at tokenVersion 0, but the user's live tokenVersion is now 1
+      // (e.g. logout-all / password reset) — the token is revoked.
+      vi.mocked(mockPrisma.user.findUnique).mockResolvedValue({
+        locale: "en",
+        tokenVersion: 1,
+      } as never);
+      const token = signUnsubscribeToken({
+        userId: "user-1",
+        type: "share_expiring",
+        tokenVersion: 0,
+      });
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/notifications/unsubscribe",
+        headers: { "content-type": "application/json" },
+        payload: JSON.stringify({ token }),
+      });
+
+      // The unsubscribe is a silent no-op; the success page is still rendered (no
+      // oracle), but the preference is NOT written.
+      expect(res.statusCode).toBe(200);
+      expect(mockPrisma.notificationPreference.upsert).not.toHaveBeenCalled();
+    });
+
+    it("GET confirm page renders the error page for a revoked token (A6-05)", async () => {
+      vi.mocked(mockPrisma.user.findUnique).mockResolvedValue({
+        locale: "en",
+        tokenVersion: 1,
+      } as never);
+      const token = signUnsubscribeToken({
+        userId: "user-1",
+        type: "share_expiring",
+        tokenVersion: 0,
+      });
+
+      const res = await app.inject({
+        method: "GET",
+        url: `/notifications/unsubscribe?token=${token}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.payload).toContain("Invalid or expired unsubscribe link");
+    });
+
+    it("rejects a legacy token missing the tv claim (A6-05)", async () => {
+      // Forge a token with no `tv` claim (pre-A6-05 format) — verify must reject it.
+      const key = deriveKey(UNSUBSCRIBE_KEY_LABEL);
+      const now = Math.floor(Date.now() / 1000);
+      const header = base64url(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+      const body = base64url(
+        JSON.stringify({
+          userId: "user-1",
+          type: "share_expiring",
+          iat: now,
+          exp: now + 3600,
+        }),
+      );
+      const signature = base64url(
+        crypto.createHmac("sha256", key).update(`${header}.${body}`).digest(),
+      );
+      const legacyToken = `${header}.${body}.${signature}`;
+
+      const res = await app.inject({
+        method: "POST",
+        url: "/notifications/unsubscribe",
+        headers: { "content-type": "application/json" },
+        payload: JSON.stringify({ token: legacyToken }),
+      });
+
+      expect(res.statusCode).toBe(200);
       expect(res.payload).toContain("Invalid or expired unsubscribe link");
       expect(mockPrisma.notificationPreference.upsert).not.toHaveBeenCalled();
     });

@@ -15,6 +15,8 @@
       "passThroughEnv": [
         "JWT_SECRET",
         "API_BASE_URL",
+        "APP_URL",
+        "CSP_STORAGE_ORIGINS",
         "OAUTH_ALLOWED_REDIRECT_HOSTS",
         "ALLOWED_IMAGE_HOSTS",
         "CSP_CONNECT_SOURCES",

@@ -64,7 +64,7 @@ cp .env.example .env
 
 ### ⚠️ Mandatory Security Secrets
 
-The server will **crash at startup** if these three variables are missing or too short. Each must be at least 32 characters and all three must be distinct.
+The server will **crash at startup** if these four variables are missing or too short. Each must be at least 32 characters and all four must be distinct. In production the server also refuses to boot on a known placeholder or low-entropy value.
 
 Generate each secret with:
 
@@ -78,6 +78,7 @@ Then set them in your `.env`:
 JWT_SECRET=<output of openssl rand -hex 32>
 CSRF_SECRET=<output of openssl rand -hex 32>
 COOKIE_SECRET=<output of openssl rand -hex 32>
+ENCRYPTION_SECRET=<output of openssl rand -hex 32>
 ```
 
 ### Storage Configuration
@@ -133,10 +134,9 @@ API_BASE_URL=http://localhost:3333
 # Default UI language
 NEXT_PUBLIC_DEFAULT_LANGUAGE=en-US
 
-# Encryption key for sensitive data at rest (required for LDAP)
-# ENCRYPTION_SECRET=<output of openssl rand -hex 32>
-
-# Trust proxy setting (required behind reverse proxy)
+# Trust proxy setting. SECURITY: only set "true" (or a proxy CIDR) when the server
+# is NOT directly reachable (reverse proxy is the sole ingress); otherwise a client
+# can forge X-Forwarded-For and bypass rate limits. Default "loopback" is safe.
 # TRUST_PROXY=loopback
 
 # Enable API documentation in production (Scalar + Swagger)

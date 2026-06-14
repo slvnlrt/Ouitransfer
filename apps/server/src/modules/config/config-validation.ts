@@ -16,6 +16,98 @@ import { ValidationError } from "../../utils/app-error.js";
 type ConfigValueValidator = (value: string) => void;
 
 /**
+ * Whether `value` is a canonical, credential-safe `http(s)://` origin (A6-07).
+ * This is the single source of truth for `appUrl` validation across the app —
+ * the LDAP welcome-link guard (`ldap/app-url.ts`) delegates to it (A5-13).
+ *
+ *   - parseable as a URL,
+ *   - http or https scheme only (rejects `javascript:`, `ftp:`, `data:`, …),
+ *   - has a hostname,
+ *   - carries no userinfo (`user:pass@`), which could mask the real host,
+ *   - carries no path / query / fragment beyond the bare origin (an `appUrl`
+ *     with a path would corrupt every link built by concatenation), and
+ *   - contains no CR/LF (header-injection / link-poisoning defense).
+ */
+export function isCanonicalHttpOrigin(value: string): boolean {
+  // Reject ASCII control characters (CR/LF/TAB/NUL and friends) before parsing —
+  // the URL parser tolerates some of them, but they must never reach a link
+  // builder or header. Checked by code point to avoid embedding raw control
+  // characters in a regex literal.
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i);
+    if (code <= 0x1f || code === 0x7f) return false;
+  }
+
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+  if (!url.hostname) return false;
+  if (url.username || url.password) return false;
+  if (url.search || url.hash) return false;
+  // A trailing "/" is the only path the URL parser normalizes an origin to; any
+  // other pathname means the admin supplied a path, which we reject.
+  if (url.pathname !== "/" && url.pathname !== "") return false;
+  return true;
+}
+
+/**
+ * Whether `value` is a safe `http(s)://` URL for a user-facing, `target="_blank"`
+ * link (A7-01). Unlike {@link isCanonicalHttpOrigin}, this permits a path, query,
+ * and fragment (a footer link may point at a deep page), but still enforces the
+ * scheme allow-list and rejects the dangerous-scheme / link-poisoning classes:
+ *
+ *   - parseable as an absolute URL (rejects protocol-relative `//evil.com`,
+ *     which `new URL()` cannot parse without a base),
+ *   - `http:` / `https:` scheme only — rejects `javascript:`, `data:`,
+ *     `vbscript:`, `file:`, `ftp:`, etc. (DOM-XSS via a rendered href),
+ *   - has a hostname, and
+ *   - contains no CR/LF or other ASCII control characters.
+ */
+export function isSafeHttpLinkUrl(value: string): boolean {
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i);
+    if (code <= 0x1f || code === 0x7f) return false;
+  }
+
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+  if (!url.hostname) return false;
+  return true;
+}
+
+/** Max length for free-text branding strings persisted to config (appName, smtpFromName). */
+const MAX_BRANDING_LENGTH = 200;
+
+/**
+ * Validator for free-text branding strings (`appName`, `smtpFromName`). These are
+ * interpolated into email subjects, the `From` display name, and HTML/text bodies.
+ * Subjects and headers are already CRLF-stripped at render time, but we reject
+ * CR/LF and cap the length at the config boundary too (defense-in-depth, A6-07)
+ * so a malformed value never reaches the email pipeline.
+ */
+function brandingString(label: string): ConfigValueValidator {
+  return (value: string) => {
+    if (/[\r\n]/.test(value)) {
+      throw new ValidationError(`${label} must not contain line breaks.`, { key: label });
+    }
+    if (value.length > MAX_BRANDING_LENGTH) {
+      throw new ValidationError(`${label} must be at most ${MAX_BRANDING_LENGTH} characters.`, {
+        key: label,
+      });
+    }
+  };
+}
+
+/**
  * Builds a validator that delegates to a Zod schema and rethrows any failure as
  * a {@link ValidationError} (HTTP 400) carrying the offending `key` in
  * `details`, matching the behavior the admin UI and API clients rely on.
@@ -143,8 +235,50 @@ const auditRetentionDaysSchema = z
       }),
   );
 
+/**
+ * `appUrl` must be a canonical http(s):// origin (A6-07). Every email link and the
+ * OAuth/LDAP base URL is built by concatenating onto this value, so a non-http(s)
+ * scheme, an embedded path, userinfo, or CR/LF would poison those links.
+ */
+const appUrlValidator: ConfigValueValidator = (value: string) => {
+  if (!isCanonicalHttpOrigin(value)) {
+    throw new ValidationError(
+      "Application URL must be a valid http(s):// origin with no path, query, credentials, or line breaks (e.g. https://transfer.example.com).",
+      { key: "appUrl" },
+    );
+  }
+};
+
+/**
+ * `footerUrl` is rendered as the `href` of an admin-configurable, public-facing
+ * `target="_blank"` footer link (A7-01). It must be an `http(s)://` URL so a
+ * stored `javascript:`/`data:`/`vbscript:` value can never become a DOM-XSS sink
+ * when clicked, and a protocol-relative `//evil` value can never silently
+ * redirect users off-origin. The frontend validates again at render time
+ * (defense-in-depth), but the value is rejected at the write boundary here.
+ */
+const footerUrlValidator: ConfigValueValidator = (value: string) => {
+  // An empty value is allowed — it disables the footer link (renders no href).
+  if (value === "") return;
+  if (!isSafeHttpLinkUrl(value)) {
+    throw new ValidationError(
+      "Footer URL must be a valid http(s):// URL (e.g. https://example.com). javascript:, data:, and protocol-relative URLs are not allowed.",
+      { key: "footerUrl" },
+    );
+  }
+};
+
 const configValueValidators: Record<string, ConfigValueValidator> = {
   auditRetentionDays: fromSchema("auditRetentionDays", auditRetentionDaysSchema),
+
+  // Branding & email identity (A6-07). appUrl backs every link builder; the SMTP
+  // From identity feeds outbound headers.
+  appUrl: appUrlValidator,
+  // Public footer link rendered with target="_blank" (A7-01).
+  footerUrl: footerUrlValidator,
+  appName: brandingString("appName"),
+  smtpFromName: brandingString("smtpFromName"),
+  smtpFromEmail: fromSchema("smtpFromEmail", z.email("From email must be a valid email address.")),
 
   // Lifecycle Management & Automatic Cleanup (5.2 Phase A).
   autoCleanupEnabled: fromSchema("autoCleanupEnabled", booleanString("Automatic cleanup")),

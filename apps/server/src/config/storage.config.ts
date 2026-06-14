@@ -10,6 +10,7 @@ import { NodeHttpHandler } from "@smithy/node-http-handler";
 import { env } from "../env.js";
 import type { StorageConfig } from "../types/storage.js";
 import { getLogger } from "../utils/logger.js";
+import { assertUrlAllowed, SsrfValidationError } from "../utils/ssrf-guard.js";
 
 /**
  * Storage configuration:
@@ -133,6 +134,70 @@ export function createPublicS3Client(): S3Client | null {
       requestTimeout: 300000, // 5 minutes timeout for S3 operations
     }),
   });
+}
+
+/**
+ * Validate the configured S3 / public-storage endpoints at boot (A3-07 SSRF
+ * hardening). Both the server-side S3 endpoint and the client-facing
+ * `STORAGE_URL` are derived from operator-controlled env, but a misconfigured or
+ * poisoned value (e.g. `http://169.254.169.254/...`) would turn the server-side
+ * copy/orphan-sweep `fetch()` calls and S3 requests into SSRF probes against
+ * internal/metadata resources.
+ *
+ * Policy:
+ * - Cloud metadata endpoints are ALWAYS rejected (no escape hatch).
+ * - Private/loopback/link-local hosts are rejected UNLESS the deployment opts in.
+ *   Internal storage (RustFS over a private/loopback address) is the expected
+ *   default, so `isInternalStorage` implicitly allows private hosts; external S3
+ *   requires `S3_ALLOW_PRIVATE_ENDPOINT=true` or an explicit
+ *   `STORAGE_ALLOWED_HOSTS` entry.
+ * - In production, https is required (unless a private host is explicitly allowed,
+ *   since internal RustFS commonly speaks http on a trusted network).
+ *
+ * Throws to abort boot when a value is unsafe — a misconfigured storage endpoint
+ * is a security failure, not a degraded-mode condition.
+ */
+export function validateStorageEndpoints(): void {
+  if (!s3Client) {
+    // Storage not configured (e.g. tests / setup phase) — nothing to validate.
+    return;
+  }
+
+  const allowPrivate = env.S3_ALLOW_PRIVATE_ENDPOINT === "true" || isInternalStorage;
+  const allowlist = (env.STORAGE_ALLOWED_HOSTS ?? "")
+    .split(",")
+    .map((h) => h.trim())
+    .filter(Boolean);
+  // Internal storage routinely speaks http over a trusted private network, so
+  // https is only enforced in production for non-private deployments.
+  const requireHttps = process.env.NODE_ENV === "production" && !allowPrivate;
+
+  const targets: Array<{ label: string; url: string }> = [
+    { label: "S3_ENDPOINT", url: buildEndpointUrl(storageConfig) },
+  ];
+  if (isInternalStorage && env.STORAGE_URL) {
+    targets.push({ label: "STORAGE_URL", url: env.STORAGE_URL });
+  }
+
+  for (const { label, url } of targets) {
+    try {
+      assertUrlAllowed(url, { allowPrivate, allowlist, requireHttps });
+    } catch (err) {
+      if (err instanceof SsrfValidationError) {
+        throw new Error(
+          `[STORAGE] Refusing to start: ${label} (${url}) is not a permitted endpoint — ${err.message}. ` +
+            `Set S3_ALLOW_PRIVATE_ENDPOINT=true or add the host to STORAGE_ALLOWED_HOSTS to opt in (metadata endpoints are never allowed).`,
+        );
+      }
+      throw err;
+    }
+  }
+
+  if (!rejectUnauthorized && process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[STORAGE] Refusing to start: S3_REJECT_UNAUTHORIZED=false disables TLS verification and is forbidden in production (test-only).",
+    );
+  }
 }
 
 /**

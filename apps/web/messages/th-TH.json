@@ -1110,9 +1110,11 @@
       "lastNameRequired": "ต้องระบุนามสกุล",
       "usernameMinLength": "ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร",
       "invalidEmail": "อีเมลไม่ถูกต้อง",
-      "passwordMinLength": "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
+      "passwordMinLength": "รหัสผ่านต้องมีอย่างน้อย 12 ตัวอักษร",
       "success": "สร้างผู้ใช้ผู้ดูแลระบบเรียบร้อยแล้ว!",
-      "error": "เกิดข้อผิดพลาดในการสร้างผู้ใช้ผู้ดูแลระบบ"
+      "error": "เกิดข้อผิดพลาดในการสร้างผู้ใช้ผู้ดูแลระบบ",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "ชื่อจริง",
@@ -2659,14 +2661,16 @@
     "usernameLength": "ชื่อผู้ใช้ต้องมีความยาวอย่างน้อย 3 ตัวอักษร",
     "usernameSpaces": "ชื่อผู้ใช้ไม่สามารถมีช่องว่าง",
     "invalidEmail": "โปรดป้อนที่อยู่อีเมลที่ถูกต้อง",
-    "passwordLength": "รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร",
+    "passwordLength": "รหัสผ่านต้องมีความยาวอย่างน้อย 12 ตัวอักษร",
     "passwordsMatch": "รหัสผ่านต้องตรงกัน",
     "emailRequired": "จำเป็นต้องมีอีเมล",
     "emailOrUsernameRequired": "จำเป็นต้องมีอีเมลหรือชื่อผู้ใช้",
     "passwordRequired": "จำเป็นต้องมีรหัสผ่าน",
     "passwordMinLength": "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร",
     "nameRequired": "จำเป็นต้องมีชื่อ",
-    "required": "จำเป็นต้องกรอกข้อมูลช่องนี้"
+    "required": "จำเป็นต้องกรอกข้อมูลช่องนี้",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "registerWithInvite": {
     "title": "สร้างบัญชีของคุณ",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "ต้องระบุนามสกุล",
       "usernameMinLength": "ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร",
       "invalidEmail": "อีเมลไม่ถูกต้อง",
-      "passwordMinLength": "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร",
-      "passwordsMatch": "รหัสผ่านต้องตรงกัน"
+      "passwordMinLength": "รหัสผ่านต้องมีอย่างน้อย 12 ตัวอักษร",
+      "passwordsMatch": "รหัสผ่านต้องตรงกัน",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "สร้างบัญชีเรียบร้อยแล้ว! กำลังเปลี่ยนเส้นทางไปยังหน้าเข้าสู่ระบบ...",

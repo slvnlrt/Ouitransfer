@@ -11,7 +11,7 @@ import {
 } from "./catalog.js";
 import { emailQueueEvents } from "./events.js";
 import { createTranslationFn, t } from "./i18n/loader.js";
-import { type EmailJobStatus, getMaxRetries } from "./queue.js";
+import { type EmailJobStatus, getMaxRetries, MAX_PENDING_QUEUE_DEPTH } from "./queue.js";
 import { renderLayout } from "./templates/base-layout.js";
 import { signUnsubscribeToken } from "./unsubscribe-token.js";
 import { buildUnsubscribeUrl, getAppUrl } from "./url-builder.js";
@@ -117,6 +117,20 @@ class EmailService {
        * For share notifications: the shareId. For reverse-share notifications: the reverseShareId.
        */
       relatedId?: string;
+      /**
+       * The authenticated user who triggered this email, for the per-user
+       * anti-spam quota (A6-03). Persisted on the EmailJob row as `senderUserId`
+       * and counted by {@link assertEmailQuotaAvailable}. Pass it only for
+       * user-triggered, non-critical outbound mail (share/reverse-share
+       * invitations + reminders); omit it for system/critical mail (password
+       * resets, admin alerts) so it never consumes a user's budget.
+       *
+       * Note: this is distinct from `userId`, which is the *recipient's* account
+       * id used for notification-preference resolution. For external invitations
+       * the recipient has no account, so `userId` is omitted while `senderUserId`
+       * identifies the abuser-of-record.
+       */
+      senderUserId?: string;
     },
   ): Promise<{ enqueued: boolean; reason?: "invalid_payload" }> {
     const log = getLogger();
@@ -312,6 +326,29 @@ class EmailService {
       status = "digest_pending";
     }
 
+    // 11b. Cap pending-queue depth (A6-06). A burst of enqueues (e.g. spam, see
+    //      A6-03) can otherwise grow the EmailJob table faster than the worker
+    //      drains it. Beyond the threshold we drop the new job and log a warning
+    //      rather than let the backlog grow unbounded. Critical mail (priority 1,
+    //      e.g. password resets) is exempt so a backlog never blocks a reset.
+    if (entry.priority !== 1) {
+      try {
+        const pending = await prisma.emailJob.count({
+          where: { status: { in: ["pending", "digest_pending"] } },
+        });
+        if (pending >= MAX_PENDING_QUEUE_DEPTH) {
+          log.warn(
+            { type, to: options.to, pending, cap: MAX_PENDING_QUEUE_DEPTH },
+            "Email queue pending-depth cap reached — dropping non-critical email",
+          );
+          return { enqueued: false };
+        }
+      } catch (countError) {
+        // A failed count must not block legitimate mail — fall through and enqueue.
+        log.warn({ type, err: countError }, "Failed to check email queue depth, enqueueing anyway");
+      }
+    }
+
     // 12. Insert EmailJob
     // Digest jobs store raw data as JSON payload (htmlBody/textBody null) — the digest
     // aggregator will render a combined template at send time. Immediate jobs store
@@ -332,6 +369,7 @@ class EmailService {
           priority: entry.priority,
           relatedId: effectiveRelatedId,
           listUnsubscribe,
+          senderUserId: options.senderUserId,
           maxAttempts,
         },
       });
@@ -428,13 +466,22 @@ class EmailService {
 
   /**
    * Generates a signed unsubscribe URL for the given user + notification type.
-   * The token is a compact HS256 JWT with a 90-day expiry.
+   * The token is a compact HS256 JWT with a 30-day expiry (A6-05) that embeds the
+   * user's current `tokenVersion` for revocation.
    *
    * Pass a pre-fetched `appUrl` to avoid a redundant DB round-trip when the
    * caller has already resolved it.
    */
   async generateUnsubscribeUrl(userId: string, type: string, appUrl?: string): Promise<string> {
-    const token = signUnsubscribeToken({ userId, type });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { tokenVersion: true },
+    });
+    const token = signUnsubscribeToken({
+      userId,
+      type,
+      tokenVersion: user?.tokenVersion ?? 0,
+    });
     return buildUnsubscribeUrl(token, appUrl);
   }
 

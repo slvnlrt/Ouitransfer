@@ -1110,9 +1110,11 @@
       "lastNameRequired": "Прізвище обов'язкове",
       "usernameMinLength": "Ім'я користувача має бути щонайменше 3 символи",
       "invalidEmail": "Неправильна електронна пошта",
-      "passwordMinLength": "Пароль має бути щонайменше 8 символів",
+      "passwordMinLength": "Пароль має бути щонайменше 12 символів",
       "success": "Користувача-адміністратора створено успішно!",
-      "error": "Помилка створення користувача-адміністратора"
+      "error": "Помилка створення користувача-адміністратора",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Ім'я",
@@ -2659,14 +2661,16 @@
     "usernameLength": "Ім'я користувача повинно містити принаймні 3 символи",
     "usernameSpaces": "Ім'я користувача не може містити пробіли",
     "invalidEmail": "Будь ласка, введіть дійсну адресу електронної пошти",
-    "passwordLength": "Пароль повинен містити принаймні 8 символів",
+    "passwordLength": "Пароль повинен містити принаймні 12 символів",
     "passwordsMatch": "Паролі повинні збігатися",
     "emailRequired": "Електронна пошта обов'язкова",
     "emailOrUsernameRequired": "Електронна пошта або ім'я користувача обов'язкові",
     "passwordRequired": "Пароль обов'язковий",
     "passwordMinLength": "Пароль повинен містити принаймні 6 символів",
     "nameRequired": "Назва обов'язкова",
-    "required": "Це поле обов'язкове"
+    "required": "Це поле обов'язкове",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "registerWithInvite": {
     "title": "Створіть свій обліковий запис",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "Прізвище обов'язкове",
       "usernameMinLength": "Ім'я користувача має бути щонайменше 3 символи",
       "invalidEmail": "Неправильна електронна пошта",
-      "passwordMinLength": "Пароль має бути щонайменше 8 символів",
-      "passwordsMatch": "Паролі повинні збігатися"
+      "passwordMinLength": "Пароль має бути щонайменше 12 символів",
+      "passwordsMatch": "Паролі повинні збігатися",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Обліковий запис створено успішно! Перенаправлення на вхід...",

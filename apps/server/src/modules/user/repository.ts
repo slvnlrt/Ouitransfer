@@ -6,7 +6,9 @@ import type { RegisterUserInput, UpdateUserInput } from "./dto.js";
 type UserWithGroup = User & { group: { id: string; name: string } | null };
 
 export interface IUserRepository {
-  createUser(data: RegisterUserInput & { password: string }): Promise<User>;
+  // `isAdmin` is passed explicitly (NOT via the register DTO — A2-07) so admin
+  // status can only ever be set by the server-side caller, never from client input.
+  createUser(data: RegisterUserInput & { password: string; isAdmin: boolean }): Promise<User>;
   findUserByEmail(email: string): Promise<User | null>;
   findUserById(id: string): Promise<UserWithGroup | null>;
   findUserByUsername(username: string): Promise<User | null>;
@@ -21,7 +23,9 @@ export interface IUserRepository {
 }
 
 export class PrismaUserRepository implements IUserRepository {
-  async createUser(data: RegisterUserInput & { password: string }): Promise<User> {
+  async createUser(
+    data: RegisterUserInput & { password: string; isAdmin: boolean },
+  ): Promise<User> {
     return prisma.user.create({
       data: {
         firstName: data.firstName,

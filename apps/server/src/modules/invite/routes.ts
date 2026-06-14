@@ -61,6 +61,15 @@ export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "GET",
     url: "/invite-tokens/:token",
+    config: {
+      // A6-08: strict per-IP limit on the unauthenticated validate oracle. Tokens
+      // are 256-bit (brute force infeasible) but this is an unthrottled probe that
+      // also feeds the bcrypt path indirectly; keyed by IP via the global keyGenerator.
+      rateLimit: {
+        max: 5,
+        timeWindow: "1 minute",
+      },
+    },
     schema: {
       tags: ["Invite"],
       operationId: "validateInviteToken",
@@ -83,7 +92,19 @@ export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "POST",
     url: "/register-with-invite",
-    config: { csrfExempt: true },
+    config: {
+      csrfExempt: true,
+      // A6-02: strict per-IP limit on the unauthenticated registration endpoint.
+      // It runs bcrypt per request (CPU-heavy) and is otherwise bounded only by the
+      // shared global 100/min bucket — one source could exhaust the global budget.
+      // The cheap pre-flight token check (service.ts) still runs ahead of bcrypt so
+      // the bcrypt-DoS amplification stays bounded even within this limit. Keyed by
+      // IP via the global keyGenerator.
+      rateLimit: {
+        max: 5,
+        timeWindow: "1 minute",
+      },
+    },
     schema: {
       tags: ["Invite"],
       operationId: "registerWithInvite",
@@ -93,6 +114,7 @@ export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
       response: {
         200: RegisterWithInviteResponseSchema,
         400: ErrorResponseSchema,
+        403: ErrorResponseSchema,
         404: ErrorResponseSchema,
         409: ErrorResponseSchema,
         410: ErrorResponseSchema,

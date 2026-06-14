@@ -107,7 +107,8 @@ describe("setAuthCookies (SECURE_SITE=true)", () => {
     expect(refreshCall?.options).toMatchObject({
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      // A1-13: refresh cookie is sameSite "strict" (never needed cross-site).
+      sameSite: "strict",
       path: "/api/auth/refresh",
       maxAge: 7 * 24 * 60 * 60,
       signed: false,
@@ -245,22 +246,22 @@ describe("getClientInfo", () => {
     expect(ipAddress).toBe("192.168.1.1");
   });
 
-  it("prefers x-user-agent over standard user-agent header", async () => {
+  it("ignores the spoofable x-user-agent header and uses the standard user-agent (A1-01/A8-02)", async () => {
     const { getClientInfo } = await import("../auth-cookies.js");
     const request = makeMockRequest({
       headers: {
-        "user-agent": "proxy-agent",
-        "x-user-agent": "real-client-agent",
+        "user-agent": "real-agent",
+        "x-user-agent": "spoofed-client-agent",
       },
       ip: "10.0.0.1",
     });
 
     const { userAgent } = getClientInfo(request as never);
 
-    expect(userAgent).toBe("real-client-agent");
+    expect(userAgent).toBe("real-agent");
   });
 
-  it("prefers x-real-ip over request.ip", async () => {
+  it("ignores the spoofable x-real-ip header and uses request.ip (A1-01/A8-02)", async () => {
     const { getClientInfo } = await import("../auth-cookies.js");
     const request = makeMockRequest({
       headers: { "x-real-ip": "203.0.113.42" },
@@ -269,7 +270,8 @@ describe("getClientInfo", () => {
 
     const { ipAddress } = getClientInfo(request as never);
 
-    expect(ipAddress).toBe("203.0.113.42");
+    // The forged x-real-ip must NOT influence the audit IP — request.ip wins.
+    expect(ipAddress).toBe("10.0.0.1");
   });
 
   it("falls back to request.socket.remoteAddress when request.ip is empty", async () => {
@@ -299,7 +301,7 @@ describe("getClientInfo", () => {
     expect(ipAddress).toBe("");
   });
 
-  it("extracts both IP and user-agent from proxy headers simultaneously", async () => {
+  it("uses only request.ip + standard user-agent even when spoofable proxy headers are present (A1-01/A8-02)", async () => {
     const { getClientInfo } = await import("../auth-cookies.js");
     const request = makeMockRequest({
       headers: {
@@ -312,7 +314,9 @@ describe("getClientInfo", () => {
 
     const { ipAddress, userAgent } = getClientInfo(request as never);
 
-    expect(ipAddress).toBe("198.51.100.5");
-    expect(userAgent).toBe("CustomApp/1.0");
+    // request.ip (trustProxy-gated) and the standard user-agent are authoritative;
+    // the client-controlled x-real-ip / x-user-agent are ignored.
+    expect(ipAddress).toBe("172.16.0.1");
+    expect(userAgent).toBe("nginx/1.24");
   });
 });

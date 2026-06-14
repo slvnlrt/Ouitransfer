@@ -1,5 +1,5 @@
 import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
-import type { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply } from "fastify";
 import { z } from "zod";
 
 import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
@@ -7,7 +7,6 @@ import { NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { signAndSetCookies } from "../../utils/auth-cookies.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
-import { isAllowedRedirectUrl } from "../../utils/redirect-validation.js";
 import { logAuditEvent } from "../audit/service.js";
 import { validateAllProvidersDisable } from "../config/service.js";
 import {
@@ -16,8 +15,9 @@ import {
   UpdateOfficialProviderSchema,
   UpdateProvidersOrderSchema,
 } from "./dto.js";
+import { getAppOrigin, sanitizeReturnPath } from "./oauth-callback-url.js";
+import { clearOAuthFlowCookie, consumeOAuthFlowCookie, setOAuthFlowCookie } from "./oauth-state.js";
 import { AuthProvidersService } from "./service.js";
-import type { RequestContext } from "./types.js";
 
 // ── Constants ─────────────────────────────────────────────────
 
@@ -39,18 +39,6 @@ const ERROR_MESSAGES = {
 const authProvidersService = new AuthProvidersService();
 
 // ── Module-level helper functions ─────────────────────────────
-
-function buildRequestContext(request: FastifyRequest): RequestContext {
-  return {
-    protocol: request.protocol,
-    host: request.hostname,
-    headers: request.headers,
-  };
-}
-
-function buildBaseUrl(requestContext: RequestContext): string {
-  return `${requestContext.protocol}://${requestContext.host}`;
-}
 
 function sendSuccessResponse(reply: FastifyReply, data?: unknown, message?: string) {
   const responseBody: Record<string, unknown> = { success: true };
@@ -215,7 +203,11 @@ const AuthProviderResponseSchema = z.object({
 // ── Plugin ────────────────────────────────────────────────────
 
 export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
-  const adminPreValidation = createAdminPreValidation({ allowSetupBypass: true });
+  // A2-03: NO setup bypass. Auth-provider CRUD must require a real admin JWT —
+  // otherwise, in the zero-user window, an attacker could pre-seed a malicious
+  // OIDC provider with autoRegister + admin domains and OIDC-login as an admin.
+  // First-user registration is the only route permitted before an admin exists.
+  const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false });
 
   // ── GET /providers ──────────────────────────────────────────
   app.route({
@@ -243,9 +235,8 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
         500: ErrorResponseSchema,
       },
     },
-    handler: async (request, reply) => {
-      const requestContext = buildRequestContext(request);
-      const providers = await authProvidersService.getEnabledProviders(requestContext);
+    handler: async (_request, reply) => {
+      const providers = await authProvidersService.getEnabledProviders();
       return sendSuccessResponse(reply, providers);
     },
   });
@@ -503,8 +494,10 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
       }),
       querystring: z
         .object({
-          state: z.string().optional(),
-          redirect_uri: z.string().optional(),
+          // A5-04: the client may NOT supply `state` or `redirect_uri`. The only
+          // accepted client input is an optional relative post-login return path,
+          // which is sanitised server-side.
+          returnPath: z.string().optional(),
         })
         .optional(),
       response: {
@@ -516,15 +509,16 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const { provider: providerName } = request.params;
-      const { state, redirect_uri } = request.query || {};
+      const { returnPath } = request.query || {};
 
-      const requestContext = buildRequestContext(request);
-      const authUrl = await authProvidersService.getAuthorizationUrl(
+      const { authUrl, flowState } = await authProvidersService.getAuthorizationUrl(
         providerName,
-        state,
-        redirect_uri,
-        requestContext,
+        sanitizeReturnPath(returnPath),
       );
+
+      // Bind state/nonce/verifier/return-path to this browser via a signed
+      // httpOnly cookie (A5-03 / A5-09).
+      await setOAuthFlowCookie(reply, flowState);
 
       return reply.redirect(authUrl);
     },
@@ -559,32 +553,38 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
       const { provider: providerName } = request.params;
       const { code, state, error } = request.query || {};
 
-      const requestContext = buildRequestContext(request);
-      const baseUrl = buildBaseUrl(requestContext);
+      // A6-01 / A5-04: every base URL is derived from the trusted `appUrl`, never
+      // from the request Host. Resolved once up-front.
+      const baseUrl = await getAppOrigin();
 
       // Keep try/catch: callback errors redirect to login page with error params,
       // they don't return JSON error responses.
       try {
         if (error) {
+          clearOAuthFlowCookie(reply);
           return reply.redirect(`${baseUrl}/login?error=oauth_error&provider=${providerName}`);
         }
 
         if (!code) {
+          clearOAuthFlowCookie(reply);
           return reply.redirect(`${baseUrl}/login?error=missing_code&provider=${providerName}`);
         }
 
         if (!state) {
+          clearOAuthFlowCookie(reply);
           return reply.redirect(
             `${baseUrl}/login?error=missing_parameters&provider=${providerName}`,
           );
         }
 
-        const result = await authProvidersService.handleCallback(
+        // A5-03: read + verify + SINGLE-USE-consume the browser-bound flow cookie,
+        // and assert the callback `state` matches the cookie (constant-time).
+        const flowState = await consumeOAuthFlowCookie(request, reply, {
           providerName,
-          code,
           state,
-          requestContext,
-        );
+        });
+
+        const result = await authProvidersService.handleCallback(providerName, code, flowState);
 
         // Issue JWT + refresh token so OIDC users can renew their 15-minute access token
         // without re-authenticating.
@@ -606,20 +606,14 @@ export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
           metadata: { providerName, providerType: provider?.type ?? null },
         }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
-        const redirectUrl = result.redirectUrl || "/dashboard";
-        const fullRedirectUrl = redirectUrl.startsWith("http")
-          ? redirectUrl
-          : `${baseUrl}${redirectUrl}`;
-
-        // Validate redirect URL to prevent open redirect attacks (S-2)
-        const requestOrigin = `${requestContext.protocol}://${requestContext.host}`;
-        if (!isAllowedRedirectUrl(fullRedirectUrl, requestOrigin)) {
-          request.log.warn({ redirectUrl: fullRedirectUrl }, "Blocked unsafe redirect URL");
-          return reply.redirect(`${baseUrl}/dashboard`);
-        }
-
-        return reply.redirect(fullRedirectUrl);
+        // returnPath is a server-validated relative path (A5-04); concatenated
+        // onto the trusted origin. No client-supplied absolute URL is ever honored.
+        const returnPath = result.returnPath || "/dashboard";
+        return reply.redirect(`${baseUrl}${returnPath}`);
       } catch (callbackError) {
+        // Defense-in-depth: ensure the flow cookie is burned on any failure path.
+        clearOAuthFlowCookie(reply);
+
         // Log error for debugging
         request.log.error({ err: callbackError, provider: providerName }, "Auth callback error");
 

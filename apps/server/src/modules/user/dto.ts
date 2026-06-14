@@ -1,19 +1,23 @@
 import { z } from "zod";
 
+// A2-07: `isAdmin` is intentionally NOT part of the register DTO. Admin status
+// is never client-controlled — the first user becomes admin automatically
+// (decided server-side in UserService.register), and admin is otherwise granted
+// only via the admin-gated `PUT /users`. Keeping `isAdmin` out of this schema
+// removes a latent mass-assignment / privilege-escalation footgun should a
+// future refactor forward the DTO straight to the repository.
 export const BaseRegisterUserSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   username: z.string().min(3),
   email: z.email(),
   image: z.string().optional(),
-  isAdmin: z.boolean().optional().default(false),
 });
 
 export type BaseRegisterUserInput = z.infer<typeof BaseRegisterUserSchema>;
 
 export type RegisterUserInput = BaseRegisterUserInput & {
   password: string;
-  isAdmin?: boolean;
 };
 
 export const UpdateUserSchema = z.object({

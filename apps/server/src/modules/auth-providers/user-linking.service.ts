@@ -36,14 +36,32 @@ export class UserLinkingService {
       });
 
       if (existingUserProvider) {
+        // Already linked to THIS provider — a normal repeat SSO login, safe to
+        // update profile and return.
         return await this.updateExistingUserFromProvider(existingUser, userInfo);
       }
 
-      return await this.linkProviderToExistingUser(
-        existingUser,
-        provider.id,
-        String(externalId),
-        userInfo,
+      // A5-02: NEVER auto-link a federated identity to a pre-existing local
+      // account on a matching email alone. Auto-linking is only permitted when
+      // BOTH the IdP asserted the email as verified AND the local account's email
+      // is already proven owned (verified). Otherwise an attacker who can set an
+      // arbitrary email at any IdP could take over the local account.
+      if (userInfo.emailVerified === true && existingUser.emailVerified === true) {
+        return await this.linkProviderToExistingUser(
+          existingUser,
+          provider.id,
+          String(externalId),
+          userInfo,
+        );
+      }
+
+      // Refuse: a local account exists for this email but ownership has not been
+      // proven by the IdP (or the local account is itself unverified). Do not log
+      // in. The user must connect the SSO identity from an authenticated session
+      // (explicit link) instead.
+      throw new ForbiddenError(
+        "An account with this email already exists. Sign in with your existing method, " +
+          "then connect this provider from your account settings.",
       );
     }
 
@@ -125,6 +143,9 @@ export class UserLinkingService {
         userId: existingUser.id,
         providerId,
         externalId,
+        // Provenance: record that this link was established off a verified-email
+        // claim (the only path that reaches here per A5-02).
+        metadata: JSON.stringify({ emailVerifiedAtLink: true, linkedAt: new Date().toISOString() }),
       },
     });
 
@@ -157,10 +178,17 @@ export class UserLinkingService {
         lastName,
         image: userInfo.avatar || null,
         isAdmin: false,
+        // A5-02: persist whether the IdP proved ownership of this email. A future
+        // local login or SSO link decision keys off this flag.
+        emailVerified: userInfo.emailVerified === true,
         authProviders: {
           create: {
             providerId,
             externalId,
+            metadata: JSON.stringify({
+              emailVerifiedAtCreate: userInfo.emailVerified === true,
+              createdAt: new Date().toISOString(),
+            }),
           },
         },
       },

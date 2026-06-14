@@ -34,7 +34,7 @@ export function AuditLogExport({ params }: AuditLogExportProps) {
       targetType: params.targetType,
       search: params.search,
     });
-    window.open(url, "_blank");
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (

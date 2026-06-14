@@ -1106,9 +1106,11 @@
       "lastNameRequired": "姓は必須です",
       "usernameMinLength": "ユーザー名は3文字以上である必要があります",
       "invalidEmail": "無効なメールアドレスです",
-      "passwordMinLength": "パスワードは8文字以上である必要があります",
+      "passwordMinLength": "パスワードは12文字以上である必要があります",
       "success": "管理者ユーザーは正常に作成されました！",
-      "error": "管理者ユーザーの作成エラー"
+      "error": "管理者ユーザーの作成エラー",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "名",
@@ -2656,13 +2658,15 @@
     "lastNameRequired": "姓は必須です",
     "usernameLength": "ユーザー名は最低3文字必要です",
     "usernameSpaces": "ユーザー名にスペースは使用できません",
-    "passwordLength": "パスワードは最低8文字必要です",
+    "passwordLength": "パスワードは最低12文字必要です",
     "passwordsMatch": "パスワードが一致しません",
     "emailRequired": "メールアドレスは必須です",
     "emailOrUsernameRequired": "メールアドレスまたはユーザー名は必須です",
     "passwordRequired": "パスワードは必須です",
     "nameRequired": "名前は必須です",
-    "required": "このフィールドは必須です"
+    "required": "このフィールドは必須です",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "contextMenu": {
     "newFolder": "新規フォルダ",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "姓は必須です",
       "usernameMinLength": "ユーザー名は3文字以上である必要があります",
       "invalidEmail": "無効なメールアドレスです",
-      "passwordMinLength": "パスワードは8文字以上である必要があります",
-      "passwordsMatch": "パスワードが一致する必要があります"
+      "passwordMinLength": "パスワードは12文字以上である必要があります",
+      "passwordsMatch": "パスワードが一致する必要があります",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "アカウントが正常に作成されました！ログインにリダイレクト中...",

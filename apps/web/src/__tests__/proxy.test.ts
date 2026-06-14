@@ -24,9 +24,10 @@ const { TEST_SECRET, WRONG_SECRET, TEST_SECRET_KEY, WRONG_SECRET_KEY, BASE_URL }
 // ---------------------------------------------------------------------------
 // Mock fns — also hoisted so they can be used in vi.mock factories
 // ---------------------------------------------------------------------------
-const { mockRedirect, mockNext, mockCookiesDelete } = vi.hoisted(() => ({
+const { mockRedirect, mockNext, mockRewrite, mockCookiesDelete } = vi.hoisted(() => ({
   mockRedirect: vi.fn(),
   mockNext: vi.fn(),
+  mockRewrite: vi.fn(),
   mockCookiesDelete: vi.fn(),
 }));
 
@@ -50,6 +51,10 @@ function nextServerMockFactory() {
         mockNext(...args);
         return new MockNextResponse();
       },
+      rewrite: (...args: unknown[]) => {
+        mockRewrite(...args);
+        return new MockNextResponse();
+      },
     },
   };
 }
@@ -59,7 +64,11 @@ function nextServerMockFactory() {
 // ---------------------------------------------------------------------------
 vi.mock("next/server", nextServerMockFactory);
 vi.mock("@/env", () => ({
-  env: { JWT_SECRET: TEST_SECRET },
+  env: {
+    JWT_SECRET: TEST_SECRET,
+    API_BASE_URL: "http://api.internal:3333",
+    CSP_STORAGE_ORIGINS: "http://storage:9000",
+  },
 }));
 
 // ---------------------------------------------------------------------------
@@ -70,13 +79,19 @@ vi.mock("@/env", () => ({
 function createRequest(
   path: string,
   token?: string,
-): { nextUrl: { pathname: string }; url: string; cookies: { get: Mock } } {
+): {
+  nextUrl: { pathname: string };
+  url: string;
+  cookies: { get: Mock };
+  headers: Headers;
+} {
   return {
     nextUrl: { pathname: path },
     url: `${BASE_URL}${path}`,
     cookies: {
       get: vi.fn((name: string) => (name === "token" && token ? { value: token } : undefined)),
     },
+    headers: new Headers(),
   };
 }
 
@@ -335,6 +350,97 @@ describe("proxy", () => {
     // Non-admin user on a non-admin path → should be allowed
     expect(mockNext).toHaveBeenCalledTimes(1);
     expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  // -----------------------------------------------------------------------
+  // R2 (A3-03 / A7-07): /api/* rewrites carry restrictive security headers
+  // -----------------------------------------------------------------------
+  it("rewrites /api/* to the API and applies sandbox CSP + nosniff (no auth needed)", async () => {
+    const req = {
+      nextUrl: { pathname: "/api/files/download-url", search: "" },
+      url: `${BASE_URL}/api/files/download-url`,
+      cookies: { get: vi.fn(() => undefined) },
+    };
+    const res = (await proxy(req)) as { headers: Map<string, string> };
+
+    expect(mockRewrite).toHaveBeenCalledTimes(1);
+    expect(mockNext).not.toHaveBeenCalled();
+    expect(mockRedirect).not.toHaveBeenCalled();
+
+    const csp = res.headers.get("Content-Security-Policy");
+    expect(csp).toContain("sandbox");
+    expect(csp).toContain("default-src 'none'");
+    expect(res.headers.get("X-Content-Type-Options")).toBe("nosniff");
+    expect(res.headers.get("X-Frame-Options")).toBe("DENY");
+  });
+
+  // -----------------------------------------------------------------------
+  // R6 (A7-02 / A7-03 / A7-04): page-response CSP — nonce script-src,
+  // hardened directives, storage-origin propagation
+  // -----------------------------------------------------------------------
+  describe("page-response CSP", () => {
+    /** Extracts the page CSP from a public-path response. */
+    async function getPageCsp(path = "/login"): Promise<string> {
+      const req = createRequest(path);
+      const res = (await proxy(req)) as { headers: Map<string, string> };
+      const csp = res.headers.get("Content-Security-Policy");
+      if (!csp) throw new Error("no CSP set");
+      return csp;
+    }
+
+    it("uses a per-request nonce + strict-dynamic in script-src (no 'unsafe-inline')", async () => {
+      const csp = await getPageCsp();
+      const scriptSrc = csp.split(";").find((d) => d.trim().startsWith("script-src"));
+      expect(scriptSrc).toBeDefined();
+      expect(scriptSrc).toMatch(/'nonce-[A-Za-z0-9+/=]+'/);
+      expect(scriptSrc).toContain("'strict-dynamic'");
+      expect(scriptSrc).not.toContain("'unsafe-inline'");
+    });
+
+    it("generates a fresh nonce per request", async () => {
+      const csp1 = await getPageCsp();
+      const csp2 = await getPageCsp();
+      const nonce = (s: string) => s.match(/'nonce-([A-Za-z0-9+/=]+)'/)?.[1];
+      expect(nonce(csp1)).toBeTruthy();
+      expect(nonce(csp1)).not.toBe(nonce(csp2));
+    });
+
+    it("forwards the nonce to the app via the request Content-Security-Policy + x-nonce headers", async () => {
+      const req = createRequest("/login");
+      await proxy(req);
+      // NextResponse.next is called with { request: { headers } }
+      const arg = mockNext.mock.calls.at(-1)?.[0] as
+        | { request?: { headers?: Headers } }
+        | undefined;
+      const fwd = arg?.request?.headers;
+      expect(fwd).toBeInstanceOf(Headers);
+      const nonce = fwd?.get("x-nonce");
+      expect(nonce).toBeTruthy();
+      // The forwarded CSP must carry the same nonce so Next.js stamps its scripts.
+      expect(fwd?.get("content-security-policy")).toContain(`'nonce-${nonce}'`);
+    });
+
+    it("adds object-src 'none', frame-src, worker-src, manifest-src (A7-02)", async () => {
+      const csp = await getPageCsp();
+      expect(csp).toContain("object-src 'none'");
+      expect(csp).toContain("frame-src 'self' blob:");
+      expect(csp).toContain("worker-src 'self' blob:");
+      expect(csp).toContain("manifest-src 'self'");
+    });
+
+    it("propagates the storage origin into img-src and connect-src (A7-04)", async () => {
+      const csp = await getPageCsp();
+      const imgSrc = csp.split(";").find((d) => d.trim().startsWith("img-src"));
+      const connectSrc = csp.split(";").find((d) => d.trim().startsWith("connect-src"));
+      expect(imgSrc).toContain("http://storage:9000");
+      expect(connectSrc).toContain("http://storage:9000");
+    });
+
+    it("keeps frame-ancestors 'none' and base-uri 'self'", async () => {
+      const csp = await getPageCsp();
+      expect(csp).toContain("frame-ancestors 'none'");
+      expect(csp).toContain("base-uri 'self'");
+    });
   });
 });
 

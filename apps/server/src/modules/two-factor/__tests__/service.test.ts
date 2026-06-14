@@ -8,11 +8,19 @@ vi.mock("../../../shared/prisma.js", () => ({
       findUnique: vi.fn(),
       update: vi.fn(),
     },
+    // disable2FA revokes trusted devices (A1-09) via TrustedDeviceService.
+    trustedDevice: {
+      deleteMany: vi.fn().mockResolvedValue({ count: 0 }),
+    },
   },
 }));
 
 import { prisma } from "../../../shared/prisma.js";
+import { encryptSecret } from "../../../utils/encryption.js";
 import { TwoFactorService } from "../service.js";
+
+/** Encrypt a base32 secret the way the service persists it (purpose "totp-secret"). */
+const encSecret = (base32: string) => encryptSecret(base32, "totp-secret");
 
 describe("TwoFactorService.disable2FA (5.13)", () => {
   const service = new TwoFactorService();
@@ -33,8 +41,9 @@ describe("TwoFactorService.disable2FA (5.13)", () => {
       id: "user-1",
       password: hashedPassword,
       twoFactorEnabled: true,
-      twoFactorSecret: secret.base32,
+      twoFactorSecret: encSecret(secret.base32),
       twoFactorBackupCodes: null,
+      lastTotpStep: null,
     } as never);
     vi.mocked(prisma.user.update).mockResolvedValue({} as never);
 
@@ -58,8 +67,9 @@ describe("TwoFactorService.disable2FA (5.13)", () => {
       id: "user-1",
       password: hashedPassword,
       twoFactorEnabled: true,
-      twoFactorSecret: secret.base32,
+      twoFactorSecret: encSecret(secret.base32),
       twoFactorBackupCodes: null,
+      lastTotpStep: null,
     } as never);
 
     await expect(service.disable2FA("user-1", password, "000000")).rejects.toThrow();
@@ -75,8 +85,9 @@ describe("TwoFactorService.disable2FA (5.13)", () => {
       id: "user-1",
       password: hashedPassword,
       twoFactorEnabled: true,
-      twoFactorSecret: secret.base32,
+      twoFactorSecret: encSecret(secret.base32),
       twoFactorBackupCodes: null,
+      lastTotpStep: null,
     } as never);
 
     await expect(service.disable2FA("user-1", "wrong-password", validToken)).rejects.toThrow(

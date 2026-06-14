@@ -3,19 +3,30 @@ import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
 import { z } from "zod";
 
 import { bucketName, s3Client } from "../../config/storage.config.js";
+import { createJwtPreValidation } from "../../middleware/jwt-prevalidation.js";
 import { prisma } from "../../shared/prisma.js";
 import { evaluateEmailHealth } from "../email/health.js";
 
 const emailStatusEnum = z.enum(["ok", "disabled", "degraded", "down"]);
 
-const healthResponseSchema = z.object({
+// A8-11 — Public liveness response: a single coarse field plus uptime/timestamp.
+// NO per-subsystem breakdown is exposed unauthenticated (that would let an
+// attacker probe which backend is degraded and time follow-on attacks). The
+// detailed breakdown lives at the authenticated /health/status endpoint below.
+const livenessResponseSchema = z.object({
   status: z.enum(["healthy", "degraded"]),
+  timestamp: z.string(),
+  uptime: z.number(),
+});
+
+// Authenticated detailed health: full per-subsystem breakdown.
+const detailedHealthResponseSchema = z.object({
+  status: z.enum(["healthy", "degraded", "unhealthy"]),
   timestamp: z.string(),
   uptime: z.number(),
   checks: z.object({
     database: z.enum(["ok", "error"]),
     storage: z.enum(["ok", "error", "not_configured"]),
-    // Coarse email subsystem status (enum only — no counters, this endpoint is public).
     email: emailStatusEnum,
   }),
 });
@@ -55,16 +66,63 @@ async function runHealthChecks(): Promise<{
 }
 
 export const healthRoutes: FastifyPluginAsyncZod = async (app) => {
+  // ── Public liveness probe (orchestrators / container healthchecks) ──────────
+  // A8-11: minimal 200/503 with a coarse aggregate only — no per-subsystem detail.
+  // Returns 503 when the DB is down (the only hard dependency for liveness); 200
+  // otherwise (including degraded storage, which is surfaced via /health/status).
   app.route({
     method: "GET",
     url: "/health",
     schema: {
       tags: ["Health"],
       operationId: "checkHealth",
-      summary: "Check API Health",
-      description: "Returns health status including database and storage checks.",
+      summary: "Liveness probe",
+      description:
+        "Public liveness probe for orchestrators. Returns 200 when the API is alive, " +
+        "503 when the database is unreachable. No per-subsystem detail is exposed " +
+        "unauthenticated — use the authenticated /health/status for the breakdown.",
       response: {
-        200: healthResponseSchema,
+        200: livenessResponseSchema,
+        503: livenessResponseSchema,
+      },
+    },
+    handler: async (_request, reply) => {
+      const { dbOk, storageOk, storageConfigured } = await runHealthChecks();
+
+      // DB is the hard liveness dependency. Degraded storage does NOT fail the
+      // liveness probe (kept consistent with the previous public aggregate) — it
+      // only flips the coarse `status` to "degraded".
+      const storageHealthy = !storageConfigured || storageOk;
+      const status = dbOk && storageHealthy ? ("healthy" as const) : ("degraded" as const);
+
+      return reply.code(dbOk ? 200 : 503).send({
+        status,
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+      });
+    },
+  });
+
+  // ── Authenticated detailed status (per-subsystem breakdown) ─────────────────
+  // A8-11: the DB/storage/email subsystem breakdown requires an authenticated
+  // session so an UNAUTHENTICATED attacker cannot probe which backend is degraded.
+  // Any logged-in user (not just admins) may read it — this powers the user-facing
+  // "notifications/email disrupted" indicator (feature 10.2 / TD-42); an already
+  // authenticated user learning that email is degraded is not a meaningful leak.
+  app.route({
+    method: "GET",
+    url: "/health/status",
+    preValidation: createJwtPreValidation(),
+    schema: {
+      tags: ["Health"],
+      operationId: "getHealthStatus",
+      summary: "Detailed system health (authenticated)",
+      description:
+        "Returns the full per-subsystem health breakdown (database, storage, email). " +
+        "Requires an authenticated session (any logged-in user) — never exposed " +
+        "unauthenticated.",
+      response: {
+        200: detailedHealthResponseSchema,
       },
     },
     handler: async (_request, reply) => {
@@ -82,53 +140,21 @@ export const healthRoutes: FastifyPluginAsyncZod = async (app) => {
       };
 
       // Aggregate status is deliberately based on DB + storage ONLY. Email is a
-      // non-critical subsystem (upload/download works without it), so it must not
-      // flip ops monitoring to degraded — the UI bumps the dot client-side instead.
-      const allHealthy =
-        checks.database === "ok" &&
-        (checks.storage === "ok" || checks.storage === "not_configured");
+      // non-critical subsystem (upload/download works without it).
+      const effectiveStorageOk = !storageConfigured || storageOk;
+      const status =
+        dbOk && effectiveStorageOk
+          ? ("healthy" as const)
+          : dbOk || effectiveStorageOk
+            ? ("degraded" as const)
+            : ("unhealthy" as const);
 
       return reply.code(200).send({
-        status: allHealthy ? "healthy" : "degraded",
+        status,
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
         checks,
       });
-    },
-  });
-
-  app.route({
-    method: "GET",
-    url: "/health/status",
-    schema: {
-      tags: ["Health"],
-      operationId: "getHealthStatus",
-      summary: "Get simplified system health status",
-      description: "Returns aggregate health status as a single field. No authentication required.",
-      response: {
-        200: z.object({
-          status: z.enum(["healthy", "degraded", "unhealthy"]),
-          // Coarse email subsystem status (enum only — no counters, this endpoint is public).
-          email: emailStatusEnum,
-        }),
-      },
-    },
-    handler: async (_request, reply) => {
-      const { dbOk, storageOk, storageConfigured } = await runHealthChecks();
-      const { status: emailStatus } = await evaluateEmailHealth();
-
-      // Storage not configured is treated as ok for the simplified status.
-      // The aggregate `status` is deliberately based on DB + storage ONLY — email is
-      // a non-critical subsystem and is surfaced separately via the `email` field.
-      const effectiveStorageOk = !storageConfigured || storageOk;
-      const status =
-        dbOk && effectiveStorageOk
-          ? "healthy"
-          : dbOk || effectiveStorageOk
-            ? "degraded"
-            : "unhealthy";
-
-      return reply.status(200).send({ status, email: emailStatus });
     },
   });
 };

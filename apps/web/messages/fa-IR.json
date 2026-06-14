@@ -1112,7 +1112,9 @@
       "invalidEmail": "ایمیل نامعتبر است",
       "passwordMinLength": "گذرواژه باید حداقل ۸ کاراکتر باشد",
       "success": "کاربر مدیر با موفقیت ایجاد شد!",
-      "error": "خطا در ایجاد کاربر مدیر"
+      "error": "خطا در ایجاد کاربر مدیر",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "نام",
@@ -2666,7 +2668,9 @@
     "passwordRequired": "گذرواژه الزامی است",
     "passwordMinLength": "گذرواژه باید حداقل ۶ کاراکتر باشد",
     "nameRequired": "نام الزامی است",
-    "required": "این فیلد الزامی است"
+    "required": "این فیلد الزامی است",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "registerWithInvite": {
     "title": "حساب خود را ایجاد کنید",
@@ -2695,7 +2699,9 @@
       "usernameMinLength": "نام کاربری باید حداقل ۳ کاراکتر باشد",
       "invalidEmail": "ایمیل نامعتبر است",
       "passwordMinLength": "گذرواژه باید حداقل ۸ کاراکتر باشد",
-      "passwordsMatch": "گذرواژه‌ها باید مطابقت داشته باشند"
+      "passwordsMatch": "گذرواژه‌ها باید مطابقت داشته باشند",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "حساب با موفقیت ایجاد شد! در حال انتقال به صفحه ورود...",

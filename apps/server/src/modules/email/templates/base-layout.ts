@@ -81,6 +81,30 @@ export function safeHref(url: string): string {
   }
 }
 
+/**
+ * Returns `url` only if it is a safe `http:`/`https:`/`mailto:` URL, otherwise the
+ * placeholder `"#"` (A6-07). The HTML renderer escapes hrefs via {@link safeHref};
+ * the plain-text renderer has no escaping, so a non-http(s) `appUrl` (e.g. from a
+ * misconfigured config key) would otherwise print a raw `javascript:`/`data:` URL.
+ * This applies the same scheme allowlist for the text body.
+ */
+export function safeTextUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    if (!["http:", "https:", "mailto:"].includes(u.protocol)) {
+      getLogger().warn(
+        { url, protocol: u.protocol },
+        "Rejected URL with disallowed protocol in plain-text email",
+      );
+      return "#";
+    }
+    return url;
+  } catch {
+    getLogger().warn({ url }, "Rejected invalid URL in plain-text email");
+    return "#";
+  }
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
@@ -234,7 +258,7 @@ function renderText(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
 
   // CTA
   if (slots.cta) {
-    lines.push(`${slots.cta.label}: ${slots.cta.url}`);
+    lines.push(`${slots.cta.label}: ${safeTextUrl(slots.cta.url)}`);
     lines.push("");
   }
 
@@ -251,7 +275,7 @@ function renderText(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
 
   if (slots.unsubscribeUrl) {
     const unsubLabel = tr ? tr("common.unsubscribe") : "Unsubscribe";
-    lines.push(`${unsubLabel}: ${slots.unsubscribeUrl}`);
+    lines.push(`${unsubLabel}: ${safeTextUrl(slots.unsubscribeUrl)}`);
   }
 
   lines.push(`${footerPoweredBy} — https://github.com/slvnlrt/ouitransfer`);

@@ -19,6 +19,7 @@ export interface TwoFactorSetupResponse {
 export interface VerifySetupRequest {
   token: string;
   secret: string;
+  password: string; // re-authentication required to enable 2FA
 }
 
 export interface VerifySetupResponse {
@@ -33,6 +34,11 @@ export interface DisableTwoFactorRequest {
 
 export interface DisableTwoFactorResponse {
   success: boolean;
+}
+
+export interface GenerateBackupCodesRequest {
+  password: string;
+  totpCode: string; // TOTP code or backup code — step-up re-authentication
 }
 
 export interface GenerateBackupCodesResponse {

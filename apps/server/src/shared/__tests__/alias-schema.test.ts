@@ -5,7 +5,7 @@ import { ALIAS_MAX_LENGTH, aliasSchema } from "../alias-schema.js";
 describe("aliasSchema", () => {
   describe("valid aliases", () => {
     it.each([
-      "abcde", // exactly the 5-char minimum
+      "abcdefgh", // exactly the 8-char minimum
       "my-share", // single internal hyphen
       "a1-b2-c3", // multiple internal hyphens
       "AbCdE12345", // mixed case + digits (auto-generated shape)
@@ -20,10 +20,10 @@ describe("aliasSchema", () => {
   });
 
   describe("length bounds", () => {
-    it("rejects values shorter than 5 characters", () => {
-      const result = aliasSchema.safeParse("abcd");
+    it("rejects values shorter than 8 characters", () => {
+      const result = aliasSchema.safeParse("abcdefg");
       expect(result.success).toBe(false);
-      expect(result.error?.issues[0]?.message).toMatch(/at least 5/);
+      expect(result.error?.issues[0]?.message).toMatch(/at least 8/);
     });
 
     it("rejects values longer than 30 characters", () => {

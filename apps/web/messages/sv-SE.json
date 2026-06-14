@@ -1110,9 +1110,11 @@
       "lastNameRequired": "Efternamn krävs",
       "usernameMinLength": "Användarnamnet måste bestå av minst 3 tecken",
       "invalidEmail": "Ogiltig e-postadress",
-      "passwordMinLength": "Lösenordet måste vara minst 8 tecken",
+      "passwordMinLength": "Lösenordet måste vara minst 12 tecken",
       "success": "Administratörsanvändare skapades framgångsrikt!",
-      "error": "Det gick inte att skapa administratörsanvändare"
+      "error": "Det gick inte att skapa administratörsanvändare",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Förnamn",
@@ -2659,14 +2661,16 @@
     "usernameLength": "Användarnamnet måste vara minst 3 tecken långt",
     "usernameSpaces": "Användarnamnet får inte innehålla mellanslag",
     "invalidEmail": "Vänligen ange en giltig e-postadress",
-    "passwordLength": "Lösenordet måste vara minst 8 tecken långt",
+    "passwordLength": "Lösenordet måste vara minst 12 tecken långt",
     "passwordsMatch": "Lösenord måste matcha",
     "emailRequired": "E-post krävs",
     "emailOrUsernameRequired": "E-post eller användarnamn krävs",
     "passwordRequired": "Lösenord krävs",
     "passwordMinLength": "Lösenordet måste bestå av minst 6 tecken",
     "nameRequired": "Namn krävs",
-    "required": "Detta fält är obligatoriskt"
+    "required": "Detta fält är obligatoriskt",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "registerWithInvite": {
     "title": "Skapa ditt konto",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "Efternamn krävs",
       "usernameMinLength": "Användarnamnet måste vara minst 3 tecken",
       "invalidEmail": "Ogiltig e-post",
-      "passwordMinLength": "Lösenordet måste vara minst 8 tecken",
-      "passwordsMatch": "Lösenorden måste matcha"
+      "passwordMinLength": "Lösenordet måste vara minst 12 tecken",
+      "passwordsMatch": "Lösenorden måste matcha",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Kontot skapades framgångsrikt! Omdirigerar till inloggning...",

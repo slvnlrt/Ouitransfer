@@ -5,11 +5,13 @@ import { getLogger } from "../../utils/logger.js";
 import { hashToken } from "../../utils/token-hash.js";
 import { logAuditEvent } from "../audit/service.js";
 import { emailService } from "../email/service.js";
-import { buildResetPasswordUrl } from "../email/url-builder.js";
+import { buildResetPasswordUrl, getAppUrl } from "../email/url-builder.js";
+import { assertSafeAppUrl } from "./app-url.js";
 import { LdapConfigRepository } from "./config.repository.js";
 import { decrypt } from "./encryption.js";
 import type { LdapUserEntry } from "./ldap.client.js";
 import { LdapClient } from "./ldap.client.js";
+import { sanitizeDirectoryEmail, sanitizeDirectoryName } from "./sanitize-directory.js";
 import { LdapSyncLogRepository } from "./sync.repository.js";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -242,6 +244,24 @@ export class LdapSyncService {
       return;
     }
 
+    // Treat directory attribute values as untrusted input (A5-08): strip control
+    // and bidi/zero-width characters, cap length, and reject implausible emails
+    // before they are persisted (defense-in-depth against stored XSS / spoofing).
+    const sanitizedEmail = sanitizeDirectoryEmail(adUser.email);
+    if (!sanitizedEmail) {
+      stats.skipped++;
+      stats.details.push({
+        type: "skip",
+        username: adUser.username,
+        email: adUser.email,
+        message: "Invalid email address in AD",
+      });
+      return;
+    }
+    // Replace the raw value so every downstream use (conflict lookup, create,
+    // update, welcome email) operates on the normalized address.
+    adUser.email = sanitizedEmail;
+
     const { firstName, lastName } = this.parseDisplayName(adUser.displayName, adUser.username);
 
     // Find matching local group (first match wins)
@@ -393,6 +413,12 @@ export class LdapSyncService {
       // Send welcome email outside transaction (non-fatal)
       if (resetToken && appUrl) {
         try {
+          // A5-13: the password-set link carries a reset token (a credential).
+          // Validate appUrl is a canonical http(s):// origin and warn if it
+          // diverges from the application appUrl the email layer actually uses,
+          // before building the link.
+          const configuredAppUrl = await getAppUrl().catch(() => undefined);
+          assertSafeAppUrl(appUrl, configuredAppUrl);
           const setPasswordUrl = await buildResetPasswordUrl(resetToken);
           await emailService.send("welcome", {
             to: newUser.email,
@@ -434,12 +460,17 @@ export class LdapSyncService {
    * Falls back to username if displayName is empty.
    */
   parseDisplayName(displayName: string, username: string): { firstName: string; lastName: string } {
-    const name = (displayName || username).trim();
+    // Sanitize directory-sourced names on ingest (A5-08): strip control and
+    // bidi/zero-width characters and cap length before they are persisted.
+    const name = sanitizeDirectoryName(displayName) || sanitizeDirectoryName(username);
 
     // Handle "Last, First" format (common in AD)
     const commaIdx = name.indexOf(", ");
     if (commaIdx !== -1) {
-      return { firstName: name.slice(commaIdx + 2), lastName: name.slice(0, commaIdx) };
+      return {
+        firstName: sanitizeDirectoryName(name.slice(commaIdx + 2)),
+        lastName: sanitizeDirectoryName(name.slice(0, commaIdx)),
+      };
     }
 
     const spaceIdx = name.indexOf(" ");
@@ -449,8 +480,8 @@ export class LdapSyncService {
     }
 
     return {
-      firstName: name.slice(0, spaceIdx),
-      lastName: name.slice(spaceIdx + 1),
+      firstName: sanitizeDirectoryName(name.slice(0, spaceIdx)),
+      lastName: sanitizeDirectoryName(name.slice(spaceIdx + 1)),
     };
   }
 }

@@ -85,21 +85,25 @@ export const listFiles = (
 };
 
 /**
- * Generates a pre-signed URL for downloading a private file
+ * Generates a pre-signed URL for downloading a file.
+ *
+ * `objectName` is the download handle from the share/file response: an opaque per-share file
+ * token for public share downloads (R2 — A4-08), or the raw object name for the owner's own
+ * files. The server resolves it to the real key and authorizes against the bound share.
+ *
+ * `shareId` is no longer sent to the server (the token already binds the share); it is kept in the
+ * signature only so the client-side presigned-URL cache can scope entries per share.
  * @summary Get Download URL
  */
 export const getDownloadUrl = (
   objectName: string,
   password?: string,
-  shareId?: string,
+  _shareId?: string,
   options?: AxiosRequestConfig,
 ): Promise<GetDownloadUrlResult> => {
-  const body: { objectName: string; password?: string; shareId?: string } = { objectName };
+  const body: { objectName: string; password?: string } = { objectName };
   if (password) {
     body.password = password;
-  }
-  if (shareId) {
-    body.shareId = shareId;
   }
   return apiInstance.post(`/api/files/download-url`, body, options);
 };

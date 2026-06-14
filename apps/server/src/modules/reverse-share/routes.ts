@@ -283,6 +283,8 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "GET",
     url: "/reverse-shares/:id/upload",
+    // Per-IP enumeration rate limit (R2 — A4-12): public info endpoint over guessable aliases/ids.
+    config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
     schema: {
       tags: ["Reverse Share"],
       operationId: "getReverseShareForUpload",
@@ -379,6 +381,8 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "GET",
     url: "/reverse-shares/alias/:alias/upload",
+    // Per-IP enumeration rate limit (R2 — A4-12): public info endpoint over guessable aliases.
+    config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
     schema: {
       tags: ["Reverse Share"],
       operationId: "getReverseShareForUploadByAlias",
@@ -651,7 +655,8 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "POST",
     url: "/reverse-shares/:id/check-password",
-    config: { csrfExempt: true },
+    // Per-route IP rate limit (R2 — A4-03) on top of the per-share lockout in the service.
+    config: { csrfExempt: true, rateLimit: { max: 10, timeWindow: "1 minute" } },
     schema: {
       tags: ["Reverse Share"],
       operationId: "checkReverseSharePassword",
@@ -676,6 +681,7 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
       const result = await reverseShareService.checkPassword(
         request.params.id,
         request.body.password,
+        request.ip,
       );
       return reply.send(result);
     },
@@ -717,12 +723,9 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
           "Unauthorized: a valid token is required to access this resource.",
         );
       }
-      // Pass request context for internal storage proxy URLs
-      const requestContext = { protocol: "https", host: "localhost" }; // Simplified - frontend will handle the real URL
       const result = await reverseShareService.downloadReverseShareFile(
         request.params.fileId,
         userId,
-        requestContext,
       );
       logAuditEvent({
         action: "REVERSE_SHARE_FILE_DOWNLOAD",
@@ -1137,6 +1140,8 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
           .string()
           .optional()
           .describe("Password for accessing password-protected reverse shares"),
+        uploaderEmail: z.email().optional().describe("Optional self-declared uploader email"),
+        uploaderName: z.string().optional().describe("Optional self-declared uploader name"),
       }),
       response: {
         200: z.object({
@@ -1153,13 +1158,14 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const { alias } = request.params;
-      const { uploadId, objectName, parts, password } = request.body;
+      const { uploadId, objectName, parts, password, uploaderEmail, uploaderName } = request.body;
       const result = await multipartService.completeMultipartUploadByAlias(
         alias,
         uploadId,
         objectName,
         parts,
         password,
+        { uploaderEmail, uploaderName },
       );
       return reply.status(200).send(result);
     },
@@ -1385,6 +1391,8 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
         400: ErrorResponseSchema,
         401: ErrorResponseSchema,
         404: ErrorResponseSchema,
+        // Per-user anti-spam quota / burst cap (A6-03).
+        429: ErrorResponseSchema,
       },
     },
     handler: async (request, reply) => {
@@ -1418,6 +1426,8 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "GET",
     url: "/reverse-shares/alias/:alias/metadata",
+    // Per-IP enumeration rate limit (R2 — A4-12): public metadata over guessable aliases.
+    config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
     schema: {
       tags: ["Reverse Share"],
       operationId: "getReverseShareMetadataByAlias",

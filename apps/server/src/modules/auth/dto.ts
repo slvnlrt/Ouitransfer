@@ -1,13 +1,9 @@
 import { z } from "zod";
 
-import { getConfigValue } from "../config/service.js";
+import { createPasswordPolicySchema } from "./password-policy.js";
 
 export const createPasswordSchema = async () => {
-  const minLength = Number(await getConfigValue("passwordMinLength"));
-  return z
-    .string()
-    .min(minLength, `Password must be at least ${minLength} characters`)
-    .describe("User password");
+  return createPasswordPolicySchema();
 };
 
 /** Login input shape — matches the dynamic schema built in routes.ts */
@@ -25,12 +21,8 @@ export const BaseResetPasswordSchema = z.object({
 });
 
 export const createResetPasswordSchema = async () => {
-  const minLength = Number(await getConfigValue("passwordMinLength"));
   return BaseResetPasswordSchema.extend({
-    password: z
-      .string()
-      .min(minLength, `Password must be at least ${minLength} characters`)
-      .describe("User password"),
+    password: await createPasswordPolicySchema(),
   });
 };
 

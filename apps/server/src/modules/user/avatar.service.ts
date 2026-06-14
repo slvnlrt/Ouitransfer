@@ -3,15 +3,23 @@ import { prisma } from "../../shared/prisma.js";
 import { ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 
+/**
+ * A3-12: cap decoded pixels to defend against image decompression bombs (small,
+ * highly-compressed input decoding to hundreds of MB of RAM). 50 Mpx is well
+ * above any avatar need and below libvips' ~268 Mpx default. `failOn: "error"`
+ * rejects truncated/corrupt inputs.
+ */
+const SHARP_OPTIONS = { limitInputPixels: 50_000_000, failOn: "error" } as const;
+
 export class AvatarService {
   async uploadAvatar(buffer: Buffer): Promise<string> {
     try {
-      const metadata = await sharp(buffer).metadata();
+      const metadata = await sharp(buffer, SHARP_OPTIONS).metadata();
       if (!metadata.width || !metadata.height) {
         throw new ValidationError("Invalid image file");
       }
 
-      const webpBuffer = await sharp(buffer)
+      const webpBuffer = await sharp(buffer, SHARP_OPTIONS)
         .resize(100, 100, {
           fit: "cover",
           background: { r: 255, g: 255, b: 255, alpha: 0 },

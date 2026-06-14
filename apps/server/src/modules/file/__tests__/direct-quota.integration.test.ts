@@ -24,12 +24,14 @@ const {
   mockEvaluateAndNotifyQuota,
   mockFileCreate,
   mockGetConfigValue,
+  mockGetObjectSize,
 } = vi.hoisted(() => ({
   mockResolveEffectiveLimits: vi.fn(),
   mockCalculateStorageUsed: vi.fn(),
   mockEvaluateAndNotifyQuota: vi.fn(),
   mockFileCreate: vi.fn(),
   mockGetConfigValue: vi.fn(),
+  mockGetObjectSize: vi.fn(),
 }));
 
 vi.mock("../../../shared/prisma.js", () => ({
@@ -85,7 +87,8 @@ vi.mock("../../audit/service.js", () => ({
 
 vi.mock("../service.js", () => ({
   FileService: class {
-    getObjectHead = vi.fn();
+    getObjectHead = vi.fn().mockResolvedValue(Buffer.from("plain text content"));
+    getObjectSize = mockGetObjectSize;
     getPresignedGetUrl = vi.fn();
     getPresignedPutUrl = vi.fn();
   },
@@ -163,6 +166,10 @@ describe("Direct upload hard quota enforcement — integration", () => {
   }
 
   async function register(size: number) {
+    // A3-08: register HEAD-reconciles declared size against the real object size.
+    // Echo the declared size so these quota tests exercise quota math, not the
+    // size-mismatch guard.
+    mockGetObjectSize.mockResolvedValue(BigInt(size));
     const { csrfToken, csrfCookie } = await getCsrf();
     return app.inject({
       method: "POST",

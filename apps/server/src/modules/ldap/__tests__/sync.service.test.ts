@@ -243,11 +243,13 @@ describe("LdapSyncService", () => {
       twoFactorSecret: null,
       twoFactorBackupCodes: null,
       twoFactorVerified: false,
+      lastTotpStep: null,
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       quotaLastWarnedThreshold: null,
       quotaExceededSince: null,
       tokenVersion: 0,
+      emailVerified: false,
       deactivatedAt: null,
       locale: "en",
       createdAt: new Date(),
@@ -327,11 +329,13 @@ describe("LdapSyncService", () => {
       twoFactorSecret: null,
       twoFactorBackupCodes: null,
       twoFactorVerified: false,
+      lastTotpStep: null,
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       quotaLastWarnedThreshold: null,
       quotaExceededSince: null,
       tokenVersion: 0,
+      emailVerified: false,
       deactivatedAt: null,
       locale: "en",
       createdAt: new Date(),
@@ -376,11 +380,13 @@ describe("LdapSyncService", () => {
       twoFactorSecret: null,
       twoFactorBackupCodes: null,
       twoFactorVerified: false,
+      lastTotpStep: null,
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       quotaLastWarnedThreshold: null,
       quotaExceededSince: null,
       tokenVersion: 0,
+      emailVerified: false,
       deactivatedAt: null,
       locale: "en",
       createdAt: new Date(),
@@ -432,11 +438,13 @@ describe("LdapSyncService", () => {
       twoFactorSecret: null,
       twoFactorBackupCodes: null,
       twoFactorVerified: false,
+      lastTotpStep: null,
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       quotaLastWarnedThreshold: null,
       quotaExceededSince: null,
       tokenVersion: 0,
+      emailVerified: false,
       deactivatedAt: null,
       locale: "en",
       createdAt: new Date(),
@@ -488,11 +496,13 @@ describe("LdapSyncService", () => {
       twoFactorSecret: null,
       twoFactorBackupCodes: null,
       twoFactorVerified: false,
+      lastTotpStep: null,
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       quotaLastWarnedThreshold: null,
       quotaExceededSince: null,
       tokenVersion: 0,
+      emailVerified: false,
       deactivatedAt: null,
       locale: "en",
       createdAt: new Date(),
@@ -552,11 +562,13 @@ describe("LdapSyncService", () => {
       twoFactorSecret: null,
       twoFactorBackupCodes: null,
       twoFactorVerified: false,
+      lastTotpStep: null,
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       quotaLastWarnedThreshold: null,
       quotaExceededSince: null,
       tokenVersion: 0,
+      emailVerified: false,
       deactivatedAt: null,
       locale: "en",
       createdAt: new Date(),
@@ -630,6 +642,61 @@ describe("LdapSyncService", () => {
   });
 
   // ────────────────────────────────────────────────────────────────────────────
+  // 8b. A5-08: skip users whose directory email is implausible after cleaning
+  // ────────────────────────────────────────────────────────────────────────────
+  it("should skip a user whose AD email is malformed (A5-08)", async () => {
+    const adUser = {
+      dn: "CN=evil,OU=Users,DC=corp,DC=local",
+      username: "evil",
+      email: "not-an-email", // no @, unusable
+      displayName: "Evil User",
+      memberOf: [],
+    };
+
+    const { service, syncRepo } = makeService([adUser]);
+    vi.mocked(prisma.user.findMany).mockResolvedValue([]);
+
+    await service.runSync("manual");
+
+    expect(vi.mocked(prisma.user.create)).not.toHaveBeenCalled();
+    expect(vi.mocked(syncRepo.complete)).toHaveBeenCalledWith(
+      "log-1",
+      expect.objectContaining({ usersSkipped: 1 }),
+    );
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
+  // 8c. A5-08: strip control / bidi characters from directory display name
+  // ────────────────────────────────────────────────────────────────────────────
+  it("should strip control/bidi characters from the AD display name on ingest (A5-08)", async () => {
+    const adUser = {
+      dn: "CN=spoof,OU=Users,DC=corp,DC=local",
+      username: "spoof",
+      email: "spoof@corp.local",
+      // RLO + zero-width + a C0 control char embedded in the name.
+      displayName: "Jo\u202Ehn\u200B Doe",
+      memberOf: [],
+    };
+
+    const { service } = makeService([adUser]);
+    vi.mocked(prisma.user.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.user.findFirst).mockResolvedValue(null);
+    // biome-ignore lint/suspicious/noExplicitAny: minimal create return for assertion
+    vi.mocked(prisma.user.create).mockResolvedValue({ id: "new-x", username: "spoof" } as any);
+
+    await service.runSync("manual");
+
+    expect(vi.mocked(prisma.user.create)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          firstName: "John",
+          lastName: "Doe",
+        }),
+      }),
+    );
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
   // 9. Parse display name: "Jean Pierre Dupont" → firstName: "Jean", lastName: "Pierre Dupont"
   // ────────────────────────────────────────────────────────────────────────────
   it("should parse display name into first and last name", async () => {
@@ -661,11 +728,13 @@ describe("LdapSyncService", () => {
       twoFactorSecret: null,
       twoFactorBackupCodes: null,
       twoFactorVerified: false,
+      lastTotpStep: null,
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       quotaLastWarnedThreshold: null,
       quotaExceededSince: null,
       tokenVersion: 0,
+      emailVerified: false,
       deactivatedAt: null,
       locale: "en",
       createdAt: new Date(),
@@ -714,11 +783,13 @@ describe("LdapSyncService", () => {
       twoFactorSecret: null,
       twoFactorBackupCodes: null,
       twoFactorVerified: false,
+      lastTotpStep: null,
       maxFileSizeOverride: null,
       maxTotalStorageOverride: null,
       quotaLastWarnedThreshold: null,
       quotaExceededSince: null,
       tokenVersion: 0,
+      emailVerified: false,
       deactivatedAt: null,
       locale: "en",
       createdAt: new Date(),

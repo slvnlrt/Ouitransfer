@@ -1106,9 +1106,11 @@
       "lastNameRequired": "Achternaam is verplicht",
       "usernameMinLength": "Gebruikersnaam moet minimaal 3 tekens zijn",
       "invalidEmail": "Ongeldig e-mail",
-      "passwordMinLength": "Wachtwoord moet minimaal 8 tekens zijn",
+      "passwordMinLength": "Wachtwoord moet minimaal 12 tekens zijn",
       "success": "Administrator gebruiker succesvol aangemaakt!",
-      "error": "Fout bij het aanmaken van administrator gebruiker"
+      "error": "Fout bij het aanmaken van administrator gebruiker",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Voornaam",
@@ -2655,14 +2657,16 @@
     "usernameLength": "Gebruikersnaam moet minimaal 3 tekens zijn",
     "usernameSpaces": "Gebruikersnaam mag geen spaties bevatten",
     "invalidEmail": "Voer een geldig e-mailadres in",
-    "passwordLength": "Wachtwoord moet minimaal 8 tekens zijn",
+    "passwordLength": "Wachtwoord moet minimaal 12 tekens zijn",
     "passwordsMatch": "Wachtwoorden moeten overeenkomen",
     "emailRequired": "E-mail is verplicht",
     "emailOrUsernameRequired": "E-mail of gebruikersnaam is verplicht",
     "passwordRequired": "Wachtwoord is verplicht",
     "passwordMinLength": "Wachtwoord moet minimaal 6 tekens bevatten",
     "nameRequired": "Naam is verplicht",
-    "required": "Dit veld is verplicht"
+    "required": "Dit veld is verplicht",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "contextMenu": {
     "newFolder": "Nieuwe map",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "Achternaam is verplicht",
       "usernameMinLength": "Gebruikersnaam moet minimaal 3 tekens bevatten",
       "invalidEmail": "Ongeldig e-mailadres",
-      "passwordMinLength": "Wachtwoord moet minimaal 8 tekens bevatten",
-      "passwordsMatch": "Wachtwoorden moeten overeenkomen"
+      "passwordMinLength": "Wachtwoord moet minimaal 12 tekens bevatten",
+      "passwordsMatch": "Wachtwoorden moeten overeenkomen",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Account succesvol aangemaakt! Doorverwijzen naar inloggen...",

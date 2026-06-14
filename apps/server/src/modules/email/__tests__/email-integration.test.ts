@@ -35,6 +35,7 @@ const { mockGetConfigValue, mockPrisma } = vi.hoisted(() => ({
       update: vi.fn(),
       updateMany: vi.fn(),
       deleteMany: vi.fn(),
+      count: vi.fn(),
     },
     notificationPreference: {
       findUnique: vi.fn(),
@@ -44,6 +45,7 @@ const { mockGetConfigValue, mockPrisma } = vi.hoisted(() => ({
     },
     user: {
       findMany: vi.fn(),
+      findUnique: vi.fn(),
     },
   },
 }));
@@ -106,6 +108,9 @@ describe("Email integration: send → catalog → i18n → renderLayout → job"
     mockPrisma.notificationPreference.findUnique.mockResolvedValue(null);
     mockPrisma.emailJob.findFirst.mockResolvedValue(null);
     mockPrisma.emailJob.create.mockResolvedValue({ id: "integration-job-1" });
+    // Empty pending queue (A6-06) + sending user for the unsubscribe token (A6-05)
+    mockPrisma.emailJob.count.mockResolvedValue(0);
+    mockPrisma.user.findUnique.mockResolvedValue({ tokenVersion: 0 });
   });
 
   afterEach(() => {

@@ -81,6 +81,8 @@ vi.mock("../trusted-device.service.js", () => ({
 
 vi.mock("../login-attempts.service.js", () => ({
   isAccountLocked: vi.fn().mockResolvedValue({ locked: false }),
+  is2faVerifyLocked: vi.fn().mockResolvedValue({ locked: false }),
+  isIpThrottled: vi.fn().mockResolvedValue({ throttled: false }),
   recordLoginAttempt: vi.fn(),
 }));
 
@@ -207,9 +209,14 @@ describe("AuthService.requestPasswordReset — URL security", () => {
 
     const unregisteredResult = await authService.requestPasswordReset("noone@example.com");
 
-    // Both return undefined (no distinguishable difference)
-    expect(registeredResult).toBeUndefined();
-    expect(unregisteredResult).toBeUndefined();
+    // Neither call throws (the no-enumeration contract is enforced at the HTTP
+    // layer, where the route always replies with the generic 200 message). The
+    // service now returns a redaction-safe marker used only for audit logging:
+    // `{ userId }` for an existing account that was actually issued a reset, and
+    // `{}` (no userId) for an unknown email. This internal difference is never
+    // surfaced in the HTTP response (see auth-r3b A1-06 tests).
+    expect(registeredResult).toEqual({ userId: "user-1" });
+    expect(unregisteredResult).toEqual({});
   });
 
   it("does NOT throw when emailService.send fails — prevents user enumeration", async () => {

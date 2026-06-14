@@ -27,7 +27,37 @@
       "groupName": "TypeScript type definitions"
     },
     {
+      "description": "A8-15 — security-critical dependencies require manual review (never automerge, even patch/minor). A malicious or regressed release of any of these is an auth/crypto/supply-chain risk. This also covers the deferred bcryptjs@3 bump (A8-14/A1-17) being human-reviewed. Listed LAST so it overrides the general automerge rules above (last matching rule wins in Renovate).",
+      "matchPackageNames": [
+        "@fastify/jwt",
+        "jose",
+        "@fastify/csrf-protection",
+        "bcryptjs",
+        "otpauth",
+        "@fastify/helmet",
+        "helmet",
+        "@fastify/rate-limit",
+        "ldapts",
+        "nodemailer"
+      ],
+      "automerge": false,
+      "groupName": "security-critical (manual review)",
+      "groupSlug": "security-critical"
+    },
+    {
       "matchPackageNames": ["*"],
+      "excludePackageNames": [
+        "@fastify/jwt",
+        "jose",
+        "@fastify/csrf-protection",
+        "bcryptjs",
+        "otpauth",
+        "@fastify/helmet",
+        "helmet",
+        "@fastify/rate-limit",
+        "ldapts",
+        "nodemailer"
+      ],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch"

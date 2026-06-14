@@ -15,7 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { useDashboardMetrics } from "@/contexts/dashboard-metrics-context";
 import { useSystemStatus } from "@/hooks/use-system-status";
 import type { AdminStats200 } from "@/http/endpoints/admin/types";
-import type { CheckHealth200, DiskSpaceInfo, EmailHealthStatus } from "@/http/endpoints/app/types";
+import type { DiskSpaceInfo, EmailHealthStatus, HealthStatus200 } from "@/http/endpoints/app/types";
 import type { EmailStats } from "@/http/endpoints/notifications/types";
 import { formatStorageSize } from "@/utils/format-storage-size";
 
@@ -212,6 +212,10 @@ function BarUserView({
 
   const hasQuota = diskSpace && diskSpace.diskAvailableGB !== -1 && diskSpace.diskSizeGB > 0;
   const hasMetrics = fileCount !== undefined || activeShareCount !== undefined;
+  // A8-11: the per-subsystem breakdown (/health/status) now requires an
+  // authenticated session (any logged-in user) — not admin. So regular users can
+  // again be informed when email/notification delivery is disrupted. The endpoint
+  // is no longer reachable unauthenticated, which is what the finding required.
   const showNotifications = emailStatus === "degraded" || emailStatus === "down";
 
   if (!hasQuota && !hasMetrics && !showNotifications) return null;
@@ -316,7 +320,7 @@ function BarAdminView({
   emailStats,
   emailStatsError,
 }: {
-  healthData: CheckHealth200 | null;
+  healthData: HealthStatus200 | null;
   diskSpace: DiskSpaceInfo | null;
   adminStats: AdminStats200 | null;
   adminStatsError: string | null;
@@ -631,9 +635,11 @@ export function SystemStatusBar() {
 
     // Email subsystem is excluded from the server aggregate on purpose; surface it
     // client-side by bumping a healthy dot to degraded (never to unhealthy).
+    // A8-11: /health/status is authenticated (not admin-only), so every logged-in
+    // user — admin or not — can reflect the email subsystem in the dot.
     const emailStatus = status.isAdmin
       ? status.healthData?.checks.email
-      : status.healthStatus?.email;
+      : status.healthStatus?.checks.email;
     if ((emailStatus === "degraded" || emailStatus === "down") && overallStatus === "healthy") {
       overallStatus = "degraded";
     }
@@ -668,7 +674,10 @@ export function SystemStatusBar() {
                 emailStatsError={status.emailStatsError}
               />
             ) : (
-              <BarUserView diskSpace={status.diskSpace} emailStatus={status.healthStatus?.email} />
+              <BarUserView
+                diskSpace={status.diskSpace}
+                emailStatus={status.healthStatus?.checks.email}
+              />
             )}
           </ExpandedPanel>
         </div>

@@ -1110,9 +1110,11 @@
       "lastNameRequired": "El apellido es obligatorio",
       "usernameMinLength": "El nombre de usuario debe tener al menos 3 caracteres",
       "invalidEmail": "Correo electrónico inválido",
-      "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+      "passwordMinLength": "La contraseña debe tener al menos 12 caracteres",
       "success": "¡El usuario del administrador creado con éxito!",
-      "error": "Error a crear usuario administrador"
+      "error": "Error a crear usuario administrador",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Nombre",
@@ -2660,13 +2662,15 @@
     "lastNameRequired": "Se requiere el apellido",
     "usernameLength": "El nombre de usuario debe tener al menos 3 caracteres",
     "usernameSpaces": "El nombre de usuario no puede contener espacios",
-    "passwordLength": "La contraseña debe tener al menos 8 caracteres",
+    "passwordLength": "La contraseña debe tener al menos 12 caracteres",
     "passwordsMatch": "Las contraseñas no coinciden",
     "emailRequired": "Se requiere el correo electrónico",
     "emailOrUsernameRequired": "Se requiere el correo electrónico o nombre de usuario",
     "passwordRequired": "Se requiere la contraseña",
     "nameRequired": "El nombre es obligatorio",
-    "required": "Este campo es obligatorio"
+    "required": "Este campo es obligatorio",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "registerWithInvite": {
     "title": "Crea Tu Cuenta",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "El apellido es obligatorio",
       "usernameMinLength": "El nombre de usuario debe tener al menos 3 caracteres",
       "invalidEmail": "Correo electrónico inválido",
-      "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
-      "passwordsMatch": "Las contraseñas deben coincidir"
+      "passwordMinLength": "La contraseña debe tener al menos 12 caracteres",
+      "passwordsMatch": "Las contraseñas deben coincidir",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "¡Cuenta creada exitosamente! Redirigiendo al inicio de sesión...",

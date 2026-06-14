@@ -84,7 +84,7 @@ export const defaultConfigs = [
   },
   {
     key: "passwordMinLength",
-    value: "8",
+    value: "12",
     type: "number",
     group: "security",
   },

@@ -1106,9 +1106,11 @@
       "lastNameRequired": "Nachname ist erforderlich",
       "usernameMinLength": "Benutzername muss mindestens 3 Zeichen lang sein",
       "invalidEmail": "Ungültige E-Mail-Adresse",
-      "passwordMinLength": "Passwort muss mindestens 8 Zeichen lang sein",
+      "passwordMinLength": "Passwort muss mindestens 12 Zeichen lang sein",
       "success": "Administratorbenutzer erfolgreich erstellt!",
-      "error": "Fehler beim Erstellen von Administratorbenutzer"
+      "error": "Fehler beim Erstellen von Administratorbenutzer",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Vorname",
@@ -2656,13 +2658,15 @@
     "lastNameRequired": "Nachname ist erforderlich",
     "usernameLength": "Der Benutzername muss mindestens 3 Zeichen lang sein",
     "usernameSpaces": "Der Benutzername darf keine Leerzeichen enthalten",
-    "passwordLength": "Das Passwort muss mindestens 8 Zeichen lang sein",
+    "passwordLength": "Das Passwort muss mindestens 12 Zeichen lang sein",
     "passwordsMatch": "Die Passwörter stimmen nicht überein",
     "emailRequired": "E-Mail ist erforderlich",
     "emailOrUsernameRequired": "E-Mail oder Benutzername ist erforderlich",
     "passwordRequired": "Passwort ist erforderlich",
     "nameRequired": "Name ist erforderlich",
-    "required": "Dieses Feld ist erforderlich"
+    "required": "Dieses Feld ist erforderlich",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "contextMenu": {
     "newFolder": "Neuer Ordner",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "Nachname ist erforderlich",
       "usernameMinLength": "Benutzername muss mindestens 3 Zeichen lang sein",
       "invalidEmail": "Ungültige E-Mail",
-      "passwordMinLength": "Passwort muss mindestens 8 Zeichen lang sein",
-      "passwordsMatch": "Passwörter müssen übereinstimmen"
+      "passwordMinLength": "Passwort muss mindestens 12 Zeichen lang sein",
+      "passwordsMatch": "Passwörter müssen übereinstimmen",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Konto erfolgreich erstellt! Weiterleitung zur Anmeldung...",

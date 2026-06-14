@@ -39,6 +39,7 @@ const {
   mockCalculateStorageUsed,
   mockEvaluateAndNotifyQuota,
   mockGetConfigValue,
+  mockGetObjectSize,
 } = vi.hoisted(() => ({
   mockReverseShareFindUnique: vi.fn(),
   mockReverseShareAliasFindUnique: vi.fn(),
@@ -49,6 +50,7 @@ const {
   mockCalculateStorageUsed: vi.fn(),
   mockEvaluateAndNotifyQuota: vi.fn(),
   mockGetConfigValue: vi.fn(),
+  mockGetObjectSize: vi.fn(),
 }));
 
 vi.mock("../../../shared/prisma.js", () => ({
@@ -126,7 +128,8 @@ vi.mock("../../file/service.js", () => ({
     getPresignedGetUrl = vi.fn().mockResolvedValue("https://presigned.url/get");
     getPresignedPutUrl = vi.fn().mockResolvedValue("https://presigned.url/upload");
     getObjectStream = vi.fn();
-    getObjectHead = vi.fn();
+    getObjectHead = vi.fn().mockResolvedValue(Buffer.from("plain text content"));
+    getObjectSize = mockGetObjectSize;
     deleteObject = vi.fn();
     createMultipartUpload = vi.fn();
     getPresignedPartUrl = vi.fn();
@@ -255,6 +258,8 @@ describe("Reverse-share per-recipient upload tracking (8.3 lot D) — integratio
     mockResolveEffectiveLimits.mockResolvedValue({ maxFileSize: 0n, maxTotalStorage: 0n });
     mockEvaluateAndNotifyQuota.mockResolvedValue(undefined);
     mockGetConfigValue.mockResolvedValue("true");
+    // A3-08: registerPayload declares size 10; echo it for the HEAD-reconcile.
+    mockGetObjectSize.mockResolvedValue(BigInt(10));
   });
 
   function registerById(extra: Record<string, unknown> = {}) {

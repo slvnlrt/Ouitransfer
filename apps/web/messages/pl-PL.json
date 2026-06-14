@@ -1106,9 +1106,11 @@
       "lastNameRequired": "Nazwisko jest wymagane",
       "usernameMinLength": "Nazwa użytkownika musi mieć co najmniej 3 znaki",
       "invalidEmail": "Nieprawidłowy adres e-mail",
-      "passwordMinLength": "Hasło musi mieć co najmniej 8 znaków",
+      "passwordMinLength": "Hasło musi mieć co najmniej 12 znaków",
       "success": "Użytkownik administratora utworzony pomyślnie!",
-      "error": "Błąd podczas tworzenia użytkownika administratora"
+      "error": "Błąd podczas tworzenia użytkownika administratora",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Imię",
@@ -2655,14 +2657,16 @@
     "usernameLength": "Nazwa użytkownika musi mieć co najmniej 3 znaki",
     "usernameSpaces": "Nazwa użytkownika nie może zawierać spacji",
     "invalidEmail": "Proszę wprowadzić prawidłowy adres e-mail",
-    "passwordLength": "Hasło musi mieć co najmniej 8 znaków",
+    "passwordLength": "Hasło musi mieć co najmniej 12 znaków",
     "passwordsMatch": "Hasła muszą być zgodne",
     "emailRequired": "E-mail jest wymagany",
     "emailOrUsernameRequired": "E-mail lub nazwa użytkownika jest wymagana",
     "passwordRequired": "Hasło jest wymagane",
     "passwordMinLength": "Hasło musi mieć co najmniej 6 znaków",
     "nameRequired": "Nazwa jest wymagana",
-    "required": "To pole jest wymagane"
+    "required": "To pole jest wymagane",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "contextMenu": {
     "newFolder": "Nowy folder",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "Nazwisko jest wymagane",
       "usernameMinLength": "Nazwa użytkownika musi mieć co najmniej 3 znaki",
       "invalidEmail": "Nieprawidłowy adres e-mail",
-      "passwordMinLength": "Hasło musi mieć co najmniej 8 znaków",
-      "passwordsMatch": "Hasła muszą być zgodne"
+      "passwordMinLength": "Hasło musi mieć co najmniej 12 znaków",
+      "passwordsMatch": "Hasła muszą być zgodne",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Konto utworzone pomyślnie! Przekierowywanie do logowania...",

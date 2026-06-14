@@ -7,6 +7,8 @@ export interface StorageProvider {
   fileExists(objectName: string): Promise<boolean>;
   getObjectStream(objectName: string): Promise<Readable>;
   getObjectHead(objectName: string, bytes?: number): Promise<Buffer>;
+  /** Return the actual stored byte size of an object via HeadObject. */
+  getObjectSize(objectName: string): Promise<bigint>;
 
   // Multipart upload methods
   createMultipartUpload(objectName: string): Promise<string>;

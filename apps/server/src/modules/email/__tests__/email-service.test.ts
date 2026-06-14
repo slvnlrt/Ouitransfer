@@ -18,6 +18,7 @@ const {
     emailJob: {
       create: vi.fn(),
       findFirst: vi.fn(),
+      count: vi.fn(),
     },
     notificationPreference: {
       findUnique: vi.fn(),
@@ -30,6 +31,7 @@ const {
     },
     user: {
       findMany: vi.fn(),
+      findUnique: vi.fn(),
     },
   },
   mockLogger: {
@@ -136,6 +138,12 @@ function setupDefaultMocks() {
   // No recent jobs (cooldown)
   mockPrisma.emailJob.findFirst.mockResolvedValue(null);
 
+  // Empty pending queue (A6-06 depth cap is well below the threshold)
+  mockPrisma.emailJob.count.mockResolvedValue(0);
+
+  // Sending user exists with tokenVersion 0 (A6-05 unsubscribe token version)
+  mockPrisma.user.findUnique.mockResolvedValue({ tokenVersion: 0 });
+
   // EmailJob create succeeds
   mockPrisma.emailJob.create.mockResolvedValue({ id: "job-1" });
 }
@@ -144,10 +152,12 @@ function resetAllMocks() {
   mockGetConfigValue.mockReset();
   mockPrisma.emailJob.create.mockReset();
   mockPrisma.emailJob.findFirst.mockReset();
+  mockPrisma.emailJob.count.mockReset();
   mockPrisma.notificationPreference.findUnique.mockReset();
   mockPrisma.share.findUnique.mockReset();
   mockPrisma.reverseShare.findUnique.mockReset();
   mockPrisma.user.findMany.mockReset();
+  mockPrisma.user.findUnique.mockReset();
   mockLogger.info.mockReset();
   mockLogger.warn.mockReset();
   mockLogger.error.mockReset();
@@ -1074,10 +1084,11 @@ describe("EmailService", () => {
   // ── generateUnsubscribeUrl() ───────────────────────────────────────────────
 
   describe("generateUnsubscribeUrl()", () => {
-    it("returns valid JWT-based URL with exp=90d", async () => {
+    it("returns valid JWT-based URL with exp=30d and the user's tokenVersion (A6-05)", async () => {
       mockBuildUnsubscribeUrl.mockImplementation(async (token: string) => {
         return `https://test.example.com/api/notifications/unsubscribe?token=${token}`;
       });
+      mockPrisma.user.findUnique.mockResolvedValue({ tokenVersion: 7 });
 
       const url = await emailService.generateUnsubscribeUrl("user-1", "share_expiring");
 
@@ -1095,11 +1106,13 @@ describe("EmailService", () => {
       const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString());
       expect(payload.userId).toBe("user-1");
       expect(payload.type).toBe("share_expiring");
+      // tokenVersion embedded as `tv` so a version bump revokes the token (A6-05)
+      expect(payload.tv).toBe(7);
       expect(payload.iat).toBeDefined();
       expect(payload.exp).toBeDefined();
 
-      // Check 90-day expiry (within 5s tolerance)
-      const expectedExp = payload.iat + 90 * 24 * 60 * 60;
+      // Check 30-day expiry (A6-05)
+      const expectedExp = payload.iat + 30 * 24 * 60 * 60;
       expect(payload.exp).toBe(expectedExp);
     });
   });

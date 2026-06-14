@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAppInfo } from "@/contexts/app-info-context";
 import { registerUser } from "@/http/endpoints";
+import { createPasswordPolicySchema } from "@/lib/password-policy";
 import { MultiProviderButtons } from "./multi-provider-buttons";
 import { PasswordVisibilityToggle } from "./password-visibility-toggle";
 
@@ -37,7 +38,11 @@ export function RegisterForm({ isVisible, onToggleVisibility }: RegisterFormProp
     lastName: z.string().min(1, t("register.validation.lastNameRequired")),
     username: z.string().min(3, t("register.validation.usernameMinLength")),
     email: z.string().email(t("register.validation.invalidEmail")),
-    password: z.string().min(8, t("register.validation.passwordMinLength")),
+    password: createPasswordPolicySchema({
+      minLength: t("register.validation.passwordMinLength"),
+      maxLength: t("register.validation.passwordMaxLength"),
+      complexity: t("register.validation.passwordComplexity"),
+    }),
   });
 
   const form = useForm<z.infer<typeof registerSchema>>({

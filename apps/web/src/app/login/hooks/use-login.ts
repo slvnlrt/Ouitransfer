@@ -47,7 +47,6 @@ export function useLogin() {
 
   useEffect(() => {
     const errorParam = searchParams.get("error");
-    const messageParam = searchParams.get("message");
     const reasonParam = searchParams.get("reason");
 
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -69,14 +68,10 @@ export function useLogin() {
     }
 
     if (errorParam) {
-      let message: string;
-
-      if (messageParam) {
-        message = decodeURIComponent(messageParam);
-      } else {
-        const errorKey = `auth.errors.${errorParam}`;
-        message = t(errorKey);
-      }
+      // Map the error code to an i18n key only — never render a free-form
+      // `message` URL param, which would let an attacker craft a phishing toast
+      // on the legitimate login page (A7-08).
+      const message = t(`auth.errors.${errorParam}`);
 
       timers.push(
         setTimeout(() => {

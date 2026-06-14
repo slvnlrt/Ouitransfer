@@ -29,7 +29,7 @@ export function ShareDetailsLinksSection({ shareLink, onEditLink }: ShareDetails
 
   const handleOpenLink = () => {
     if (shareLink) {
-      window.open(shareLink, "_blank");
+      window.open(shareLink, "_blank", "noopener,noreferrer");
     }
   };
 
