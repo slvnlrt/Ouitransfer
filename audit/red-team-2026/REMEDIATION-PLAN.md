@@ -39,16 +39,16 @@ After de-duplication of cross-corroborated findings: see batches below.
 - [x] A3-13 / A3-14 (Info) document header-only sniffing limits; keep forced attachment (covered by R2 A3-03)
 
 ## R2 — Download/share access control (server: file/share routes + service + web proxy)
-- [ ] A4-02 / A3-04 / A2-04 (Crit/High/Low) `checkFileAccess`: require+bind `shareId`, evaluate access against THAT share only, enforce full lifecycle gate (isActive/expiration/maxViews/deactivatedAt/creator.isActive). Extract shared `assertShareAccessible(share)` used by `getShare` + `checkFileAccess`. Decrement/enforce maxViews on download.
-- [ ] A3-03 / A7-07 (High/Low) force `Content-Disposition: attachment` + `application/octet-stream` + `nosniff` on streamed downloads; apply CSP/security headers (incl. `sandbox`) to `/api/*` proxy responses in `apps/web/src/proxy.ts`
-- [ ] A4-03 (High) per-share password brute-force throttle/lockout on `/access`, `/check-password`, and password-bearing download endpoints; audit failed password on download path
-- [ ] A4-06 (Med) metadata endpoints: 404/minimal for owner-inactive/expired/paused/maxed; apply `assertOwnerActive`
-- [ ] A4-08 (Med) non-owner share response: omit `userId`, replace raw `objectName` with opaque per-share file token
-- [ ] A4-09 (Med) never mutate recipient stats from self-declared cookie email; only `token`-verified arrivals write download stats
-- [ ] A2-01 (High) IDOR: scope `findFilesByIds`/`findFoldersByIds` by `userId` in `addItemsToShare`; add inject test
-- [ ] A4-10 (Med) avoid distinct "already exists" recipient oracle; (spam cap handled in R5)
-- [ ] A4-12 (Low) raise alias min length / add per-IP enumeration rate-limit on metadata/upload-info
-- [ ] A4-11 / A4-13 / A4-14 (Low) document anonymous csrfExempt surface; presigned/streamed delivery note; ensure expiry computed from date not just flag
+- [x] A4-02 / A3-04 / A2-04 (Crit/High/Low) `checkFileAccess` replaced by `resolveDownloadTarget`: a download key is EITHER an opaque per-share file token (bound to a specific shareId, full lifecycle gate via `assertShareAccessible`) OR a raw objectName (JWT owner only). Extracted shared `assertShareAccessible(share)` used by `getShare` + the download path. maxViews enforced on download via the views>=maxViews gate (not per-file increment, to keep ZIP downloads correct).
+- [x] A3-03 / A7-07 (High/Low) forced `Content-Disposition: attachment` + `application/octet-stream` + `nosniff` (+ CSP sandbox) on streamed downloads; restrictive CSP (sandbox + default-src 'none') + nosniff applied to `/api/*` proxy responses in `apps/web/src/proxy.ts`
+- [x] A4-03 (High) per-share password brute-force lockout (share-password-attempts.service, reuses LoginAttempt keyed by share) on `/access`, `/check-password`, and the password-bearing download path; per-route IP rate limits added; failed password audited on the download path
+- [x] A4-06 (Med) metadata endpoints (share + reverse-share): 404 for owner-inactive; name/description withheld for closed shares; expiry computed from date
+- [x] A4-08 (Med) non-owner share response omits `userId` (blank) and replaces raw `objectName` with the opaque per-share file token (folders' objectName/userId blanked too)
+- [x] A4-09 (Med) self-declared cookie email never mutates recipient stats (access accessCount/lastAccessedAt nor download downloadCount/lastDownloadedAt); only `token`-verified arrivals do
+- [x] A2-01 (High) IDOR: `findFilesByIds`/`findFoldersByIds` scoped by `userId` in `addItemsToShare`; inject test added
+- [x] A4-10 (Med) reverse-share recipient add returns a generic conflict (no "already exists" oracle); (spam cap handled in R5)
+- [x] A4-12 (Low) alias min length raised 5→8; per-IP enumeration rate-limits on reverse-share upload-info + metadata; share metadata tightened 60→30/min
+- [x] A4-11 / A4-13 / A4-14 (Low) documented anonymous csrfExempt surface + presigned/streamed delivery; expiry computed from date (not just the persisted flag) in lifecycle gate + metadata
 
 ## R3 — Authentication & session + access-control core (server: auth/two-factor/user/middleware)
 - [ ] **X-Real-IP/X-User-Agent (Crit, A1-01/A8-02)** stop reading `x-real-ip`/`x-user-agent`; use Fastify `request.ip`; add per-IP failed-login throttle alongside email lockout
