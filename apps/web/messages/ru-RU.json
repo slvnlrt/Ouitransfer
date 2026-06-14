@@ -1106,9 +1106,11 @@
       "lastNameRequired": "Фамилия обязательна",
       "usernameMinLength": "Имя пользователя должно содержать минимум 3 символа",
       "invalidEmail": "Неверный email",
-      "passwordMinLength": "Пароль должен содержать минимум 8 символов",
+      "passwordMinLength": "Пароль должен содержать минимум 12 символов",
       "success": "Пользователь администратора создал успешно!",
-      "error": "Ошибка создания пользователя администратора"
+      "error": "Ошибка создания пользователя администратора",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Имя",
@@ -2656,13 +2658,15 @@
     "lastNameRequired": "Фамилия обязательна",
     "usernameLength": "Имя пользователя должно содержать не менее 3 символов",
     "usernameSpaces": "Имя пользователя не может содержать пробелов",
-    "passwordLength": "Пароль должен содержать не менее 8 символов",
+    "passwordLength": "Пароль должен содержать не менее 12 символов",
     "passwordsMatch": "Пароли не совпадают",
     "emailRequired": "Требуется электронная почта",
     "emailOrUsernameRequired": "Электронная почта или имя пользователя обязательно",
     "passwordRequired": "Требуется пароль",
     "nameRequired": "Требуется имя",
-    "required": "Это поле обязательно"
+    "required": "Это поле обязательно",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "contextMenu": {
     "newFolder": "Новая папка",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "Фамилия обязательна",
       "usernameMinLength": "Имя пользователя должно содержать не менее 3 символов",
       "invalidEmail": "Неверный адрес электронной почты",
-      "passwordMinLength": "Пароль должен содержать не менее 8 символов",
-      "passwordsMatch": "Пароли должны совпадать"
+      "passwordMinLength": "Пароль должен содержать не менее 12 символов",
+      "passwordsMatch": "Пароли должны совпадать",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Учетная запись успешно создана! Перенаправление на вход...",

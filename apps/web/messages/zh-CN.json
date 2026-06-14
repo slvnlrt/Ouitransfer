@@ -1106,9 +1106,11 @@
       "lastNameRequired": "姓氏为必填项",
       "usernameMinLength": "用户名至少需要3个字符",
       "invalidEmail": "无效的电子邮件",
-      "passwordMinLength": "密码至少需要8个字符",
+      "passwordMinLength": "密码至少需要12个字符",
       "success": "管理员用户成功创建了！",
-      "error": "错误创建管理员用户"
+      "error": "错误创建管理员用户",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "名字",
@@ -2656,13 +2658,15 @@
     "lastNameRequired": "姓氏为必填项",
     "usernameLength": "用户名至少需要3个字符",
     "usernameSpaces": "用户名不能包含空格",
-    "passwordLength": "密码至少需要8个字符",
+    "passwordLength": "密码至少需要12个字符",
     "passwordsMatch": "密码不匹配",
     "emailRequired": "电子邮件为必填项",
     "emailOrUsernameRequired": "电子邮件或用户名是必填项",
     "passwordRequired": "密码为必填项",
     "nameRequired": "名称为必填项",
-    "required": "此字段为必填项"
+    "required": "此字段为必填项",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "contextMenu": {
     "newFolder": "新建文件夹",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "姓氏为必填项",
       "usernameMinLength": "用户名至少需要3个字符",
       "invalidEmail": "无效的电子邮件",
-      "passwordMinLength": "密码至少需要8个字符",
-      "passwordsMatch": "密码必须匹配"
+      "passwordMinLength": "密码至少需要12个字符",
+      "passwordsMatch": "密码必须匹配",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "账户创建成功！正在重定向到登录...",

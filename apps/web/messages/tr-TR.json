@@ -1106,9 +1106,11 @@
       "lastNameRequired": "Soyad gereklidir",
       "usernameMinLength": "Kullanıcı adı en az 3 karakter olmalıdır",
       "invalidEmail": "Geçersiz e-posta",
-      "passwordMinLength": "Şifre en az 8 karakter olmalıdır",
+      "passwordMinLength": "Şifre en az 12 karakter olmalıdır",
       "success": "Yönetici kullanıcısı başarıyla yarattı!",
-      "error": "Yönetici kullanıcısı oluşturma hatası"
+      "error": "Yönetici kullanıcısı oluşturma hatası",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Ad",
@@ -2656,13 +2658,15 @@
     "lastNameRequired": "Soyad gerekli",
     "usernameLength": "Kullanıcı adı en az 3 karakter olmalıdır",
     "usernameSpaces": "Kullanıcı adında boşluk olamaz",
-    "passwordLength": "Şifre en az 8 karakter olmalıdır",
+    "passwordLength": "Şifre en az 12 karakter olmalıdır",
     "passwordsMatch": "Şifreler eşleşmiyor",
     "emailRequired": "E-posta gerekli",
     "emailOrUsernameRequired": "E-posta veya kullanıcı adı gereklidir",
     "passwordRequired": "Şifre gerekli",
     "nameRequired": "İsim gereklidir",
-    "required": "Bu alan zorunludur"
+    "required": "Bu alan zorunludur",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "contextMenu": {
     "newFolder": "Yeni klasör",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "Soyad gerekli",
       "usernameMinLength": "Kullanıcı adı en az 3 karakter olmalıdır",
       "invalidEmail": "Geçersiz e-posta",
-      "passwordMinLength": "Şifre en az 8 karakter olmalıdır",
-      "passwordsMatch": "Şifreler eşleşmelidir"
+      "passwordMinLength": "Şifre en az 12 karakter olmalıdır",
+      "passwordsMatch": "Şifreler eşleşmelidir",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Hesap başarıyla oluşturuldu! Girişe yönlendiriliyor...",

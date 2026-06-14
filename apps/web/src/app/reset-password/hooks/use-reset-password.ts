@@ -9,18 +9,25 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { resetPassword } from "@/http/endpoints";
+import { createPasswordPolicySchema } from "@/lib/password-policy";
 import { parseApiError } from "@/utils/api-error";
 
-const createSchema = (t: (key: string) => string) =>
-  z
+const createSchema = (t: (key: string) => string) => {
+  const passwordSchema = createPasswordPolicySchema({
+    minLength: t("validation.passwordLength"),
+    maxLength: t("validation.passwordMaxLength"),
+    complexity: t("validation.passwordComplexity"),
+  });
+  return z
     .object({
-      password: z.string().min(8, t("validation.passwordLength")),
-      confirmPassword: z.string().min(8, t("validation.passwordLength")),
+      password: passwordSchema,
+      confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
       message: t("validation.passwordsMatch"),
       path: ["confirmPassword"],
     });
+};
 
 export type ResetPasswordFormData = z.infer<ReturnType<typeof createSchema>>;
 

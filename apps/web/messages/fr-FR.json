@@ -1106,9 +1106,11 @@
       "lastNameRequired": "Le nom est requis",
       "usernameMinLength": "Le nom d'utilisateur doit contenir au moins 3 caractères",
       "invalidEmail": "Email invalide",
-      "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
+      "passwordMinLength": "Le mot de passe doit contenir au moins 12 caractères",
       "success": "L'utilisateur de l'administrateur a créé avec succès!",
-      "error": "Erreur créant l'utilisateur de l'administrateur"
+      "error": "Erreur créant l'utilisateur de l'administrateur",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Prénom",
@@ -2708,13 +2710,15 @@
     "lastNameRequired": "Le nom est requis",
     "usernameLength": "Le nom d'utilisateur doit contenir au moins 3 caractères",
     "usernameSpaces": "Le nom d'utilisateur ne peut pas contenir d'espaces",
-    "passwordLength": "Le mot de passe doit contenir au moins 8 caractères",
+    "passwordLength": "Le mot de passe doit contenir au moins 12 caractères",
     "passwordsMatch": "Les mots de passe ne correspondent pas",
     "emailRequired": "L'email est requis",
     "emailOrUsernameRequired": "L'email ou le nom d'utilisateur est requis",
     "passwordRequired": "Le mot de passe est requis",
     "nameRequired": "Le nom est requis",
-    "required": "Ce champ est requis"
+    "required": "Ce champ est requis",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "contextMenu": {
     "newFolder": "Nouveau dossier",
@@ -2746,8 +2750,10 @@
       "lastNameRequired": "Le nom est requis",
       "usernameMinLength": "Le nom d'utilisateur doit contenir au moins 3 caractères",
       "invalidEmail": "E-mail invalide",
-      "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
-      "passwordsMatch": "Les mots de passe doivent correspondre"
+      "passwordMinLength": "Le mot de passe doit contenir au moins 12 caractères",
+      "passwordsMatch": "Les mots de passe doivent correspondre",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Compte créé avec succès ! Redirection vers la connexion...",

@@ -1106,9 +1106,11 @@
       "lastNameRequired": "اسم العائلة مطلوب",
       "usernameMinLength": "يجب أن يحتوي اسم المستخدم على 3 أحرف على الأقل",
       "invalidEmail": "البريد الإلكتروني غير صالح",
-      "passwordMinLength": "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل",
+      "passwordMinLength": "يجب أن تحتوي كلمة المرور على 12 أحرف على الأقل",
       "success": "تم إنشاء مستخدم المسؤول بنجاح!",
-      "error": "خطأ في إنشاء مستخدم المسؤول"
+      "error": "خطأ في إنشاء مستخدم المسؤول",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "الاسم الأول",
@@ -2656,13 +2658,15 @@
     "lastNameRequired": "اسم العائلة مطلوب",
     "usernameLength": "يجب أن يحتوي اسم المستخدم على 3 أحرف على الأقل",
     "usernameSpaces": "لا يمكن أن يحتوي اسم المستخدم على فراغات",
-    "passwordLength": "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل",
+    "passwordLength": "يجب أن تحتوي كلمة المرور على 12 أحرف على الأقل",
     "passwordsMatch": "كلمتا المرور غير متطابقتين",
     "emailRequired": "البريد الإلكتروني مطلوب",
     "emailOrUsernameRequired": "البريد الإلكتروني أو اسم المستخدم مطلوب",
     "passwordRequired": "كلمة المرور مطلوبة",
     "nameRequired": "الاسم مطلوب",
-    "required": "هذا الحقل مطلوب"
+    "required": "هذا الحقل مطلوب",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "contextMenu": {
     "newFolder": "مجلد جديد",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "اسم العائلة مطلوب",
       "usernameMinLength": "يجب أن يحتوي اسم المستخدم على 3 أحرف على الأقل",
       "invalidEmail": "البريد الإلكتروني غير صالح",
-      "passwordMinLength": "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل",
-      "passwordsMatch": "يجب أن تتطابق كلمتا المرور"
+      "passwordMinLength": "يجب أن تحتوي كلمة المرور على 12 أحرف على الأقل",
+      "passwordsMatch": "يجب أن تتطابق كلمتا المرور",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "تم إنشاء الحساب بنجاح! جارٍ إعادة التوجيه إلى تسجيل الدخول...",

@@ -1106,9 +1106,11 @@
       "lastNameRequired": "성을 입력해주세요",
       "usernameMinLength": "사용자 이름은 최소 3자 이상이어야 합니다",
       "invalidEmail": "유효하지 않은 이메일입니다",
-      "passwordMinLength": "비밀번호는 최소 8자 이상이어야 합니다",
+      "passwordMinLength": "비밀번호는 최소 12자 이상이어야 합니다",
       "success": "관리자 사용자가 성공적으로 생성되었습니다!",
-      "error": "오류 관리자 사용자 생성"
+      "error": "오류 관리자 사용자 생성",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "이름",
@@ -2656,13 +2658,15 @@
     "lastNameRequired": "성을 입력하세요",
     "usernameLength": "사용자 이름은 최소 3자 이상이어야 합니다",
     "usernameSpaces": "사용자 이름에는 공백을 사용할 수 없습니다",
-    "passwordLength": "비밀번호는 최소 8자 이상이어야 합니다",
+    "passwordLength": "비밀번호는 최소 12자 이상이어야 합니다",
     "passwordsMatch": "비밀번호가 일치하지 않습니다",
     "emailRequired": "이메일은 필수입니다",
     "emailOrUsernameRequired": "이메일 또는 사용자 이름은 필수입니다",
     "passwordRequired": "비밀번호는 필수입니다",
     "nameRequired": "이름은 필수입니다",
-    "required": "이 필드는 필수입니다"
+    "required": "이 필드는 필수입니다",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "contextMenu": {
     "newFolder": "새 폴더",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "성은 필수입니다",
       "usernameMinLength": "사용자 이름은 최소 3자 이상이어야 합니다",
       "invalidEmail": "유효하지 않은 이메일입니다",
-      "passwordMinLength": "비밀번호는 최소 8자 이상이어야 합니다",
-      "passwordsMatch": "비밀번호가 일치해야 합니다"
+      "passwordMinLength": "비밀번호는 최소 12자 이상이어야 합니다",
+      "passwordsMatch": "비밀번호가 일치해야 합니다",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "계정이 성공적으로 생성되었습니다! 로그인 페이지로 이동합니다...",

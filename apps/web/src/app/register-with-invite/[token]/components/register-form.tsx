@@ -158,8 +158,21 @@ export function RegisterForm({ token, onSuccess }: RegisterFormProps) {
             {...register("password", {
               required: t("registerWithInvite.validation.passwordMinLength"),
               minLength: {
-                value: 8,
+                value: 12,
                 message: t("registerWithInvite.validation.passwordMinLength"),
+              },
+              maxLength: {
+                value: 72,
+                message: t("registerWithInvite.validation.passwordMaxLength"),
+              },
+              validate: (value: string) => {
+                // Mirror the server "3 of 4 character classes" complexity rule.
+                const classes =
+                  (/[a-z]/.test(value) ? 1 : 0) +
+                  (/[A-Z]/.test(value) ? 1 : 0) +
+                  (/[0-9]/.test(value) ? 1 : 0) +
+                  (/[^a-zA-Z0-9]/.test(value) ? 1 : 0);
+                return classes >= 3 || t("registerWithInvite.validation.passwordComplexity");
               },
             })}
           />

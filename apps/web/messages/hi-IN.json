@@ -1106,9 +1106,11 @@
       "lastNameRequired": "अंतिम नाम आवश्यक है",
       "usernameMinLength": "उपयोगकर्ता नाम कम से कम 3 अक्षर का होना चाहिए",
       "invalidEmail": "अमान्य ईमेल",
-      "passwordMinLength": "पासवर्ड कम से कम 8 अक्षर का होना चाहिए",
+      "passwordMinLength": "पासवर्ड कम से कम 12 अक्षर का होना चाहिए",
       "success": "व्यवस्थापक उपयोगकर्ता ने सफलतापूर्वक बनाया!",
-      "error": "व्यवस्थापक उपयोगकर्ता बनाने में त्रुटि"
+      "error": "व्यवस्थापक उपयोगकर्ता बनाने में त्रुटि",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "पहला नाम",
@@ -2656,13 +2658,15 @@
     "lastNameRequired": "अंतिम नाम आवश्यक है",
     "usernameLength": "उपयोगकर्ता नाम कम से कम 3 अक्षर का होना चाहिए",
     "usernameSpaces": "उपयोगकर्ता नाम में रिक्त स्थान नहीं हो सकते",
-    "passwordLength": "पासवर्ड कम से कम 8 अक्षर का होना चाहिए",
+    "passwordLength": "पासवर्ड कम से कम 12 अक्षर का होना चाहिए",
     "passwordsMatch": "पासवर्ड मेल नहीं खाते",
     "emailRequired": "ईमेल आवश्यक है",
     "emailOrUsernameRequired": "ईमेल या उपयोगकर्ता नाम आवश्यक है",
     "passwordRequired": "पासवर्ड आवश्यक है",
     "nameRequired": "नाम आवश्यक है",
-    "required": "यह फ़ील्ड आवश्यक है"
+    "required": "यह फ़ील्ड आवश्यक है",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "contextMenu": {
     "newFolder": "नया फ़ोल्डर",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "अंतिम नाम आवश्यक है",
       "usernameMinLength": "उपयोगकर्ता नाम कम से कम 3 अक्षर का होना चाहिए",
       "invalidEmail": "अमान्य ईमेल",
-      "passwordMinLength": "पासवर्ड कम से कम 8 अक्षर का होना चाहिए",
-      "passwordsMatch": "पासवर्ड मेल खाना चाहिए"
+      "passwordMinLength": "पासवर्ड कम से कम 12 अक्षर का होना चाहिए",
+      "passwordsMatch": "पासवर्ड मेल खाना चाहिए",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "खाता सफलतापूर्वक बनाया गया! लॉगिन पर पुनर्निर्देशित किया जा रहा है...",

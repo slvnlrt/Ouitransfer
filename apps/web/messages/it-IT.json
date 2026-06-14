@@ -1106,9 +1106,11 @@
       "lastNameRequired": "Il cognome è obbligatorio",
       "usernameMinLength": "Il nome utente deve essere di almeno 3 caratteri",
       "invalidEmail": "Indirizzo email non valido",
-      "passwordMinLength": "La parola d'accesso deve essere di almeno 8 caratteri",
+      "passwordMinLength": "La parola d'accesso deve essere di almeno 12 caratteri",
       "success": "Utente amministratore creato con successo!",
-      "error": "Errore durante la creazione dell'utente amministratore"
+      "error": "Errore durante la creazione dell'utente amministratore",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Nome",
@@ -2655,14 +2657,16 @@
     "usernameLength": "Il nome utente deve essere di almeno 3 caratteri",
     "usernameSpaces": "Il nome utente non può contenere spazi",
     "invalidEmail": "Inserisci un indirizzo email valido",
-    "passwordLength": "La parola d'accesso deve essere di almeno 8 caratteri",
+    "passwordLength": "La parola d'accesso deve essere di almeno 12 caratteri",
     "passwordsMatch": "Le parole d'accesso devono corrispondere",
     "emailRequired": "L'indirizzo email è obbligatorio",
     "emailOrUsernameRequired": "L'indirizzo email o il nome utente è obbligatorio",
     "passwordRequired": "La parola d'accesso è obbligatoria",
     "passwordMinLength": "La password deve contenere almeno 6 caratteri",
     "nameRequired": "Il nome è obbligatorio",
-    "required": "Questo campo è obbligatorio"
+    "required": "Questo campo è obbligatorio",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "contextMenu": {
     "newFolder": "Nuova cartella",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "Il cognome è obbligatorio",
       "usernameMinLength": "Il nome utente deve essere di almeno 3 caratteri",
       "invalidEmail": "Email non valida",
-      "passwordMinLength": "La password deve essere di almeno 8 caratteri",
-      "passwordsMatch": "Le password devono corrispondere"
+      "passwordMinLength": "La password deve essere di almeno 12 caratteri",
+      "passwordsMatch": "Le password devono corrispondere",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Account creato con successo! Reindirizzamento al login...",

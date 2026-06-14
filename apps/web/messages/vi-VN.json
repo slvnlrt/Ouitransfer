@@ -1110,9 +1110,11 @@
       "lastNameRequired": "Họ là bắt buộc",
       "usernameMinLength": "Tên người dùng phải có ít nhất 3 ký tự",
       "invalidEmail": "Email không hợp lệ",
-      "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+      "passwordMinLength": "Mật khẩu phải có ít nhất 12 ký tự",
       "success": "Người dùng quản trị đã được tạo thành công!",
-      "error": "Lỗi khi tạo người dùng quản trị"
+      "error": "Lỗi khi tạo người dùng quản trị",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "labels": {
       "firstName": "Tên",
@@ -2659,14 +2661,16 @@
     "usernameLength": "Tên người dùng phải có ít nhất 3 ký tự",
     "usernameSpaces": "Tên người dùng không được chứa dấu cách",
     "invalidEmail": "Vui lòng nhập một địa chỉ email hợp lệ",
-    "passwordLength": "Mật khẩu phải có ít nhất 8 ký tự",
+    "passwordLength": "Mật khẩu phải có ít nhất 12 ký tự",
     "passwordsMatch": "Mật khẩu phải khớp",
     "emailRequired": "Email là bắt buộc",
     "emailOrUsernameRequired": "Email hoặc tên người dùng là bắt buộc",
     "passwordRequired": "Mật khẩu là bắt buộc",
     "passwordMinLength": "Mật khẩu phải có ít nhất 6 ký tự",
     "nameRequired": "Tên là bắt buộc",
-    "required": "Trường này là bắt buộc"
+    "required": "Trường này là bắt buộc",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
   },
   "registerWithInvite": {
     "title": "Tạo Tài Khoản Của Bạn",
@@ -2694,8 +2698,10 @@
       "lastNameRequired": "Họ là bắt buộc",
       "usernameMinLength": "Tên người dùng phải có ít nhất 3 ký tự",
       "invalidEmail": "Email không hợp lệ",
-      "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
-      "passwordsMatch": "Mật khẩu phải khớp"
+      "passwordMinLength": "Mật khẩu phải có ít nhất 12 ký tự",
+      "passwordsMatch": "Mật khẩu phải khớp",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
     },
     "messages": {
       "success": "Đã tạo tài khoản thành công! Đang chuyển hướng đến đăng nhập...",
