@@ -17,9 +17,15 @@ import { CSRF_EXEMPT_ROUTES } from "./config/csrf.config.js";
 import { registerSwagger } from "./config/swagger.config.js";
 import { envTimeoutOverrides, timeoutConfig } from "./config/timeout.config.js";
 import { env } from "./env.js";
+import { createAdminPreValidation } from "./middleware/admin-prevalidation.js";
 import { validateTokenVersion } from "./modules/auth/token-version.js";
 import { ForbiddenError } from "./utils/app-error.js";
 import { globalErrorHandler, globalNotFoundHandler } from "./utils/error-handler.js";
+import {
+  LOG_REDACT_CENSOR,
+  LOG_REDACT_PATHS,
+  redactRequestSerializer,
+} from "./utils/log-redaction.js";
 import { setLogger } from "./utils/logger.js";
 import { parseTrustProxy } from "./utils/parse-trust-proxy.js";
 
@@ -41,6 +47,15 @@ export async function buildApp() {
     },
     logger: {
       level: process.env.LOG_LEVEL || "info",
+      // A8-05 — Pino redaction + sensitive-header serializer. Config lives in
+      // utils/log-redaction.ts (single source of truth, unit-tested there).
+      redact: {
+        paths: LOG_REDACT_PATHS,
+        censor: LOG_REDACT_CENSOR,
+      },
+      serializers: {
+        req: redactRequestSerializer,
+      },
     },
     bodyLimit: 50 * 1024 * 1024,
     connectionTimeout: timeoutConfig.connection.timeout,
@@ -105,14 +120,31 @@ export async function buildApp() {
 
   app.register(fastifyCors, {
     origin: (origin, cb) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      // A8-06 — With `credentials: true`, never auto-allow a missing/`null`
+      // Origin. The previous `!origin → allow` branch treated no-Origin and
+      // `Origin: null` (sandboxed iframes, data:/file: documents, some non-browser
+      // clients) as same-origin and reflected credentials, widening the surface
+      // for credentialed cross-context requests. We now allow ONLY exact
+      // allow-listed origins. Requests with no Origin header are not CORS requests
+      // (same-origin / non-browser); @fastify/cors does not add ACAO headers for
+      // them, so returning `false` here simply means "no CORS grant" — it does not
+      // block legitimate same-origin or server-to-server traffic, which never
+      // carries an Origin. `Origin: null` (a real header value) is rejected.
+      if (!origin) {
+        // No Origin header at all → not a cross-origin browser request. Do not
+        // emit ACAO (false), but don't raise a 403 either — let the request
+        // proceed without a CORS grant.
+        cb(null, false);
+        return;
+      }
+      if (allowedOrigins.includes(origin)) {
         cb(null, true);
       } else {
         // Reject with a ForbiddenError so the globalErrorHandler maps it to a
         // 403 (instead of a generic 500). A bare Error would fall through to the
         // unknown-error branch. The request's Origin is not in CORS_ORIGINS —
         // ensure every hostname the app is served on (external AND internal) is
-        // listed there, comma-separated.
+        // listed there, comma-separated. `Origin: null` lands here and is rejected.
         cb(new ForbiddenError("Origin not allowed by CORS policy"), false);
       }
     },
@@ -122,38 +154,59 @@ export async function buildApp() {
 
   const isDevMode = process.env.NODE_ENV !== "production";
   const docsEnabled = isDevMode || env.ENABLE_API_DOCS === "true";
+  // Route prefixes served by the API-doc UIs (Swagger UI + Scalar). Used to scope
+  // the relaxed docs CSP to ONLY these paths (A8-07).
+  const DOC_ROUTE_PREFIXES = ["/swagger", "/docs"];
 
   // Security headers: CSP, X-Content-Type-Options, X-Frame-Options, etc.
   // Registered BEFORE rate-limit so security headers apply to all responses,
   // including rate-limit rejections.
   //
-  // When Swagger UI / Scalar docs are enabled, we relax CSP to allow the
-  // assets those UIs need (inline scripts/styles, data: URIs for images).
-  // This relaxation only applies when docsEnabled is true (dev or explicit opt-in).
+  // A8-07 — The API JSON surface ALWAYS gets the strict `default-src 'none'` CSP,
+  // regardless of whether docs are enabled. The relaxed CSP that Swagger UI /
+  // Scalar need (inline scripts/styles, data: images) is applied ONLY to the doc
+  // route prefixes via the onSend hook below — it never weakens API responses.
   await app.register(helmet, {
     contentSecurityPolicy: {
-      directives: docsEnabled
-        ? {
-            // Swagger UI and Scalar require inline scripts/styles and data: images.
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", "data:"],
-            frameAncestors: ["'none'"],
-          }
-        : {
-            // The API doesn't serve HTML in production; a restrictive default is fine.
-            defaultSrc: ["'none'"],
-            frameAncestors: ["'none'"],
-          },
+      directives: {
+        // The API doesn't serve HTML; a restrictive default is correct everywhere
+        // except the doc UIs, which get their relaxed CSP scoped in onSend below.
+        defaultSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+      },
     },
     // HSTS is typically set by the reverse proxy (nginx/caddy), but
     // setting it here provides defense-in-depth.
     strictTransportSecurity: {
       maxAge: 31536000, // 1 year
       includeSubDomains: true,
+      // A8-13 — request inclusion in the browser HSTS preload list. Safe here
+      // because the API is served over HTTPS (TLS terminated at the reverse proxy)
+      // and `includeSubDomains` is already set, which preload requires.
+      preload: true,
     },
   });
+
+  if (docsEnabled) {
+    // A8-07 — Scope the relaxed CSP (needed by Swagger UI / Scalar) to ONLY the
+    // doc route prefixes. Every other response keeps the strict `default-src
+    // 'none'` policy set by helmet above. Runs after helmet's onSend so it
+    // overrides the header only for doc paths.
+    const relaxedDocsCsp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data:",
+      "frame-ancestors 'none'",
+    ].join("; ");
+    app.addHook("onSend", (request, reply, payload, done) => {
+      const path = request.url.split("?")[0];
+      if (DOC_ROUTE_PREFIXES.some((prefix) => path === prefix || path.startsWith(`${prefix}/`))) {
+        reply.header("Content-Security-Policy", relaxedDocsCsp);
+      }
+      done(null, payload);
+    });
+  }
 
   await app.register(rateLimit, {
     max: 100,
@@ -272,17 +325,45 @@ export async function buildApp() {
 
   if (docsEnabled) {
     registerSwagger(app);
-    app.register(fastifySwaggerUi, {
-      routePrefix: "/swagger",
-    });
+
+    // A8-07 — Gate the API-doc UIs behind admin auth. In production these expose
+    // the FULL OpenAPI spec (every route/schema/param incl. admin endpoints), so
+    // they must never be reachable unauthenticated. In dev we skip the gate for
+    // developer convenience. `ENABLE_API_DOCS=true` is documented as NOT for
+    // internet-facing deployments — the admin gate is the safety net if it is.
+    const docsAdminGuard = createAdminPreValidation({ allowSetupBypass: false });
+    const guardDocsRoutes = (instance: typeof app) => {
+      if (isDevMode) return;
+      // Re-throw any UnauthorizedError/ForbiddenError so the globalErrorHandler
+      // maps it to a 401/403 (instead of leaking via reply.send inside a hook).
+      instance.addHook("onRequest", async (request) => {
+        await docsAdminGuard(request);
+      });
+    };
+
+    await app.register(
+      async (swaggerScope) => {
+        guardDocsRoutes(swaggerScope as typeof app);
+        await swaggerScope.register(fastifySwaggerUi, {
+          routePrefix: "/swagger",
+        });
+      },
+      { encapsulate: true },
+    );
 
     const { default: scalarFastify } = await import("@scalar/fastify-api-reference");
-    app.register(scalarFastify, {
-      routePrefix: "/docs",
-      configuration: {
-        theme: "deepSpace",
+    await app.register(
+      async (scalarScope) => {
+        guardDocsRoutes(scalarScope as typeof app);
+        await scalarScope.register(scalarFastify, {
+          routePrefix: "/docs",
+          configuration: {
+            theme: "deepSpace",
+          },
+        });
       },
-    });
+      { encapsulate: true },
+    );
   }
   // No else branch — globalNotFoundHandler already returns 404 for unregistered routes.
 

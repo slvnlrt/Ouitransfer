@@ -137,9 +137,20 @@ export function getClientInfo(request: FastifyRequest): {
   userAgent: string;
 } {
   const userAgent = headerString(request.headers["user-agent"]) || "";
-  const ipAddress = request.ip || request.socket.remoteAddress || "";
+  const ipAddress = normalizeIp(request.ip || request.socket.remoteAddress || "");
 
   return { userAgent, ipAddress };
+}
+
+/**
+ * Normalize a stored client IP (A8-12). Largely moot after the A8-02 X-Real-IP
+ * fix (IPs are no longer spoofable), but normalizing the IPv6-mapped IPv4 form
+ * (`::ffff:1.2.3.4` → `1.2.3.4`) keeps the audit-log `contains` search and
+ * grouping consistent across IPv4 and dual-stack sockets.
+ */
+function normalizeIp(ip: string): string {
+  const mapped = /^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/i.exec(ip);
+  return mapped ? mapped[1] : ip;
 }
 
 /**

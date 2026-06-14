@@ -1,14 +1,22 @@
 /**
  * health-status.integration.test.ts
  *
- * Integration tests for the GET /health/status endpoint.
- * Verifies that the endpoint returns simplified health status
- * without requiring authentication.
+ * Integration tests for the health endpoints (A8-11):
+ *   - GET /health         — public liveness, 200/503, NO per-subsystem breakdown
+ *   - GET /health/status  — ADMIN-gated detailed per-subsystem breakdown
+ *
+ * The admin guard is stubbed below: a request carrying `x-test-admin: true` is
+ * treated as an authenticated admin; everything else is rejected with a 403, so
+ * we can exercise both the gate and the detailed payload without wiring a full
+ * JWT/DB stack.
  */
 
 import { serializerCompiler, validatorCompiler } from "@fastify/type-provider-zod";
+import type { FastifyRequest } from "fastify";
 import { fastify } from "fastify";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+
+import { ForbiddenError } from "../utils/app-error.js";
 
 // Mock prisma to avoid a real DB connection.
 // emailJob mocks are needed because the health routes now evaluate email health
@@ -29,14 +37,16 @@ vi.mock("../modules/config/service.js", () => ({
   getConfigValue: vi.fn().mockRejectedValue(new Error("Configuration smtpEnabled not found")),
 }));
 
-/**
- * Mutable storage stub — starts as null (storage not configured).
- * The "storage unreachable" describe block enables it by setting s3Enabled = true
- * and making send() throw.
- *
- * We use explicit getters so that Vitest's ESM live-binding layer always reads
- * the current value on each import access.
- */
+// A8-11: stub the admin pre-validation so /health/status can be tested as both
+// an unauthenticated (rejected) and an admin (allowed) caller.
+vi.mock("../middleware/admin-prevalidation.js", () => ({
+  createAdminPreValidation: () => async (request: FastifyRequest) => {
+    if (request.headers["x-test-admin"] !== "true") {
+      throw new ForbiddenError("Access restricted to administrators");
+    }
+  },
+}));
+
 const storageState = {
   s3Enabled: false,
   sendImpl: vi.fn().mockResolvedValue({}),
@@ -76,7 +86,7 @@ vi.mock("../utils/logger.js", () => ({
 
 import { healthRoutes } from "../modules/health/routes.js";
 
-describe("GET /health/status", () => {
+describe("GET /health/status (admin-gated detailed breakdown)", () => {
   const app = fastify({ logger: false });
 
   beforeAll(async () => {
@@ -90,58 +100,34 @@ describe("GET /health/status", () => {
     await app.close();
   });
 
-  it("returns simplified health status", async () => {
-    const response = await app.inject({
-      method: "GET",
-      url: "/health/status",
-    });
-
-    expect(response.statusCode).toBe(200);
-    const body = response.json<{ status: string; email: string }>();
-    expect(body.status).toMatch(/^(healthy|degraded|unhealthy)$/);
-    expect(Object.keys(body).sort()).toEqual(["email", "status"]);
-    // smtpEnabled config key is missing in tests ⇒ email subsystem is "disabled".
-    expect(body.email).toBe("disabled");
+  it("requires admin authentication (rejects an unauthenticated caller)", async () => {
+    const response = await app.inject({ method: "GET", url: "/health/status" });
+    // The stubbed admin guard throws ForbiddenError → 403 via the error handler.
+    expect(response.statusCode).toBe(403);
   });
 
-  it("does not require authentication", async () => {
+  it("returns the detailed per-subsystem breakdown for an admin", async () => {
     const response = await app.inject({
       method: "GET",
       url: "/health/status",
-    });
-
-    // No auth headers needed — should return 200
-    expect(response.statusCode).toBe(200);
-  });
-
-  it("returns only a single status field (no extra fields)", async () => {
-    const response = await app.inject({
-      method: "GET",
-      url: "/health/status",
+      headers: { "x-test-admin": "true" },
     });
 
     expect(response.statusCode).toBe(200);
-    const body = response.json<Record<string, unknown>>();
-    // The simplified endpoint exposes only the aggregate `status` plus the coarse
-    // `email` subsystem enum — no counters, timestamps, or full check breakdown.
-    expect(Object.keys(body).sort()).toEqual(["email", "status"]);
-    expect(body).toHaveProperty("status");
-    expect(body).toHaveProperty("email");
-    expect(body).not.toHaveProperty("timestamp");
-    expect(body).not.toHaveProperty("uptime");
-    expect(body).not.toHaveProperty("checks");
-  });
-
-  it("returns healthy when DB succeeds and storage is not configured", async () => {
-    const response = await app.inject({
-      method: "GET",
-      url: "/health/status",
-    });
-
-    expect(response.statusCode).toBe(200);
-    const body = response.json<{ status: string }>();
-    // DB is mocked to succeed; storage not configured counts as ok
+    const body = response.json<{
+      status: string;
+      timestamp: string;
+      uptime: number;
+      checks: { database: string; storage: string; email: string };
+    }>();
     expect(body.status).toBe("healthy");
+    expect(body.checks.database).toBe("ok");
+    // storage is "not_configured" since s3Client is null in test env
+    expect(body.checks.storage).toBe("not_configured");
+    // smtpEnabled config key is missing in tests ⇒ email subsystem is "disabled".
+    expect(body.checks.email).toBe("disabled");
+    expect(typeof body.timestamp).toBe("string");
+    expect(typeof body.uptime).toBe("number");
   });
 });
 
@@ -159,20 +145,21 @@ describe("GET /health/status — degraded (DB failure)", () => {
     await app.close();
   });
 
-  it("returns unhealthy when database check fails", async () => {
+  it("returns degraded when database check fails", async () => {
     const { prisma } = await import("../shared/prisma.js");
     vi.mocked(prisma.$queryRaw).mockRejectedValueOnce(new Error("DB connection failed"));
 
     const response = await app.inject({
       method: "GET",
       url: "/health/status",
+      headers: { "x-test-admin": "true" },
     });
 
     expect(response.statusCode).toBe(200);
-    const body = response.json<{ status: string }>();
-    // DB fails, storage not configured → only storage "ok" (not configured treated as ok),
-    // DB fails → degraded
+    const body = response.json<{ status: string; checks: { database: string } }>();
+    // DB fails, storage not configured (treated as ok) → degraded
     expect(body.status).toBe("degraded");
+    expect(body.checks.database).toBe("error");
   });
 });
 
@@ -180,8 +167,6 @@ describe("GET /health/status — degraded (storage unreachable)", () => {
   const app = fastify({ logger: false });
 
   beforeAll(async () => {
-    // Enable storage so the controller reaches the HeadBucketCommand branch,
-    // but make send() throw to simulate an unreachable storage endpoint
     storageState.s3Enabled = true;
     storageState.sendImpl.mockRejectedValue(new Error("Connection refused"));
 
@@ -192,7 +177,6 @@ describe("GET /health/status — degraded (storage unreachable)", () => {
   });
 
   afterAll(async () => {
-    // Restore storage to "not configured" state for isolation
     storageState.s3Enabled = false;
     storageState.sendImpl.mockResolvedValue({});
     await app.close();
@@ -202,11 +186,13 @@ describe("GET /health/status — degraded (storage unreachable)", () => {
     const response = await app.inject({
       method: "GET",
       url: "/health/status",
+      headers: { "x-test-admin": "true" },
     });
 
     expect(response.statusCode).toBe(200);
-    const body = response.json<{ status: string }>();
+    const body = response.json<{ status: string; checks: { storage: string } }>();
     // DB succeeds, storage configured but throws → storage "error" → degraded
     expect(body.status).toBe("degraded");
+    expect(body.checks.storage).toBe("error");
   });
 });

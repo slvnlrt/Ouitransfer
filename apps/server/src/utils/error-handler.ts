@@ -203,18 +203,22 @@ export function globalErrorHandler(
   // 5. Fastify errors with an explicit statusCode (rate-limit, content-type, etc.)
   const fastifyError = error as FastifyError;
   if (fastifyError.statusCode && fastifyError.statusCode >= 400 && fastifyError.statusCode < 600) {
+    // A8-04: do NOT forward `fastifyError.message` verbatim. These messages come
+    // from Fastify-internal plugins/parsers (multipart, content-type, body limit,
+    // etc.) and can leak internal field names, limits, and library internals that
+    // help an attacker fingerprint versions and constraints. Client-safe messages
+    // come ONLY from vetted AppError/Zod/JWT/Prisma paths handled above. For these
+    // generic Fastify errors we return the canonical status-code message for 4xx
+    // and a flat "Internal Server Error" for 5xx.
     response = {
-      error: fastifyError.message || http4xxMessage(fastifyError.statusCode),
+      error:
+        fastifyError.statusCode >= 500
+          ? "Internal Server Error"
+          : http4xxMessage(fastifyError.statusCode),
       code: fastifyError.code || ErrorCodes.FASTIFY_ERROR,
       statusCode: fastifyError.statusCode,
       timestamp: new Date().toISOString(),
     };
-
-    // For 4xx client errors, forward the (already-sanitized Fastify) message.
-    // For 5xx server errors, use a generic message to avoid leaking internals.
-    if (fastifyError.statusCode >= 500) {
-      response.error = "Internal Server Error";
-    }
 
     reply.status(response.statusCode).send(response);
     return;
