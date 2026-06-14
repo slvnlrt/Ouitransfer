@@ -1007,6 +1007,16 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
   // public metadata endpoint. The frontend identification form reads them BEFORE attempting
   // access, so it can show (or skip) the name/email fields without triggering the 403
   // IDENTIFICATION_REQUIRED gate. This is intentional per spec (Section 5).
+  //
+  // A2-09/A2-10 (Info): this endpoint (and anonymous `GET /shares/:shareId`) is
+  // public BY DESIGN — it exposes only non-sensitive preview metadata
+  // (name/description/counts/hasPassword) for Open Graph previews and the
+  // identification form. It does NOT leak the owner's identity or the raw S3
+  // object key: R2 (A4-08) replaced `objectName` in non-owner share responses
+  // with an opaque, share-scoped download token (see `mintShareFileToken` in
+  // share/service.ts), and blanks `userId`/owner-only fields. So the historical
+  // "objectName exposure" concern is already closed; what remains here is
+  // intentional, minimal metadata gated only by the per-IP rate limit below.
   app.route({
     method: "GET",
     url: "/shares/alias/:alias/metadata",

@@ -57,20 +57,20 @@ After de-duplication of cross-corroborated findings: see batches below.
 - [x] A1-03 (High) persist last-used TOTP step; reject replay; consider window 0/1
 - [x] A1-04 (High) trusted-device: server-issued random device secret in httpOnly cookie; `@@unique([userId, deviceHash])`; stop deriving from UA/IP
 - [x] A1-05 (High) require re-auth (password/step-up) to enable 2FA + regenerate backup codes
-- [ ] A1-06 (Med) forgot-password: generic 200 for disabled-password non-LDAP users (no enumeration)
+- [x] A1-06 (Med) forgot-password: generic 200 for disabled-password non-LDAP users (no enumeration) — `requestPasswordReset` returns silently for disabled-auth local users (no ForbiddenError oracle); route always sends the generic 200; inject tests in `auth-r3b.integration.test.ts`
 - [x] A1-07 (Med) backup codes ≥80-bit (`randomBytes(10)`); fix comment
 - [x] A1-08 (Med) encrypt `twoFactorSecret` at rest (AES-256-GCM/ENCRYPTION_SECRET); hash backup codes
-- [ ] A1-09 (Med) password policy: min 12 default + max-72-byte guard + complexity/HIBP optional; revoke trusted devices on reset + 2FA disable
-- [ ] A1-10 (Med) login: dummy bcrypt on absent user; defer isActive/external checks until after password or genericize
+- [x] A1-09 (Med) password policy: min 12 default (`seed-data.ts`) + max-72-byte guard + 3-of-4 complexity, centralised in `auth/password-policy.ts` (Zod schema + `validatePasswordMiddleware`); revoke trusted devices on reset (`resetPassword`) AND on 2FA disable (`two-factor/service.disable2FA`); web register/reset/profile/invite forms + i18n updated (12 chars + new max/complexity keys across 23 locales)
+- [x] A1-10 (Med) login: always runs a bcrypt compare (real hash or fixed `DUMMY_PASSWORD_HASH`) to mask user-existence timing; inactive/external/unknown all return the generic "Invalid credentials" (no distinct pre-password errors); inject tests
 - [x] A1-11 (Low) derive challenge secret from JWT_SECRET via HKDF (stable across instances); optionally bind IP/UA
-- [ ] A1-12 (Low) `await` token revocation on logout; consider tokenVersion bump
-- [ ] A1-13 (Low) `sameSite: strict` for refresh cookie
-- [ ] A1-14 (Low) align refresh cookie path with route (`/api` consistency)
-- [ ] A1-17 / A8-14 (Info/Low) bcrypt cost 12; evaluate bcryptjs@3/argon2
-- [ ] A2-02 (Med) last-admin / self-lockout protection on demote/deactivate/delete
-- [ ] A2-03 (Med) restrict `allowSetupBypass` to the minimal first-user setup path only
-- [ ] A2-07 (Low) remove `isAdmin` from register DTO
-- [ ] A1-15 / A1-16 / A2-08 / A2-09 / A2-10 (Info) document/annotate; redact reset-request email in audit where feasible
+- [x] A1-12 (Low) logout now `await`s `revokeAllUserTokens` (surfaces failures) AND bumps `tokenVersion` so the current access token is invalidated immediately; inject test
+- [x] A1-13 (Low) `sameSite: "strict"` for refresh cookie (`auth-cookies.ts`); test updated
+- [x] A1-14 (Low) documented the proxy contract for the refresh cookie path vs `/auth/refresh` route in `auth.config.ts` (browser-facing `/api` prefix is intentional + load-bearing)
+- [x] A1-17 / A8-14 (Info/Low) bcrypt cost raised 10→12 everywhere (`BCRYPT_COST` in `password-policy.ts`: register/reset/invite/user-update/share/reverse-share/reset-password script). bcryptjs@3 upgrade DEFERRED — the major bump changes the async API (callback→promise) and touches every hash/compare call site + tests; cost-12 on the current 2.4.3 already meets the hardening goal, so the lib upgrade is left to a dedicated dependency PR (also see A8-15 automerge-exclusion).
+- [x] A2-02 (Med) last-admin / self-lockout protection on demote/deactivate/delete (`UserService.assertAdminRemovalAllowed`, new `LAST_ADMIN` error code, 409); inject tests in `user-admin-protection.integration.test.ts`
+- [x] A2-03 (Med) restrict `allowSetupBypass` to first-user `POST /auth/register` only; `/users` mgmt, `/app/configs|logo|test-smtp`, `/providers*` now `allowSetupBypass: false` (401 in zero-user window); inject tests (+ updated `admin-prevalidation.integration.test.ts`)
+- [x] A2-07 (Low) removed `isAdmin` from `BaseRegisterUserSchema`/`RegisterUserInput` + register route schema; repository `createUser` takes `isAdmin` as an explicit server-only arg (never from client body)
+- [x] A1-15 / A1-16 / A2-08 / A2-09 / A2-10 (Info) A1-16: `PASSWORD_RESET_REQUEST` audit no longer stores the raw email for unknown accounts (only `userId`+email when a real reset issued). A1-15 (AJV vs Zod), A2-08 (isAdmin JWT claim propagation), A2-09/A2-10 (intentional public metadata; reconciled with R2 opaque file token) annotated in code.
 
 ## R4 — Federated identity: OAuth/OIDC & LDAP (server: auth-providers/ldap)
 - [ ] A5-01 (Crit) verify OIDC `id_token` (JWKS, alg allowlist, iss/aud/exp/iat/nonce); userinfo only for non-OIDC over verified channel

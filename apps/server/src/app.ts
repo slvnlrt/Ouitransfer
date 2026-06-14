@@ -28,6 +28,14 @@ export async function buildApp() {
   const app = fastify({
     ajv: {
       customOptions: {
+        // A1-15 (Info): `removeAdditional: "all"` only affects AJV-compiled
+        // schemas. Routes using `@fastify/type-provider-zod` (all auth/user
+        // routes) are validated and stripped by Zod, NOT AJV — Zod's object
+        // schemas already reject/ignore unknown keys, so unknown-field stripping
+        // on those payloads comes from Zod, not this AJV option. This setting is
+        // therefore a no-op for the Zod-validated auth surface; it is retained
+        // for any remaining AJV/JSON-schema routes. Do not assume it protects
+        // auth bodies against mass assignment — Zod does that.
         removeAdditional: "all",
       },
     },
