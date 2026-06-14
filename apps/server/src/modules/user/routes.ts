@@ -39,7 +39,14 @@ function serializeUser<
 
 // ── Pre-validation hooks ─────────────────────────────────────
 
-const adminPreValidation = createAdminPreValidation({ allowSetupBypass: true });
+// A2-03: ONLY first-user registration may run in the zero-user setup window.
+// `setupBypassPreValidation` is reserved for `POST /auth/register`; every other
+// admin user-management route (`GET /users`, `PUT /users`, delete, (de)activate,
+// image) uses `adminPreValidation` with NO setup bypass, so those routes are 401
+// until a real admin exists. This closes the window where an unauthenticated
+// caller could list/modify users before the first admin registers.
+const setupBypassPreValidation = createAdminPreValidation({ allowSetupBypass: true });
+const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false });
 const jwtPreValidation = createJwtPreValidation();
 
 // ── Shared response schemas ──────────────────────────────────
@@ -78,6 +85,9 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
   // Dynamic schemas (created once at plugin registration time)
   const createRegisterSchema = async () => {
     const passwordSchema = await createPasswordSchema();
+    // A2-07: no `isAdmin` field — admin is server-decided (first user) or granted
+    // via PUT /users only. A client-supplied value would be a privilege-escalation
+    // surface and is therefore not accepted here.
     return z.object({
       firstName: z.string().min(1).describe("User first name"),
       lastName: z.string().min(1).describe("User last name"),
@@ -85,7 +95,6 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
       email: z.email().describe("User email"),
       image: z.string().optional().describe("User profile image URL"),
       password: passwordSchema.describe("User password"),
-      isAdmin: z.boolean().optional().default(false).describe("Whether the user is an admin"),
     });
   };
 
@@ -100,7 +109,7 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "POST",
     url: "/auth/register",
-    preValidation: [adminPreValidation, validatePasswordMiddleware],
+    preValidation: [setupBypassPreValidation, validatePasswordMiddleware],
     schema: {
       tags: ["User"],
       operationId: "registerUser",
@@ -219,6 +228,7 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
         400: ErrorResponseSchema,
         401: ErrorResponseSchema,
         403: ErrorResponseSchema,
+        409: ErrorResponseSchema,
       },
     },
     handler: async (request, reply) => {
@@ -228,7 +238,7 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
       // Fetch old user state for audit comparison (role change detection)
       const oldUser = await userService.getUserById(id);
 
-      const updatedUser = await userService.updateUser(id, updateData);
+      const updatedUser = await userService.updateUser(id, updateData, request.user?.userId);
 
       // Audit password change if password was in the update (fire-and-forget)
       if (updateData.password) {
@@ -327,10 +337,11 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
         400: ErrorResponseSchema,
         401: ErrorResponseSchema,
         403: ErrorResponseSchema,
+        409: ErrorResponseSchema,
       },
     },
     handler: async (request, reply) => {
-      const user = await userService.deactivateUser(request.params.id);
+      const user = await userService.deactivateUser(request.params.id, request.user?.userId);
 
       // Audit user deactivation (fire-and-forget)
       logAuditEvent({
@@ -362,10 +373,11 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
         400: ErrorResponseSchema,
         401: ErrorResponseSchema,
         403: ErrorResponseSchema,
+        409: ErrorResponseSchema,
       },
     },
     handler: async (request, reply) => {
-      const { user, purge } = await userService.deleteUser(request.params.id);
+      const { user, purge } = await userService.deleteUser(request.params.id, request.user?.userId);
 
       // Audit user deletion (fire-and-forget)
       logAuditEvent({

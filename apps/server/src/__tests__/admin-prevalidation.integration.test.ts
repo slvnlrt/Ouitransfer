@@ -83,10 +83,10 @@ describe("admin preValidation middleware — integration", () => {
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // PATCH /app/configs/:key — allowSetupBypass: true
+  // PATCH /app/configs/:key — allowSetupBypass: false (A2-03)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  describe("PATCH /app/configs/:key (allowSetupBypass: true)", () => {
+  describe("PATCH /app/configs/:key (allowSetupBypass: false)", () => {
     it("returns 401 with ErrorResponseSchema shape when no auth cookie is provided", async () => {
       const res = await app.inject({
         method: "PATCH",
@@ -114,7 +114,7 @@ describe("admin preValidation middleware — integration", () => {
 
     it("returns 401 when no auth cookie is provided (via GET /app/configs, CSRF-exempt)", async () => {
       // GET requests bypass CSRF hook, so preValidation is reached directly.
-      // GET /app/configs also uses adminPreValidation (allowSetupBypass: true).
+      // GET /app/configs uses adminPreValidation (allowSetupBypass: false, A2-03).
       const res = await app.inject({
         method: "GET",
         url: "/app/configs",
@@ -179,23 +179,22 @@ describe("admin preValidation middleware — integration", () => {
       expect(res.statusCode).not.toBe(403);
     });
 
-    it("allows unauthenticated access when 0 users exist (setup window)", async () => {
-      // Setup window: user count is 0, allowSetupBypass: true → preValidation is skipped
+    it("STILL requires auth when 0 users exist (A2-03: no setup bypass on config routes)", async () => {
+      // A2-03: even in the zero-user setup window, /app/configs must NOT be
+      // unauthenticated. Only first-user registration is allowed before an admin
+      // exists; config writes/reads stay gated to prevent an attacker from
+      // rewriting config (or probing via SMTP test) during that window.
       mockUserCount.mockResolvedValue(0);
-
-      const { prisma } = await import("../shared/prisma.js");
-      vi.mocked(prisma.appConfig.findMany).mockResolvedValue([]);
 
       const res = await app.inject({
         method: "GET",
         url: "/app/configs",
-        // No auth cookie — should pass preValidation in setup window
+        // No auth cookie — must be rejected even though user count is 0.
       });
 
-      // preValidation bypassed → controller ran. Not 401 or 403.
-      expect(res.statusCode).not.toBe(401);
-      expect(res.statusCode).not.toBe(403);
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(401);
+      const body = res.json();
+      expect(typeof body.error).toBe("string");
     });
 
     it("returns 401 when JWT tokenVersion is stale (revoked session)", async () => {

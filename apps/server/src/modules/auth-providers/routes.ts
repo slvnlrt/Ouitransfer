@@ -215,7 +215,11 @@ const AuthProviderResponseSchema = z.object({
 // ── Plugin ────────────────────────────────────────────────────
 
 export const authProvidersRoutes: FastifyPluginAsyncZod = async (app) => {
-  const adminPreValidation = createAdminPreValidation({ allowSetupBypass: true });
+  // A2-03: NO setup bypass. Auth-provider CRUD must require a real admin JWT —
+  // otherwise, in the zero-user window, an attacker could pre-seed a malicious
+  // OIDC provider with autoRegister + admin domains and OIDC-login as an admin.
+  // First-user registration is the only route permitted before an admin exists.
+  const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false });
 
   // ── GET /providers ──────────────────────────────────────────
   app.route({
