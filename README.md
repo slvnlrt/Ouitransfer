@@ -44,8 +44,9 @@ Ouitransfer is a **self-hosted, open-source** file transfer platform. Upload fil
 ## Quick Start
 
 ```bash
-# 1. Copy and fill in the required secrets
-cp .env.example .env
+# 1. Create your env file, then fill in the required secrets
+#    (generate each one with: openssl rand -hex 32)
+cp .env.docker.example .env
 
 # 2. Start all 3 services
 docker compose up -d
