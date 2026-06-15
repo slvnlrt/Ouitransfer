@@ -35,13 +35,14 @@ const COLOR = {
   indigo: "#6366f1",
   indigoLight: "#e0e7ff",
   white: "#ffffff",
-  bodyBg: "#f3f4f6",
+  bodyBg: "#f4f4f7",
   cardBg: "#ffffff",
-  textPrimary: "#1f2937",
-  textSecondary: "#4b5563",
+  textPrimary: "#111827",
+  textBody: "#374151",
+  textSecondary: "#6b7280",
   textMuted: "#9ca3af",
-  border: "#e5e7eb",
-  infoBg: "#f9fafb",
+  border: "#ececf1",
+  infoBg: "#f7f7fb",
 } as const;
 
 const FONT_STACK =
@@ -156,20 +157,25 @@ function renderHtml(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:${COLOR.bodyBg};padding:40px 0;">
     <tr>
       <td align="center">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;width:100%;background-color:${COLOR.cardBg};border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;width:100%;background-color:${COLOR.cardBg};border-radius:14px;overflow:hidden;border:1px solid ${COLOR.border};box-shadow:0 1px 3px rgba(17,24,39,0.06);">
+
+          <!-- Accent bar -->
+          <tr>
+            <td style="height:4px;line-height:4px;font-size:0;background-color:${COLOR.indigo};">&nbsp;</td>
+          </tr>
 
           <!-- Header -->
           <tr>
-            <td style="background-color:${COLOR.indigo};padding:32px 24px;text-align:center;">
-              <h1 style="margin:0;color:${COLOR.white};font-size:26px;font-weight:700;letter-spacing:-0.5px;font-family:${FONT_STACK};">${safeAppName}</h1>
-              <p style="margin:6px 0 0 0;color:${COLOR.white};font-size:15px;opacity:0.9;font-family:${FONT_STACK};">${safeSubtitle}</p>
+            <td style="padding:40px 40px 0;text-align:center;background-color:${COLOR.cardBg};">
+              <h1 style="margin:0;color:${COLOR.textPrimary};font-size:22px;font-weight:700;letter-spacing:-0.3px;font-family:${FONT_STACK};">${safeAppName}</h1>
+              <p style="margin:8px 0 0 0;color:${COLOR.textSecondary};font-size:14px;font-family:${FONT_STACK};">${safeSubtitle}</p>
             </td>
           </tr>
 
           <!-- Body -->
           <tr>
-            <td style="padding:40px 32px;background-color:${COLOR.cardBg};">
-              <div style="font-size:15px;line-height:1.7;color:${COLOR.textPrimary};font-family:${FONT_STACK};">
+            <td style="padding:28px 40px 8px;background-color:${COLOR.cardBg};">
+              <div style="font-size:15px;line-height:1.7;color:${COLOR.textBody};font-family:${FONT_STACK};">
                 <!-- SAFETY: slots.body is pre-escaped — template renders use tHtml() which HTML-escapes
                      all interpolated values. Do NOT inject raw user strings into body without escaping. -->
                 ${nlToBr(slots.body)}
@@ -181,15 +187,15 @@ function renderHtml(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
 
           <!-- Footer -->
           <tr>
-            <td style="background-color:${COLOR.infoBg};padding:24px 32px;text-align:center;border-top:1px solid ${COLOR.border};">
-              <p style="margin:0;color:${COLOR.textSecondary};font-size:13px;font-family:${FONT_STACK};">
+            <td style="background-color:${COLOR.cardBg};padding:28px 40px 36px;text-align:center;border-top:1px solid ${COLOR.border};">
+              <p style="margin:0;color:${COLOR.textSecondary};font-size:13px;line-height:1.5;font-family:${FONT_STACK};">
                 ${footerSentBy}
               </p>
-              <p style="margin:6px 0 0 0;color:${COLOR.textMuted};font-size:12px;font-family:${FONT_STACK};">
+              <p style="margin:4px 0 0 0;color:${COLOR.textMuted};font-size:12px;line-height:1.5;font-family:${FONT_STACK};">
                 ${footerIgnore}
               </p>
               ${slots.unsubscribeUrl ? renderUnsubscribeHtml(slots.unsubscribeUrl, footerUnsubscribe) : ""}
-              <p style="margin:8px 0 0 0;color:${COLOR.textMuted};font-size:11px;font-family:${FONT_STACK};">
+              <p style="margin:16px 0 0 0;color:${COLOR.textMuted};font-size:11px;font-family:${FONT_STACK};">
                 <a href="https://github.com/slvnlrt/ouitransfer" style="color:${COLOR.textMuted};text-decoration:none;">${footerPoweredBy}</a>
               </p>
             </td>
@@ -207,14 +213,14 @@ function renderCtaHtml(cta: { url: string; label: string }): string {
   const safeLabel = escapeHtml(cta.label);
   const safeUrl = safeHref(cta.url);
   return `
-               <div style="text-align:center;margin:32px 0;">
-                 <a href="${safeUrl}" style="display:inline-block;background-color:${COLOR.indigo};color:${COLOR.white};text-decoration:none;padding:13px 28px;font-weight:600;font-size:15px;border-radius:6px;font-family:${FONT_STACK};">${safeLabel}</a>
+               <div style="text-align:center;margin:32px 0 8px;">
+                 <a href="${safeUrl}" style="display:inline-block;background-color:${COLOR.indigo};color:${COLOR.white};text-decoration:none;padding:12px 26px;font-weight:600;font-size:15px;border-radius:8px;font-family:${FONT_STACK};">${safeLabel}</a>
                </div>`;
 }
 
 function renderInfoBoxHtml(content: string): string {
   return `
-              <div style="background-color:${COLOR.infoBg};border-left:4px solid ${COLOR.indigo};padding:16px 20px;margin-top:28px;border-radius:0 4px 4px 0;">
+              <div style="background-color:${COLOR.infoBg};border-left:4px solid ${COLOR.indigo};padding:14px 18px;margin-top:28px;border-radius:0 8px 8px 0;">
                 <p style="margin:0;color:${COLOR.textSecondary};font-size:14px;line-height:1.6;font-family:${FONT_STACK};">${content}</p>
               </div>`;
 }
