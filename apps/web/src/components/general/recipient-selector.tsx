@@ -345,13 +345,13 @@ export function RecipientSelector({
 
         {hasSelection && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-accent border border-border rounded-lg">
-            <div className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-accent-foreground" />
+            <div className="flex items-center gap-2 min-w-0">
+              <Check className="h-4 w-4 shrink-0 text-accent-foreground" />
               <span className="text-sm font-medium text-accent-foreground">
                 {t("recipientSelector.selectedCount", { count: selectedForAction.size })}
               </span>
             </div>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center sm:justify-end gap-2">
               {showSmtpControls && shareAlias && (
                 <Button
                   variant="outline"

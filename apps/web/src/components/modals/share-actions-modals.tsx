@@ -531,7 +531,7 @@ export function ShareActionsModals({
       </Dialog>
 
       <Dialog open={!!shareToManageRecipients} onOpenChange={() => onCloseManageRecipients()}>
-        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-hidden">
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-hidden">
           <DialogHeader className="space-y-3">
             <DialogTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
