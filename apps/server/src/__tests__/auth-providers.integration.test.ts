@@ -264,4 +264,40 @@ describe("GET /auth/providers/all — integration", () => {
     // clientSecret must NOT be present (SAFE_PROVIDER_SELECT excludes it)
     expect(provider).not.toHaveProperty("clientSecret");
   });
+
+  // ── GET /providers (public enabled list) ──────────────────────────────────
+  // Regression: getEnabledProviders built each authUrl from getAppUrl(), which
+  // THROWS when `appUrl` is not configured (the default on a fresh install).
+  // That 500-ed /auth/providers and wedged the login/register page on its
+  // loading spinner. The authorize endpoint is same-origin, so an unconfigured
+  // appUrl must yield a RELATIVE authUrl, not a 500.
+  describe("GET /auth/providers — public enabled list (appUrl independence)", () => {
+    it("returns 200 with a RELATIVE authUrl when appUrl is not configured", async () => {
+      const { getConfigValue } = await import("../modules/config/service.js");
+      vi.mocked(getConfigValue).mockImplementation(async (key: string) =>
+        key === "appUrl" ? "" : "true",
+      );
+      mockAuthProviderFindMany.mockResolvedValue([makeProvider({ name: "google" })]);
+
+      const res = await app.inject({ method: "GET", url: "/auth/providers" });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.json().data[0].authUrl).toBe("/api/auth/providers/google/authorize");
+    });
+
+    it("returns 200 with an ABSOLUTE authUrl from the configured appUrl", async () => {
+      const { getConfigValue } = await import("../modules/config/service.js");
+      vi.mocked(getConfigValue).mockImplementation(async (key: string) =>
+        key === "appUrl" ? "https://transfer.example.com" : "true",
+      );
+      mockAuthProviderFindMany.mockResolvedValue([makeProvider({ name: "google" })]);
+
+      const res = await app.inject({ method: "GET", url: "/auth/providers" });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.json().data[0].authUrl).toBe(
+        "https://transfer.example.com/api/auth/providers/google/authorize",
+      );
+    });
+  });
 });

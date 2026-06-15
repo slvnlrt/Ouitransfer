@@ -1,7 +1,7 @@
 import { prisma } from "../../shared/prisma.js";
 import { NotFoundError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
-import { getAppUrl } from "../email/url-builder.js";
+import { getConfigValue } from "../config/service.js";
 import type {
   CreateAuthProviderInput,
   UpdateAuthProviderInput,
@@ -84,7 +84,21 @@ export class AuthProvidersService {
   }
 
   private async resolveAppOrigin(): Promise<string> {
-    return new URL(await getAppUrl()).origin;
+    // The per-provider authorize endpoint is same-origin. Prefer the configured
+    // canonical appUrl (A6-01: never trust the request Host), but when appUrl is
+    // not configured — the default on a fresh install — fall back to a RELATIVE
+    // URL (empty origin) rather than failing the whole endpoint with a 500. A
+    // relative href resolves against the page's real origin in the browser, which
+    // is safe (no Host-header trust) and keeps the login/register page working out
+    // of the box. Previously this threw "appUrl is not configured", 500-ing
+    // /auth/providers and wedging the login form on its loading spinner.
+    const appUrl = await getConfigValue("appUrl");
+    if (!appUrl) return "";
+    try {
+      return new URL(appUrl).origin;
+    } catch {
+      return "";
+    }
   }
 
   private static readonly SAFE_PROVIDER_SELECT = {
