@@ -284,7 +284,8 @@ function renderText(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
     lines.push(`${unsubLabel}: ${safeTextUrl(slots.unsubscribeUrl)}`);
   }
 
-  lines.push(`${footerPoweredBy} — https://github.com/slvnlrt/ouitransfer`);
+  lines.push(footerPoweredBy);
+  lines.push("https://github.com/slvnlrt/ouitransfer");
 
   return lines.join("\n");
 }
