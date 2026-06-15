@@ -7,7 +7,16 @@ function makeQueryClient(): QueryClient {
       queries: {
         staleTime: 30_000, // 30 seconds — data changes infrequently in a file-transfer app
         gcTime: 5 * 60_000, // 5 minutes — keep unused cache entries briefly
-        refetchOnWindowFocus: true,
+        // Disabled deliberately. Returning to a tab whose access token expired
+        // while backgrounded fired a refetch storm: every query 401s at once and
+        // funnels through the token-refresh interceptor, which briefly drops auth
+        // to a resolving state and flashes — or, under load, wedges — the
+        // full-screen LoadingScreen, even though a hard reload is instant and keeps
+        // the user logged in. We don't need focus-driven refetching here: data is
+        // refreshed on mutations (invalidateQueries) and explicit user actions, so
+        // returning to the tab now renders the cached UI immediately. (The earlier
+        // 30s refresh-timeout fix only masked the symptom.)
+        refetchOnWindowFocus: false,
         retry: (failureCount, error) => {
           // Don't retry on client errors (auth, not found, forbidden)
           if (axios.isAxiosError(error)) {
