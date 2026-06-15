@@ -16,7 +16,7 @@
 
 ---
 
-Ouitransfer is a **self-hosted, open-source** file transfer platform. Upload files, share them via a link with optional passwords and expiration dates, and let others send files back to you — all on your own infrastructure, with no third-party dependencies and zero tracking.
+Ouitransfer is a **self-hosted, open-source** file transfer platform. Upload files, share them via a link with optional passwords and expiration dates, and let others send files back to you, all on your own infrastructure, with no third-party dependencies and zero tracking.
 
 ## Screenshots
 
@@ -30,16 +30,16 @@ Ouitransfer is a **self-hosted, open-source** file transfer platform. Upload fil
 
 ## Features
 
-- **Self-hosted** — deploy on any VPS, dedicated server, or cloud platform; no external services required
-- **S3-compatible storage** — includes built-in RustFS (zero config, no dependencies) or connect any S3 provider (AWS, Backblaze, Cloudflare R2...)
-- **Secure sharing** — password protection, expiration dates, view limits, per-share download notifications
-- **Reverse shares** — create upload links so others can send files directly to you
-- **User management** — multi-user, admin roles, storage quotas, and user groups with per-group quota policies
-- **LDAP / Active Directory** — sync users and groups from your directory server
-- **OIDC / SSO** — sign in with your identity provider (Zitadel, Google, Keycloak...)
-- **2FA** — TOTP two-factor authentication (RFC 6238)
-- **Email notifications** — configurable per event type, with cooldown periods and one-click unsubscribe
-- **23 languages** — full internationalization including RTL support
+- **Self-hosted**: deploy on any VPS, dedicated server, or cloud platform; no external services required
+- **S3-compatible storage**: includes built-in RustFS (zero config, no dependencies) or connect any S3 provider (AWS, Backblaze, Cloudflare R2...)
+- **Secure sharing**: password protection, expiration dates, view limits, per-share download notifications
+- **Reverse shares**: create upload links so others can send files directly to you
+- **User management**: multi-user, admin roles, storage quotas, and user groups with per-group quota policies
+- **LDAP / Active Directory**: sync users and groups from your directory server
+- **OIDC / SSO**: sign in with your identity provider (Zitadel, Google, Keycloak...)
+- **2FA**: TOTP two-factor authentication (RFC 6238)
+- **Email notifications**: configurable per event type, with cooldown periods and one-click unsubscribe
+- **23 languages**: full internationalization including RTL support
 
 ## Quick Start
 
@@ -67,7 +67,7 @@ The first account registered becomes the administrator. See the [documentation](
 | Backend        | Fastify 5 · Prisma · SQLite                         |
 | Frontend       | Next.js 15 · React 19 · Tailwind CSS 4 · shadcn/ui  |
 | Storage        | RustFS (built-in) or any S3-compatible provider      |
-| Infrastructure | Docker Compose — 3 containers (storage, API, web)    |
+| Infrastructure | Docker Compose, 3 containers (storage, API, web)     |
 | Monorepo       | pnpm workspaces · Turborepo                          |
 
 ## Contributing
@@ -87,4 +87,4 @@ Ouitransfer started from code in the [Palmr](https://github.com/kyantech/Palmr) 
 
 ## License
 
-Apache 2.0 — see [LICENSE](LICENSE).
+Apache 2.0. See [LICENSE](LICENSE).
