@@ -81,6 +81,10 @@ just setup-dev   # install deps, generate Prisma client, create local SQLite DB
 just dev         # start all apps in watch mode (API · Web · Docs)
 ```
 
+## Acknowledgements
+
+Ouitransfer started from code in the [Palmr](https://github.com/kyantech/Palmr) project by Daniel Luiz Alves / Kyantech Solutions, Inc., also licensed under Apache 2.0. See [NOTICE](NOTICE).
+
 ## License
 
 Apache 2.0 — see [LICENSE](LICENSE).
