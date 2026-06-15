@@ -17,9 +17,12 @@ test.describe("Smoke tests", () => {
     const response = await request.get("http://localhost:3333/health");
     expect(response.ok()).toBeTruthy();
     const body = await response.json();
+    // A8-11: the public liveness probe exposes only a coarse aggregate — the
+    // per-subsystem breakdown (checks.database/storage/email) moved to the
+    // authenticated /health/status endpoint and is no longer public.
     expect(body.status).toBe("healthy");
-    expect(body.checks.database).toBe("ok");
-    expect(body.checks.storage).toBe("ok");
+    expect(typeof body.timestamp).toBe("string");
+    expect(typeof body.uptime).toBe("number");
   });
 
   test("first-user registration creates admin and redirects to dashboard", async ({ page }) => {
