@@ -336,6 +336,7 @@ volumes:
 | `OUITRANSFER_UID` | `1001` | User ID for server container processes. Useful for NAS or bind-mount setups. |
 | `OUITRANSFER_GID` | `1001` | Group ID for server container processes. |
 | `DEFAULT_LANGUAGE` | `en-US` | Default UI language. See [available languages](/docs/v1-beta/available-languages). |
+| `APP_URL` | first `FRONTEND_ORIGIN` | Canonical public origin used for OpenGraph/canonical metadata on public share pages. Optional: it defaults to the first `FRONTEND_ORIGIN` entry, so set it only to override that (e.g. `https://files.example.com`). |
 | `ENABLE_API_DOCS` | `false` | When `true`, exposes the `/swagger` and `/docs` UIs (publicly reachable — no auth gate). Enabling it serves the full OpenAPI spec, so it is **not recommended for internet-facing deployments**. |
 | `PRESIGNED_URL_EXPIRATION` | `3600` | Upload presigned URL expiry in seconds (default: 1 hour). |
 | `PRESIGNED_GET_URL_EXPIRATION` | `900` | Download presigned URL expiry in seconds (default: 15 min). |

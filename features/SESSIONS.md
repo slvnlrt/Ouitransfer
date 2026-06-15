@@ -1,5 +1,36 @@
 # Session Log
 
+## 2026-06-15 (v1.0 release hardening + post-release hotfixes)
+
+Shipped after merging the red-team PR and cutting v1.0. Final state of each item:
+
+- **`/auth/providers` no longer 500s when `appUrl` is unconfigured.** `getEnabledProviders`
+  now builds a RELATIVE same-origin `authUrl` when no canonical `appUrl` is set (the default
+  on a fresh install), instead of throwing. This was the release blocker: the 500 left the
+  login/register page stuck on its loading spinner. A6-01 preserved (never trusts the request
+  Host). Regression tests added.
+- **Canonical metadata origin auto-derives from `FRONTEND_ORIGIN`.** Web `getBaseUrl()` resolves
+  `APP_URL` → first `FRONTEND_ORIGIN` entry → connection host, so public share pages get a
+  correct OpenGraph/canonical base out of the box (no separate var needed). `FRONTEND_ORIGIN`
+  now passed to the web container. A7-05 host-poisoning protection intact.
+- **CSP: nonce + `strict-dynamic` script-src with next-themes nonce integration (A7-03).** Root
+  layout reads the proxy's `x-nonce` and passes it to `ThemeProvider`, so the theme anti-flash
+  script is nonced — zero CSP-blocked scripts, no hydration error.
+- **Tab-return loading screen fixed** by disabling `refetchOnWindowFocus` (the focus refetch
+  storm transiently collapsed auth state). Returning to the tab renders cached UI instantly.
+- **E2E health smoke test** aligned with the hardened public `/health` (coarse aggregate only;
+  per-subsystem breakdown lives on the authenticated `/health/status`).
+- **Emails**: modern/minimal template redesign (slim indigo accent bar, lighter card, sober
+  CTA/footer) + de-duplicated, em-dash-free footer.
+- **Manage-recipients modal** widened (`sm:max-w-2xl`) with wrap-safe bulk-action bar (no more
+  horizontal overflow).
+- **Licensing**: verbatim Apache-2.0 `LICENSE` (copyright 2026), `NOTICE` + README
+  acknowledgement crediting the upstream Palmr project (Apache-2.0).
+- **Docs reconciled to the final state**: Quick Start env table (`.env.docker.example`,
+  `ENCRYPTION_SECRET` required, `APP_URL` optional override, RustFS on 9000 / reverse-proxy for
+  internet-facing), `/health/status` authenticated, API-doc UIs off-by-default and not
+  admin-gated, image tags `:latest`.
+
 ## 2026-06-14 (Red Team 2026 — full offensive audit + complete remediation)
 
 - **Phase 1 — Red team (8 parallel read-only Opus agents).** Partitioned the attack surface into 8
