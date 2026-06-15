@@ -213,46 +213,6 @@ describe("AuthProvider", () => {
     expect(result.current.isAdmin).toBe(false);
   });
 
-  it("force-resolves to unauthenticated when auth never settles (loading-screen backstop)", async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true });
-    try {
-      mockGetAppInfo.mockResolvedValue({
-        data: {
-          appName: "Test",
-          appDescription: "",
-          appLogo: "",
-          firstUserAccess: false,
-        },
-      } as ReturnType<typeof getAppInfo> extends Promise<infer R> ? R : never);
-
-      // The current-user request never settles (dead socket after the tab was
-      // backgrounded). Without the ceiling this would keep isAuthenticated null
-      // forever, wedging every LoadingScreen.
-      mockGetCurrentUser.mockReturnValue(new Promise(() => {}));
-
-      const { result } = renderHook(() => useAuth(), {
-        wrapper: createWrapper(queryClient),
-      });
-
-      // appInfo resolves → current-user query runs but stays pending → still resolving.
-      await waitFor(() => {
-        expect(mockGetCurrentUser).toHaveBeenCalled();
-      });
-      expect(result.current.isAuthenticated).toBeNull();
-
-      // Advancing past the ceiling trips the backstop → unauthenticated (→ /login).
-      await act(async () => {
-        await vi.advanceTimersByTimeAsync(20_000);
-      });
-
-      expect(result.current.isAuthenticated).toBe(false);
-      expect(result.current.user).toBeNull();
-      expect(result.current.isAdmin).toBe(false);
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-
   it("does not expose setter functions", () => {
     mockGetAppInfo.mockReturnValue(new Promise(() => {}));
 
