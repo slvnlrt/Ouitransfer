@@ -11,6 +11,7 @@ import {
   Source_Sans_3,
   Work_Sans,
 } from "next/font/google";
+import { headers } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 
@@ -115,6 +116,13 @@ export default async function RootLayout({
   const locale = await getLocale();
   const isRTL = RTL_LANGUAGES.includes(locale as (typeof RTL_LANGUAGES)[number]);
 
+  // Per-request CSP nonce set by the proxy (A7-03). Forwarded to next-themes so
+  // its anti-flash inline <script> carries the nonce and is not blocked by the
+  // `script-src 'nonce-…' 'strict-dynamic'` policy. Next.js stamps its own
+  // scripts automatically from the request CSP header; third-party inline
+  // scripts like next-themes' must be nonced explicitly.
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html lang={locale} dir={isRTL ? "rtl" : "ltr"} suppressHydrationWarning>
       <head />
@@ -130,6 +138,7 @@ export default async function RootLayout({
             <SkipToContent />
             <Favicon />
             <ThemeProvider
+              nonce={nonce}
               attribute="class"
               defaultTheme="system"
               enableSystem

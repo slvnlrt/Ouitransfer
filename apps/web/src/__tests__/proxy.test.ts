@@ -375,8 +375,8 @@ describe("proxy", () => {
   });
 
   // -----------------------------------------------------------------------
-  // R6 (A7-02 / A7-04): page-response CSP — hardened directives + storage-origin
-  // propagation. (A7-03 nonce/strict-dynamic reverted; see script-src test below.)
+  // R6 (A7-02 / A7-03 / A7-04): page-response CSP — nonce script-src,
+  // hardened directives, storage-origin propagation
   // -----------------------------------------------------------------------
   describe("page-response CSP", () => {
     /** Extracts the page CSP from a public-path response. */
@@ -388,26 +388,36 @@ describe("proxy", () => {
       return csp;
     }
 
-    it("uses 'self' 'unsafe-inline' in script-src (nonce/strict-dynamic reverted)", async () => {
-      // A nonce + 'strict-dynamic' policy was tried (A7-03) but is incompatible
-      // with this app's statically-optimized pages: Next.js cannot stamp a
-      // per-request nonce on prerendered scripts, so 'strict-dynamic' blocked all
-      // of them and the app never hydrated. See proxy.ts buildPageCsp doc.
+    it("uses a per-request nonce + strict-dynamic in script-src (no 'unsafe-inline')", async () => {
       const csp = await getPageCsp();
       const scriptSrc = csp.split(";").find((d) => d.trim().startsWith("script-src"));
       expect(scriptSrc).toBeDefined();
-      expect(scriptSrc).toContain("'self'");
-      expect(scriptSrc).toContain("'unsafe-inline'");
-      expect(scriptSrc).not.toContain("'strict-dynamic'");
-      expect(scriptSrc).not.toMatch(/'nonce-/);
+      expect(scriptSrc).toMatch(/'nonce-[A-Za-z0-9+/=]+'/);
+      expect(scriptSrc).toContain("'strict-dynamic'");
+      expect(scriptSrc).not.toContain("'unsafe-inline'");
     });
 
-    it("does not mutate request headers to force a per-request nonce", async () => {
+    it("generates a fresh nonce per request", async () => {
+      const csp1 = await getPageCsp();
+      const csp2 = await getPageCsp();
+      const nonce = (s: string) => s.match(/'nonce-([A-Za-z0-9+/=]+)'/)?.[1];
+      expect(nonce(csp1)).toBeTruthy();
+      expect(nonce(csp1)).not.toBe(nonce(csp2));
+    });
+
+    it("forwards the nonce to the app via the request Content-Security-Policy + x-nonce headers", async () => {
       const req = createRequest("/login");
       await proxy(req);
-      // NextResponse.next() is now called with no request-header override.
-      const arg = mockNext.mock.calls.at(-1)?.[0];
-      expect(arg).toBeUndefined();
+      // NextResponse.next is called with { request: { headers } }
+      const arg = mockNext.mock.calls.at(-1)?.[0] as
+        | { request?: { headers?: Headers } }
+        | undefined;
+      const fwd = arg?.request?.headers;
+      expect(fwd).toBeInstanceOf(Headers);
+      const nonce = fwd?.get("x-nonce");
+      expect(nonce).toBeTruthy();
+      // The forwarded CSP must carry the same nonce so Next.js stamps its scripts.
+      expect(fwd?.get("content-security-policy")).toContain(`'nonce-${nonce}'`);
     });
 
     it("adds object-src 'none', frame-src, worker-src, manifest-src (A7-02)", async () => {
