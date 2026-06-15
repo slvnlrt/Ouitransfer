@@ -190,7 +190,7 @@ function renderHtml(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
               </p>
               ${slots.unsubscribeUrl ? renderUnsubscribeHtml(slots.unsubscribeUrl, footerUnsubscribe) : ""}
               <p style="margin:8px 0 0 0;color:${COLOR.textMuted};font-size:11px;font-family:${FONT_STACK};">
-                ${footerPoweredBy} — <a href="https://github.com/slvnlrt/ouitransfer" style="color:${COLOR.textMuted};text-decoration:none;">Ouitransfer</a>
+                <a href="https://github.com/slvnlrt/ouitransfer" style="color:${COLOR.textMuted};text-decoration:none;">${footerPoweredBy}</a>
               </p>
             </td>
           </tr>
