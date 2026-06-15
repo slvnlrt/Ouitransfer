@@ -183,10 +183,13 @@ services:
       # tier verifies the same signed token for SSR auth).
       JWT_SECRET: "${JWT_SECRET:?JWT_SECRET is required}"
       CSP_STORAGE_ORIGINS: "${STORAGE_PUBLIC_URL:-http://localhost:9000}"
-      # APP_URL (R6, optional): canonical public origin used for OpenGraph /
-      # canonical metadata and to validate the request host. Set it to the exact
-      # origin browsers use, e.g. https://files.example.com. Leave unset for local.
-      # APP_URL: "${FRONTEND_ORIGIN}"
+      # Canonical public origin for OpenGraph/canonical metadata on public share
+      # pages. The web tier uses APP_URL if set, otherwise the FIRST entry of
+      # FRONTEND_ORIGIN (the primary public origin) — so this works out of the box.
+      FRONTEND_ORIGIN: "${FRONTEND_ORIGIN:-http://localhost:5487}"
+      # APP_URL (optional override): set only if the canonical origin differs from
+      # the first FRONTEND_ORIGIN entry, e.g. https://files.example.com.
+      # APP_URL: "https://files.example.com"
       # DEFAULT_LANGUAGE: "en-US"
     ports:
       - "5487:5487"    # Web interface

@@ -22,15 +22,19 @@ import { getBaseUrl } from "../app-info";
 
 describe("getBaseUrl (A7-05)", () => {
   const originalAppUrl = process.env.APP_URL;
+  const originalFrontendOrigin = process.env.FRONTEND_ORIGIN;
 
   beforeEach(() => {
     mockHeaderMap = {};
     delete process.env.APP_URL;
+    delete process.env.FRONTEND_ORIGIN;
   });
 
   afterEach(() => {
     if (originalAppUrl === undefined) delete process.env.APP_URL;
     else process.env.APP_URL = originalAppUrl;
+    if (originalFrontendOrigin === undefined) delete process.env.FRONTEND_ORIGIN;
+    else process.env.FRONTEND_ORIGIN = originalFrontendOrigin;
     vi.clearAllMocks();
   });
 
@@ -47,6 +51,29 @@ describe("getBaseUrl (A7-05)", () => {
   it("strips any path from APP_URL to a bare origin", async () => {
     process.env.APP_URL = "https://transfer.example.com/subpath";
     expect(await getBaseUrl()).toBe("https://transfer.example.com");
+  });
+
+  it("falls back to the first FRONTEND_ORIGIN entry when APP_URL is unset", async () => {
+    process.env.FRONTEND_ORIGIN = "https://files.example.com";
+    mockHeaderMap = { "x-forwarded-host": "evil.example", host: "evil.example" };
+    expect(await getBaseUrl()).toBe("https://files.example.com");
+  });
+
+  it("uses the FIRST entry of a comma-separated FRONTEND_ORIGIN list", async () => {
+    process.env.FRONTEND_ORIGIN = "https://files.example.com,https://files.internal.lan";
+    expect(await getBaseUrl()).toBe("https://files.example.com");
+  });
+
+  it("prefers APP_URL over FRONTEND_ORIGIN", async () => {
+    process.env.APP_URL = "https://canonical.example.com";
+    process.env.FRONTEND_ORIGIN = "https://files.example.com";
+    expect(await getBaseUrl()).toBe("https://canonical.example.com");
+  });
+
+  it("ignores an invalid first FRONTEND_ORIGIN entry and falls back to the host header", async () => {
+    process.env.FRONTEND_ORIGIN = "not-a-url,https://files.example.com";
+    mockHeaderMap = { host: "real.example" };
+    expect(await getBaseUrl()).toBe("http://real.example");
   });
 
   it("ignores a non-http(s) APP_URL and falls back to the host header", async () => {

@@ -41,27 +41,42 @@ export async function getAppInfo(): Promise<AppInfo> {
 }
 
 /**
- * Read the configured canonical base URL (origin) for this deployment.
- *
- * `APP_URL` (server-side) is the authoritative public origin; it is the single
- * source of truth for OpenGraph/canonical metadata on public share pages. When
- * set it is used verbatim and host headers are ignored entirely — this closes
- * the `X-Forwarded-Host` poisoning vector (A7-05).
- *
- * Returns `null` when no canonical is configured (e.g. local dev), in which case
- * the caller falls back to the (trusted) `host` header.
+ * Parse a single server-configured origin string into its bare origin
+ * (scheme + host[:port], path/query stripped), or `null` if it is empty or not
+ * a valid http(s) URL.
  */
-function getConfiguredCanonicalOrigin(): string | null {
-  const raw = process.env.APP_URL;
+function parseTrustedOrigin(raw: string | undefined | null): string | null {
   if (!raw) return null;
   try {
-    const url = new URL(raw);
+    const url = new URL(raw.trim());
     if (url.protocol !== "http:" && url.protocol !== "https:") return null;
     // Normalize to the bare origin (scheme + host[:port]); strip any path.
     return url.origin;
   } catch {
     return null;
   }
+}
+
+/**
+ * Read the configured canonical base URL (origin) for this deployment.
+ *
+ * Resolution order — every source is SERVER-configured (never a client-supplied
+ * header), so none reintroduce the `X-Forwarded-Host` poisoning vector (A7-05):
+ *   1. `APP_URL` — explicit canonical override.
+ *   2. The FIRST entry of `FRONTEND_ORIGIN` — the primary public origin. It is
+ *      already required (for CORS), so this yields a correct OpenGraph/canonical
+ *      base out of the box without a second variable. `FRONTEND_ORIGIN` may be a
+ *      comma-separated list (several hostnames behind one proxy); the first is
+ *      treated as the canonical/primary one.
+ *
+ * Returns `null` only when neither is configured (e.g. local dev), in which case
+ * the caller falls back to the trusted connection `host` header.
+ */
+function getConfiguredCanonicalOrigin(): string | null {
+  return (
+    parseTrustedOrigin(process.env.APP_URL) ??
+    parseTrustedOrigin(process.env.FRONTEND_ORIGIN?.split(",")[0])
+  );
 }
 
 /**
@@ -72,12 +87,13 @@ function getConfiguredCanonicalOrigin(): string | null {
  * **client-controllable** unless the edge proxy overwrites them, so they are NOT
  * trusted blindly. Resolution order:
  *
- *   1. If `APP_URL` is configured, return it verbatim — host headers are ignored
- *      (no poisoning possible). This is the recommended production setup.
- *   2. Otherwise honor `X-Forwarded-*` **only** when the forwarded host matches
- *      the configured canonical host allow-list (here: `APP_URL`'s host). With
- *      no canonical configured there is nothing to match, so forwarded headers
- *      are ignored and we fall back to the connection `host` header.
+ *   1. If a canonical origin is configured (`APP_URL`, else the first
+ *      `FRONTEND_ORIGIN` entry — see getConfiguredCanonicalOrigin), return it
+ *      verbatim. Host headers are ignored entirely (no poisoning possible). This
+ *      is the normal production path since `FRONTEND_ORIGIN` is always set.
+ *   2. With no canonical configured (e.g. local dev), `X-Forwarded-Host` is NOT
+ *      trusted; we fall back to the connection `host` header (set by the
+ *      immediate server, not the remote client).
  *
  * Server-side only.
  */
