@@ -60,44 +60,31 @@ async function getTokenPayload(token: string): Promise<TokenPayload | null> {
 }
 
 /**
- * Generate a cryptographically-random, base64 per-request CSP nonce (A7-03).
- * Uses the Web Crypto API available in the Edge runtime.
- */
-function generateNonce(): string {
-  const bytes = new Uint8Array(16);
-  crypto.getRandomValues(bytes);
-  let binary = "";
-  for (const b of bytes) binary += String.fromCharCode(b);
-  return btoa(binary);
-}
-
-/**
  * Build the page-response Content-Security-Policy.
  *
- * `script-src` uses a per-request nonce + `'strict-dynamic'` instead of
- * `'unsafe-inline'` (A7-03): Next.js App Router auto-detects the nonce from the
- * request `Content-Security-Policy` header (set by the proxy) and stamps its
- * hydration/bootstrap inline scripts with it, so they execute while any injected
- * inline script is blocked. `'strict-dynamic'` lets those nonced scripts load
- * the chunk graph without needing a host allow-list. Browsers that honor a nonce
- * ignore `'self'` for `script-src`, but it is kept for the rare legacy fallback.
+ * `script-src` uses `'self' 'unsafe-inline'`. A per-request nonce +
+ * `'strict-dynamic'` policy (A7-03) was tried but is incompatible with this
+ * app's statically-optimized pages: Next.js can only stamp a per-request nonce
+ * onto its scripts when a route is rendered dynamically, so on the prerendered
+ * static HTML the framework's own scripts carried no nonce and `'strict-dynamic'`
+ * blocked ALL of them — the app never hydrated (blank screen in the browser).
+ * Re-introducing the nonce hardening would require forcing dynamic rendering on
+ * every route AND validating it in a real browser first.
  *
  * `style-src` keeps `'unsafe-inline'`: Next.js + Tailwind emit inline `<style>`
- * tags and inline `style=` attributes (e.g. font-variable definitions, CSS-in-JS
- * critical styles) that are NOT nonced by the framework, and CSP nonces/hashes
- * do not cover inline style *attributes* at all. Dropping it would break
- * rendering. This is the documented, intentional trade-off (the priority per the
- * audit is `script-src`, which is now nonce-locked).
+ * tags and inline `style=` attributes that are not nonceable, so dropping it
+ * would break rendering.
  */
-function buildPageCsp(nonce: string): string {
+function buildPageCsp(): string {
   const isDev = process.env.NODE_ENV === "development";
   const storageOrigins = env.CSP_STORAGE_ORIGINS ? ` ${env.CSP_STORAGE_ORIGINS}` : "";
 
   return [
     "default-src 'self'",
-    // Scripts: nonce + strict-dynamic (drops 'unsafe-inline', A7-03).
-    // Dev adds 'unsafe-eval' for React Fast Refresh (HMR) — never in production.
-    `script-src 'nonce-${nonce}' 'strict-dynamic' 'self'${isDev ? " 'unsafe-eval'" : ""}`,
+    // Scripts: 'self' + 'unsafe-inline' (+ 'unsafe-eval' in dev for React Fast
+    // Refresh). See the function doc for why the nonce/strict-dynamic policy was
+    // reverted — it broke hydration on statically-rendered pages.
+    `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
     // Styles: self + inline (required by Next/Tailwind inline styles — see doc above).
     "style-src 'self' 'unsafe-inline'",
     // Images: self + blob (preview) + data (QR codes) + storage origin (download/background).
@@ -128,7 +115,7 @@ function buildPageCsp(nonce: string): string {
  * Applied to all responses from the proxy — covers Next.js frontend pages.
  * API responses are separately covered by @fastify/helmet on the server.
  *
- * @param csp the precomputed page CSP (carries the per-request nonce, A7-03).
+ * @param csp the precomputed page CSP.
  */
 function addSecurityHeaders(response: NextResponse, csp: string): NextResponse {
   // Prevent MIME-type sniffing
@@ -190,21 +177,8 @@ export async function proxy(request: NextRequest) {
     return addApiSecurityHeaders(NextResponse.rewrite(rewriteUrl));
   }
 
-  // Per-request CSP nonce (A7-03). Embedded in the `script-src` directive of the
-  // page-response CSP and forwarded to the app on the request so Next.js App
-  // Router stamps its hydration/bootstrap inline scripts with it.
-  const nonce = generateNonce();
-  const csp = buildPageCsp(nonce);
-
-  // Forward the nonce to the rendered app. `NextResponse.next({ request })`
-  // mutates the *request* headers seen by the route/layout. Next.js auto-detects
-  // the nonce from the request `Content-Security-Policy` header and applies it to
-  // the scripts it injects; `x-nonce` is also exposed for any app code that needs
-  // it directly. (Next.js pattern for nonce-based CSP in the App Router.)
-  const forwardedHeaders = new Headers(request.headers);
-  forwardedHeaders.set("x-nonce", nonce);
-  forwardedHeaders.set("Content-Security-Policy", csp);
-  const nextWithNonce = () => NextResponse.next({ request: { headers: forwardedHeaders } });
+  const csp = buildPageCsp();
+  const pageResponse = () => NextResponse.next();
 
   const token = request.cookies.get("token")?.value;
   const payload = token ? await getTokenPayload(token) : null;
@@ -214,7 +188,7 @@ export async function proxy(request: NextRequest) {
     if (payload) {
       return addSecurityHeaders(NextResponse.redirect(new URL("/dashboard", request.url)), csp);
     }
-    return addSecurityHeaders(nextWithNonce(), csp);
+    return addSecurityHeaders(pageResponse(), csp);
   }
 
   // Public paths
@@ -225,7 +199,7 @@ export async function proxy(request: NextRequest) {
     if (isUnauthOnly && payload) {
       return addSecurityHeaders(NextResponse.redirect(new URL("/dashboard", request.url)), csp);
     }
-    return addSecurityHeaders(nextWithNonce(), csp);
+    return addSecurityHeaders(pageResponse(), csp);
   }
 
   // Protected paths: require authentication
@@ -246,7 +220,7 @@ export async function proxy(request: NextRequest) {
     return addSecurityHeaders(NextResponse.redirect(new URL("/dashboard", request.url)), csp);
   }
 
-  return addSecurityHeaders(nextWithNonce(), csp);
+  return addSecurityHeaders(pageResponse(), csp);
 }
 
 export const config = {
