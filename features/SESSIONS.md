@@ -1,5 +1,25 @@
 # Session Log
 
+## 2026-06-16 (TD-20 — Developers docs verified + corrected)
+
+- **TD-20 (Low) resolved.** The TD pointed at a non-existent `v3-beta/` path and claimed the four
+  Developers pages were all obsolete. Page-by-page verification against the code showed they had
+  already been largely maintained (docs i18n session + red-team reconciliation). Resolved by
+  verifying each page against ground truth and correcting the real drift, EN + FR.
+- **architecture.mdx:** 3 to 4 containers (added the TD-50 `docs` container across the mermaid
+  diagram, prose, table, and independent startup note), real image names
+  (`ghcr.io/slvnlrt/ouitransfer-*`), `/health` description aligned (coarse liveness +
+  per-subsystem detail on authenticated `/health/status`), `fastify-type-provider-zod` to
+  `@fastify/type-provider-zod` (post-TD-28).
+- **github-architecture.mdx:** module list fixed (dropped non-existent `s3-storage`, added
+  `cleanup` + `notification`, noted the route-less modules), added the CI Prisma migration
+  drift-check step (TD-48), folded the `docs` container into the release pipeline (4-container
+  stack, `/docs` health check, GHCR `ouitransfer-docs` publish).
+- **api.mdx** and **translation-management.mdx:** verified current against `server.ts` route
+  registrations and the Python translation scripts / 23 locale files respectively. No changes
+  needed.
+- **Verification:** docs build green (83 pages); no em-dash introduced in any edit.
+
 ## 2026-06-16 (TD-53 — email health stalled-queue detection)
 
 - **TD-53 (Low) resolved.** `evaluateEmailHealth` (TD-42) only looked at recent failures + recent

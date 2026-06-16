@@ -91,7 +91,7 @@ Each feature lives in `apps/server/src/modules/<feature>/` and follows the same 
 | `service.ts` | Business logic, Prisma queries |
 | `dto.ts` | Shared Zod schemas and TypeScript types |
 
-Current modules: `admin`, `app`, `audit`, `auth`, `auth-providers`, `background-image`, `config`, `email`, `file`, `folder`, `group`, `health`, `invite`, `ldap`, `quota`, `reverse-share`, `s3-storage`, `share`, `storage`, `two-factor`, `user`.
+Current modules: `admin`, `app`, `audit`, `auth`, `auth-providers`, `background-image`, `cleanup`, `config`, `email`, `file`, `folder`, `group`, `health`, `invite`, `ldap`, `notification`, `quota`, `reverse-share`, `share`, `storage`, `two-factor`, `user`. A few of these (`cleanup`, `config`, `email`, `notification`) are service- or scheduler-only and expose no HTTP routes of their own.
 
 ---
 
@@ -177,6 +177,8 @@ Triggers on **push to `main`** and **pull requests targeting `main`**. Concurren
   <PipelineArrow />
   <PipelineStep icon={<PackageCheck size={14} />}>Install dependencies</PipelineStep>
   <PipelineArrow />
+  <PipelineStep icon={<Layers size={14} />}>Prisma migration drift check</PipelineStep>
+  <PipelineArrow />
   <PipelineStep variant="warn" badge="non-blocking" icon={<ShieldAlert size={14} />}>Security audit</PipelineStep>
   <PipelineArrow />
   <PipelineParallel label="Turborepo · runs in parallel">
@@ -193,9 +195,10 @@ Triggers on **push to `main`** and **pull requests targeting `main`**. Concurren
 **Steps:**
 
 1. **Install**: `pnpm install --frozen-lockfile` (no lock file drift allowed)
-2. **Security audit**: `pnpm audit --audit-level=high`. Non-blocking (transitive vulnerabilities from upstream don't gate the build, but surface as warnings).
-3. **Lint + Type-check + Test**: `turbo lint type-check test --continue`. Turbo runs all three task types in parallel across all packages. `--continue` ensures all tasks run even if one fails, so you get the full picture in one pass.
-4. **Build**: `pnpm build` with a minimal `JWT_SECRET` to satisfy env validation.
+2. **Prisma migration drift check**: `prisma migrate diff --from-migrations … --to-schema … --exit-code`. Fails the build if `schema.prisma` was changed without a matching committed migration, so the schema and the migration history can never drift apart.
+3. **Security audit**: `pnpm audit --audit-level=high`. Non-blocking (transitive vulnerabilities from upstream don't gate the build, but surface as warnings).
+4. **Lint + Type-check + Test**: `turbo lint type-check test --continue`. Turbo runs all three task types in parallel across all packages. `--continue` ensures all tasks run even if one fails, so you get the full picture in one pass.
+5. **Build**: `pnpm build` with a minimal `JWT_SECRET` to satisfy env validation.
 
 This pipeline must pass before any PR can be merged.
 
@@ -213,9 +216,9 @@ Triggers on **`v*` tags** (releases) and **manual dispatch** (`workflow_dispatch
   <PipelineArrow />
   <PipelineStep icon={<Hammer size={14} />}>Build Docker images</PipelineStep>
   <PipelineArrow />
-  <PipelineStep icon={<Layers size={14} />}>Start 3-container stack</PipelineStep>
+  <PipelineStep icon={<Layers size={14} />}>Start 4-container stack</PipelineStep>
   <PipelineArrow />
-  <PipelineStep icon={<HeartPulse size={14} />}>Health checks · 120s timeout</PipelineStep>
+  <PipelineStep icon={<HeartPulse size={14} />}>Health checks · server, web, docs</PipelineStep>
   <PipelineArrow />
   <PipelineStep variant="warn" badge="non-blocking" icon={<Gauge size={14} />}>Lighthouse audit</PipelineStep>
   <PipelineArrow />
@@ -240,13 +243,13 @@ Triggers on **`v*` tags** (releases) and **manual dispatch** (`workflow_dispatch
 **Steps:**
 
 1. **Build Docker images**: `docker compose build` using `docker-compose.ci.yml` overrides. The git tag name becomes `NEXT_PUBLIC_APP_VERSION` (e.g. `v1.2.3` → `1.2.3`), which is injected at build time into the Next.js bundle.
-2. **Start stack**: full 3-container stack (storage + server + web) with CI overrides.
-3. **Wait for health**: polls `GET /health` (server) and the web port until both respond, with a 120-second timeout.
+2. **Start stack**: full 4-container stack (storage + server + web + docs) with CI overrides.
+3. **Wait for health**: polls `GET /health` (server), the web port, and `/docs` (docs) until all respond, with a 120-second timeout each.
 4. **Lighthouse CI**: performance audit. Non-blocking.
 5. **E2E tests**: full Playwright suite against the live Docker stack. Blocking.
 6. **Upload Playwright report**: stored as a GitHub Actions artifact (14-day retention).
 7. **Stop stack**: always runs, even on failure.
-8. **Publish to GHCR**: only on tag pushes (skipped on `workflow_dispatch`). Pushes `server` and `web` images to `ghcr.io/slvnlrt/ouitransfer-{server,web}` with three tags: `latest`, `1.2.3` (semver), and `1.2` (minor).
+8. **Publish to GHCR**: only on tag pushes (skipped on `workflow_dispatch`). Pushes the `server`, `web`, and `docs` images to `ghcr.io/slvnlrt/ouitransfer-{server,web,docs}`, each with three tags: `latest`, `1.2.3` (semver), and `1.2` (minor).
 
 <Callout type="info">
 **Why two separate workflows?**

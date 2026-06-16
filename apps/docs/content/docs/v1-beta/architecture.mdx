@@ -5,7 +5,7 @@ icon: ServerCog
 
 ## Overview
 
-OUITRANSFER runs as three Docker containers with a clear separation of concerns. The browser talks to the **web** frontend and directly to **storage** for presigned file transfers. The **server** handles all business logic and coordinates between the two.
+OUITRANSFER runs as four Docker containers with a clear separation of concerns. The three core containers handle the application: the browser talks to the **web** frontend and directly to **storage** for presigned file transfers, and the **server** handles all business logic and coordinates between the two. A fourth, self-contained **docs** container serves this documentation site under `/docs`; it is independent of the rest and can be removed without affecting the application.
 
 ```mermaid
 flowchart TB
@@ -16,6 +16,7 @@ flowchart TB
         Web["<b>web</b><br/>Next.js 16 + React 19<br/>port 5487"]
         Server["<b>server</b><br/>Fastify 5 + Zod<br/>SQLite · port 3333"]
         Storage["<b>storage</b><br/>RustFS S3-compatible<br/>port 9000"]
+        Docs["<b>docs</b><br/>Fumadocs (Next.js)<br/>port 5488 · /docs"]
     end
 
     RP["Reverse Proxy<br/>Traefik / Nginx<br/><i>optional</i>"]
@@ -24,6 +25,7 @@ flowchart TB
     Browser -- "App UI" --> RP
     RP --> Web
     RP -- "Presigned URLs" --> Storage
+    RP -- "/docs" --> Docs
     Web -- "REST API" --> Server
     Server -- "S3 API" --> Storage
     Server -. "ENABLE_S3=true" .-> ExtS3
@@ -34,11 +36,11 @@ flowchart TB
     classDef container fill:#4f46e5,color:#ffffff,stroke:#3730a3,stroke-width:2px
     classDef client fill:#0284c7,color:#ffffff,stroke:#0369a1,stroke-width:2px
 
-    class Web,Server,Storage container
+    class Web,Server,Storage,Docs container
     class Browser client
 ```
 
-Startup order is managed automatically via healthcheck-based `depends_on`: `storage` starts first, then `server` (once storage is healthy), then `web` (once server is healthy).
+Startup order for the three core containers is managed automatically via healthcheck-based `depends_on`: `storage` starts first, then `server` (once storage is healthy), then `web` (once server is healthy). The `docs` container has no such dependency and starts independently.
 
 ## Technologies used
 
@@ -80,7 +82,7 @@ See [S3 Providers](/docs/v1-beta/s3-providers) for setup instructions when using
 The backend of OUITRANSFER is powered by **Fastify**, **Zod**, and **TypeScript**, creating a robust and type-safe API layer. Fastify is a super-fast Node.js web framework optimized for performance and low overhead, designed to handle lots of concurrent requests with minimal resource usage. Zod provides runtime type validation and schema definition, ensuring all incoming data is properly validated before reaching business logic. TypeScript adds compile-time type safety throughout the entire backend codebase. This combination creates a highly reliable and maintainable backend that prevents bugs and security issues while maintaining excellent performance.
 
 - **Fastify** provides fast request handling with a lightweight core
-- **Zod** enables runtime schema validation and type inference via `fastify-type-provider-zod`
+- **Zod** enables runtime schema validation and type inference via `@fastify/type-provider-zod`
 - **TypeScript** ensures type safety across the entire backend codebase
 - Built-in schema-based validation for secure and reliable API handling
 - Supports plugin-based architecture for easy extensibility
@@ -88,15 +90,16 @@ The backend of OUITRANSFER is powered by **Fastify**, **Zod**, and **TypeScript*
 
 ## Docker architecture
 
-OUITRANSFER runs as **3 Docker containers** with healthcheck-based startup ordering:
+OUITRANSFER runs as **4 Docker containers**. The three core services use healthcheck-based startup ordering; the documentation site is independent:
 
 | Service | Image | Port | Description |
 |---------|-------|------|-------------|
 | **storage** | `rustfs/rustfs:latest` | 9000 | S3-compatible object storage (RustFS) |
-| **server** | `ouitransfer/server:latest` | 3333 | Fastify API server + embedded SQLite |
-| **web** | `ouitransfer/web:latest` | 5487 | Next.js web frontend |
+| **server** | `ghcr.io/slvnlrt/ouitransfer-server:latest` | 3333 | Fastify API server + embedded SQLite |
+| **web** | `ghcr.io/slvnlrt/ouitransfer-web:latest` | 5487 | Next.js web frontend |
+| **docs** | `ghcr.io/slvnlrt/ouitransfer-docs:latest` | 5488 | Fumadocs documentation site (served under `/docs`) |
 
-Startup order is managed automatically: `storage` starts first, then `server` (once storage is healthy), then `web` (once server is healthy). The health endpoint at `http://localhost:3333/health` returns database and storage status for monitoring.
+Startup order for the core services is managed automatically: `storage` starts first, then `server` (once storage is healthy), then `web` (once server is healthy). The `docs` container starts independently. The liveness endpoint at `http://localhost:3333/health` returns a coarse `{ status, timestamp, uptime }` for monitoring; the detailed per-subsystem breakdown (database, storage, email) lives on the authenticated `/health/status` endpoint. See the [API Reference](/docs/v1-beta/api#health) for details.
 
 ## How it works
 
