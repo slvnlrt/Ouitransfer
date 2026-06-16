@@ -45,18 +45,17 @@
       "groupSlug": "security-critical"
     },
     {
-      "matchPackageNames": ["*"],
-      "excludePackageNames": [
-        "@fastify/jwt",
-        "jose",
-        "@fastify/csrf-protection",
-        "bcryptjs",
-        "otpauth",
-        "@fastify/helmet",
-        "helmet",
-        "@fastify/rate-limit",
-        "ldapts",
-        "nodemailer"
+      "matchPackageNames": [
+        "!@fastify/jwt",
+        "!jose",
+        "!@fastify/csrf-protection",
+        "!bcryptjs",
+        "!otpauth",
+        "!@fastify/helmet",
+        "!helmet",
+        "!@fastify/rate-limit",
+        "!ldapts",
+        "!nodemailer"
       ],
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "all non-major dependencies",
