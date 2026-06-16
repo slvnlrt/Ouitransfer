@@ -42,7 +42,7 @@ Ajoutez ces variables d'environnement au service **server** dans votre `docker-c
 ```yaml
 services:
   server:
-    image: ouitransfer/server:latest
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
     container_name: ouitransfer-server
     environment:
       OUITRANSFER_UID: "1000"
@@ -97,7 +97,7 @@ Utilisez les valeurs `uid` et `gid` pour configurer `OUITRANSFER_UID` et `OUITRA
 ```yaml
 services:
   server:
-    image: ouitransfer/server:latest
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
     container_name: ouitransfer-server
     environment:
       OUITRANSFER_UID: "1000"
@@ -113,7 +113,7 @@ services:
 ```yaml
 services:
   server:
-    image: ouitransfer/server:latest
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
     container_name: ouitransfer-server
     environment:
       OUITRANSFER_UID: "1026"
@@ -129,7 +129,7 @@ services:
 ```yaml
 services:
   server:
-    image: ouitransfer/server:latest
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
     container_name: ouitransfer-server
     environment:
       OUITRANSFER_UID: "1000"
