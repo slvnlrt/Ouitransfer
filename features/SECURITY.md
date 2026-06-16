@@ -150,8 +150,19 @@ Le résultat est toujours une URL HTTP/S sur le même domaine, avec `provider.na
 ## S-4 — GitHub Actions non épinglées par hash
 
 **Source :** Aikido.dev SAST
-**Fichiers :** `.github/workflows/ci.yml:19`, `.github/workflows/e2e.yml:24`
-**Statut :** 🔴 À faire
+**Fichiers :** `.github/workflows/ci.yml`, `.github/workflows/e2e.yml`
+**Statut :** ✅ Fixé (2026-06-16)
+
+### Résolution
+
+Les 9 `uses:` des deux workflows sont désormais épinglés sur le **SHA de commit** (40 caractères),
+avec un commentaire `# vX.Y.Z` lisible : `actions/checkout`, `pnpm/action-setup`, `actions/setup-node`,
+`actions/cache`, `actions/upload-artifact`, `docker/login-action`. Les SHA correspondent au commit
+pelé de chaque tag de release (attention aux tags annotés : `checkout` et `pnpm/action-setup` ont
+nécessité le commit `^{}` et non l'objet-tag). Le preset Renovate `helpers:pinGitHubActionDigests`
+a été ajouté à `renovate.json` pour maintenir ces digests à jour automatiquement (bump du SHA +
+mise à jour du commentaire de version). Prérequis levé au passage : la config Renovate était cassée
+(issue #39), ce qui empêchait toute automatisation ; corrigée dans le même lot.
 
 ### Description
 
