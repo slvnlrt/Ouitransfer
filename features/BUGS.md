@@ -9,6 +9,10 @@
 
 ## Open
 
+_None._
+
+## Resolved (recent)
+
 ### B-28: Share password update returns 404 — PATCH/PUT method mismatch
 
 - **Severity**: High (feature broken in production)
@@ -16,8 +20,6 @@
 - **Description**: The frontend calls `PUT /api/shares/:id/password` but the server route declares `PATCH /shares/:shareId/password`. Fastify treats unknown method+URL combinations as 404. The reverse-share equivalent is consistent (`PUT` on both sides) — only shares is affected.
 - **Fix**: Changed `apiInstance.put(...)` → `apiInstance.patch(...)` in `shares/index.ts`.
 - **Status**: Fixed (2026-06-10)
-
-## Resolved (recent)
 
 ### B-29 (gap): Authenticated Ouitransfer users not identified in share activity log — RESOLVED
 

@@ -23,9 +23,10 @@ Envisagez d'utiliser le stockage compatible S3 lorsque vous avez besoin de :
 
 ### Configuration générale (applicable à tous les types de stockage)
 
-| Variable                   | Description                                                    | Requis | Défaut          |
-| -------------------------- | -------------------------------------------------------------- | ------ | --------------- |
-| `PRESIGNED_URL_EXPIRATION` | Durée d'expiration des URLs présignées en secondes | Non    | `3600` (1 heure) |
+| Variable                       | Description                                                              | Requis | Défaut              |
+| ------------------------------ | ------------------------------------------------------------------------ | ------ | ------------------- |
+| `PRESIGNED_URL_EXPIRATION`     | Durée d'expiration des URLs présignées de **téléversement** en secondes (60 à 86400) | Non    | `3600` (1 heure)    |
+| `PRESIGNED_GET_URL_EXPIRATION` | Durée d'expiration des URLs présignées de **téléchargement** en secondes (60 à 86400) | Non    | `900` (15 minutes)  |
 
 ### Configuration spécifique à S3
 
@@ -232,12 +233,12 @@ Les URLs présignées sont des URLs temporaires qui permettent un accès direct 
 
 **Comportement par défaut :**
 
-- URLs de téléversement : 1 heure (3600 secondes)
-- URLs de téléchargement : 1 heure (3600 secondes)
+- URLs de téléversement : 1 heure (3600 secondes), définie par `PRESIGNED_URL_EXPIRATION`
+- URLs de téléchargement : 15 minutes (900 secondes), définie par `PRESIGNED_GET_URL_EXPIRATION`
 
 ### Configurer la durée d'expiration
 
-Vous pouvez personnaliser la durée d'expiration via la variable d'environnement `PRESIGNED_URL_EXPIRATION` :
+Les URLs de téléversement et de téléchargement se configurent indépendamment : `PRESIGNED_URL_EXPIRATION` contrôle les téléversements, `PRESIGNED_GET_URL_EXPIRATION` contrôle les téléchargements. Les deux acceptent une durée en secondes (60 à 86400). Par exemple, pour étendre les URLs de téléversement à 2 heures :
 
 ```bash
 # Définir l'expiration à 2 heures (7200 secondes)

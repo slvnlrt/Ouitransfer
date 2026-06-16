@@ -8,17 +8,29 @@ but must be addressed. Each item includes context and the fix needed.
 
 ---
 
-## TD-53 — Email health: stalled-queue blind spot (processing/pending false-negative)
+## TD-53 — Email health: stalled-queue blind spot (processing/pending false-negative) ✅ DONE
 
-**Context:** The cheap, queue-counter-based `evaluateEmailHealth` (TD-42) derives its status from
+**Resolved:** 2026-06-16
+
+**Context:** The cheap, queue-counter-based `evaluateEmailHealth` (TD-42) derived its status from
 recent failures + recent sends only. A genuine stall where SMTP hangs and jobs pile up in
 `processing` (until `recoverStuckJobs` times them out), or a large `pending` backlog with zero
-outright failures, both still report **`ok`**. The `pending`/`digestPending` counts are surfaced to
-admins but never influence the derived status.
+outright failures, both still reported **`ok`**.
 
-**Fix:** Factor a `pending`/`processing` backlog threshold (and/or an oldest-pending age) into the
-`degraded` derivation, so a stuck/clogged queue is reflected. Keep it a cheap DB query — still no
-live SMTP probe (the `/health` endpoints are public/unauthenticated).
+**Fix applied (`apps/server/src/modules/email/health.ts`):** Added an oldest-unsent-job stall
+signal to the `degraded` derivation, keyed off the insight that the worker drains the queue
+**oldest-first** — while it is running the oldest *ready* job stays young, so a ready job that ages
+past a window means the worker is not draining (not merely a large backlog). Two cheap DB counts
+feed the signal:
+- `pending` jobs with `nextAttemptAt <= now − 15min` (ready to send but never picked up), and
+- `processing` jobs with `lockedAt <= now − 15min` (locked for delivery on a hung/frozen worker).
+
+Either trips `degraded`. The 15-minute window sits well above the queue's 5-minute
+stuck-`processing` recovery window and several poll intervals, so it only fires on a genuinely
+frozen worker and never flaps under bursty load or a slow poll interval. Still **no live SMTP
+probe** (the `/health` endpoints stay public/cheap). The public `EmailHealth` interface and
+`lastError` semantics are unchanged; `down` keeps precedence over a concurrent stall. Self-heals to
+`ok` once the worker resumes and the backlog clears. 6 new unit tests in `health.test.ts`.
 
 **Found during:** TD-42 Opus second-pass review (juin 2026, finding #3). Findings #1 (stale
 `lastError`) and #2 (retention-window `failed` false-positive) were fixed in the same session by
@@ -74,16 +86,37 @@ than the false-positives already fixed.
 
 ---
 
-## TD-20 — Docs : section Developers à réécrire pour v3-beta
+## TD-20 — Docs : section Developers à réécrire ✅ DONE
 
-**Context:** Les pages de la section "Developers" dans `apps/docs/content/docs/v3-beta/` sont
-obsolètes et ne correspondent plus à l'architecture actuelle du projet.
+**Resolved:** 2026-06-16
 
-**Pages à réécrire :**
-- `architecture.mdx` — Architecture of OUITRANSFER. (monorepo, Fastify 5, Prisma 7, RustFS…)
-- `github-architecture.mdx` — GitHub Architecture (CI pipeline, Docker, workflows actuels)
-- `api.mdx` — API Endpoints (toutes les routes ont changé depuis les refactors TD-4+)
-- `translation-management.mdx` — Translation Management (next-intl v4, 23 langues, nouveau workflow)
+**Note de contexte :** le TD pointait `apps/docs/content/docs/v3-beta/` (chemin inexistant) ; les
+pages vivent en réalité sous `v1-beta/`, en EN + FR. Une vérification page par page contre le code
+a montré que les pages avaient déjà été largement maintenues entre-temps (session i18n docs +
+réconciliation red-team), et non « toutes obsolètes ». La résolution a donc consisté à **vérifier
+chaque page contre la vérité terrain et corriger les inexactitudes réelles**, plutôt qu'à réécrire
+du contenu correct.
+
+**Vérification + corrections :**
+- `architecture.mdx` — corrigé : passage de **3 à 4 conteneurs** (ajout du conteneur `docs` de
+  TD-50 : diagramme mermaid, prose, table, ordre de démarrage indépendant), noms d'images réels
+  (`ghcr.io/slvnlrt/ouitransfer-*`), description `/health` alignée (liveness grossier + détail par
+  sous-système sur `/health/status` authentifié), `fastify-type-provider-zod` →
+  `@fastify/type-provider-zod` (post-TD-28).
+- `github-architecture.mdx` — corrigé : liste des modules (`s3-storage` inexistant retiré ;
+  `cleanup` + `notification` ajoutés ; note sur les modules sans route HTTP), ajout de l'étape CI
+  **Prisma migration drift check** (TD-48), conteneur **docs** intégré au pipeline de release
+  (stack 4 conteneurs, health-check `/docs`, publication GHCR `ouitransfer-docs`).
+- `api.mdx` — **vérifié à jour** : la couverture des routes correspond aux modules enregistrés dans
+  `server.ts` (quickshare réutilise `/shares`, aucune route dédiée), références récentes correctes
+  (`authenticated_user`/B-29, enum email health, `/health/status` authentifié). Aucune correction
+  nécessaire.
+- `translation-management.mdx` — **vérifié à jour** : scripts Python (`run_translations.py`,
+  `sync`/`check`/`prune`) et scripts `pnpm run translations:*` conformes ; 23 fichiers de langue
+  présents (22 cibles + `en-US` de référence). Aucune correction nécessaire.
+
+Corrections appliquées en EN + FR (4 fichiers modifiés). Build docs vert (83 pages) ; aucun em-dash
+introduit.
 
 **Found during:** Revue du site docs post-upgrade Next.js 16 (mai 2026)
 **Severity:** Low — le site docs n'est pas encore public, pas d'impact utilisateur immédiat

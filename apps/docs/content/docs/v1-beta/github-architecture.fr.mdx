@@ -91,7 +91,7 @@ Chaque fonctionnalité réside dans `apps/server/src/modules/<feature>/` et suit
 | `service.ts` | Logique métier, requêtes Prisma |
 | `dto.ts` | Schémas Zod partagés et types TypeScript |
 
-Modules actuels : `admin`, `app`, `audit`, `auth`, `auth-providers`, `background-image`, `config`, `email`, `file`, `folder`, `group`, `health`, `invite`, `ldap`, `quota`, `reverse-share`, `s3-storage`, `share`, `storage`, `two-factor`, `user`.
+Modules actuels : `admin`, `app`, `audit`, `auth`, `auth-providers`, `background-image`, `cleanup`, `config`, `email`, `file`, `folder`, `group`, `health`, `invite`, `ldap`, `notification`, `quota`, `reverse-share`, `share`, `storage`, `two-factor`, `user`. Certains d'entre eux (`cleanup`, `config`, `email`, `notification`) sont uniquement des services ou des planificateurs et n'exposent aucune route HTTP propre.
 
 ---
 
@@ -177,6 +177,8 @@ Se déclenche sur les **push vers `main`** et les **pull requests ciblant `main`
   <PipelineArrow />
   <PipelineStep icon={<PackageCheck size={14} />}>Installation des dépendances</PipelineStep>
   <PipelineArrow />
+  <PipelineStep icon={<Layers size={14} />}>Contrôle de dérive des migrations Prisma</PipelineStep>
+  <PipelineArrow />
   <PipelineStep variant="warn" badge="non-bloquant" icon={<ShieldAlert size={14} />}>Audit de sécurité</PipelineStep>
   <PipelineArrow />
   <PipelineParallel label="Turborepo · exécution en parallèle">
@@ -193,9 +195,10 @@ Se déclenche sur les **push vers `main`** et les **pull requests ciblant `main`
 **Étapes :**
 
 1. **Installation** : `pnpm install --frozen-lockfile` (aucune dérive du fichier de verrouillage autorisée)
-2. **Audit de sécurité** : `pnpm audit --audit-level=high`. Non bloquant (les vulnérabilités transitives provenant de dépendances amont ne bloquent pas le build, mais remontent en avertissements).
-3. **Lint + Vérification des types + Tests** : `turbo lint type-check test --continue`. Turbo exécute les trois types de tâches en parallèle sur tous les paquets. `--continue` garantit que toutes les tâches s'exécutent même si l'une échoue, afin d'avoir une vision complète en une seule passe.
-4. **Build** : `pnpm build` avec un `JWT_SECRET` minimal pour satisfaire la validation des variables d'environnement.
+2. **Contrôle de dérive des migrations Prisma** : `prisma migrate diff --from-migrations … --to-schema … --exit-code`. Fait échouer le build si `schema.prisma` a été modifié sans migration committée correspondante, afin que le schéma et l'historique des migrations ne puissent jamais diverger.
+3. **Audit de sécurité** : `pnpm audit --audit-level=high`. Non bloquant (les vulnérabilités transitives provenant de dépendances amont ne bloquent pas le build, mais remontent en avertissements).
+4. **Lint + Vérification des types + Tests** : `turbo lint type-check test --continue`. Turbo exécute les trois types de tâches en parallèle sur tous les paquets. `--continue` garantit que toutes les tâches s'exécutent même si l'une échoue, afin d'avoir une vision complète en une seule passe.
+5. **Build** : `pnpm build` avec un `JWT_SECRET` minimal pour satisfaire la validation des variables d'environnement.
 
 Ce pipeline doit passer avant qu'une pull request puisse être fusionnée.
 
@@ -213,9 +216,9 @@ Se déclenche sur les **tags `v*`** (releases) et le **déclenchement manuel** (
   <PipelineArrow />
   <PipelineStep icon={<Hammer size={14} />}>Build des images Docker</PipelineStep>
   <PipelineArrow />
-  <PipelineStep icon={<Layers size={14} />}>Démarrage de la stack 3 conteneurs</PipelineStep>
+  <PipelineStep icon={<Layers size={14} />}>Démarrage de la stack 4 conteneurs</PipelineStep>
   <PipelineArrow />
-  <PipelineStep icon={<HeartPulse size={14} />}>Vérifications de santé · délai 120s</PipelineStep>
+  <PipelineStep icon={<HeartPulse size={14} />}>Vérifications de santé · server, web, docs</PipelineStep>
   <PipelineArrow />
   <PipelineStep variant="warn" badge="non-bloquant" icon={<Gauge size={14} />}>Audit Lighthouse</PipelineStep>
   <PipelineArrow />
@@ -240,13 +243,13 @@ Se déclenche sur les **tags `v*`** (releases) et le **déclenchement manuel** (
 **Étapes :**
 
 1. **Build des images Docker** : `docker compose build` avec les remplacements `docker-compose.ci.yml`. Le nom du tag git devient `NEXT_PUBLIC_APP_VERSION` (ex. `v1.2.3` → `1.2.3`), injecté au moment du build dans le bundle Next.js.
-2. **Démarrage de la stack** : stack complète à 3 conteneurs (storage + server + web) avec les remplacements CI.
-3. **Attente de la santé** : interroge `GET /health` (serveur) et le port web jusqu'à ce que les deux répondent, avec un délai de 120 secondes.
+2. **Démarrage de la stack** : stack complète à 4 conteneurs (storage + server + web + docs) avec les remplacements CI.
+3. **Attente de la santé** : interroge `GET /health` (serveur), le port web et `/docs` (docs) jusqu'à ce que tous répondent, avec un délai de 120 secondes pour chacun.
 4. **Lighthouse CI** : audit de performance. Non bloquant.
 5. **Tests E2E** : suite Playwright complète contre la stack Docker en live. Bloquant.
 6. **Upload du rapport Playwright** : stocké comme artifact GitHub Actions (rétention 14 jours).
 7. **Arrêt de la stack** : s'exécute toujours, même en cas d'échec.
-8. **Publication sur GHCR** : uniquement lors des push de tags (ignoré sur `workflow_dispatch`). Pousse les images `server` et `web` sur `ghcr.io/slvnlrt/ouitransfer-{server,web}` avec trois tags : `latest`, `1.2.3` (semver) et `1.2` (mineur).
+8. **Publication sur GHCR** : uniquement lors des push de tags (ignoré sur `workflow_dispatch`). Pousse les images `server`, `web` et `docs` sur `ghcr.io/slvnlrt/ouitransfer-{server,web,docs}`, chacune avec trois tags : `latest`, `1.2.3` (semver) et `1.2` (mineur).
 
 <Callout type="info">
 **Pourquoi deux workflows distincts ?**

@@ -124,8 +124,8 @@ features/
 **Completed:** 5.1 Quotas, 5.2 Auto-cleanup (Phase A + A.1 + B), 5.4 Groups, 5.3 LDAP, 6.1-6.3 UI Overhaul, 7.1 Error Handling, 9.1 Quickshare, 10.1 System Status Bar, 8.1 Audit Trail, 8.2 Email Notifications, 8.3 Download Tracking.
 All resolved: B-1 through B-25, TD-1 through TD-5, TD-6 through TD-19, TD-21, TD-24, TD-25, TD-28, TD-29, TD-31, TD-32, TD-33, TD-35, TD-37, TD-41, TD-43, TD-45, TD-46, TD-48, TD-49, TD-52. TD-10 also resolved.
 
-**Test counts:** 103 server test files (1642 tests) + 37 web test files (367 tests) + 2 shared (14 tests) = **2023 total**.
+**Test counts:** 122 server test files (1851 tests) + 37 web test files (367 tests) + 2 shared (14 tests) = **2232 total**.
 
 **Open bugs:** _none_ (B-29 resolved — authenticated users identified in the share activity log)
-**Open tech debt:** TD-20, TD-27, TD-53 — see `TECHNICAL-DEBT.md` (TD-5, TD-10, TD-28, TD-30, TD-32, TD-33, TD-36, TD-38, TD-40, TD-42, TD-43, TD-50, TD-51, TD-52 resolved/closed)
+**Open tech debt:** TD-27 — see `TECHNICAL-DEBT.md` (TD-5, TD-10, TD-20, TD-28, TD-30, TD-32, TD-33, TD-36, TD-38, TD-40, TD-42, TD-43, TD-50, TD-51, TD-52, TD-53 resolved/closed)
 **Next features:** _none queued_. Recently shipped: TD-42 (System Status Email/Notifications subsystem — Opus re-review confirmed clean, 2 false-positive refinements + TD-53 logged) and B-29 (authenticated-visit identity — Opus review 0C/1I/4M, all fixed).

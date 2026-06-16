@@ -39,6 +39,11 @@ import { evaluateEmailHealth } from "../health.js";
  * test is robust to call ordering. `failedRecent` defaults to `failed` (i.e. all
  * failures are recent) unless overridden — that distinction is what drives the
  * windowed status derivation.
+ *
+ * The stall signals are keyed off the extra `where` bounds: the stalled-pending
+ * query adds `nextAttemptAt`, the stalled-processing query targets the
+ * `processing` status. Both default to 0 so a test that does not opt into a
+ * stall reports a draining queue.
  */
 function mockCounts({
   pending,
@@ -46,19 +51,24 @@ function mockCounts({
   failed,
   failedRecent,
   digestPending,
+  stalledPending = 0,
+  stalledProcessing = 0,
 }: {
   pending: number;
   sentLast24h: number;
   failed: number;
   failedRecent?: number;
   digestPending: number;
+  stalledPending?: number;
+  stalledProcessing?: number;
 }): void {
   const recentFailed = failedRecent ?? failed;
   mockPrisma.emailJob.count.mockImplementation((args: { where: Record<string, unknown> }) => {
     const where = args.where;
     switch (where.status) {
       case "pending":
-        return Promise.resolve(pending);
+        // The stall query adds a `nextAttemptAt` bound; the total backlog omits it.
+        return Promise.resolve(where.nextAttemptAt ? stalledPending : pending);
       case "sent":
         return Promise.resolve(sentLast24h);
       case "failed":
@@ -66,6 +76,8 @@ function mockCounts({
         return Promise.resolve(where.createdAt ? recentFailed : failed);
       case "digest_pending":
         return Promise.resolve(digestPending);
+      case "processing":
+        return Promise.resolve(stalledProcessing);
       default:
         return Promise.resolve(0);
     }
@@ -144,6 +156,78 @@ describe("evaluateEmailHealth", () => {
 
     expect(result.status).toBe("down");
     expect(result.smtpConfigured).toBe(true);
+  });
+
+  it("returns degraded when the queue is stalled with ready pending jobs (no failures)", async () => {
+    // The worker is not draining: a job has been ready to send past the stall
+    // window, yet there are no outright failures. The failure-based signals alone
+    // would report ok — the stall detection must surface it.
+    vi.mocked(getConfigValue).mockResolvedValue("true");
+    mockCounts({ pending: 7, sentLast24h: 4, failed: 0, digestPending: 0, stalledPending: 7 });
+
+    const result = await evaluateEmailHealth();
+
+    expect(result.status).toBe("degraded");
+  });
+
+  it("returns degraded when a job is stuck in processing past the stall window", async () => {
+    // A hung transport leaves a job locked in `processing`; the frozen worker
+    // never reaches stuck-job recovery. No failures recorded yet.
+    vi.mocked(getConfigValue).mockResolvedValue("true");
+    mockCounts({ pending: 1, sentLast24h: 0, failed: 0, digestPending: 0, stalledProcessing: 1 });
+
+    const result = await evaluateEmailHealth();
+
+    expect(result.status).toBe("degraded");
+  });
+
+  it("stays ok when pending jobs exist but none have aged past the stall window", async () => {
+    // A healthy worker drains oldest-first, so a backlog with no over-aged ready
+    // job is normal throughput, not a stall.
+    vi.mocked(getConfigValue).mockResolvedValue("true");
+    mockCounts({
+      pending: 50,
+      sentLast24h: 20,
+      failed: 0,
+      digestPending: 0,
+      stalledPending: 0,
+      stalledProcessing: 0,
+    });
+
+    const result = await evaluateEmailHealth();
+
+    expect(result.status).toBe("ok");
+  });
+
+  it("keeps down precedence over a concurrent stall (failures + nothing sent)", async () => {
+    // A stall must not downgrade a confirmed outage: recent failures with zero
+    // throughput stay `down`, the most severe state.
+    vi.mocked(getConfigValue).mockResolvedValue("true");
+    mockCounts({
+      pending: 3,
+      sentLast24h: 0,
+      failed: 2,
+      digestPending: 0,
+      stalledPending: 3,
+    });
+
+    const result = await evaluateEmailHealth();
+
+    expect(result.status).toBe("down");
+  });
+
+  it("queries the stall signals with the correct status and age bounds", async () => {
+    vi.mocked(getConfigValue).mockResolvedValue("true");
+    mockCounts({ pending: 0, sentLast24h: 1, failed: 0, digestPending: 0 });
+
+    await evaluateEmailHealth();
+
+    expect(mockPrisma.emailJob.count).toHaveBeenCalledWith({
+      where: { status: "pending", nextAttemptAt: { lte: expect.any(Date) } },
+    });
+    expect(mockPrisma.emailJob.count).toHaveBeenCalledWith({
+      where: { status: "processing", lockedAt: { lte: expect.any(Date) } },
+    });
   });
 
   it("selects the most recent non-null lastError", async () => {

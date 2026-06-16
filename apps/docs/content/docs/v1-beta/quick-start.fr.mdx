@@ -280,7 +280,7 @@ Si vous ne pouvez pas configurer SMTP pour l'instant, consultez [Réinitialisati
 
 Si vous déployez derrière un proxy inverse (Traefik, Nginx, Caddy) avec HTTPS :
 
-1. Ajoutez `SECURE_SITE=true` aux variables d'environnement du service **server** dans votre `docker-compose.yml`. Cela indique à l'API d'émettre des cookies avec le flag `Secure`, requis pour que les cookies fonctionnent en HTTPS.
+1. `SECURE_SITE` vaut déjà `true` par défaut, donc l'API émet des cookies avec le flag `Secure` (requis en HTTPS). Si vous l'aviez mis à `false` pour des tests en HTTP simple, remettez-le à `true` ou supprimez la surcharge.
 2. Définissez `FRONTEND_ORIGIN` et `STORAGE_PUBLIC_URL` avec vos URLs en `https://`.
 3. Configurez votre proxy inverse pour transmettre les requêtes vers les bons conteneurs.
 
@@ -334,7 +334,7 @@ volumes:
 
 | Variable | Défaut | Description |
 |----------|--------|-------------|
-| `SECURE_SITE` | `false` | Définissez `true` lors de la diffusion en HTTPS derrière un proxy inverse. Requis pour que les cookies fonctionnent correctement avec HTTPS. |
+| `SECURE_SITE` | `true` | Émet les cookies d'authentification avec le flag `Secure` (HTTPS uniquement), ce qui est la valeur par défaut. Pour un accès en HTTP simple (test local ou LAN), mettez-le à `false`, sinon le navigateur n'enverra pas le cookie de session et la connexion semblera échouer. |
 | `OUITRANSFER_UID` | `1001` | ID utilisateur pour les processus du conteneur serveur. Utile pour les NAS ou les montages bind. |
 | `OUITRANSFER_GID` | `1001` | ID de groupe pour les processus du conteneur serveur. |
 | `DEFAULT_LANGUAGE` | `en-US` | Langue d'interface par défaut. Voir [langues disponibles](/docs/v1-beta/available-languages). |

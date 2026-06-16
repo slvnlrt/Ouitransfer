@@ -1,5 +1,62 @@
 # Session Log
 
+## 2026-06-16 (Docs verification pass — drift fixes + 2FA page)
+
+- Full read-only audit of the docs site against the code (one Explore agent + structural checks).
+  Structure clean: EN/FR parity, meta.json/meta.fr.json consistent, no orphan files, no broken
+  internal links.
+- **Factual drift fixed (EN + FR):** `SECURE_SITE` default is `true` (env.ts), not `false`
+  (quick-start env table + HTTPS section reframed; plain-HTTP now told to set `false`); download
+  presigned URLs default to 15 min / 900s via `PRESIGNED_GET_URL_EXPIRATION`, not 1h (s3-providers
+  documented only the upload var); pnpm pinned version 11.5.0 to 11.5.1. Also corrected the
+  misleading `SECURE_SITE` comment in `.env.docker.example`.
+- **Missing page added:** Two-Factor Authentication (`two-factor-authentication.mdx` + `.fr.mdx`,
+  added to both metas under Usage). Written from `two-factor/service.ts`: TOTP (RFC 6238, SHA-1, 6
+  digits, 30s, +/-1 step), enable flow with password step-up, 10 single-use HMAC-hashed backup
+  codes, trusted devices (30-day TTL, revoked on disable), disable/regenerate step-up, encrypted
+  TOTP secret, replay protection, and the no-admin-reset recovery caveat.
+- **Assessed, no page needed:** background images (minor appearance option), system status (UI
+  element), download tracking (already covered in shares.mdx). api.mdx and translation-management.mdx
+  re-confirmed current.
+- Docs build green (85 pages); no em-dash introduced.
+
+## 2026-06-16 (TD-20 — Developers docs verified + corrected)
+
+- **TD-20 (Low) resolved.** The TD pointed at a non-existent `v3-beta/` path and claimed the four
+  Developers pages were all obsolete. Page-by-page verification against the code showed they had
+  already been largely maintained (docs i18n session + red-team reconciliation). Resolved by
+  verifying each page against ground truth and correcting the real drift, EN + FR.
+- **architecture.mdx:** 3 to 4 containers (added the TD-50 `docs` container across the mermaid
+  diagram, prose, table, and independent startup note), real image names
+  (`ghcr.io/slvnlrt/ouitransfer-*`), `/health` description aligned (coarse liveness +
+  per-subsystem detail on authenticated `/health/status`), `fastify-type-provider-zod` to
+  `@fastify/type-provider-zod` (post-TD-28).
+- **github-architecture.mdx:** module list fixed (dropped non-existent `s3-storage`, added
+  `cleanup` + `notification`, noted the route-less modules), added the CI Prisma migration
+  drift-check step (TD-48), folded the `docs` container into the release pipeline (4-container
+  stack, `/docs` health check, GHCR `ouitransfer-docs` publish).
+- **api.mdx** and **translation-management.mdx:** verified current against `server.ts` route
+  registrations and the Python translation scripts / 23 locale files respectively. No changes
+  needed.
+- **Verification:** docs build green (83 pages); no em-dash introduced in any edit.
+
+## 2026-06-16 (TD-53 — email health stalled-queue detection)
+
+- **TD-53 (Low) resolved.** `evaluateEmailHealth` (TD-42) only looked at recent failures + recent
+  sends, so a frozen worker (hung SMTP leaving jobs stuck in `processing`, or a `pending` backlog
+  that never drains) still reported `ok` despite zero outright failures.
+- **Fix (`apps/server/src/modules/email/health.ts`):** added an oldest-unsent-job stall signal to
+  the `degraded` derivation. Key insight — the worker drains the queue **oldest-first**, so while it
+  runs the oldest *ready* job stays young; a ready job aging past a window means the worker is not
+  draining, not just that the backlog is large. Two cheap DB counts: `pending` with
+  `nextAttemptAt <= now - 15min`, and `processing` with `lockedAt <= now - 15min`. Either trips
+  `degraded`. 15-minute window chosen above the queue's 5-minute stuck-recovery window and several
+  poll intervals, so it only fires on a genuine freeze and never flaps. No live SMTP probe; public
+  `EmailHealth` interface and `lastError` semantics unchanged; `down` keeps precedence.
+- **Tests:** 6 new unit cases in `health.test.ts` (stalled pending, stalled processing, large
+  healthy backlog stays ok, down-over-stall precedence, query-bounds assertion). Full server suite
+  **1851 tests (122 files)** green; type-check + Biome clean.
+
 ## 2026-06-15 (v1.0 release hardening + post-release hotfixes)
 
 Shipped after merging the red-team PR and cutting v1.0. Final state of each item:
