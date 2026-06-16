@@ -278,7 +278,7 @@ If you can't configure SMTP right now, see [Password Reset Without SMTP](/docs/v
 
 If you're deploying behind a reverse proxy (Traefik, Nginx, Caddy) with HTTPS:
 
-1. Add `SECURE_SITE=true` to the **server** service's environment variables in your `docker-compose.yml`. This tells the API to issue cookies with the `Secure` flag, which is required for cookies to work over HTTPS.
+1. `SECURE_SITE` is already `true` by default, so the API issues cookies with the `Secure` flag (required over HTTPS). If you set it to `false` for earlier plain-HTTP testing, set it back to `true` or remove the override.
 2. Set `FRONTEND_ORIGIN` and `STORAGE_PUBLIC_URL` to your `https://` URLs.
 3. Configure your reverse proxy to forward requests to the correct containers.
 
@@ -332,7 +332,7 @@ volumes:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `SECURE_SITE` | `false` | Set `true` when serving over HTTPS behind a reverse proxy. Required for cookies to work correctly with HTTPS. |
+| `SECURE_SITE` | `true` | Issues auth cookies with the `Secure` flag (HTTPS only), which is the default. For plain-HTTP access (local or LAN testing) set this to `false`, otherwise the browser will not send the login cookie and sign-in will appear to fail. |
 | `OUITRANSFER_UID` | `1001` | User ID for server container processes. Useful for NAS or bind-mount setups. |
 | `OUITRANSFER_GID` | `1001` | Group ID for server container processes. |
 | `DEFAULT_LANGUAGE` | `en-US` | Default UI language. See [available languages](/docs/v1-beta/available-languages). |

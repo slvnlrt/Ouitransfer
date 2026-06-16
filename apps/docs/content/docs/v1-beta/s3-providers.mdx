@@ -23,9 +23,10 @@ Consider using S3-compatible storage when you need:
 
 ### General configuration (applies to all storage types)
 
-| Variable                   | Description                                      | Required | Default         |
-| -------------------------- | ------------------------------------------------ | -------- | --------------- |
-| `PRESIGNED_URL_EXPIRATION` | Duration in seconds for presigned URL expiration | No       | `3600` (1 hour) |
+| Variable                       | Description                                                      | Required | Default            |
+| ------------------------------ | --------------------------------------------------------------- | -------- | ------------------ |
+| `PRESIGNED_URL_EXPIRATION`     | Duration in seconds for **upload** presigned URLs (60 to 86400) | No       | `3600` (1 hour)    |
+| `PRESIGNED_GET_URL_EXPIRATION` | Duration in seconds for **download** presigned URLs (60 to 86400) | No     | `900` (15 minutes) |
 
 ### S3-specific configuration
 
@@ -232,12 +233,12 @@ Presigned URLs are temporary URLs that allow direct access to files without expo
 
 **Default behavior:**
 
-- Upload URLs: 1 hour (3600 seconds)
-- Download URLs: 1 hour (3600 seconds)
+- Upload URLs: 1 hour (3600 seconds), set by `PRESIGNED_URL_EXPIRATION`
+- Download URLs: 15 minutes (900 seconds), set by `PRESIGNED_GET_URL_EXPIRATION`
 
 ### Configuring expiration time
 
-You can customize the expiration time using the `PRESIGNED_URL_EXPIRATION` environment variable:
+Upload and download URLs are configured independently: `PRESIGNED_URL_EXPIRATION` controls uploads, `PRESIGNED_GET_URL_EXPIRATION` controls downloads. Both take a duration in seconds (60 to 86400). For example, to extend upload URLs to 2 hours:
 
 ```bash
 # Set URLs to expire after 2 hours (7200 seconds)
