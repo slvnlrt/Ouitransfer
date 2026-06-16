@@ -8,17 +8,29 @@ but must be addressed. Each item includes context and the fix needed.
 
 ---
 
-## TD-53 — Email health: stalled-queue blind spot (processing/pending false-negative)
+## TD-53 — Email health: stalled-queue blind spot (processing/pending false-negative) ✅ DONE
 
-**Context:** The cheap, queue-counter-based `evaluateEmailHealth` (TD-42) derives its status from
+**Resolved:** 2026-06-16
+
+**Context:** The cheap, queue-counter-based `evaluateEmailHealth` (TD-42) derived its status from
 recent failures + recent sends only. A genuine stall where SMTP hangs and jobs pile up in
 `processing` (until `recoverStuckJobs` times them out), or a large `pending` backlog with zero
-outright failures, both still report **`ok`**. The `pending`/`digestPending` counts are surfaced to
-admins but never influence the derived status.
+outright failures, both still reported **`ok`**.
 
-**Fix:** Factor a `pending`/`processing` backlog threshold (and/or an oldest-pending age) into the
-`degraded` derivation, so a stuck/clogged queue is reflected. Keep it a cheap DB query — still no
-live SMTP probe (the `/health` endpoints are public/unauthenticated).
+**Fix applied (`apps/server/src/modules/email/health.ts`):** Added an oldest-unsent-job stall
+signal to the `degraded` derivation, keyed off the insight that the worker drains the queue
+**oldest-first** — while it is running the oldest *ready* job stays young, so a ready job that ages
+past a window means the worker is not draining (not merely a large backlog). Two cheap DB counts
+feed the signal:
+- `pending` jobs with `nextAttemptAt <= now − 15min` (ready to send but never picked up), and
+- `processing` jobs with `lockedAt <= now − 15min` (locked for delivery on a hung/frozen worker).
+
+Either trips `degraded`. The 15-minute window sits well above the queue's 5-minute
+stuck-`processing` recovery window and several poll intervals, so it only fires on a genuinely
+frozen worker and never flaps under bursty load or a slow poll interval. Still **no live SMTP
+probe** (the `/health` endpoints stay public/cheap). The public `EmailHealth` interface and
+`lastError` semantics are unchanged; `down` keeps precedence over a concurrent stall. Self-heals to
+`ok` once the worker resumes and the backlog clears. 6 new unit tests in `health.test.ts`.
 
 **Found during:** TD-42 Opus second-pass review (juin 2026, finding #3). Findings #1 (stale
 `lastError`) and #2 (retention-window `failed` false-positive) were fixed in the same session by

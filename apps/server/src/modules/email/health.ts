@@ -19,6 +19,22 @@ export interface EmailHealth {
 const RECENT_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 /**
+ * A job that is ready to send (`pending`, `nextAttemptAt <= now`) or locked for
+ * delivery (`processing`) for longer than this is treated as a stalled queue.
+ *
+ * The worker drains the queue oldest-first (`orderBy createdAt asc`) at a fixed
+ * batch size, so while it is running the oldest *ready* job is always young — it
+ * gets picked up on the very next poll. A ready job that ages past this window
+ * therefore means the worker is not draining (frozen on a hung `sendMail`,
+ * crashed, or otherwise stuck), not merely that the backlog is large.
+ *
+ * The threshold is set well above both the queue's 5-minute stuck-`processing`
+ * recovery window and several poll intervals, so it only trips on a genuinely
+ * frozen worker and never flaps under bursty load or a slow poll interval.
+ */
+const STALLED_THRESHOLD_MS = 15 * 60 * 1000;
+
+/**
  * Evaluate the health of the email / notifications subsystem.
  *
  * Status is derived purely from cheap DB queue counters and the persisted SMTP
@@ -38,15 +54,20 @@ const RECENT_WINDOW_MS = 24 * 60 * 60 * 1000;
  * stays the lifetime total (informative); only the status/lastError derivation
  * is windowed.
  *
+ * A **stalled queue** is also surfaced: a transport that hangs leaves jobs stuck
+ * in `processing`/`pending` and produces no outright failures, so the
+ * failure-based signals above would still report `ok`. We detect this cheaply
+ * via the oldest still-unsent job: a job ready to send (or locked for delivery)
+ * for longer than {@link STALLED_THRESHOLD_MS} means the worker is not draining
+ * the queue → `degraded`. It self-heals to `ok` once the worker resumes and the
+ * backlog clears.
+ *
  * Status derivation:
  * - `disabled`  — SMTP not enabled (admin choice, not a fault).
  * - `down`      — enabled, recent failed jobs and nothing sent in the last 24h.
- * - `degraded`  — enabled, recent failed jobs but some mail is still going out.
- * - `ok`        — enabled, no recent failures.
- *
- * Known bounded blind spot (tracked as tech debt): a stalled transport that
- * leaves jobs stuck in `processing`/`pending` with zero outright failures still
- * reports `ok`. Detecting that cheaply (without a live probe) is a follow-up.
+ * - `degraded`  — enabled, recent failed jobs but some mail is still going out,
+ *                 OR the queue is stalled (not draining).
+ * - `ok`        — enabled, no recent failures and the queue is draining.
  */
 export async function evaluateEmailHealth(): Promise<EmailHealth> {
   let smtpConfigured = false;
@@ -58,15 +79,31 @@ export async function evaluateEmailHealth(): Promise<EmailHealth> {
     smtpConfigured = false;
   }
 
-  const since = new Date(Date.now() - RECENT_WINDOW_MS);
+  const now = Date.now();
+  const since = new Date(now - RECENT_WINDOW_MS);
+  const stalledBefore = new Date(now - STALLED_THRESHOLD_MS);
 
-  const [pending, sentLast24h, failed, failedRecent, digestPending] = await Promise.all([
+  const [
+    pending,
+    sentLast24h,
+    failed,
+    failedRecent,
+    digestPending,
+    stalledPending,
+    stalledProcessing,
+  ] = await Promise.all([
     prisma.emailJob.count({ where: { status: "pending" } }),
     prisma.emailJob.count({ where: { status: "sent", sentAt: { gte: since } } }),
     prisma.emailJob.count({ where: { status: "failed" } }),
     prisma.emailJob.count({ where: { status: "failed", createdAt: { gte: since } } }),
     prisma.emailJob.count({ where: { status: "digest_pending" } }),
+    // Stall signals: a job ready to send (pending, due) or locked for delivery
+    // (processing) since before the stall cutoff — the worker is not draining.
+    prisma.emailJob.count({ where: { status: "pending", nextAttemptAt: { lte: stalledBefore } } }),
+    prisma.emailJob.count({ where: { status: "processing", lockedAt: { lte: stalledBefore } } }),
   ]);
+
+  const queueStalled = stalledPending > 0 || stalledProcessing > 0;
 
   // Only surface an error for a recently-failed job — a job that ultimately sent
   // keeps its (now-stale) `lastError`, and an old dead-letter job is not a
@@ -83,7 +120,7 @@ export async function evaluateEmailHealth(): Promise<EmailHealth> {
     status = "disabled";
   } else if (failedRecent > 0 && sentLast24h === 0) {
     status = "down";
-  } else if (failedRecent > 0) {
+  } else if (failedRecent > 0 || queueStalled) {
     status = "degraded";
   } else {
     status = "ok";

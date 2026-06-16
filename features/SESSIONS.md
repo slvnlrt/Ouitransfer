@@ -1,5 +1,22 @@
 # Session Log
 
+## 2026-06-16 (TD-53 — email health stalled-queue detection)
+
+- **TD-53 (Low) resolved.** `evaluateEmailHealth` (TD-42) only looked at recent failures + recent
+  sends, so a frozen worker (hung SMTP leaving jobs stuck in `processing`, or a `pending` backlog
+  that never drains) still reported `ok` despite zero outright failures.
+- **Fix (`apps/server/src/modules/email/health.ts`):** added an oldest-unsent-job stall signal to
+  the `degraded` derivation. Key insight — the worker drains the queue **oldest-first**, so while it
+  runs the oldest *ready* job stays young; a ready job aging past a window means the worker is not
+  draining, not just that the backlog is large. Two cheap DB counts: `pending` with
+  `nextAttemptAt <= now - 15min`, and `processing` with `lockedAt <= now - 15min`. Either trips
+  `degraded`. 15-minute window chosen above the queue's 5-minute stuck-recovery window and several
+  poll intervals, so it only fires on a genuine freeze and never flaps. No live SMTP probe; public
+  `EmailHealth` interface and `lastError` semantics unchanged; `down` keeps precedence.
+- **Tests:** 6 new unit cases in `health.test.ts` (stalled pending, stalled processing, large
+  healthy backlog stays ok, down-over-stall precedence, query-bounds assertion). Full server suite
+  **1851 tests (122 files)** green; type-check + Biome clean.
+
 ## 2026-06-15 (v1.0 release hardening + post-release hotfixes)
 
 Shipped after merging the red-team PR and cutting v1.0. Final state of each item:
