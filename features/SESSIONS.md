@@ -1,5 +1,25 @@
 # Session Log
 
+## 2026-06-16 (Docs verification pass — drift fixes + 2FA page)
+
+- Full read-only audit of the docs site against the code (one Explore agent + structural checks).
+  Structure clean: EN/FR parity, meta.json/meta.fr.json consistent, no orphan files, no broken
+  internal links.
+- **Factual drift fixed (EN + FR):** `SECURE_SITE` default is `true` (env.ts), not `false`
+  (quick-start env table + HTTPS section reframed; plain-HTTP now told to set `false`); download
+  presigned URLs default to 15 min / 900s via `PRESIGNED_GET_URL_EXPIRATION`, not 1h (s3-providers
+  documented only the upload var); pnpm pinned version 11.5.0 to 11.5.1. Also corrected the
+  misleading `SECURE_SITE` comment in `.env.docker.example`.
+- **Missing page added:** Two-Factor Authentication (`two-factor-authentication.mdx` + `.fr.mdx`,
+  added to both metas under Usage). Written from `two-factor/service.ts`: TOTP (RFC 6238, SHA-1, 6
+  digits, 30s, +/-1 step), enable flow with password step-up, 10 single-use HMAC-hashed backup
+  codes, trusted devices (30-day TTL, revoked on disable), disable/regenerate step-up, encrypted
+  TOTP secret, replay protection, and the no-admin-reset recovery caveat.
+- **Assessed, no page needed:** background images (minor appearance option), system status (UI
+  element), download tracking (already covered in shares.mdx). api.mdx and translation-management.mdx
+  re-confirmed current.
+- Docs build green (85 pages); no em-dash introduced.
+
 ## 2026-06-16 (TD-20 — Developers docs verified + corrected)
 
 - **TD-20 (Low) resolved.** The TD pointed at a non-existent `v3-beta/` path and claimed the four

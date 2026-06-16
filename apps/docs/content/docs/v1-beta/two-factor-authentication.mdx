@@ -1,0 +1,96 @@
+---
+title: Two-Factor Authentication
+icon: ShieldCheck
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+Two-factor authentication (2FA) adds a second step to sign-in: after your password, you also enter a
+one-time code from an authenticator app. Ouitransfer uses **time-based one-time passwords (TOTP,
+RFC 6238)**, compatible with apps such as Google Authenticator, Microsoft Authenticator, Authy, and
+1Password.
+
+2FA is opt-in and configured per user from your own account. There is no global toggle: each user
+enables it for themselves.
+
+## Enabling 2FA
+
+You manage 2FA from your **Profile** page (your account settings).
+
+<Steps>
+<Step>
+**Start setup.** Open your Profile and begin two-factor setup. Ouitransfer generates a secret and
+displays a QR code.
+</Step>
+<Step>
+**Add the account to your authenticator.** Scan the QR code with your authenticator app, or enter
+the displayed key manually. The codes are 6 digits and rotate every 30 seconds.
+</Step>
+<Step>
+**Confirm.** Enter the current 6-digit code from your app together with your **account password**,
+then confirm. The password step ensures someone who only borrowed your open session cannot enroll
+their own device.
+</Step>
+<Step>
+**Save your backup codes.** Ouitransfer shows **10 single-use backup codes**. Store them somewhere
+safe (a password manager works well). They are displayed **only once** and are your fallback if you
+lose access to your authenticator.
+</Step>
+</Steps>
+
+<Callout type="warn">
+Enabling 2FA signs out your other active sessions. You will need to sign back in (with your new
+second factor) on your other devices.
+</Callout>
+
+## Signing in with 2FA
+
+After you enter your username and password, Ouitransfer prompts for your second factor. Enter the
+current 6-digit code from your authenticator app, or one of your **backup codes** if you do not have
+your authenticator at hand.
+
+### Trusted devices
+
+When prompted, you can mark the current device as trusted. A trusted device skips the 2FA prompt for
+**30 days**, after which you are asked again. You can review and remove trusted devices from your
+Profile at any time, and all trusted devices are revoked automatically when you disable 2FA.
+
+## Backup codes
+
+Backup codes let you sign in when your authenticator is unavailable.
+
+- You receive **10 codes** when you enable 2FA. Each code works **once**.
+- Your Profile shows how many unused codes remain.
+- You can **regenerate** a fresh set at any time. Regenerating requires your password and a current
+  authenticator (or backup) code, and it invalidates the previous set.
+
+<Callout type="warn">
+Backup codes are the only way back in if you lose your authenticator. Ouitransfer has no
+self-service or administrator "reset 2FA" action: if you lose **both** your authenticator and all of
+your backup codes, an operator must clear the 2FA flag directly in the server database to restore
+access. Keep your codes safe.
+</Callout>
+
+## Disabling 2FA
+
+You can turn 2FA off from your Profile. For safety this is a step-up action: it requires your
+**password and a current authenticator or backup code**. Disabling 2FA also revokes all of your
+trusted devices and signs out your other sessions.
+
+## How it is protected
+
+- **TOTP parameters:** SHA-1, 6 digits, 30-second period, with a one-step tolerance on either side
+  for clock drift (RFC 6238).
+- **Encrypted at rest:** the TOTP secret is encrypted with AES-256-GCM using the server's
+  `ENCRYPTION_SECRET`, so a database leak does not expose the seed.
+- **Hashed backup codes:** backup codes are stored as keyed HMAC-SHA256 hashes, never in plaintext,
+  and are matched in constant time.
+- **Replay protection:** a one-time code cannot be reused. Once a time-step is consumed at login it
+  is rejected if presented again.
+
+<Callout type="info">
+2FA is independent of single sign-on. When you sign in through an [OIDC / SSO provider](/docs/v1-beta/oidc-authentication),
+the second factor is handled by that provider, so Ouitransfer's TOTP setup applies to
+password-based accounts.
+</Callout>
