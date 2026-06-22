@@ -3,7 +3,7 @@ packages:
   - "packages/*"
 
 overrides:
-  fast-uri: ">=3.1.2"
+  fast-uri: ">=4.0.0"
   fast-xml-builder: ">=1.2.0"
   fast-xml-parser: ">=5.8.0"
 
