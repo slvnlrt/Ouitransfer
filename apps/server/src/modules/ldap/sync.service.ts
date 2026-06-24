@@ -267,7 +267,17 @@ export class LdapSyncService {
     // update, welcome email) operates on the normalized address.
     adUser.email = sanitizedEmail;
 
-    const { firstName, lastName } = this.parseDisplayName(adUser.displayName, adUser.username);
+    // Prefer AD's dedicated givenName/sn attributes. These avoid the
+    // "LASTNAME Firstname" displayName ambiguity (common on French AD), which
+    // would otherwise put the surname into firstName. Fall back to splitting
+    // displayName only when BOTH dedicated attributes come back empty (directories
+    // that don't populate them).
+    const directoryFirstName = sanitizeDirectoryName(adUser.firstName);
+    const directoryLastName = sanitizeDirectoryName(adUser.lastName);
+    const { firstName, lastName } =
+      directoryFirstName || directoryLastName
+        ? { firstName: directoryFirstName, lastName: directoryLastName }
+        : this.parseDisplayName(adUser.displayName, adUser.username);
 
     // Find matching local group (first match wins)
     const matchedGroup = groups.find((g) => g.ldapDn && adUser.memberOf.includes(g.ldapDn));

@@ -30,6 +30,8 @@ export interface LdapUserEntry {
   username: string;
   email: string;
   displayName: string;
+  firstName: string;
+  lastName: string;
   memberOf: string[];
 }
 
@@ -60,6 +62,15 @@ export interface LdapSearchConfig {
   emailAttribute: string;
   displayNameAttribute: string;
 }
+
+/**
+ * AD/LDAP standard attributes for a person's given (first) and surname (last)
+ * names (RFC 2256 / RFC 4519). Hardcoded rather than configurable: these are
+ * the canonical names in Active Directory and every standard directory schema,
+ * so there is no need to surface them in the config.
+ */
+const FIRST_NAME_ATTRIBUTE = "givenName";
+const LAST_NAME_ATTRIBUTE = "sn";
 
 /**
  * Get the single value of an LDAP attribute from an entry, using case-insensitive
@@ -164,6 +175,8 @@ export class LdapClient {
         config.usernameAttribute,
         config.emailAttribute,
         config.displayNameAttribute,
+        FIRST_NAME_ATTRIBUTE,
+        LAST_NAME_ATTRIBUTE,
         "memberOf",
       ],
     });
@@ -184,6 +197,8 @@ export class LdapClient {
         username: getEntryAttribute(entryRecord, config.usernameAttribute),
         email: getEntryAttribute(entryRecord, config.emailAttribute),
         displayName: getEntryAttribute(entryRecord, config.displayNameAttribute),
+        firstName: getEntryAttribute(entryRecord, FIRST_NAME_ATTRIBUTE),
+        lastName: getEntryAttribute(entryRecord, LAST_NAME_ATTRIBUTE),
         memberOf: memberOfArray,
       };
     });
