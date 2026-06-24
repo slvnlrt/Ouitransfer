@@ -612,7 +612,8 @@
     "config": {
       "title": "Configuration",
       "description": "LDAP server connection and attribute mapping settings",
-      "enabled": "Enabled",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "Connection",
       "serverUrl": "Server URL",
       "useTls": "Use TLS (LDAPS)",

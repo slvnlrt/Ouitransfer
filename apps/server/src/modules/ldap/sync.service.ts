@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { prisma } from "../../shared/prisma.js";
-import { ConflictError } from "../../utils/app-error.js";
+import { ConflictError, ValidationError } from "../../utils/app-error.js";
 import { getLogger } from "../../utils/logger.js";
 import { hashToken } from "../../utils/token-hash.js";
 import { logAuditEvent } from "../audit/service.js";
@@ -68,8 +68,13 @@ export class LdapSyncService {
     let currentPhase = "connect";
     try {
       const config = await this.configRepository.get();
-      if (!config) throw new Error("LDAP configuration not found");
-      if (!config.enabled) throw new Error("LDAP sync is disabled");
+      if (!config) throw new ValidationError("LDAP is not configured");
+      // A manual sync runs regardless of the automatic-sync toggle: `enabled`
+      // only gates the scheduler (which never fires while disabled). Surfacing a
+      // proper AppError here also avoids the bare-Error → 500 the UI used to show.
+      if (trigger === "scheduled" && !config.enabled) {
+        throw new ConflictError("Automatic LDAP sync is disabled");
+      }
 
       const bindPassword = decrypt(config.bindPassword);
 

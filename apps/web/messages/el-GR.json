@@ -2729,7 +2729,8 @@
     "config": {
       "title": "Ρύθμιση",
       "description": "Ρυθμίσεις σύνδεσης διακομιστή LDAP και χαρτογράφησης χαρακτηριστικών",
-      "enabled": "Ενεργό",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "Σύνδεση",
       "serverUrl": "URL διακομιστή",
       "useTls": "Χρήση TLS (LDAPS)",

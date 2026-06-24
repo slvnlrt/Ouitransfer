@@ -2729,7 +2729,8 @@
     "config": {
       "title": "תצורה",
       "description": "הגדרות חיבור שרת LDAP ומיפוי תכונות",
-      "enabled": "מופעל",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "חיבור",
       "serverUrl": "כתובת URL של שרת",
       "useTls": "השתמש ב-TLS (LDAPS)",

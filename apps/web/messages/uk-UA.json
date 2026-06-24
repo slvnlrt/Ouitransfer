@@ -2729,7 +2729,8 @@
     "config": {
       "title": "Конфігурація",
       "description": "Налаштування з'єднання сервера LDAP і відображення атрибутів",
-      "enabled": "Увімкнено",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "З'єднання",
       "serverUrl": "URL сервера",
       "useTls": "Використовувати TLS (LDAPS)",

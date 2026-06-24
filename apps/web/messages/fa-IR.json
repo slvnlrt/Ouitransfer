@@ -2729,7 +2729,8 @@
     "config": {
       "title": "پیکربندی",
       "description": "اتصال سرور LDAP و تنظیمات نقشه‌برداری ویژگی",
-      "enabled": "فعال",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "اتصال",
       "serverUrl": "URL سرور",
       "useTls": "استفاده از TLS (LDAPS)",

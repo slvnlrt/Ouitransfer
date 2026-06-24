@@ -216,6 +216,28 @@ describe("LdapSyncService", () => {
   });
 
   // ────────────────────────────────────────────────────────────────────────────
+  // 1b. Auto-sync toggle only gates the scheduler, not manual runs
+  // ────────────────────────────────────────────────────────────────────────────
+  it("runs a manual sync even when automatic sync is disabled", async () => {
+    const disabledConfig = { ...defaultConfig, enabled: false };
+    const { service, ldapClient } = makeService([], disabledConfig);
+
+    // Must not throw — manual sync ignores the `enabled` toggle.
+    await expect(service.runSync("manual")).resolves.toBe(defaultLog.id);
+    // It got past the gate and actually connected to the directory.
+    expect(ldapClient.connect).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects a scheduled sync when automatic sync is disabled (defensive)", async () => {
+    const disabledConfig = { ...defaultConfig, enabled: false };
+    const { service, ldapClient } = makeService([], disabledConfig);
+
+    await expect(service.runSync("scheduled")).rejects.toThrow(ConflictError);
+    // Short-circuits before opening a connection.
+    expect(ldapClient.connect).not.toHaveBeenCalled();
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
   // 2. Create new users from AD
   // ────────────────────────────────────────────────────────────────────────────
   it("should create new users from AD", async () => {

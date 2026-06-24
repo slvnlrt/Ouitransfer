@@ -2729,7 +2729,8 @@
     "config": {
       "title": "Configurazione",
       "description": "Impostazioni di connessione al server LDAP e mapping degli attributi",
-      "enabled": "Abilitato",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "Connessione",
       "serverUrl": "URL Server",
       "useTls": "Usa TLS (LDAPS)",

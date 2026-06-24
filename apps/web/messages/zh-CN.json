@@ -2729,7 +2729,8 @@
     "config": {
       "title": "配置",
       "description": "LDAP服务器连接和属性映射设置",
-      "enabled": "已启用",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "连接",
       "serverUrl": "服务器URL",
       "useTls": "使用TLS（LDAPS）",

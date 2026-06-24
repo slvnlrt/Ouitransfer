@@ -70,21 +70,11 @@ export function LdapConfigForm({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Server className="h-5 w-5 text-muted-foreground" />
-            <div>
-              <CardTitle>{t("ldap.config.title")}</CardTitle>
-              <CardDescription>{t("ldap.config.description")}</CardDescription>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Label htmlFor="ldap-enabled">{t("ldap.config.enabled")}</Label>
-            <Switch
-              id="ldap-enabled"
-              checked={enabled}
-              onCheckedChange={(checked) => setValue("enabled", checked)}
-            />
+        <div className="flex items-center gap-3">
+          <Server className="h-5 w-5 text-muted-foreground" />
+          <div>
+            <CardTitle>{t("ldap.config.title")}</CardTitle>
+            <CardDescription>{t("ldap.config.description")}</CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -250,6 +240,17 @@ export function LdapConfigForm({
           {/* Sync Settings */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium">{t("ldap.config.syncSettings")}</h3>
+            <div className="flex items-start justify-between gap-4 rounded-md border p-3">
+              <div className="space-y-0.5">
+                <Label htmlFor="ldap-enabled">{t("ldap.config.autoSync")}</Label>
+                <p className="text-xs text-muted-foreground">{t("ldap.config.autoSyncHelp")}</p>
+              </div>
+              <Switch
+                id="ldap-enabled"
+                checked={enabled}
+                onCheckedChange={(checked) => setValue("enabled", checked)}
+              />
+            </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="syncIntervalMinutes">{t("ldap.config.syncInterval")}</Label>

@@ -786,9 +786,9 @@ describe("LDAP integration tests", () => {
       expect(res.statusCode).toBe(401);
     });
 
-    it("returns 500 when LDAP config not found", async () => {
-      // No config → sync service throws plain Error ("LDAP configuration not found")
-      // which becomes 500 via the global error handler's unknown-error branch.
+    it("returns 400 when LDAP config not found", async () => {
+      // No config → sync service throws a ValidationError ("LDAP is not
+      // configured") → a clean 400, not a 500 unknown-error.
       vi.mocked(prisma.ldapConfig.findUnique).mockResolvedValue(null);
       vi.mocked(prisma.ldapSyncLog.create).mockResolvedValue({
         id: "log-err-1",
@@ -820,7 +820,8 @@ describe("LDAP integration tests", () => {
         },
       });
 
-      expect(res.statusCode).toBe(500);
+      expect(res.statusCode).toBe(400);
+      expect(res.json().code).toBe("VALIDATION_ERROR");
     });
   });
 
