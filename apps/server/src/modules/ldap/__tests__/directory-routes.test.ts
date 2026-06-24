@@ -306,6 +306,8 @@ describe("LDAP directory routes — integration", () => {
       expect(res.statusCode).toBe(400);
       expect(res.json().code).toBe("LDAP_BIND_PASSWORD_REQUIRED");
       expect(connectMock).not.toHaveBeenCalled();
+      // disconnect() still runs in the route's finally even on a pre-connect throw.
+      expect(disconnectMock).toHaveBeenCalledTimes(1);
     });
 
     it("surfaces LDAP_ENCRYPTION_UNAVAILABLE when decrypt fails (ENCRYPTION_SECRET unset)", async () => {
@@ -324,6 +326,8 @@ describe("LDAP directory routes — integration", () => {
       expect(res.statusCode).toBe(400);
       expect(res.json().code).toBe("LDAP_ENCRYPTION_UNAVAILABLE");
       expect(connectMock).not.toHaveBeenCalled();
+      // disconnect() still runs in the route's finally even on a pre-connect throw.
+      expect(disconnectMock).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -62,17 +62,13 @@ export interface LdapSearchConfig {
 }
 
 /**
- * Get the value of an LDAP attribute from an entry, using case-insensitive lookup.
- * LDAP attributes are case-insensitive per RFC 4512.
+ * Get the single value of an LDAP attribute from an entry, using case-insensitive
+ * lookup. LDAP attributes are case-insensitive per RFC 4512. Array-safe: a
+ * multi-valued attribute returns its first value (not a comma-joined string),
+ * via {@link getEntryAttributeValues}.
  */
 function getEntryAttribute(entry: Record<string, unknown>, attribute: string): string {
-  const lowerAttr = attribute.toLowerCase();
-  for (const key of Object.keys(entry)) {
-    if (key.toLowerCase() === lowerAttr) {
-      return String(entry[key] || "");
-    }
-  }
-  return "";
+  return getEntryAttributeValues(entry, attribute)[0] ?? "";
 }
 
 /**
@@ -168,7 +164,6 @@ export class LdapClient {
         config.usernameAttribute,
         config.emailAttribute,
         config.displayNameAttribute,
-        "distinguishedName",
         "memberOf",
       ],
     });
@@ -183,7 +178,9 @@ export class LdapClient {
           : [];
 
       return {
-        dn: String(entry.distinguishedName || entry.dn),
+        // `entry.dn` is ldapts' always-populated real DN; `distinguishedName` is
+        // an AD-specific attribute that comes back as `[]` on non-AD servers.
+        dn: String(entry.dn),
         username: getEntryAttribute(entryRecord, config.usernameAttribute),
         email: getEntryAttribute(entryRecord, config.emailAttribute),
         displayName: getEntryAttribute(entryRecord, config.displayNameAttribute),
@@ -312,7 +309,7 @@ export class LdapClient {
       ({ searchEntries } = await this.client.search(searchBase, {
         scope: "sub",
         filter,
-        attributes: ["cn", "name", "distinguishedName"],
+        attributes: ["cn", "name"],
         sizeLimit: GROUP_SEARCH_SIZE_LIMIT,
       }));
     } catch (error) {
@@ -326,18 +323,26 @@ export class LdapClient {
       throw error;
     }
 
+    // Conservative off-by-one: a result set of exactly GROUP_SEARCH_SIZE_LIMIT
+    // reports truncated=true even when those were the only matches. ldapts
+    // swallows the LDAP result code when a sizeLimit is set, so a precise
+    // "more exist" signal is not recoverable from searchEntries alone; an
+    // occasional harmless "refine your search" hint is the intended trade-off.
     if (searchEntries.length >= GROUP_SEARCH_SIZE_LIMIT) {
       truncated = true;
     }
 
     const groups: LdapDirectoryNode[] = searchEntries.map((entry) => {
       const record = entry as unknown as Record<string, unknown>;
+      // `entry.dn` is always populated by ldapts' toObject with the entry's real
+      // DN. We do NOT request/prefer `distinguishedName`: it is an AD-specific
+      // operational attribute that ldapts returns as `[]` (truthy → String([])
+      // = "") on non-AD servers (OpenLDAP/389-DS/FreeIPA), which would yield an
+      // empty group DN. Mirrors browseContainers.
       const name =
-        getEntryAttribute(record, "cn") ||
-        getEntryAttribute(record, "name") ||
-        String(entry.distinguishedName || entry.dn);
+        getEntryAttribute(record, "cn") || getEntryAttribute(record, "name") || String(entry.dn);
       return {
-        dn: String(entry.distinguishedName || entry.dn),
+        dn: String(entry.dn),
         name,
         type: "group",
         hasChildren: false,

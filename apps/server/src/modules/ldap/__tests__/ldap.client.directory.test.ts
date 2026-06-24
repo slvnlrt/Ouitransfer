@@ -225,7 +225,7 @@ describe("LdapClient.searchGroups", () => {
     expect(base).toBe("DC=corp,DC=local");
     expect(options.scope).toBe("sub");
     expect(options.sizeLimit).toBe(GROUP_SEARCH_SIZE_LIMIT);
-    expect(options.attributes).toEqual(["cn", "name", "distinguishedName"]);
+    expect(options.attributes).toEqual(["cn", "name"]);
 
     const filter = options.filter as AndFilter;
     expect(filter).toBeInstanceOf(AndFilter);
@@ -243,15 +243,9 @@ describe("LdapClient.searchGroups", () => {
     }
   });
 
-  it("maps group entries to leaf nodes preferring distinguishedName for the dn", async () => {
+  it("maps group entries to leaf nodes using entry.dn for the dn", async () => {
     searchMock.mockResolvedValue({
-      searchEntries: [
-        {
-          dn: "CN=Admins,DC=corp,DC=local",
-          cn: "Admins",
-          distinguishedName: "CN=Admins,DC=corp,DC=local",
-        },
-      ],
+      searchEntries: [{ dn: "CN=Admins,DC=corp,DC=local", cn: "Admins" }],
     });
 
     const client = await connectedClient();
@@ -266,6 +260,21 @@ describe("LdapClient.searchGroups", () => {
         hasChildren: false,
       },
     ]);
+  });
+
+  it("uses entry.dn on non-AD servers where distinguishedName is absent ([] → not ''))", async () => {
+    // ldapts sets any requested-but-absent attribute to [] (truthy → String([])
+    // = ""). On OpenLDAP/389-DS the AD-specific distinguishedName is [], so the
+    // group dn must come from entry.dn, never an empty string.
+    searchMock.mockResolvedValue({
+      searchEntries: [{ dn: "cn=admins,dc=corp,dc=local", cn: "admins", distinguishedName: [] }],
+    });
+
+    const client = await connectedClient();
+    const { groups } = await client.searchGroups("dc=corp,dc=local", "adm");
+
+    expect(groups[0]?.dn).toBe("cn=admins,dc=corp,dc=local");
+    expect(groups[0]?.dn).not.toBe("");
   });
 
   it("reports truncated=true when the result reaches the size cap", async () => {
