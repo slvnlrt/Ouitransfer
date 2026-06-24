@@ -2,12 +2,16 @@ import type { AxiosRequestConfig } from "axios";
 
 import apiInstance from "@/config/api";
 import type {
+  BrowseLdapDirectoryResult,
   GetLdapConfigResult,
   GetLdapStatusResult,
   GetLdapSyncLogDetailResult,
   GetLdapSyncLogsResult,
+  LdapBrowseBody,
   LdapConfigBody,
+  LdapSearchGroupsBody,
   LdapTestBody,
+  SearchLdapGroupsResult,
   TestLdapConnectionResult,
   TriggerLdapSyncResult,
   UpdateLdapConfigResult,
@@ -32,6 +36,27 @@ export const testLdapConnection = (
   options?: AxiosRequestConfig,
 ): Promise<TestLdapConnectionResult> => {
   return apiInstance.post("/api/admin/ldap/test", body, options);
+};
+
+/**
+ * Browse the LDAP directory tree.
+ *
+ * Without `baseDn` the response holds the naming-context roots and the detected
+ * `defaultBaseDn`; with `baseDn` it holds that node's container children.
+ */
+export const browseLdapDirectory = (
+  body: LdapBrowseBody,
+  options?: AxiosRequestConfig,
+): Promise<BrowseLdapDirectoryResult> => {
+  return apiInstance.post("/api/admin/ldap/browse", body, options);
+};
+
+/** Search the LDAP directory for groups under a search base. */
+export const searchLdapGroups = (
+  body: LdapSearchGroupsBody,
+  options?: AxiosRequestConfig,
+): Promise<SearchLdapGroupsResult> => {
+  return apiInstance.post("/api/admin/ldap/search-groups", body, options);
 };
 
 /** Trigger manual LDAP sync */

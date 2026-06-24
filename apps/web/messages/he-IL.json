@@ -2818,6 +2818,32 @@
       "minutesAgo": "לפני {minutes} דקות",
       "hoursAgo": "לפני {hours} שעות",
       "daysAgo": "לפני {days} ימים"
+    },
+    "browse": {
+      "retry": "Retry",
+      "error": "Something went wrong. Please try again.",
+      "directory": {
+        "title": "Browse Directory",
+        "description": "Pick a base DN from the live directory tree.",
+        "buttonLabel": "Browse directory",
+        "useDetectedBase": "Use detected base",
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "loading": "Loading directory…",
+        "noRoots": "No naming contexts found.",
+        "noSubContainers": "No sub-containers"
+      },
+      "groups": {
+        "title": "Find Group",
+        "description": "Search the directory for a group to sync.",
+        "buttonLabel": "Search groups",
+        "placeholder": "Type to search groups…",
+        "prompt": "Start typing to search for a group.",
+        "searching": "Searching…",
+        "empty": "No groups match your search.",
+        "truncated": "Too many results — refine your search.",
+        "resultCount": "{count, plural, =0 {No groups found} one {# group found} other {# groups found}}"
+      }
     }
   },
   "backgroundImages": {
