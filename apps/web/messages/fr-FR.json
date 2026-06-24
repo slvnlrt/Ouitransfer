@@ -2872,29 +2872,29 @@
       "daysAgo": "il y a {days}d"
     },
     "browse": {
-      "retry": "Retry",
-      "error": "Something went wrong. Please try again.",
+      "retry": "Réessayer",
+      "error": "Une erreur est survenue. Veuillez réessayer.",
       "directory": {
-        "title": "Browse Directory",
-        "description": "Pick a base DN from the live directory tree.",
-        "buttonLabel": "Browse directory",
-        "useDetectedBase": "Use detected base",
-        "expand": "Expand",
-        "collapse": "Collapse",
-        "loading": "Loading directory…",
-        "noRoots": "No naming contexts found.",
-        "noSubContainers": "No sub-containers"
+        "title": "Parcourir l'annuaire",
+        "description": "Choisissez un DN de base dans l'arborescence de l'annuaire.",
+        "buttonLabel": "Parcourir l'annuaire",
+        "useDetectedBase": "Utiliser la base détectée",
+        "expand": "Développer",
+        "collapse": "Réduire",
+        "loading": "Chargement de l'annuaire…",
+        "noRoots": "Aucun contexte de nommage trouvé.",
+        "noSubContainers": "Aucun sous-conteneur"
       },
       "groups": {
-        "title": "Find Group",
-        "description": "Search the directory for a group to sync.",
-        "buttonLabel": "Search groups",
-        "placeholder": "Type to search groups…",
-        "prompt": "Start typing to search for a group.",
-        "searching": "Searching…",
-        "empty": "No groups match your search.",
-        "truncated": "Too many results — refine your search.",
-        "resultCount": "{count, plural, =0 {No groups found} one {# group found} other {# groups found}}"
+        "title": "Rechercher un groupe",
+        "description": "Recherchez dans l'annuaire un groupe à synchroniser.",
+        "buttonLabel": "Rechercher des groupes",
+        "placeholder": "Saisissez pour rechercher des groupes…",
+        "prompt": "Commencez à saisir pour rechercher un groupe.",
+        "searching": "Recherche…",
+        "empty": "Aucun groupe ne correspond à votre recherche.",
+        "truncated": "Trop de résultats — affinez votre recherche.",
+        "resultCount": "{count, plural, =0 {Aucun groupe trouvé} one {# groupe trouvé} other {# groupes trouvés}}"
       }
     }
   },
