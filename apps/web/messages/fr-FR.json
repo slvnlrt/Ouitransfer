@@ -2781,7 +2781,8 @@
     "config": {
       "title": "Configuration",
       "description": "Paramètres de connexion au serveur LDAP et mappage d'attributs",
-      "enabled": "Activé",
+      "autoSync": "Synchronisation automatique",
+      "autoSyncHelp": "Synchronise périodiquement les utilisateurs de l’annuaire selon l’intervalle ci-dessous. La synchronisation manuelle reste disponible dans tous les cas.",
       "connection": "Connexion",
       "serverUrl": "URL du serveur",
       "useTls": "Utiliser TLS (LDAPS)",

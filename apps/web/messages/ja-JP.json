@@ -2729,7 +2729,8 @@
     "config": {
       "title": "設定",
       "description": "LDAPサーバー接続と属性マッピング設定",
-      "enabled": "有効",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "接続",
       "serverUrl": "サーバーURL",
       "useTls": "TLS (LDAPS) を使用",

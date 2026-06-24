@@ -2729,7 +2729,8 @@
     "config": {
       "title": "การตั้งค่า",
       "description": "การตั้งค่าการเชื่อมต่อเซิร์ฟเวอร์ LDAP และการแมปแอตทริบิวต์",
-      "enabled": "เปิดใช้งาน",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "การเชื่อมต่อ",
       "serverUrl": "URL เซิร์ฟเวอร์",
       "useTls": "ใช้ TLS (LDAPS)",

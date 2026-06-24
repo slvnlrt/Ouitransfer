@@ -2729,7 +2729,8 @@
     "config": {
       "title": "Konfigurasi",
       "description": "Pengaturan koneksi server LDAP dan pemetaan atribut",
-      "enabled": "Diaktifkan",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "Koneksi",
       "serverUrl": "URL Server",
       "useTls": "Gunakan TLS (LDAPS)",

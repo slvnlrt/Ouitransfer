@@ -306,6 +306,10 @@ locales portent les valeurs anglaises en placeholder, suivant le même pattern q
 structurelle assurée par `locale-keys.test.ts`). Ces 21 placeholders rejoignent le périmètre TD-36 —
 à traduire dans la même passe que le reste.
 
+**Addendum 2 (LDAP sync UX fixes, juin 2026) :** ajout de `ldap.config.autoSync` +
+`ldap.config.autoSyncHelp` (en remplacement de `ldap.config.enabled`) dans les 23 locales — `en-US`
+et `fr-FR` traduits, 21 placeholders anglais. Même périmètre TD-36.
+
 **Found during:** Audit scripts traduction (mai 2026)
 **Severity:** Low — app pas en production ; les valeurs anglaises sont fonctionnelles mais dégradent
 l'expérience pour les utilisateurs non-EN/FR.

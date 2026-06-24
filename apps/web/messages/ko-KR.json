@@ -2729,7 +2729,8 @@
     "config": {
       "title": "구성",
       "description": "LDAP 서버 연결 및 속성 매핑 설정",
-      "enabled": "활성화됨",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "연결",
       "serverUrl": "서버 URL",
       "useTls": "TLS 사용 (LDAPS)",

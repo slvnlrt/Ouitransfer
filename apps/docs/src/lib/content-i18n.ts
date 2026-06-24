@@ -25,7 +25,7 @@ export interface SiteContent {
     };
     demo: {
       label: string;
-      encrypted: string;
+      passwordProtected: string;
       file: string;
       size: string;
       uploading: string;
@@ -96,7 +96,7 @@ const en: SiteContent = {
     },
     demo: {
       label: "New transfer",
-      encrypted: "Encrypted",
+      passwordProtected: "Password protected",
       file: "design-handoff.zip",
       size: "248 MB",
       uploading: "Uploading…",
@@ -204,7 +204,7 @@ const fr: SiteContent = {
     },
     demo: {
       label: "Nouveau transfert",
-      encrypted: "Chiffré",
+      passwordProtected: "Protégé par mot de passe",
       file: "remise-design.zip",
       size: "248 Mo",
       uploading: "Envoi en cours…",

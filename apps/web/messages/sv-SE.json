@@ -2729,7 +2729,8 @@
     "config": {
       "title": "Konfiguration",
       "description": "LDAP-serveranslutning och attributmappningsinställningar",
-      "enabled": "Aktiverad",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "Anslutning",
       "serverUrl": "Server URL",
       "useTls": "Använd TLS (LDAPS)",

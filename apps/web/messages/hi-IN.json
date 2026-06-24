@@ -2729,7 +2729,8 @@
     "config": {
       "title": "कॉन्फ़िगरेशन",
       "description": "LDAP सर्वर कनेक्शन और विशेषता मानचित्रण सेटिंग्स",
-      "enabled": "सक्षम",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "कनेक्शन",
       "serverUrl": "सर्वर URL",
       "useTls": "TLS (LDAPS) का उपयोग करें",

@@ -2729,7 +2729,8 @@
     "config": {
       "title": "Yapılandırma",
       "description": "LDAP sunucusu bağlantısı ve öznitelik eşlemesi ayarları",
-      "enabled": "Etkin",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "Bağlantı",
       "serverUrl": "Sunucu URL'si",
       "useTls": "TLS kullan (LDAPS)",

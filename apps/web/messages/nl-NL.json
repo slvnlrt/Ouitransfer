@@ -2729,7 +2729,8 @@
     "config": {
       "title": "Configuratie",
       "description": "LDAP-serververbinding en instellingen voor kenmerkstoewijzing",
-      "enabled": "Ingeschakeld",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
       "connection": "Verbinding",
       "serverUrl": "Server URL",
       "useTls": "TLS gebruiken (LDAPS)",

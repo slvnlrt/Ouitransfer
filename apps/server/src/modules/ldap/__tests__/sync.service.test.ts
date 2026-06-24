@@ -216,14 +216,40 @@ describe("LdapSyncService", () => {
   });
 
   // ────────────────────────────────────────────────────────────────────────────
+  // 1b. Auto-sync toggle only gates the scheduler, not manual runs
+  // ────────────────────────────────────────────────────────────────────────────
+  it("runs a manual sync even when automatic sync is disabled", async () => {
+    const disabledConfig = { ...defaultConfig, enabled: false };
+    const { service, ldapClient } = makeService([], disabledConfig);
+
+    // Must not throw — manual sync ignores the `enabled` toggle.
+    await expect(service.runSync("manual")).resolves.toBe(defaultLog.id);
+    // It got past the gate and actually connected to the directory.
+    expect(ldapClient.connect).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects a scheduled sync when automatic sync is disabled (defensive)", async () => {
+    const disabledConfig = { ...defaultConfig, enabled: false };
+    const { service, ldapClient } = makeService([], disabledConfig);
+
+    await expect(service.runSync("scheduled")).rejects.toThrow(ConflictError);
+    // Short-circuits before opening a connection.
+    expect(ldapClient.connect).not.toHaveBeenCalled();
+  });
+
+  // ────────────────────────────────────────────────────────────────────────────
   // 2. Create new users from AD
   // ────────────────────────────────────────────────────────────────────────────
-  it("should create new users from AD", async () => {
+  it("should create new users from AD using givenName/sn directly", async () => {
     const adUser = {
       dn: "CN=jdoe,OU=Users,DC=corp,DC=local",
       username: "jdoe",
       email: "jdoe@corp.local",
-      displayName: "John Doe",
+      // displayName is "LASTNAME Firstname" (French-AD style). The dedicated
+      // givenName/sn attributes must win, so firstName must be "John" (not "DOE").
+      displayName: "DOE John",
+      firstName: "John",
+      lastName: "Doe",
       memberOf: [],
     };
 
@@ -297,6 +323,32 @@ describe("LdapSyncService", () => {
     );
   });
 
+  it("falls back to splitting displayName when givenName/sn are empty", async () => {
+    // A directory that does not populate givenName/sn → split displayName.
+    const adUser = {
+      dn: "CN=asmith,OU=Users,DC=corp,DC=local",
+      username: "asmith",
+      email: "asmith@corp.local",
+      displayName: "Alice Smith",
+      firstName: "",
+      lastName: "",
+      memberOf: [],
+    };
+
+    const { service } = makeService([adUser]);
+    vi.mocked(prisma.user.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.user.findFirst).mockResolvedValue(null);
+    vi.mocked(prisma.user.create).mockResolvedValue({ id: "u-fallback" } as never);
+
+    await service.runSync("manual");
+
+    expect(vi.mocked(prisma.user.create)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ firstName: "Alice", lastName: "Smith" }),
+      }),
+    );
+  });
+
   // ────────────────────────────────────────────────────────────────────────────
   // 3. Skip users with email conflict (non-LDAP account)
   // ────────────────────────────────────────────────────────────────────────────
@@ -306,6 +358,8 @@ describe("LdapSyncService", () => {
       username: "jdoe",
       email: "jdoe@corp.local",
       displayName: "John Doe",
+      firstName: "John",
+      lastName: "Doe",
       memberOf: [],
     };
 
@@ -361,6 +415,8 @@ describe("LdapSyncService", () => {
       username: "jdoe",
       email: "jdoe.new@corp.local", // email changed
       displayName: "John Doe",
+      firstName: "John",
+      lastName: "Doe",
       memberOf: [],
     };
 
@@ -477,6 +533,8 @@ describe("LdapSyncService", () => {
       username: "jdoe",
       email: "jdoe@corp.local",
       displayName: "John Doe",
+      firstName: "John",
+      lastName: "Doe",
       memberOf: [],
     };
 
