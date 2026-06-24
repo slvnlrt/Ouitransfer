@@ -1,25 +1,73 @@
 import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
 import { z } from "zod";
 import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
-import { NotFoundError, ValidationError } from "../../utils/app-error.js";
+import { AppError, NotFoundError, ValidationError } from "../../utils/app-error.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
 import { logAuditEvent } from "../audit/service.js";
+import { resolveBindPassword } from "./bind-password.js";
 import { LdapConfigRepository } from "./config.repository.js";
-import { LdapConfigSchema, LdapTestSchema, SyncLogsQuerySchema } from "./dto.js";
+import { MASKED_PASSWORD } from "./constants.js";
+import {
+  LdapBrowseSchema,
+  LdapConfigSchema,
+  LdapSearchGroupsSchema,
+  LdapTestSchema,
+  SyncLogsQuerySchema,
+} from "./dto.js";
 import { encrypt } from "./encryption.js";
 import { LdapClient } from "./ldap.client.js";
 import { LdapSyncLogRepository } from "./sync.repository.js";
 import { getNextSyncAt, startScheduler, stopScheduler } from "./sync.scheduler.js";
 import { LdapSyncService } from "./sync.service.js";
 
-const MASKED_PASSWORD = "••••••••";
-
 const configRepository = new LdapConfigRepository();
 const syncLogRepository = new LdapSyncLogRepository();
 const syncService = new LdapSyncService();
 
 const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false });
+
+// ── Response schemas for the directory-browse / group-search routes ──────────
+const LdapDirectoryNodeSchema = z.object({
+  dn: z.string(),
+  name: z.string(),
+  type: z.enum(["ou", "container", "domain", "group"]),
+  hasChildren: z.boolean(),
+});
+
+const LdapBrowseResponseSchema = z.object({
+  nodes: z.array(LdapDirectoryNodeSchema),
+  defaultBaseDn: z.string().nullable(),
+});
+
+const LdapSearchGroupsResponseSchema = z.object({
+  groups: z.array(LdapDirectoryNodeSchema),
+  truncated: z.boolean(),
+});
+
+/**
+ * Map a thrown error to a client-safe error for the browse/search routes.
+ *
+ * Surfaces only our own `LDAP_*` configuration errors (scheme / SSRF / attribute
+ * / bind-password resolution) — these are safe, actionable config feedback.
+ * Everything else (raw connection/bind/search failures) is logged server-side
+ * and replaced with a generic message so the endpoint never becomes a port-scan
+ * or topology oracle. Mirrors LdapClient.testConnection's discipline.
+ */
+function toClientSafeLdapError(error: unknown): AppError {
+  if (error instanceof AppError && error.code?.startsWith("LDAP_")) {
+    return error;
+  }
+  getLogger().warn(
+    { err: error instanceof Error ? error.message : "unknown" },
+    "LDAP directory request failed",
+  );
+  return new AppError(
+    400,
+    "Connection failed. Check the server URL, credentials, and network reachability.",
+    "LDAP_CONNECTION_FAILED",
+  );
+}
 
 export const ldapRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
@@ -198,6 +246,97 @@ export const ldapRoutes: FastifyPluginAsyncZod = async (app) => {
         displayNameAttribute: data.displayNameAttribute,
       });
       return reply.send(result);
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/admin/ldap/browse",
+    preValidation: [adminPreValidation],
+    schema: {
+      tags: ["ldap"],
+      operationId: "browseLdapDirectory",
+      summary: "Browse the LDAP directory tree",
+      body: LdapBrowseSchema,
+      response: {
+        200: LdapBrowseResponseSchema,
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const data = request.body;
+      const client = new LdapClient();
+      try {
+        const bindPassword = await resolveBindPassword(data);
+        await client.connect({
+          serverUrl: data.serverUrl,
+          bindDn: data.bindDn,
+          bindPassword,
+          useTls: data.useTls,
+          tlsSkipVerify: data.tlsSkipVerify,
+        });
+
+        if (!data.baseDn) {
+          const { namingContexts, defaultNamingContext } = await client.readRootDse();
+          return reply.send({
+            nodes: namingContexts.map((dn) => ({
+              dn,
+              name: dn,
+              type: "domain" as const,
+              hasChildren: true,
+            })),
+            defaultBaseDn: defaultNamingContext,
+          });
+        }
+
+        const nodes = await client.browseContainers(data.baseDn);
+        return reply.send({ nodes, defaultBaseDn: null });
+      } catch (error) {
+        throw toClientSafeLdapError(error);
+      } finally {
+        await client.disconnect();
+      }
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/admin/ldap/search-groups",
+    preValidation: [adminPreValidation],
+    schema: {
+      tags: ["ldap"],
+      operationId: "searchLdapGroups",
+      summary: "Search the LDAP directory for groups",
+      body: LdapSearchGroupsSchema,
+      response: {
+        200: LdapSearchGroupsResponseSchema,
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const data = request.body;
+      const client = new LdapClient();
+      try {
+        const bindPassword = await resolveBindPassword(data);
+        await client.connect({
+          serverUrl: data.serverUrl,
+          bindDn: data.bindDn,
+          bindPassword,
+          useTls: data.useTls,
+          tlsSkipVerify: data.tlsSkipVerify,
+        });
+
+        const { groups, truncated } = await client.searchGroups(data.searchBase, data.query);
+        return reply.send({ groups, truncated });
+      } catch (error) {
+        throw toClientSafeLdapError(error);
+      } finally {
+        await client.disconnect();
+      }
     },
   });
 
