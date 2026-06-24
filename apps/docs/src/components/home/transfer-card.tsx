@@ -84,7 +84,7 @@ export function TransferCard({ demo }: { demo: SiteContent["home"]["demo"] }) {
           </div>
           <span className="flex items-center gap-1 rounded-full border border-brand/30 bg-brand/10 px-2 py-1 text-[11px] font-medium text-brand">
             <Lock className="size-3" />
-            {demo.encrypted}
+            {demo.passwordProtected}
           </span>
         </div>
 
