@@ -15,6 +15,12 @@ export interface LayoutSlots {
   infoBox?: string;
   /** Optional unsubscribe URL — renders unsubscribe link in footer when provided */
   unsubscribeUrl?: string;
+  /**
+   * Visual variant. `"hero"` renders a larger, glowing brand header — reserved
+   * for high-impact emails (e.g. welcome). Defaults to the sober `"default"`
+   * header used by transactional/service emails.
+   */
+  variant?: "default" | "hero";
 }
 
 export interface LayoutConfig {
@@ -22,6 +28,12 @@ export interface LayoutConfig {
   appName: string;
   /** Locale code for the `<html lang>` attribute (defaults to "en") */
   locale?: string;
+  /**
+   * Canonical application origin (e.g. "https://transfer.example.com"). When
+   * present, the brand logo (served at `${appUrl}/email-logo.png`) is shown in
+   * the header. Omitted in unit tests / when unconfigured → wordmark only.
+   */
+  appUrl?: string;
 }
 
 export interface LayoutOutput {
@@ -29,21 +41,31 @@ export interface LayoutOutput {
   text: string;
 }
 
-// ─── Colours / tokens (inline, Outlook-safe) ─────────────────────────────────
+// ─── Colours / tokens (inline, Outlook-safe, dark brand theme) ───────────────
+// Matches the app's public landing page: near-black canvas, indigo→violet→blue
+// brand gradient, light text. The brand gradient degrades to a solid indigo
+// (`brandVia` = #6366f1) on clients that ignore CSS gradients (Outlook/Word).
 
 const COLOR = {
+  brandFrom: "#8b5cf6", // violet
+  brandVia: "#6366f1", // indigo (solid fallback for the gradient)
+  brandTo: "#3b82f6", // blue
   indigo: "#6366f1",
-  indigoLight: "#e0e7ff",
+  indigoSoft: "#a5b4fc", // light indigo — readable accent on dark
   white: "#ffffff",
-  bodyBg: "#f4f4f7",
-  cardBg: "#ffffff",
-  textPrimary: "#111827",
-  textBody: "#374151",
-  textSecondary: "#6b7280",
-  textMuted: "#9ca3af",
-  border: "#ececf1",
-  infoBg: "#f7f7fb",
+  bodyBg: "#08080c",
+  cardBg: "#111119",
+  headerBg: "#0d0d14",
+  textPrimary: "#f5f5fa",
+  textBody: "#c7c7d4",
+  textSecondary: "#9a9aab",
+  textMuted: "#74748a",
+  border: "rgba(255,255,255,0.08)",
+  infoBg: "rgba(99,102,241,0.10)",
 } as const;
+
+/** The brand gradient, used on the accent bar, hero glow, and CTA button. */
+const BRAND_GRADIENT = `linear-gradient(120deg, ${COLOR.brandFrom}, ${COLOR.brandVia} 50%, ${COLOR.brandTo})`;
 
 const FONT_STACK =
   "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
@@ -60,10 +82,10 @@ function nlToBr(text: string): string {
 }
 
 /**
- * Validates a URL scheme and HTML-escapes it for safe use in `href` attributes.
- * Only allows `http:`, `https:`, and `mailto:` schemes. Returns `"#"` for
- * invalid URLs or dangerous schemes (e.g., `javascript:`), and logs a warning
- * so the operator can detect misconfigured URLs (e.g. wrong appUrl).
+ * Validates a URL scheme and HTML-escapes it for safe use in `href`/`src`
+ * attributes. Only allows `http:`, `https:`, and `mailto:` schemes. Returns
+ * `"#"` for invalid URLs or dangerous schemes (e.g., `javascript:`), and logs a
+ * warning so the operator can detect misconfigured URLs (e.g. wrong appUrl).
  */
 export function safeHref(url: string): string {
   try {
@@ -106,13 +128,28 @@ export function safeTextUrl(url: string): string {
   }
 }
 
+/**
+ * Build the brand logo `<img>` for the header, or `""` when no `appUrl` is
+ * configured (the logo is served as a static asset by the web app). `size` is
+ * the rendered square in px.
+ */
+function renderLogoImg(appUrl: string | undefined, appName: string, size: number): string {
+  if (!appUrl) return "";
+  // Strip a trailing slash so we don't emit `//email-logo.png`.
+  const base = appUrl.replace(/\/+$/, "");
+  const src = safeHref(`${base}/email-logo.png`);
+  if (src === "#") return "";
+  const alt = escapeHtml(appName);
+  return `<img src="${src}" width="${size}" height="${size}" alt="${alt}" style="display:block;border:0;border-radius:${Math.round(size * 0.28)}px;margin:0 auto;" />`;
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
  * Renders a complete email in both HTML and plain-text formats.
  *
  * All styles are inline (no `<style>` block) for Outlook compatibility.
- * Max width: 600px. Primary colour: indigo (#6366f1).
+ * Max width: 600px. Dark brand theme; brand gradient degrades to solid indigo.
  *
  * @param tr - Optional translation function for i18n footer strings.
  *   When omitted (e.g. in tests), falls back to hardcoded English.
@@ -145,32 +182,33 @@ function renderHtml(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
   const footerPoweredBy = tr ? tr("common.poweredBy") : "Powered by Ouitransfer";
   const footerUnsubscribe = tr ? tr("common.unsubscribe") : "Unsubscribe from these notifications";
 
+  const header =
+    slots.variant === "hero"
+      ? renderHeroHeader(config.appUrl, safeAppName, safeSubtitle)
+      : renderDefaultHeader(config.appUrl, safeAppName, safeSubtitle);
+
   return `<!DOCTYPE html>
 <html lang="${lang}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">
 <title>${safeAppName}</title>
 </head>
 <body style="margin:0;padding:0;background-color:${COLOR.bodyBg};font-family:${FONT_STACK};color:${COLOR.textPrimary};">
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:${COLOR.bodyBg};padding:40px 0;">
     <tr>
       <td align="center">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;width:100%;background-color:${COLOR.cardBg};border-radius:14px;overflow:hidden;border:1px solid ${COLOR.border};box-shadow:0 1px 3px rgba(17,24,39,0.06);">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;width:100%;background-color:${COLOR.cardBg};border-radius:16px;overflow:hidden;border:1px solid ${COLOR.border};box-shadow:0 8px 30px rgba(0,0,0,0.45);">
 
-          <!-- Accent bar -->
+          <!-- Gradient accent bar (solid indigo fallback on Outlook) -->
           <tr>
-            <td style="height:4px;line-height:4px;font-size:0;background-color:${COLOR.indigo};">&nbsp;</td>
+            <td style="height:5px;line-height:5px;font-size:0;background-color:${COLOR.brandVia};background-image:linear-gradient(90deg, ${COLOR.brandFrom}, ${COLOR.brandVia}, ${COLOR.brandTo});">&nbsp;</td>
           </tr>
 
-          <!-- Header -->
-          <tr>
-            <td style="padding:40px 40px 0;text-align:center;background-color:${COLOR.cardBg};">
-              <h1 style="margin:0;color:${COLOR.textPrimary};font-size:22px;font-weight:700;letter-spacing:-0.3px;font-family:${FONT_STACK};">${safeAppName}</h1>
-              <p style="margin:8px 0 0 0;color:${COLOR.textSecondary};font-size:14px;font-family:${FONT_STACK};">${safeSubtitle}</p>
-            </td>
-          </tr>
+          ${header}
 
           <!-- Body -->
           <tr>
@@ -209,12 +247,54 @@ function renderHtml(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
 </html>`;
 }
 
+/** Sober header (transactional / service emails): logo, wordmark, subtitle. */
+function renderDefaultHeader(
+  appUrl: string | undefined,
+  safeAppName: string,
+  safeSubtitle: string,
+): string {
+  const logo = renderLogoImg(appUrl, safeAppName, 48);
+  return `
+          <tr>
+            <td style="padding:36px 40px 0;text-align:center;background-color:${COLOR.headerBg};">
+              ${logo ? `<div style="margin:0 0 16px;">${logo}</div>` : ""}
+              <h1 style="margin:0;color:${COLOR.textPrimary};font-size:22px;font-weight:700;letter-spacing:-0.3px;font-family:${FONT_STACK};">${safeAppName}</h1>
+              <p style="margin:8px 0 0 0;color:${COLOR.indigoSoft};font-size:14px;font-weight:500;font-family:${FONT_STACK};">${safeSubtitle}</p>
+            </td>
+          </tr>`;
+}
+
+/**
+ * High-impact "hero" header (welcome): a larger glowing brand block — a radial
+ * indigo glow behind a big logo, oversized wordmark, and an accent tagline.
+ * The glow is a CSS background-image (ignored by Outlook → solid dark).
+ */
+function renderHeroHeader(
+  appUrl: string | undefined,
+  safeAppName: string,
+  safeSubtitle: string,
+): string {
+  const logo = renderLogoImg(appUrl, safeAppName, 72);
+  return `
+          <tr>
+            <td style="padding:48px 40px 8px;text-align:center;background-color:${COLOR.headerBg};background-image:radial-gradient(circle at 50% 0%, rgba(99,102,241,0.40), rgba(13,13,20,0) 72%);">
+              ${logo ? `<div style="margin:0 0 22px;">${logo}</div>` : ""}
+              <h1 style="margin:0;color:${COLOR.textPrimary};font-size:30px;font-weight:800;letter-spacing:-0.6px;font-family:${FONT_STACK};">${safeAppName}</h1>
+              <p style="margin:10px 0 0 0;color:${COLOR.indigoSoft};font-size:15px;font-weight:600;font-family:${FONT_STACK};">${safeSubtitle}</p>
+              <!-- Gradient divider (solid indigo fallback) -->
+              <div style="width:64px;height:3px;margin:22px auto 0;border-radius:3px;background-color:${COLOR.brandVia};background-image:${BRAND_GRADIENT};font-size:0;line-height:0;">&nbsp;</div>
+            </td>
+          </tr>`;
+}
+
 function renderCtaHtml(cta: { url: string; label: string }): string {
   const safeLabel = escapeHtml(cta.label);
   const safeUrl = safeHref(cta.url);
+  // Solid indigo background + gradient overlay: Outlook shows the solid indigo,
+  // gradient-capable clients show the brand gradient.
   return `
                <div style="text-align:center;margin:32px 0 8px;">
-                 <a href="${safeUrl}" style="display:inline-block;background-color:${COLOR.indigo};color:${COLOR.white};text-decoration:none;padding:12px 26px;font-weight:600;font-size:15px;border-radius:8px;font-family:${FONT_STACK};">${safeLabel}</a>
+                 <a href="${safeUrl}" style="display:inline-block;background-color:${COLOR.brandVia};background-image:${BRAND_GRADIENT};color:${COLOR.white};text-decoration:none;padding:13px 30px;font-weight:600;font-size:15px;border-radius:10px;font-family:${FONT_STACK};box-shadow:0 6px 18px rgba(99,102,241,0.35);">${safeLabel}</a>
                </div>`;
 }
 
