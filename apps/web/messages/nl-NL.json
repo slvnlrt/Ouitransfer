@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "Tussen 15 minuten en 7 dagen (10080 minuten)",
       "appUrl": "Applicatie URL",
       "appUrlHelp": "Gebruikt in welkomst-e-mails verzonden naar nieuwe LDAP-gebruikers",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "Applicatie URL is vereist wanneer LDAP is ingeschakeld",
       "bindPasswordRequired": "Bind-wachtwoord is vereist voor een nieuwe configuratie",
       "members": "leden",

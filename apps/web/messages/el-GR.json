@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "Μεταξύ 15 λεπτών και 7 ημερών (10080 λεπτά)",
       "appUrl": "URL εφαρμογής",
       "appUrlHelp": "Χρησιμοποιείται σε email καλωσορίσματος που αποστέλλονται σε νέους χρήστες LDAP",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "Το URL της εφαρμογής απαιτείται όταν το LDAP είναι ενεργό",
       "bindPasswordRequired": "Ο κωδικός Bind απαιτείται για νέα ρύθμιση",
       "members": "μέλη",

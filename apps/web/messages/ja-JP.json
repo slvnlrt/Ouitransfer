@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "15分～7日（10080分）の間",
       "appUrl": "アプリケーションURL",
       "appUrlHelp": "新しいLDAPユーザーに送信されるウェルカムメールで使用されます",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "LDAPが有効な場合、アプリケーションURLが必要です",
       "bindPasswordRequired": "新しい設定にはバインドパスワードが必要です",
       "members": "メンバー",

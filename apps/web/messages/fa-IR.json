@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "بین ۱۵ دقیقه و ۷ روز (۱۰۰۸۰ دقیقه)",
       "appUrl": "URL برنامه",
       "appUrlHelp": "در ایمیل‌های خوش‌آمدگویی برای کاربران LDAP جدید استفاده می‌شود",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "URL برنامه هنگام فعال بودن LDAP الزامی است",
       "bindPasswordRequired": "رمز Bind برای پیکربندی جدید الزامی است",
       "members": "اعضا",

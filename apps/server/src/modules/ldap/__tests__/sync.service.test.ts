@@ -52,6 +52,7 @@ vi.mock("../encryption.js", () => ({
 vi.mock("../../email/service.js", () => ({
   emailService: {
     send: vi.fn().mockResolvedValue(undefined),
+    sendToAdmins: vi.fn().mockResolvedValue(undefined),
   },
 }));
 
@@ -72,9 +73,11 @@ vi.mock("../../../utils/logger.js", () => ({
   }),
 }));
 
-// ── Now we can import the mocked modules ──
 import { prisma } from "../../../shared/prisma.js";
 import { ConflictError } from "../../../utils/app-error.js";
+// ── Now we can import the mocked modules ──
+import { getConfigValue } from "../../config/service.js";
+import { emailService } from "../../email/service.js";
 import { LdapConfigRepository } from "../config.repository.js";
 import { LdapClient } from "../ldap.client.js";
 import { LdapSyncLogRepository } from "../sync.repository.js";
@@ -95,6 +98,8 @@ const defaultConfig = {
   usernameAttribute: "sAMAccountName",
   emailAttribute: "mail",
   displayNameAttribute: "displayName",
+  // "fr" so it is distinguishable from the "en" fallback in assertions below.
+  defaultLocale: "fr",
   syncIntervalMinutes: 360,
   useTls: true,
   tlsSkipVerify: false,
@@ -277,7 +282,8 @@ describe("LdapSyncService", () => {
       tokenVersion: 0,
       emailVerified: false,
       deactivatedAt: null,
-      locale: "en",
+      // Persisted from the configured defaultLocale ("fr") — see assertions below.
+      locale: "fr",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -287,6 +293,9 @@ describe("LdapSyncService", () => {
     vi.mocked(prisma.user.findMany).mockResolvedValue([]);
     vi.mocked(prisma.user.findFirst).mockResolvedValue(null);
     vi.mocked(prisma.user.create).mockResolvedValue(newUserRecord);
+    // The welcome email path builds a reset link from the configured appUrl;
+    // provide one so the email is actually dispatched (locale assertion below).
+    vi.mocked(getConfigValue).mockResolvedValue("https://transfer.corp.local");
 
     // $transaction callback returns the created user and token
     vi.mocked(prisma.$transaction).mockImplementation(async (fn) => {
@@ -307,6 +316,8 @@ describe("LdapSyncService", () => {
           lastName: "Doe",
           ldapDn: adUser.dn,
           isActive: true,
+          // The configured defaultLocale ("fr") is persisted on the new user.
+          locale: "fr",
         }),
       }),
     );
@@ -316,6 +327,11 @@ describe("LdapSyncService", () => {
           token: expect.stringMatching(/^hashed-/),
         }),
       }),
+    );
+    // The welcome email is sent in the configured locale, not the "en" fallback.
+    expect(vi.mocked(emailService.send)).toHaveBeenCalledWith(
+      "welcome",
+      expect.objectContaining({ to: "jdoe@corp.local", locale: "fr" }),
     );
     expect(vi.mocked(syncRepo.complete)).toHaveBeenCalledWith(
       "log-1",

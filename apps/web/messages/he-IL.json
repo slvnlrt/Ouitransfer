@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "בין 15 דקות ל-7 ימים (10080 דקות)",
       "appUrl": "כתובת URL של אפליקציה",
       "appUrlHelp": "בשימוש בדוא\"לי ברוכים הבאים ששלחו למשתמשי LDAP חדשים",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "כתובת URL של אפליקציה נדרשת כאשר LDAP מופעל",
       "bindPasswordRequired": "סיסמת Bind נדרשת לתצורה חדשה",
       "members": "חברים",

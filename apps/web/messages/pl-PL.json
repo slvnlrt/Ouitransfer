@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "Od 15 minut do 7 dni (10080 minut)",
       "appUrl": "Adres URL aplikacji",
       "appUrlHelp": "Używany w e-mailach powitalnych wysyłanych do nowych użytkowników LDAP",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "Adres URL aplikacji jest wymagany, gdy LDAP jest włączone",
       "bindPasswordRequired": "Hasło Bind jest wymagane dla nowej konfiguracji",
       "members": "członków",

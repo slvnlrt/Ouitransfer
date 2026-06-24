@@ -136,6 +136,7 @@ function makeConfig(overrides?: Record<string, unknown>) {
     usernameAttribute: "sAMAccountName",
     emailAttribute: "mail",
     displayNameAttribute: "displayName",
+    defaultLocale: "en",
     syncIntervalMinutes: 360,
     useTls: true,
     tlsSkipVerify: false,
@@ -362,6 +363,7 @@ describe("LDAP integration tests", () => {
       expect(body.usernameAttribute).toBe("sAMAccountName");
       expect(body.emailAttribute).toBe("mail");
       expect(body.displayNameAttribute).toBe("displayName");
+      expect(body.defaultLocale).toBe("en");
       expect(body.syncIntervalMinutes).toBe(360);
       expect(body.useTls).toBe(true);
       expect(body.tlsSkipVerify).toBe(false);

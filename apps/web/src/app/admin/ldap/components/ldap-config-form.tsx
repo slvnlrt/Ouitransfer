@@ -16,6 +16,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import type { LdapConfigFormProps, LdapConnectionValues } from "../types";
 import { LdapDirectoryBrowser } from "./ldap-directory-browser";
@@ -42,6 +49,7 @@ export function LdapConfigForm({
   const useTls = watch("useTls");
   const tlsSkipVerify = watch("tlsSkipVerify");
   const bindPassword = watch("bindPassword");
+  const defaultLocale = watch("defaultLocale");
   const serverUrl = watch("serverUrl");
   const bindDn = watch("bindDn");
   const searchBase = watch("searchBase");
@@ -277,6 +285,29 @@ export function LdapConfigForm({
                   <p className="text-sm text-destructive">{errors.appUrl.message}</p>
                 )}
                 <p className="text-xs text-muted-foreground">{t("ldap.config.appUrlHelp")}</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="defaultLocale">{t("ldap.config.defaultLocaleLabel")}</Label>
+                <Select
+                  value={defaultLocale}
+                  onValueChange={(value) =>
+                    setValue("defaultLocale", value as "en" | "fr", { shouldDirty: true })
+                  }
+                >
+                  <SelectTrigger id="defaultLocale">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="fr">Français</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.defaultLocale && (
+                  <p className="text-sm text-destructive">{errors.defaultLocale.message}</p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  {t("ldap.config.defaultLocaleDescription")}
+                </p>
               </div>
             </div>
           </div>

@@ -563,6 +563,7 @@ model LdapConfig {
   usernameAttribute    String   @default("sAMAccountName")
   emailAttribute       String   @default("mail")
   displayNameAttribute String   @default("displayName")
+  defaultLocale        String   @default("en")
   syncIntervalMinutes  Int      @default(360)
   useTls               Boolean  @default(true)
   tlsSkipVerify        Boolean  @default(false)
