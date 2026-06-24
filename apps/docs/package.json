@@ -14,7 +14,7 @@
     "typescript"
   ],
   "license": "Apache-2.0",
-  "packageManager": "pnpm@11.5.1",
+  "packageManager": "pnpm@11.8.0",
   "scripts": {
     "build": "next build",
     "dev": "next dev -p 3001",
@@ -30,9 +30,9 @@
   "dependencies": {
     "@radix-ui/react-dialog": "catalog:",
     "clsx": "catalog:",
-    "fumadocs-core": "16.9.3",
+    "fumadocs-core": "16.10.5",
     "fumadocs-mdx": "13.0.8",
-    "fumadocs-ui": "16.9.3",
+    "fumadocs-ui": "16.10.5",
     "lucide-react": "catalog:",
     "mermaid": "^11.15.0",
     "motion": "catalog:",
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "catalog:",
-    "@types/mdx": "2.0.13",
+    "@types/mdx": "2.0.14",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

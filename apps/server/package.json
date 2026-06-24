@@ -14,7 +14,7 @@
     "typescript"
   ],
   "license": "Apache-2.0",
-  "packageManager": "pnpm@11.5.1",
+  "packageManager": "pnpm@11.8.0",
   "files": [
     "dist",
     "prisma",
@@ -46,8 +46,8 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1062.0",
-    "@aws-sdk/s3-request-presigner": "^3.1062.0",
+    "@aws-sdk/client-s3": "^3.1073.0",
+    "@aws-sdk/s3-request-presigner": "^3.1073.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.2.0",
     "@fastify/csrf-protection": "^7.1.0",
@@ -61,10 +61,10 @@
     "@ouitransfer/shared": "workspace:*",
     "@prisma/adapter-better-sqlite3": "^7.8.0",
     "@prisma/client": "^7.8.0",
-    "@scalar/fastify-api-reference": "^1.58.0",
-    "@smithy/node-http-handler": "^4.7.7",
+    "@scalar/fastify-api-reference": "^1.60.0",
+    "@smithy/node-http-handler": "^4.8.1",
     "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^12.10.0",
+    "better-sqlite3": "^12.11.1",
     "dotenv": "^17.4.2",
     "fastify": "^5.8.5",
     "@fastify/type-provider-zod": "^1.0.0",
@@ -75,7 +75,7 @@
     "otpauth": "^9.5.1",
     "prisma": "^7.8.0",
     "qrcode": "catalog:",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.2",
     "tsx": "^4.22.4",
     "zod": "catalog:"
   },
@@ -83,7 +83,7 @@
     "@types/bcryptjs": "2.4.6",
     "@types/better-sqlite3": "7.6.13",
     "@types/node": "catalog:",
-    "@types/nodemailer": "8.0.0",
+    "@types/nodemailer": "8.0.1",
     "@types/qrcode": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
