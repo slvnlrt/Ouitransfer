@@ -58,11 +58,23 @@ export function LdapGroupSearch({
 
   const enabled = open && debounced.length >= MIN_QUERY_LENGTH;
 
-  // Race-safety (spec M-4): the query is keyed by the debounced string, so a slow
-  // response for an older query (e.g. "ad") can never overwrite a newer one
-  // ("admin") — TanStack Query only renders the data of the active query key.
+  // Primitive connection identity (stable by value, unlike the parent's fresh
+  // object literal) so editing a connection field behind the open dialog re-keys
+  // the query instead of serving a result bound to the old credentials.
+  const connectionKey = [
+    connection.serverUrl,
+    connection.bindDn,
+    connection.bindPassword,
+    connection.useTls,
+    connection.tlsSkipVerify,
+  ] as const;
+
+  // Race-safety (spec M-4): the query is keyed by the debounced string (and the
+  // connection identity), so a slow response for an older query (e.g. "ad") can
+  // never overwrite a newer one ("admin") — TanStack Query only renders the data
+  // of the active query key.
   const { data, isFetching, isError, error, refetch } = useQuery<LdapGroupSearchResult>({
-    queryKey: ["ldap", "search-groups", searchBase, debounced],
+    queryKey: ["ldap", "search-groups", ...connectionKey, searchBase, debounced],
     enabled,
     staleTime: 30_000,
     retry: false,

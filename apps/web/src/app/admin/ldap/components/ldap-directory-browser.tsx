@@ -94,11 +94,18 @@ export function LdapDirectoryBrowser({
   // Refs to the rendered treeitem rows, keyed by DN, for roving-tabindex focus.
   const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
+  // Latest connection values, read at request time. The load effect depends on
+  // `open` alone — if it depended on `connection` (a fresh object literal each
+  // parent render) it would re-run on every form keystroke/background refetch
+  // and collapse the admin's expanded subtree.
+  const connectionRef = useRef(connection);
+  connectionRef.current = connection;
+
   const loadRoots = useCallback(async () => {
     setRootStatus("loading");
     setRootError(null);
     try {
-      const res = await browseLdapDirectory(toConnectionBody(connection));
+      const res = await browseLdapDirectory(toConnectionBody(connectionRef.current));
       const roots = res.data.nodes;
       const map: NodeMap = {};
       for (const node of roots) {
@@ -119,7 +126,7 @@ export function LdapDirectoryBrowser({
       setRootStatus("error");
       setRootError(parseApiError(error).message);
     }
-  }, [connection]);
+  }, []);
 
   // (Re)load the naming-context roots each time the dialog opens. Connection
   // values are captured fresh on open so unsaved form edits are reflected.
@@ -133,48 +140,48 @@ export function LdapDirectoryBrowser({
     void loadRoots();
   }, [open, loadRoots]);
 
-  const loadChildren = useCallback(
-    async (dn: string) => {
+  const loadChildren = useCallback(async (dn: string) => {
+    setNodes((prev) => {
+      const target = prev[dn];
+      if (!target) return prev;
+      return { ...prev, [dn]: { ...target, status: "loading" } };
+    });
+    try {
+      const res = await browseLdapDirectory({
+        ...toConnectionBody(connectionRef.current),
+        baseDn: dn,
+      });
+      const children = res.data.nodes;
       setNodes((prev) => {
         const target = prev[dn];
         if (!target) return prev;
-        return { ...prev, [dn]: { ...target, status: "loading" } };
-      });
-      try {
-        const res = await browseLdapDirectory({ ...toConnectionBody(connection), baseDn: dn });
-        const children = res.data.nodes;
-        setNodes((prev) => {
-          const target = prev[dn];
-          if (!target) return prev;
-          const next: NodeMap = { ...prev };
-          for (const child of children) {
-            next[child.dn] = {
-              node: child,
-              depth: target.depth + 1,
-              status: "unloaded",
-              expanded: false,
-              childDns: [],
-            };
-          }
-          next[dn] = {
-            ...target,
-            status: "loaded",
-            expanded: true,
-            childDns: children.map((c) => c.dn),
+        const next: NodeMap = { ...prev };
+        for (const child of children) {
+          next[child.dn] = {
+            node: child,
+            depth: target.depth + 1,
+            status: "unloaded",
+            expanded: false,
+            childDns: [],
           };
-          return next;
-        });
-      } catch (error) {
-        const message = parseApiError(error).message;
-        setNodes((prev) => {
-          const target = prev[dn];
-          if (!target) return prev;
-          return { ...prev, [dn]: { ...target, status: "error", errorMessage: message } };
-        });
-      }
-    },
-    [connection],
-  );
+        }
+        next[dn] = {
+          ...target,
+          status: "loaded",
+          expanded: true,
+          childDns: children.map((c) => c.dn),
+        };
+        return next;
+      });
+    } catch (error) {
+      const message = parseApiError(error).message;
+      setNodes((prev) => {
+        const target = prev[dn];
+        if (!target) return prev;
+        return { ...prev, [dn]: { ...target, status: "error", errorMessage: message } };
+      });
+    }
+  }, []);
 
   const toggleExpand = useCallback(
     (dn: string) => {
@@ -332,8 +339,9 @@ export function LdapDirectoryBrowser({
                       }}
                       role="treeitem"
                       aria-level={depth + 1}
-                      aria-expanded={node.hasChildren ? expanded : undefined}
-                      aria-selected={isActive}
+                      // Expandable only while the node may still have children;
+                      // a loaded-empty container is announced as a leaf (no state).
+                      aria-expanded={showArrow ? expanded : undefined}
                       tabIndex={isActive ? 0 : -1}
                       onKeyDown={(e) => handleKeyDown(e, node.dn)}
                       onClick={() => setActiveDn(node.dn)}

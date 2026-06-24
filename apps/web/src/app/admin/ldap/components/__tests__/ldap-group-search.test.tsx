@@ -144,11 +144,26 @@ describe("LdapGroupSearch", () => {
 
     renderDialog();
     const input = screen.getByPlaceholderText("ldap.browse.groups.placeholder");
-    await user.type(input, "ad");
-    await user.type(input, "min");
 
+    // Type "ad" and wait until its (slow) query is genuinely in flight — this is
+    // the older request that must NOT win. Without this wait the 300ms debounce
+    // would coalesce "ad"+"min" into a single "admin" query and the race would
+    // never actually occur.
+    await user.type(input, "ad");
+    await waitFor(() =>
+      expect(searchLdapGroups).toHaveBeenCalledWith(expect.objectContaining({ query: "ad" })),
+    );
+
+    // Now type the rest → a newer "admin" query that resolves first.
+    await user.type(input, "min");
+    await waitFor(() =>
+      expect(searchLdapGroups).toHaveBeenCalledWith(expect.objectContaining({ query: "admin" })),
+    );
+
+    // Both queries fired; the newer one's results render.
     expect(await screen.findByText("Fresh")).toBeInTheDocument();
-    // Even after the slow "ad" response would have resolved, the stale row never appears.
+    // The older "ad" response resolves last (after 200ms) but lands under an
+    // inactive query key, so the stale row must never appear.
     await new Promise((r) => setTimeout(r, 250));
     expect(screen.queryByText("Stale")).not.toBeInTheDocument();
     expect(screen.getByText("Fresh")).toBeInTheDocument();
