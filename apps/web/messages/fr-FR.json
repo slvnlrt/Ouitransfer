@@ -2870,6 +2870,32 @@
       "minutesAgo": "il y a {minutes}m",
       "hoursAgo": "il y a {hours}h",
       "daysAgo": "il y a {days}d"
+    },
+    "browse": {
+      "retry": "Réessayer",
+      "error": "Une erreur est survenue. Veuillez réessayer.",
+      "directory": {
+        "title": "Parcourir l'annuaire",
+        "description": "Choisissez un DN de base dans l'arborescence de l'annuaire.",
+        "buttonLabel": "Parcourir l'annuaire",
+        "useDetectedBase": "Utiliser la base détectée",
+        "expand": "Développer",
+        "collapse": "Réduire",
+        "loading": "Chargement de l'annuaire…",
+        "noRoots": "Aucun contexte de nommage trouvé.",
+        "noSubContainers": "Aucun sous-conteneur"
+      },
+      "groups": {
+        "title": "Rechercher un groupe",
+        "description": "Recherchez dans l'annuaire un groupe à synchroniser.",
+        "buttonLabel": "Rechercher des groupes",
+        "placeholder": "Saisissez pour rechercher des groupes…",
+        "prompt": "Commencez à saisir pour rechercher un groupe.",
+        "searching": "Recherche…",
+        "empty": "Aucun groupe ne correspond à votre recherche.",
+        "truncated": "Trop de résultats — affinez votre recherche.",
+        "resultCount": "{count, plural, =0 {Aucun groupe trouvé} one {# groupe trouvé} other {# groupes trouvés}}"
+      }
     }
   },
   "backgroundImages": {

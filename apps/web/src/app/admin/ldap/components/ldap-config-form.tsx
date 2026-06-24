@@ -1,14 +1,25 @@
 "use client";
 
-import { AlertTriangle, CheckCircle, Loader2, Server, XCircle } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle,
+  FolderTree,
+  Loader2,
+  Search,
+  Server,
+  XCircle,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import type { LdapConfigFormProps } from "../types";
+import type { LdapConfigFormProps, LdapConnectionValues } from "../types";
+import { LdapDirectoryBrowser } from "./ldap-directory-browser";
+import { LdapGroupSearch } from "./ldap-group-search";
 
 export function LdapConfigForm({
   isSaving,
@@ -17,6 +28,7 @@ export function LdapConfigForm({
   formMethods,
   onSave,
   onTest,
+  configSaved,
 }: LdapConfigFormProps) {
   const t = useTranslations();
   const {
@@ -30,6 +42,30 @@ export function LdapConfigForm({
   const useTls = watch("useTls");
   const tlsSkipVerify = watch("tlsSkipVerify");
   const bindPassword = watch("bindPassword");
+  const serverUrl = watch("serverUrl");
+  const bindDn = watch("bindDn");
+  const searchBase = watch("searchBase");
+
+  const [browserOpen, setBrowserOpen] = useState(false);
+  const [groupSearchOpen, setGroupSearchOpen] = useState(false);
+
+  // A usable bind password exists when one is typed OR the config is already
+  // saved (the server then reuses the stored, encrypted password). Mirrors the
+  // Test button's password gate, plus the saved-config fallback.
+  const hasUsablePassword = Boolean(bindPassword) || configSaved;
+  // Connection-level prerequisites for any directory read.
+  const canBrowse = Boolean(serverUrl) && Boolean(bindDn) && hasUsablePassword;
+  // The group search roots at the Base DN (`scope: "sub"`), so it additionally
+  // requires a non-empty search base (spec M-6).
+  const canSearchGroups = canBrowse && Boolean(searchBase);
+
+  const connection: LdapConnectionValues = {
+    serverUrl,
+    bindDn,
+    bindPassword,
+    useTls,
+    tlsSkipVerify,
+  };
 
   return (
     <Card>
@@ -132,18 +168,50 @@ export function LdapConfigForm({
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="searchBase">{t("ldap.config.searchBase")}</Label>
-                <Input id="searchBase" placeholder="DC=corp,DC=local" {...register("searchBase")} />
+                <div className="flex gap-2">
+                  <Input
+                    id="searchBase"
+                    placeholder="DC=corp,DC=local"
+                    className="flex-1"
+                    {...register("searchBase")}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    disabled={!canBrowse}
+                    onClick={() => setBrowserOpen(true)}
+                    aria-label={t("ldap.browse.directory.buttonLabel")}
+                    title={t("ldap.browse.directory.buttonLabel")}
+                  >
+                    <FolderTree className="h-4 w-4" />
+                  </Button>
+                </div>
                 {errors.searchBase && (
                   <p className="text-sm text-destructive">{errors.searchBase.message}</p>
                 )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="syncGroupDn">{t("ldap.config.syncGroupDn")}</Label>
-                <Input
-                  id="syncGroupDn"
-                  placeholder="CN=OuiTransfer Users,OU=Groups,DC=corp,DC=local"
-                  {...register("syncGroupDn")}
-                />
+                <div className="flex gap-2">
+                  <Input
+                    id="syncGroupDn"
+                    placeholder="CN=OuiTransfer Users,OU=Groups,DC=corp,DC=local"
+                    className="flex-1"
+                    {...register("syncGroupDn")}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    disabled={!canSearchGroups}
+                    onClick={() => setGroupSearchOpen(true)}
+                    aria-label={t("ldap.browse.groups.buttonLabel")}
+                    title={t("ldap.browse.groups.buttonLabel")}
+                  >
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </div>
                 {errors.syncGroupDn && (
                   <p className="text-sm text-destructive">{errors.syncGroupDn.message}</p>
                 )}
@@ -255,6 +323,20 @@ export function LdapConfigForm({
           </div>
         </form>
       </CardContent>
+
+      <LdapDirectoryBrowser
+        open={browserOpen}
+        onOpenChange={setBrowserOpen}
+        connection={connection}
+        onSelect={(dn) => setValue("searchBase", dn, { shouldValidate: true })}
+      />
+      <LdapGroupSearch
+        open={groupSearchOpen}
+        onOpenChange={setGroupSearchOpen}
+        connection={connection}
+        searchBase={searchBase}
+        onSelect={(dn) => setValue("syncGroupDn", dn, { shouldValidate: true })}
+      />
     </Card>
   );
 }

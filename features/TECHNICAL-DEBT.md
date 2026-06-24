@@ -300,6 +300,12 @@ Priorité : `errors.*` (UX critique), `audit.*` (grand nombre), `quickShare.*` (
 **Référence :** Anciens TD-16 (4 clés settings) et TD-21 (35 clés quickShare) sont désormais
 marqués SUPERSEDED et consolidés dans ce TD-36.
 
+**Addendum (5.5 LDAP Directory Browser, juin 2026) :** la feature 5.5 a ajouté le namespace
+`ldap.browse.*` (20 clés) dans les 23 locales. `en-US` et `fr-FR` sont traduits ; les 21 autres
+locales portent les valeurs anglaises en placeholder, suivant le même pattern que ci-dessus (parité
+structurelle assurée par `locale-keys.test.ts`). Ces 21 placeholders rejoignent le périmètre TD-36 —
+à traduire dans la même passe que le reste.
+
 **Found during:** Audit scripts traduction (mai 2026)
 **Severity:** Low — app pas en production ; les valeurs anglaises sont fonctionnelles mais dégradent
 l'expérience pour les utilisateurs non-EN/FR.

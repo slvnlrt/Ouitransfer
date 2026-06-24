@@ -17,6 +17,7 @@ import { useLdapSync } from "./hooks/use-ldap-sync";
 export default function LdapPage() {
   const t = useTranslations();
   const {
+    config,
     isLoading: isLoadingConfig,
     formMethods,
     isSaving,
@@ -83,6 +84,7 @@ export default function LdapPage() {
               formMethods={formMethods}
               onSave={onSave}
               onTest={onTest}
+              configSaved={config?.configured ?? false}
             />
 
             <LdapGroupMapping groups={mappedGroups} isLoading={isLoadingGroups} />

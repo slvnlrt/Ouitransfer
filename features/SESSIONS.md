@@ -1,5 +1,31 @@
 # Session Log
 
+## 2026-06-24 (5.5 — LDAP Directory Browser)
+
+- Built the LDAP directory browser so admins pick DNs from the live directory instead of typing
+  them: **Base DN** via RootDSE auto-detect + a lazy container tree, **Sync Group** via a search box.
+  `bindDn` stays free-text (UPN/down-level). Spec + plan in `features/{specs,plans}/5.5-...md`;
+  per-lot Opus design/code reviews in `features/reviews/5.5-...md` (every finding fixed).
+- **Spec hardening (Opus design review):** filter-object composition to kill LDAP-filter injection
+  (C-1), non-AD RootDSE degradation, explicit no-audit-log/no-rate-limit decisions, masked-password
+  resolver contract (MASKED_PASSWORD hoist + ENCRYPTION_SECRET handling), expand tri-state, tree a11y,
+  debounce race-safety, searchBase-gated group button — all folded in before coding.
+- **Lot 1 (server):** `LdapClient.readRootDse/browseContainers/searchGroups` (filters as ldapts
+  objects, never strings), `resolveBindPassword` (reuses the stored encrypted password on the masked
+  value), two admin-gated routes `POST /admin/ldap/{browse,search-groups}` with generic-error
+  discipline (no topology oracle) + sizeLimit caps. Review: 1 Important (empty-array
+  `distinguishedName` → empty DN on non-AD; switched to ldapts' always-populated `entry.dn`, also
+  fixed the latent `searchSyncGroupMembers` path) + 3 Minor, all fixed.
+- **Lot 2 (web):** mirrored HTTP types, `ldap-directory-browser` (lazy tri-state tree + RootDSE
+  "use detected base" + keyboard a11y) and `ldap-group-search` (debounced, TanStack-keyed race-safe)
+  dialogs, "Browse" buttons wired into the config form. Review: 2 Important (tree collapsed/refetched
+  on every parent re-render → connection read via ref so the load effect keys on `open`; hollow
+  race-safety test → rewritten to fire two real in-flight queries with the older resolving last) +
+  4 Minor (query-key connection identity, `aria-selected`/`aria-expanded` semantics, TD-36), all fixed.
+- **Lot 3:** `ldap.browse.*` (20 keys) added to all 23 locales; en-US + fr-FR translated, 21 EN
+  placeholders logged under TD-36. Final: server 125 files/1889 tests, web 44 files/414 tests, all
+  green; type-check + lint clean across both apps.
+
 ## 2026-06-16 (Docs verification pass — drift fixes + 2FA page)
 
 - Full read-only audit of the docs site against the code (one Explore agent + structural checks).
