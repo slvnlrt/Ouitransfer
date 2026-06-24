@@ -65,6 +65,7 @@ vi.mock("../catalog.js", () => ({
 
 // ─── Imports (after mocks) ────────────────────────────────────────────────────
 
+import { EMAIL_LOGO_CID } from "../assets/logo.js";
 import {
   getMaxRetries,
   initEmailQueueOnBoot,
@@ -256,6 +257,34 @@ describe("EmailQueueScheduler", () => {
 
       const sendMailCall = mockSmtpTransport.sendMail.mock.calls[0][0];
       expect(sendMailCall.listUnsubscribeHeader).toBeUndefined();
+    });
+
+    it("attaches the inline brand logo when the HTML references its CID", async () => {
+      const job = makeJob({ htmlBody: `<img src="cid:${EMAIL_LOGO_CID}"><p>Hi</p>` });
+      mockPrisma.emailJob.findMany.mockResolvedValue([job]);
+
+      startEmailQueueScheduler();
+      await vi.advanceTimersByTimeAsync(30_000 + 1);
+
+      const sendMailCall = mockSmtpTransport.sendMail.mock.calls[0][0];
+      expect(sendMailCall.attachments).toHaveLength(1);
+      expect(sendMailCall.attachments[0]).toMatchObject({
+        cid: EMAIL_LOGO_CID,
+        contentDisposition: "inline",
+        filename: "logo.png",
+      });
+      expect(Buffer.isBuffer(sendMailCall.attachments[0].content)).toBe(true);
+    });
+
+    it("does not attach the logo when the HTML does not reference its CID", async () => {
+      const job = makeJob({ htmlBody: "<p>No logo here</p>" });
+      mockPrisma.emailJob.findMany.mockResolvedValue([job]);
+
+      startEmailQueueScheduler();
+      await vi.advanceTimersByTimeAsync(30_000 + 1);
+
+      const sendMailCall = mockSmtpTransport.sendMail.mock.calls[0][0];
+      expect(sendMailCall.attachments).toBeUndefined();
     });
   });
 

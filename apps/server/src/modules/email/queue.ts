@@ -1,6 +1,7 @@
 import { prisma } from "../../shared/prisma.js";
 import { getLogger } from "../../utils/logger.js";
 import { getConfigValue } from "../config/service.js";
+import { EMAIL_LOGO_CID, emailLogoAttachment } from "./assets/logo.js";
 import { validateAllI18nKeys } from "./catalog.js";
 import { emailQueueEvents } from "./events.js";
 import { smtpTransport } from "./transport.js";
@@ -279,18 +280,27 @@ async function processBatch(): Promise<void> {
 
       // 2. Attempt to send
       try {
+        const html = job.htmlBody ?? "";
         const sendOptions: {
           to: string;
           subject: string;
           html: string;
           text: string;
           listUnsubscribeHeader?: string;
+          attachments?: ReturnType<typeof emailLogoAttachment>[];
         } = {
           to: job.to,
           subject: job.subject,
-          html: job.htmlBody ?? "",
+          html,
           text: job.textBody ?? "",
         };
+
+        // Attach the brand logo inline only when the rendered HTML references it
+        // (every layout header does). Guarding on the cid keeps an unreferenced
+        // attachment from surfacing as a paperclip in clients.
+        if (html.includes(`cid:${EMAIL_LOGO_CID}`)) {
+          sendOptions.attachments = [emailLogoAttachment()];
+        }
 
         if (job.listUnsubscribe) {
           sendOptions.listUnsubscribeHeader = job.listUnsubscribe;

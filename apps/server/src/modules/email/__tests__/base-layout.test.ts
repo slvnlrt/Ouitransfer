@@ -12,6 +12,7 @@ vi.mock("../../../utils/logger.js", () => ({
   })),
 }));
 
+import { EMAIL_LOGO_CID } from "../assets/logo.js";
 import { renderLayout, safeHref } from "../templates/base-layout.js";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -310,13 +311,28 @@ describe("renderLayout", () => {
     expect(html).toContain("&lt;script&gt;");
   });
 
+  it("renders the brand logo as an inline CID image (no appUrl needed)", () => {
+    const { html } = renderLayout(DEFAULT_SLOTS, DEFAULT_CONFIG);
+    expect(html).toContain(`src="cid:${EMAIL_LOGO_CID}"`);
+    // Never references a remote/static logo URL — it is inlined.
+    expect(html).not.toContain("email-logo.png");
+  });
+
+  it("renders the inline logo for the hero variant too", () => {
+    const { html } = renderLayout({ ...DEFAULT_SLOTS, variant: "hero" }, DEFAULT_CONFIG);
+    expect(html).toContain(`src="cid:${EMAIL_LOGO_CID}"`);
+  });
+
   it("escapes subtitle in HTML to prevent XSS", () => {
     const { html } = renderLayout(
       { ...DEFAULT_SLOTS, subtitle: '<img src=x onerror="alert(1)">' },
       DEFAULT_CONFIG,
     );
 
-    expect(html).not.toContain("<img");
+    // The header always contains a legitimate logo <img src="cid:...">, so
+    // assert the malicious subtitle tag specifically did not survive as live
+    // HTML (it must be escaped, not rendered as an <img src=x ...> element).
+    expect(html).not.toContain("<img src=x");
     expect(html).toContain("&lt;img");
   });
 

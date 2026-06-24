@@ -325,10 +325,11 @@ describe("EmailService", () => {
       expect(mockCreateTranslationFn).toHaveBeenCalledWith("fr", { appName: "TestApp" });
       expect(mockRenderLayout).toHaveBeenCalledOnce();
       const layoutCall = mockRenderLayout.mock.calls[0];
-      // First arg is slots, second is config (with locale + appUrl for the logo), third is translation fn
+      // First arg is slots, second is config (appName + locale; the logo is now
+      // an inline CID attachment, so the layout no longer needs appUrl), third is
+      // the translation fn.
       expect(layoutCall[1]).toEqual({
         appName: "TestApp",
-        appUrl: "https://test.example.com",
         locale: "fr",
       });
       expect(typeof layoutCall[2]).toBe("function"); // translation fn

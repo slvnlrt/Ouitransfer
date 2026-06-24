@@ -265,7 +265,7 @@ class EmailService {
         slots.unsubscribeUrl = unsubscribeUrl;
       }
 
-      const output = renderLayout(slots, { appName, appUrl, locale: options.locale }, tr);
+      const output = renderLayout(slots, { appName, locale: options.locale }, tr);
       htmlBody = output.html;
       textBody = output.text;
     } catch (renderError) {
