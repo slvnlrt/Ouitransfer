@@ -12,6 +12,7 @@ export interface LdapConfig {
   usernameAttribute?: string;
   emailAttribute?: string;
   displayNameAttribute?: string;
+  defaultLocale?: "en" | "fr";
   syncIntervalMinutes?: number;
   useTls?: boolean;
   tlsSkipVerify?: boolean;
@@ -30,6 +31,7 @@ export interface LdapConfigBody {
   usernameAttribute: string;
   emailAttribute: string;
   displayNameAttribute: string;
+  defaultLocale: "en" | "fr";
   syncIntervalMinutes: number;
   useTls: boolean;
   tlsSkipVerify?: boolean;

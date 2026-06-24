@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "介于15分钟至7天（10080分钟）之间",
       "appUrl": "应用URL",
       "appUrlHelp": "用于发送给新LDAP用户的欢迎电子邮件",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "启用LDAP时需要应用URL",
       "bindPasswordRequired": "新配置需要绑定密码",
       "members": "成员",

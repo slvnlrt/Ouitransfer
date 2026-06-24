@@ -1,4 +1,5 @@
 import { prisma } from "../../shared/prisma.js";
+import type { EmailLocale } from "../email/i18n/locales.js";
 
 const SINGLETON_ID = "ldap-config";
 
@@ -17,6 +18,7 @@ export class LdapConfigRepository {
     usernameAttribute: string;
     emailAttribute: string;
     displayNameAttribute: string;
+    defaultLocale: EmailLocale;
     syncIntervalMinutes: number;
     useTls: boolean;
     tlsSkipVerify: boolean;

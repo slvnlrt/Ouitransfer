@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "15 dakika ile 7 gün arasında (10080 dakika)",
       "appUrl": "Uygulama URL'si",
       "appUrlHelp": "Yeni LDAP kullanıcılarına gönderilen hoş geldiniz e-postalarında kullanılır",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "LDAP etkinleştirildiğinde Uygulama URL'si gereklidir",
       "bindPasswordRequired": "Yeni bir yapılandırma için bağlama şifresi gereklidir",
       "members": "üyeler",

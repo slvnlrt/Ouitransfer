@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "Antara 15 menit dan 7 hari (10080 menit)",
       "appUrl": "URL Aplikasi",
       "appUrlHelp": "Digunakan dalam email sambutan yang dikirim ke pengguna LDAP baru",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "URL Aplikasi diperlukan saat LDAP diaktifkan",
       "bindPasswordRequired": "Kata sandi bind diperlukan untuk konfigurasi baru",
       "members": "anggota",

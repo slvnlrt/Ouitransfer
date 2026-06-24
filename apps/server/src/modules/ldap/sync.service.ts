@@ -99,7 +99,11 @@ export class LdapSyncService {
 
       currentPhase = "sync";
       const appUrl = config.appUrl ?? "";
-      const stats = await this.performSync(adUsers, appUrl);
+      // Locale for welcome/notification emails sent to newly-provisioned users.
+      // Constrained at the DTO to translated email locales (en, fr); falls back
+      // to "en" if a row predates the column.
+      const defaultLocale = config.defaultLocale ?? "en";
+      const stats = await this.performSync(adUsers, appUrl, defaultLocale);
 
       const hasErrors = stats.details.some((d) => d.type === "error");
       const hasSkips = stats.skipped > 0;
@@ -165,7 +169,11 @@ export class LdapSyncService {
 
   // ── Core diff logic ────────────────────────────────────────────────────────
 
-  private async performSync(adUsers: LdapUserEntry[], appUrl: string): Promise<SyncStats> {
+  private async performSync(
+    adUsers: LdapUserEntry[],
+    appUrl: string,
+    defaultLocale: string,
+  ): Promise<SyncStats> {
     const stats: SyncStats = {
       created: 0,
       updated: 0,
@@ -196,7 +204,7 @@ export class LdapSyncService {
 
     // Process each AD user
     for (const adUser of adUsers) {
-      await this.processAdUser(adUser, localByDn, groups, appUrl, stats);
+      await this.processAdUser(adUser, localByDn, groups, appUrl, defaultLocale, stats);
     }
 
     // Batch deactivation: find local LDAP users no longer in AD
@@ -236,6 +244,7 @@ export class LdapSyncService {
     >,
     groups: { id: string; ldapDn: string | null }[],
     appUrl: string,
+    defaultLocale: string,
     stats: SyncStats,
   ): Promise<void> {
     // Skip if no email
@@ -288,7 +297,13 @@ export class LdapSyncService {
     if (existing) {
       await this.updateExistingUser(existing, adUser, { firstName, lastName, groupId }, stats);
     } else {
-      await this.createNewUser(adUser, { firstName, lastName, groupId }, appUrl, stats);
+      await this.createNewUser(
+        adUser,
+        { firstName, lastName, groupId },
+        appUrl,
+        defaultLocale,
+        stats,
+      );
     }
   }
 
@@ -353,6 +368,7 @@ export class LdapSyncService {
     adUser: LdapUserEntry,
     parsed: { firstName: string; lastName: string; groupId: string | null },
     appUrl: string,
+    defaultLocale: string,
     stats: SyncStats,
   ): Promise<void> {
     // Check for email/username conflicts with non-LDAP accounts
@@ -388,6 +404,10 @@ export class LdapSyncService {
             isActive: true,
             groupId: parsed.groupId,
             password: null,
+            // Drives the language of the welcome email below and any later
+            // notification emails. `user.locale` only affects emails (the web UI
+            // uses a cookie), so it is safe to set it to the configured value.
+            locale: defaultLocale,
           },
         });
 

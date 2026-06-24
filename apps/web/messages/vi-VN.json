@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "Giữa 15 phút và 7 ngày (10080 phút)",
       "appUrl": "URL ứng dụng",
       "appUrlHelp": "Được sử dụng trong email chào mừng được gửi đến người dùng LDAP mới",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "URL ứng dụng là bắt buộc khi LDAP được bật",
       "bindPasswordRequired": "Mật khẩu bind là bắt buộc đối với cấu hình mới",
       "members": "thành viên",

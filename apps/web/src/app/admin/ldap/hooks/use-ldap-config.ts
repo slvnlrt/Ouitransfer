@@ -35,6 +35,9 @@ const ldapConfigBaseSchema = z.object({
   usernameAttribute: ldapAttr,
   emailAttribute: ldapAttr,
   displayNameAttribute: ldapAttr,
+  // Constrained to locales with translated email templates (en, fr) — see
+  // apps/server/.../email/i18n/locales.ts. Other UI locales would send English.
+  defaultLocale: z.enum(["en", "fr"]),
   syncIntervalMinutes: z.number().int().min(15, "Minimum 15 minutes").max(10080, "Maximum 7 days"),
   useTls: z.boolean(),
   tlsSkipVerify: z.boolean(),
@@ -105,6 +108,7 @@ export function useLdapConfig() {
       usernameAttribute: "sAMAccountName",
       emailAttribute: "mail",
       displayNameAttribute: "displayName",
+      defaultLocale: "en",
       syncIntervalMinutes: 360,
       useTls: true,
       tlsSkipVerify: false,
@@ -121,6 +125,7 @@ export function useLdapConfig() {
           usernameAttribute: configQuery.data.usernameAttribute ?? "sAMAccountName",
           emailAttribute: configQuery.data.emailAttribute ?? "mail",
           displayNameAttribute: configQuery.data.displayNameAttribute ?? "displayName",
+          defaultLocale: configQuery.data.defaultLocale ?? "en",
           syncIntervalMinutes: configQuery.data.syncIntervalMinutes ?? 360,
           useTls: configQuery.data.useTls ?? true,
           tlsSkipVerify: configQuery.data.tlsSkipVerify ?? false,

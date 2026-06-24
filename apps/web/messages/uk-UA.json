@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "Від 15 хвилин до 7 днів (10080 хвилин)",
       "appUrl": "URL програми",
       "appUrlHelp": "Використовується у приветствувальних листах, надісланих новим користувачам LDAP",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "URL програми обов'язковий, коли LDAP увімкнено",
       "bindPasswordRequired": "Пароль Bind обов'язковий для нової конфігурації",
       "members": "учасники",

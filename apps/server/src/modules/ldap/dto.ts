@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { EMAIL_LOCALES } from "../email/i18n/locales.js";
 import { isCanonicalHttpOrigin } from "./app-url.js";
 
 // RFC 4512 §2.5: attributeType = ALPHA *( ALPHA / DIGIT / "-" ); max 64 chars (practical cap).
@@ -32,6 +33,9 @@ export const LdapConfigSchema = z.object({
   usernameAttribute: ldapAttributeName.default("sAMAccountName"),
   emailAttribute: ldapAttributeName.default("mail"),
   displayNameAttribute: ldapAttributeName.default("displayName"),
+  // Constrained to locales with translated email templates (en, fr). Other UI
+  // locales are intentionally excluded — they would silently send English.
+  defaultLocale: z.enum(EMAIL_LOCALES).default("en"),
   syncIntervalMinutes: z.number().int().min(15).max(10080), // 15 min to 7 days
   useTls: z.boolean().default(true),
   tlsSkipVerify: z.boolean().default(false),

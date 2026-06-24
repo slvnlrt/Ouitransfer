@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "ระหว่าง 15 นาทีถึง 7 วัน (10080 นาที)",
       "appUrl": "URL แอปพลิเคชัน",
       "appUrlHelp": "ใช้ในอีเมลยินดีต้อนรับที่ส่งไปยังผู้ใช้ LDAP ใหม่",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "ต้องใช้ URL แอปพลิเคชันเมื่อเปิดใช้งาน LDAP",
       "bindPasswordRequired": "ต้องใช้รหัสผ่าน Bind สำหรับการตั้งค่าใหม่",
       "members": "สมาชิก",

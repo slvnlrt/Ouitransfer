@@ -42,6 +42,7 @@ export interface LdapConfigFormData {
   usernameAttribute: string;
   emailAttribute: string;
   displayNameAttribute: string;
+  defaultLocale: "en" | "fr";
   syncIntervalMinutes: number;
   useTls: boolean;
   tlsSkipVerify: boolean;

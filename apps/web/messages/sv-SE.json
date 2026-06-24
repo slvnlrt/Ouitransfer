@@ -2751,6 +2751,8 @@
       "syncIntervalHelp": "Mellan 15 minuter och 7 dagar (10080 minuter)",
       "appUrl": "Program-URL",
       "appUrlHelp": "Används i välkomstmeddelanden som skickas till nya LDAP-användare",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
       "appUrlRequired": "Program-URL krävs när LDAP är aktiverat",
       "bindPasswordRequired": "Bind-lösenord krävs för en ny konfiguration",
       "members": "medlemmar",
