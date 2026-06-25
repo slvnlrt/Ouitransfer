@@ -142,7 +142,7 @@ describe("usePublicShare", () => {
       expect(result.current.share).toEqual(MOCK_SHARE);
     });
 
-    expect(mockGetShareByAlias).toHaveBeenCalledWith("test-alias", undefined);
+    expect(mockGetShareByAlias).toHaveBeenCalledWith("test-alias", { t: undefined });
   });
 
   it("returns flat metadata shape without .metadata wrapper (C-1 fix)", async () => {

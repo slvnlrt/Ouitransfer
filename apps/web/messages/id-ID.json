@@ -1314,7 +1314,7 @@
         "updating": "Memperbarui...",
         "create": "Buat Alias",
         "update": "Perbarui Alias",
-        "help": "3-50 karakter. Spasi akan otomatis diubah menjadi tanda hubung."
+        "help": "8-30 karakter. Spasi akan otomatis diubah menjadi tanda hubung."
       },
       "password": {
         "title": "Edit Perlindungan Kata Sandi",
@@ -2901,6 +2901,7 @@
       "error": "Gagal membuat berbagi",
       "uploadError": "Beberapa file gagal diunggah",
       "notifyError": "Berbagi dibuat tetapi gagal memberitahu penerima",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "Mohon masukkan alamat email yang valid"
     },
     "confirmation": {

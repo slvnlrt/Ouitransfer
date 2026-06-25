@@ -1310,7 +1310,7 @@
         "updating": "Wird aktualisiert...",
         "create": "Alias erstellen",
         "update": "Alias aktualisieren",
-        "help": "3-50 Zeichen. Leerzeichen werden automatisch in Bindestriche umgewandelt."
+        "help": "8-30 Zeichen. Leerzeichen werden automatisch in Bindestriche umgewandelt."
       },
       "password": {
         "title": "Passwortschutz bearbeiten",
@@ -2901,6 +2901,7 @@
       "error": "Fehler beim Erstellen der Freigabe",
       "uploadError": "Einige Dateien konnten nicht hochgeladen werden",
       "notifyError": "Freigabe erstellt, aber Benachrichtigung der Empfänger fehlgeschlagen",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein"
     },
     "confirmation": {

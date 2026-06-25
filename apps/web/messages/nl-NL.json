@@ -1310,7 +1310,7 @@
         "updating": "Bijwerken...",
         "create": "Alias Aanmaken",
         "update": "Alias Bijwerken",
-        "help": "3-50 tekens. Spaties worden automatisch omgezet in streepjes."
+        "help": "8-30 tekens. Spaties worden automatisch omgezet in streepjes."
       },
       "password": {
         "title": "Wachtwoordbeveiliging Bewerken",
@@ -2901,6 +2901,7 @@
       "error": "Deling aanmaken mislukt",
       "uploadError": "Sommige bestanden konden niet worden geüpload",
       "notifyError": "Deling aangemaakt maar kon ontvangers niet waarschuwen",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "Voer een geldig e-mailadres in"
     },
     "confirmation": {

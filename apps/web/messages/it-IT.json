@@ -1310,7 +1310,7 @@
         "updating": "Aggiornamento in corso...",
         "create": "Crea Alias",
         "update": "Aggiorna Alias",
-        "help": "3-50 caratteri. Gli spazi saranno convertiti automaticamente in trattini."
+        "help": "8-30 caratteri. Gli spazi saranno convertiti automaticamente in trattini."
       },
       "password": {
         "title": "Modifica Protezione Password",
@@ -2901,6 +2901,7 @@
       "error": "Impossibile creare la condivisione",
       "uploadError": "Impossibile caricare alcuni file",
       "notifyError": "Condivisione creata ma impossibile notificare i destinatari",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "Inserisci un indirizzo email valido"
     },
     "confirmation": {

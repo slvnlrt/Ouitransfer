@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { createShareAlias, pauseShare, resumeShare, updateShare } from "@/http/endpoints";
 import { updateFolder } from "@/http/endpoints/folders";
 import type { Share, UpdateShareBody } from "@/http/endpoints/shares/types";
+import { parseApiError } from "@/utils/api-error";
 import { useShareDelete } from "./use-share-delete";
 import { useShareDownload } from "./use-share-download";
 import { useShareRecipients } from "./use-share-recipients";
@@ -155,7 +156,8 @@ export function useShareManager(onSuccess: () => void) {
       toast.success(t("shareManager.linkGenerateSuccess"));
       onSuccess();
     } catch (error) {
-      toast.error(t("shareManager.linkGenerateError"));
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
       throw error;
     }
   };

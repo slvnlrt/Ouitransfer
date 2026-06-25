@@ -19,6 +19,7 @@ import type {
   UpdateReverseShareBody,
 } from "@/http/endpoints/reverse-shares/types";
 import { queryKeys } from "@/lib/query-keys";
+import { parseApiError } from "@/utils/api-error";
 
 export type ReverseShare = ListUserReverseSharesResult["data"]["reverseShares"][0];
 
@@ -112,8 +113,9 @@ export function useReverseShares() {
       toast.success(t("reverseShares.messages.aliasCreated"));
       queryClient.invalidateQueries({ queryKey: queryKeys.reverseShares.list() });
     },
-    onError: () => {
-      toast.error(t("reverseShares.errors.aliasCreateFailed"));
+    onError: (error) => {
+      const apiError = parseApiError(error);
+      toast.error(apiError.message);
     },
   });
 

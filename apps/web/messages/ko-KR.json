@@ -1310,7 +1310,7 @@
         "updating": "업데이트 중...",
         "create": "별칭 생성",
         "update": "별칭 업데이트",
-        "help": "3-50자. 공백은 자동으로 하이픈으로 변환됩니다."
+        "help": "8-30자. 공백은 자동으로 하이픈으로 변환됩니다."
       },
       "password": {
         "title": "비밀번호 보호 편집",
@@ -2901,6 +2901,7 @@
       "error": "공유를 만들지 못했습니다",
       "uploadError": "일부 파일을 업로드하지 못했습니다",
       "notifyError": "공유가 생성되었지만 수신자에게 알림을 보내지 못했습니다",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "유효한 이메일 주소를 입력하세요"
     },
     "confirmation": {

@@ -1491,7 +1491,7 @@
         "updating": "Updating...",
         "create": "Create Alias",
         "update": "Update Alias",
-        "help": "5-30 characters. Letters, numbers, and single internal hyphens."
+        "help": "8-30 characters. Letters, numbers, and single internal hyphens."
       },
       "password": {
         "title": "Edit Password Protection",

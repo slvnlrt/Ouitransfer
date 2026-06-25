@@ -1310,7 +1310,7 @@
         "updating": "Aktualizowanie...",
         "create": "Utwórz alias",
         "update": "Zaktualizuj alias",
-        "help": "3-50 znaków. Spacje zostaną automatycznie zamienione na myślniki."
+        "help": "8-30 znaków. Spacje zostaną automatycznie zamienione na myślniki."
       },
       "password": {
         "title": "Edytuj ochronę hasłem",
@@ -2901,6 +2901,7 @@
       "error": "Nie udało się utworzyć udostępnienia",
       "uploadError": "Nie udało się przesłać niektórych plików",
       "notifyError": "Udostępnienie zostało utworzone, ale nie udało się powiadomić odbiorców",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "Proszę wprowadzić prawidłowy adres e-mail"
     },
     "confirmation": {

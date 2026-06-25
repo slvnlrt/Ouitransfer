@@ -2,11 +2,11 @@
  * Client-side share / reverse-share alias validation.
  *
  * Mirrors the server-side rule in `apps/server/src/shared/alias-schema.ts`:
- * 5–30 characters, ASCII alphanumerics with single internal hyphens only
+ * 8–30 characters, ASCII alphanumerics with single internal hyphens only
  * (no leading, trailing, or consecutive hyphens). Kept in sync so the UI
  * rejects the same values the API does, before a request is sent.
  */
-export const ALIAS_MIN_LENGTH = 5;
+export const ALIAS_MIN_LENGTH = 8;
 export const ALIAS_MAX_LENGTH = 30;
 
 /** Alphanumerics with single internal hyphens (no leading/trailing/double `-`). */

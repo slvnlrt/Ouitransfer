@@ -1314,7 +1314,7 @@
         "updating": "Đang cập nhật...",
         "create": "Tạo bí danh",
         "update": "Cập nhật bí danh",
-        "help": "3-50 ký tự. Dấu cách sẽ tự động được chuyển đổi thành dấu gạch ngang."
+        "help": "8-30 ký tự. Dấu cách sẽ tự động được chuyển đổi thành dấu gạch ngang."
       },
       "password": {
         "title": "Chỉnh sửa bảo vệ bằng mật khẩu",
@@ -2901,6 +2901,7 @@
       "error": "Không thể tạo chia sẻ",
       "uploadError": "Một số tệp không thể tải lên",
       "notifyError": "Chia sẻ được tạo nhưng không thể thông báo cho người nhận",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "Vui lòng nhập một địa chỉ email hợp lệ"
     },
     "confirmation": {

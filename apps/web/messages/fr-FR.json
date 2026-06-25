@@ -1310,7 +1310,7 @@
         "updating": "Mise à jour...",
         "create": "Créer l'Alias",
         "update": "Mettre à jour l'Alias",
-        "help": "5 à 30 caractères. Lettres, chiffres et tirets internes simples."
+        "help": "8 à 30 caractères. Lettres, chiffres et tirets internes simples."
       },
       "password": {
         "title": "Modifier la Protection par Mot de Passe",

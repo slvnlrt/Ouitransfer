@@ -1314,7 +1314,7 @@
         "updating": "מעדכן...",
         "create": "צור כינוי",
         "update": "עדכן כינוי",
-        "help": "3-50 תווים. רווחים יומרו אוטומטית למקפים."
+        "help": "8-30 תווים. רווחים יומרו אוטומטית למקפים."
       },
       "password": {
         "title": "ערוך הגנת סיסמה",
@@ -2901,6 +2901,7 @@
       "error": "נכשל ביצירת שיתוף",
       "uploadError": "כמה קבצים נכשלו בהעלאה",
       "notifyError": "השיתוף נוצר אך נכשל בהודעה לנמענים",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "אנא הזן כתובת דוא\"ל חוקית"
     },
     "confirmation": {

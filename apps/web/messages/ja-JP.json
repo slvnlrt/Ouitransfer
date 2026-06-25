@@ -1310,7 +1310,7 @@
         "updating": "更新中...",
         "create": "エイリアスを作成",
         "update": "エイリアスを更新",
-        "help": "3-50文字。スペースは自動的にハイフンに変換されます。"
+        "help": "8-30文字。スペースは自動的にハイフンに変換されます。"
       },
       "password": {
         "title": "パスワード保護を編集",
@@ -2901,6 +2901,7 @@
       "error": "共有の作成に失敗しました",
       "uploadError": "一部のファイルのアップロードに失敗しました",
       "notifyError": "共有は作成されましたが、受信者への通知に失敗しました",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "有効なメールアドレスを入力してください"
     },
     "confirmation": {

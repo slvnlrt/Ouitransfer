@@ -1310,7 +1310,7 @@
         "updating": "Güncelleniyor...",
         "create": "Takma Ad Oluştur",
         "update": "Takma Adı Güncelle",
-        "help": "3-50 karakter. Boşluklar otomatik olarak tireye dönüştürülecektir."
+        "help": "8-30 karakter. Boşluklar otomatik olarak tireye dönüştürülecektir."
       },
       "password": {
         "title": "Şifre Korumasını Düzenle",
@@ -2901,6 +2901,7 @@
       "error": "Paylaşım oluşturulamadı",
       "uploadError": "Bazı dosyalar yüklenmedi",
       "notifyError": "Paylaşım oluşturuldu ancak alıcılara bildirilmedi",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "Lütfen geçerli bir e-posta adresi girin"
     },
     "confirmation": {

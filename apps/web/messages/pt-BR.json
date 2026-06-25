@@ -1314,7 +1314,7 @@
         "updating": "Atualizando...",
         "create": "Criar Alias",
         "update": "Atualizar Alias",
-        "help": "3-50 caracteres. Espaços serão convertidos em hífens automaticamente."
+        "help": "8-30 caracteres. Espaços serão convertidos em hífens automaticamente."
       },
       "password": {
         "title": "Editar Proteção por Senha",
@@ -2901,6 +2901,7 @@
       "error": "Falha ao criar compartilhamento",
       "uploadError": "Alguns arquivos falharam no upload",
       "notifyError": "Compartilhamento criado mas falha ao notificar destinatários",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "Por favor, digite um endereço de email válido"
     },
     "confirmation": {

@@ -1314,7 +1314,7 @@
         "updating": "Uppdaterar...",
         "create": "Skapa Alias",
         "update": "Uppdatera Alias",
-        "help": "3-50 tecken. Mellanslag konverteras automatiskt till bindestreck."
+        "help": "8-30 tecken. Mellanslag konverteras automatiskt till bindestreck."
       },
       "password": {
         "title": "Redigera lösenordsskydd",
@@ -2901,6 +2901,7 @@
       "error": "Det gick inte att skapa delning",
       "uploadError": "Vissa filer gick inte att ladda upp",
       "notifyError": "Delningen skapades men det gick inte att meddela mottagarna",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "Ange en giltig e-postadress"
     },
     "confirmation": {

@@ -1314,7 +1314,7 @@
         "updating": "Actualizando...",
         "create": "Crear Alias",
         "update": "Actualizar Alias",
-        "help": "3-50 caracteres. Los espacios se convertirán automáticamente en guiones."
+        "help": "8-30 caracteres. Los espacios se convertirán automáticamente en guiones."
       },
       "password": {
         "title": "Editar Protección por Contraseña",
@@ -2901,6 +2901,7 @@
       "error": "Error al crear el compartir",
       "uploadError": "Algunos archivos no se subieron",
       "notifyError": "Compartir creado pero fallo al notificar a los destinatarios",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "Por favor ingresa una dirección de correo válida"
     },
     "confirmation": {

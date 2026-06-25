@@ -4,7 +4,6 @@ import { Copy, Dices, Link } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -89,7 +88,6 @@ export function GenerateAliasModal({
       logger.error("Failed to create/update alias:", {
         err: error instanceof Error ? error.message : String(error),
       });
-      toast.error(t("reverseShares.errors.aliasCreateFailed"));
     } finally {
       setIsSubmitting(false);
     }

@@ -1310,7 +1310,7 @@
         "updating": "更新中...",
         "create": "创建别名",
         "update": "更新别名",
-        "help": "3-50个字符。空格将自动转换为连字符。"
+        "help": "8-30个字符。空格将自动转换为连字符。"
       },
       "password": {
         "title": "编辑密码保护",
@@ -2901,6 +2901,7 @@
       "error": "创建共享失败",
       "uploadError": "某些文件上传失败",
       "notifyError": "共享已创建，但通知收件人失败",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "请输入有效的电子邮件地址"
     },
     "confirmation": {

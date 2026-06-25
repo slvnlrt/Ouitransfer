@@ -28,9 +28,9 @@ import { PasswordSection } from "./create-reverse-share/password-section";
 import { type CreateReverseShareFormData, DEFAULT_FORM_VALUES } from "./create-reverse-share/types";
 
 const DIALOG_CONFIG = {
-  maxWidth: "sm:max-w-lg",
+  maxWidth: "sm:max-w-2xl",
   maxHeight: "max-h-[85vh]",
-  contentMaxHeight: "max-h-[calc(85vh-140px)]",
+  contentMaxHeight: "max-h-[calc(85vh-160px)]",
 } as const;
 
 interface CreateReverseShareModalProps {
@@ -124,9 +124,7 @@ export function CreateReverseShareModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent
-        className={`${DIALOG_CONFIG.maxWidth} ${DIALOG_CONFIG.maxHeight} overflow-hidden`}
-      >
+      <DialogContent className={`${DIALOG_CONFIG.maxWidth} ${DIALOG_CONFIG.maxHeight}`}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Upload size={20} />
@@ -135,9 +133,11 @@ export function CreateReverseShareModal({
           <DialogDescription>{t("reverseShares.modals.create.description")}</DialogDescription>
         </DialogHeader>
 
-        <div className={`overflow-y-auto ${DIALOG_CONFIG.contentMaxHeight} py-2`}>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col gap-0 min-h-0">
+            <div
+              className={`overflow-y-auto [scrollbar-gutter:stable] ${DIALOG_CONFIG.contentMaxHeight} py-2 space-y-6`}
+            >
               <BasicInfoSection form={form} />
               <Separator />
               <ExpirationSection form={form} hasExpiration={watchedValues.hasExpiration} />
@@ -194,25 +194,25 @@ export function CreateReverseShareModal({
                   </div>
                 )}
               </div>
+            </div>
 
-              <DialogFooter className="gap-2">
-                <Button type="button" variant="outline" onClick={handleClose} disabled={isCreating}>
-                  {t("common.cancel")}
-                </Button>
-                <Button type="submit" disabled={isCreating}>
-                  {isCreating ? (
-                    <>
-                      <Loader size="sm" />
-                      {t("common.creating")}
-                    </>
-                  ) : (
-                    t("reverseShares.form.submit")
-                  )}
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </div>
+            <DialogFooter className="gap-2 pt-4">
+              <Button type="button" variant="outline" onClick={handleClose} disabled={isCreating}>
+                {t("common.cancel")}
+              </Button>
+              <Button type="submit" disabled={isCreating}>
+                {isCreating ? (
+                  <>
+                    <Loader size="sm" />
+                    {t("common.creating")}
+                  </>
+                ) : (
+                  t("reverseShares.form.submit")
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
