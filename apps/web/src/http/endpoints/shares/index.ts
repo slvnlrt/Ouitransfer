@@ -214,15 +214,16 @@ export const getShareByAlias = (
   params?: GetShareByAliasParams,
   options?: AxiosRequestConfig,
 ): Promise<GetShareByAliasResult> => {
+  const queryParams = params?.t ? { params: { t: params.t } } : undefined;
   if (params?.password) {
     // Password-protected shares use the POST /access endpoint
     return apiInstance.post(
       `/api/shares/alias/${alias}/access`,
       { password: params.password },
-      options,
+      { ...queryParams, ...options },
     );
   }
-  return apiInstance.get(`/api/shares/alias/${alias}`, options);
+  return apiInstance.get(`/api/shares/alias/${alias}`, { ...queryParams, ...options });
 };
 
 /**

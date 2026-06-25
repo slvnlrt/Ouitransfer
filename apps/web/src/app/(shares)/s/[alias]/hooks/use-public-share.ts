@@ -2,7 +2,7 @@
 
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -38,8 +38,10 @@ function isIdentificationRequired(error: unknown): boolean {
 export function usePublicShare() {
   const t = useTranslations();
   const params = useParams();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const alias = params?.alias as string;
+  const trackingToken = searchParams?.get("t") ?? undefined;
 
   // --- UI-only state (not server-derived) ---
   const [password, setPassword] = useState("");
@@ -57,7 +59,9 @@ export function usePublicShare() {
       // Use the ref to avoid stale closure — invalidateQueries triggers refetch
       // before React re-renders with updated state.
       const storedPassword = acceptedPasswordRef.current;
-      const params = storedPassword ? { password: storedPassword } : undefined;
+      const params = storedPassword
+        ? { password: storedPassword, t: trackingToken }
+        : { t: trackingToken };
       // NOTE: Password is re-sent on every refetch (the server re-validates).
       // This is acceptable — the alternative (session cookie) would add complexity
       // for marginal benefit.
@@ -97,7 +101,10 @@ export function usePublicShare() {
   // --- Password submit mutation ---
   const passwordMutation = useMutation({
     mutationFn: async (submittedPassword: string) => {
-      const response = await getShareByAlias(alias, { password: submittedPassword });
+      const response = await getShareByAlias(alias, {
+        password: submittedPassword,
+        t: trackingToken,
+      });
       return response.data.share;
     },
     onSuccess: (shareData: Share) => {

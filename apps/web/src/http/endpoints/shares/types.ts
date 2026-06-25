@@ -262,6 +262,8 @@ export interface GetShareParams {
 
 export interface GetShareByAliasParams {
   password?: string;
+  /** Tracking token from the invitation email link (?t= query parameter). */
+  t?: string;
 }
 
 // ── Share visits ────────────────────────────────────────────────────────
