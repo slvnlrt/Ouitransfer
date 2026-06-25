@@ -56,6 +56,7 @@ export function QuickShareUpload({
 }: QuickShareUploadProps) {
   const t = useTranslations("quickShare.upload");
   const addMoreRef = useRef<HTMLInputElement>(null);
+  const recipientInputRef = useRef<HTMLInputElement>(null);
 
   const handleAddMore = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -268,6 +269,7 @@ export function QuickShareUpload({
               <div className="space-y-2">
                 <Label className="text-sm text-muted-foreground">{t("recipients.label")}</Label>
                 <Input
+                  ref={recipientInputRef}
                   type="email"
                   placeholder={t("recipients.placeholder")}
                   onKeyDown={(e) => {
@@ -320,7 +322,19 @@ export function QuickShareUpload({
 
             {/* Share button */}
             <Button
-              onClick={onShare}
+              onClick={() => {
+                const input = recipientInputRef.current;
+                if (input) {
+                  const value = input.value.trim();
+                  if (value) {
+                    if (isValidEmail(value) && !settings.recipients.includes(value)) {
+                      onUpdateSettings({ recipients: [...settings.recipients, value] });
+                    }
+                    input.value = "";
+                  }
+                }
+                onShare();
+              }}
               disabled={isSubmitting || fileUploads.length === 0 || (hasErrors && allDone)}
               className="w-full"
               size="lg"
