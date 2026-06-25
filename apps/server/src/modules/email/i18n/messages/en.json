@@ -2,15 +2,15 @@
   "common": {
     "footer": "This email was sent by <strong>{appName}</strong>",
     "footerIgnore": "If you didn't expect this email, you can safely ignore it.",
-    "poweredBy": "Powered by Ouitransfer",
+    "poweredBy": "Powered by {appName}",
     "unsubscribe": "Unsubscribe from these notifications",
     "viewShare": "View Share"
   },
   "welcome": {
     "subject": "{appName} - Welcome!",
-    "subtitle": "Welcome to {appName}",
-    "body": "Hello {firstName},\n\nWelcome to {appName}! Your account has been successfully created and is ready to use.",
-    "cta": "Sign in to {appName}"
+    "subtitle": "Welcome",
+    "body": "Hello {firstName},\n\nYour account has been successfully created and is ready to use.",
+    "cta": "Sign in"
   },
   "passwordReset": {
     "subject": "{appName} - Password Reset Request",

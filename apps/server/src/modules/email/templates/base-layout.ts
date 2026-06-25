@@ -175,7 +175,9 @@ function renderHtml(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
   const footerIgnore = tr
     ? tr("common.footerIgnore")
     : "If you didn't expect this email, you can safely ignore it.";
-  const footerPoweredBy = tr ? tr("common.poweredBy") : "Powered by Ouitransfer";
+  const footerPoweredBy = tr
+    ? tr("common.poweredBy", { appName: safeAppName })
+    : `Powered by ${safeAppName}`;
   const footerUnsubscribe = tr ? tr("common.unsubscribe") : "Unsubscribe from these notifications";
 
   const header =
@@ -314,7 +316,9 @@ function renderText(slots: LayoutSlots, config: LayoutConfig, tr?: TranslationFn
   const footerIgnore = tr
     ? tr("common.footerIgnore")
     : "If you didn't expect this email, you can safely ignore it.";
-  const footerPoweredBy = tr ? tr("common.poweredBy") : "Powered by Ouitransfer";
+  const footerPoweredBy = tr
+    ? tr("common.poweredBy", { appName: config.appName })
+    : `Powered by ${config.appName}`;
 
   // Header
   lines.push(`${config.appName}`);

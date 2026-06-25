@@ -2,15 +2,15 @@
   "common": {
     "footer": "Cet e-mail a été envoyé par <strong>{appName}</strong>",
     "footerIgnore": "Si vous n'attendiez pas cet e-mail, vous pouvez l'ignorer en toute sécurité.",
-    "poweredBy": "Propulsé par Ouitransfer",
+    "poweredBy": "Propulsé par {appName}",
     "unsubscribe": "Se désabonner de ces notifications",
     "viewShare": "Voir le partage"
   },
   "welcome": {
     "subject": "{appName} - Bienvenue !",
-    "subtitle": "Bienvenue sur {appName}",
-    "body": "Bonjour {firstName},\n\nBienvenue sur {appName} ! Votre compte a été créé avec succès et est prêt à être utilisé.",
-    "cta": "Se connecter à {appName}"
+    "subtitle": "Bienvenue",
+    "body": "Bonjour {firstName},\n\nVotre compte a été créé avec succès et est prêt à être utilisé.",
+    "cta": "Se connecter"
   },
   "passwordReset": {
     "subject": "{appName} - Demande de réinitialisation du mot de passe",
