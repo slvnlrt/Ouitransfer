@@ -1,0 +1,141 @@
+"use client";
+
+import type { DraggableProvidedDragHandleProps } from "@hello-pangea/dnd";
+import { GripVertical, Pencil, Trash2 } from "lucide-react";
+
+import { useTranslations } from "next-intl";
+import type React from "react";
+
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { type AuthProvider, EditProviderForm } from "./edit-provider-form";
+import type { ProviderFormDataMap } from "./types";
+
+interface ProviderRowProps {
+  provider: AuthProvider;
+  onUpdate: (updates: Partial<AuthProvider>) => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  saving: boolean;
+  getIcon: (provider: AuthProvider) => React.ReactNode;
+  editingProvider: AuthProvider | null;
+  editProvider: (data: Partial<AuthProvider>) => void;
+  onCancelEdit: () => void;
+  editingFormData: ProviderFormDataMap;
+  setEditingFormData: (data: ProviderFormDataMap) => void;
+  dragHandleProps: DraggableProvidedDragHandleProps | null;
+  isDragging: boolean;
+  isDragDisabled: boolean;
+}
+
+export function ProviderRow({
+  provider,
+  onUpdate,
+  onEdit,
+  onDelete,
+  saving,
+  getIcon,
+  editingProvider,
+  editProvider,
+  onCancelEdit,
+  editingFormData,
+  setEditingFormData,
+  dragHandleProps,
+  isDragging,
+  isDragDisabled,
+}: ProviderRowProps) {
+  const t = useTranslations();
+  const isEditing = editingProvider?.id === provider.id;
+
+  return (
+    <div className={`border rounded-lg ${isDragging ? "border-primary bg-primary/5" : ""}`}>
+      <div className="flex items-center justify-between p-3">
+        <div className="flex items-center gap-3">
+          {!isDragDisabled ? (
+            <div
+              {...dragHandleProps}
+              className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
+              title={t("authProviders.dragToReorder")}
+            >
+              <GripVertical className="h-4 w-4" />
+            </div>
+          ) : null}
+
+          <span className="text-lg">{getIcon(provider)}</span>
+          <div>
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div
+                    className={`w-2 h-2 rounded-full ${provider.enabled ? "bg-green-500" : "bg-muted-foreground"}`}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  {provider.enabled ? t("authProviders.enabled") : t("authProviders.disabled")}
+                </TooltipContent>
+              </Tooltip>
+              <span className="font-medium text-sm">{provider.displayName}</span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {provider.type.toUpperCase()} • {provider.name}
+              {provider.isOfficial && (
+                <span className="text-primary"> • {t("authProviders.officialProvider")}</span>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-1">
+          <Switch
+            checked={provider.enabled}
+            onCheckedChange={(enabled) => onUpdate({ enabled })}
+            disabled={saving}
+          />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" onClick={onEdit} disabled={saving}>
+                <Pencil className="h-3 w-3" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("authProviders.editProvider")}</TooltipContent>
+          </Tooltip>
+          {!provider.isOfficial && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onDelete}
+                  disabled={saving}
+                  className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t("authProviders.deleteProvider")}</TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+      </div>
+
+      {isEditing && (
+        <div className="border-t border-border dark:border-border p-4 space-y-4 bg-muted/50 dark:bg-muted/20">
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium text-foreground dark:text-foreground">
+              {provider.displayName}
+            </h3>
+          </div>
+          <EditProviderForm
+            key={provider.id}
+            provider={provider}
+            onSave={editProvider}
+            onCancel={onCancelEdit}
+            saving={saving}
+            editingFormData={editingFormData}
+            setEditingFormData={setEditingFormData}
+          />
+        </div>
+      )}
+    </div>
+  );
+}

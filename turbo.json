@@ -1,0 +1,53 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["biome.json", ".node-version"],
+  "globalEnv": ["NODE_ENV", "CI"],
+  "tasks": {
+    "db:generate": {
+      "inputs": ["prisma/schema.prisma", "prisma.config.ts"],
+      "outputs": ["src/generated/**"]
+    },
+    "build": {
+      "dependsOn": ["^build", "db:generate"],
+      "inputs": ["src/**", "package.json", "tsconfig.json", "tsconfig*.json"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "env": ["NODE_ENV"],
+      "passThroughEnv": [
+        "JWT_SECRET",
+        "API_BASE_URL",
+        "APP_URL",
+        "CSP_STORAGE_ORIGINS",
+        "OAUTH_ALLOWED_REDIRECT_HOSTS",
+        "ALLOWED_IMAGE_HOSTS",
+        "CSP_CONNECT_SOURCES",
+        "NEXT_PUBLIC_LOG_LEVEL",
+        "NEXT_PUBLIC_DEFAULT_LANGUAGE",
+        "NEXT_PUBLIC_APP_VERSION",
+        "ANALYZE"
+      ]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "inputs": ["src/**/*.{ts,tsx,js,jsx}", "biome.json", "package.json"]
+    },
+    "type-check": {
+      "dependsOn": ["db:generate"],
+      "inputs": ["src/**/*.{ts,tsx}", "tsconfig.json", "tsconfig*.json", "package.json"]
+    },
+    "format": {
+      "cache": false
+    },
+    "validate": {
+      "dependsOn": ["lint", "type-check"]
+    },
+    "test": {
+      "dependsOn": ["^build", "db:generate"],
+      "inputs": ["src/**/*.{ts,tsx}", "vitest.config.*", "package.json"],
+      "outputs": ["coverage/**"]
+    }
+  }
+}

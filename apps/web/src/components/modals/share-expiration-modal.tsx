@@ -1,0 +1,217 @@
+"use client";
+
+import { Calendar, Clock, TimerOff } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader } from "@/components/ui/loader";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { Switch } from "@/components/ui/switch";
+import { updateShare } from "@/http/endpoints";
+import type { Share } from "@/http/endpoints/shares/types";
+import { logger } from "@/lib/logger";
+
+interface ShareExpirationModalProps {
+  shareId: string | null;
+  share: Share | null;
+  onClose: () => void;
+  onSuccess?: () => void;
+}
+
+export function ShareExpirationModal({
+  shareId,
+  share,
+  onClose,
+  onSuccess,
+}: ShareExpirationModalProps) {
+  const t = useTranslations();
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasExpiration, setHasExpiration] = useState(false);
+  const [expirationDate, setExpirationDate] = useState("");
+
+  useEffect(() => {
+    if (share) {
+      const hasCurrentExpiration = !!share.expiration;
+      setHasExpiration(hasCurrentExpiration);
+
+      if (hasCurrentExpiration && share.expiration) {
+        const date = new Date(share.expiration);
+        setExpirationDate(date.toISOString().slice(0, 16));
+      } else {
+        setExpirationDate("");
+      }
+    }
+  }, [share]);
+
+  const handleSave = async () => {
+    if (!shareId) return;
+
+    if (hasExpiration) {
+      if (!expirationDate.trim()) {
+        toast.error(t("shareExpiration.validation.dateRequired"));
+        return;
+      }
+
+      const selectedDate = new Date(expirationDate);
+      const now = new Date();
+
+      if (selectedDate <= now) {
+        toast.error(t("shareExpiration.validation.dateMustBeFuture"));
+        return;
+      }
+    }
+
+    setIsLoading(true);
+    try {
+      await updateShare({
+        id: shareId,
+        expiration: hasExpiration ? new Date(expirationDate).toISOString() : undefined,
+      });
+
+      const successMessage = hasExpiration
+        ? share?.expiration
+          ? t("shareExpiration.success.expirationUpdated")
+          : t("shareExpiration.success.expirationSet")
+        : t("shareExpiration.success.expirationRemoved");
+
+      toast.success(successMessage);
+
+      if (onSuccess) {
+        onSuccess();
+      }
+      onClose();
+    } catch (error) {
+      logger.error("Failed to update share expiration:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+      toast.error(t("shareExpiration.error.updateFailed"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleExpirationToggle = (checked: boolean) => {
+    setHasExpiration(checked);
+    if (!checked) {
+      setExpirationDate("");
+    } else if (!expirationDate) {
+      const defaultDate = new Date();
+      defaultDate.setDate(defaultDate.getDate() + 7);
+      setExpirationDate(defaultDate.toISOString().slice(0, 16));
+    }
+  };
+
+  const getButtonText = () => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center gap-2">
+          <Loader size="sm" />
+          {share?.expiration ? t("common.updating") : t("common.saving")}
+        </div>
+      );
+    }
+    return share?.expiration ? t("common.update") : t("common.save");
+  };
+
+  return (
+    <Dialog open={!!shareId} onOpenChange={() => onClose()}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            {t("shareExpiration.title")}
+          </DialogTitle>
+          <DialogDescription>{t("shareExpiration.subtitle")}</DialogDescription>
+        </DialogHeader>
+
+        <div className="py-4 space-y-6">
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-foreground">
+              {t("shareExpiration.currentStatus")}
+            </h3>
+            <div className="flex gap-2">
+              {share?.expiration ? (
+                <StatusBadge variant="warning">
+                  <Clock className="h-3 w-3" />
+                  {t("shareExpiration.expires")} {new Date(share.expiration).toLocaleString()}
+                </StatusBadge>
+              ) : (
+                <StatusBadge variant="success">
+                  <TimerOff className="h-3 w-3" />
+                  {t("shareExpiration.neverExpires")}
+                </StatusBadge>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="expiration-enabled"
+                checked={hasExpiration}
+                onCheckedChange={handleExpirationToggle}
+              />
+              <Label htmlFor="expiration-enabled" className="flex items-center gap-2">
+                <Calendar className="size-4" />
+                {t("shareExpiration.enableExpiration")}
+              </Label>
+            </div>
+
+            {hasExpiration && (
+              <div className="space-y-4 ps-6 border-s-2 border-muted">
+                <div className="space-y-2">
+                  <Label htmlFor="expiration-date">{t("shareExpiration.expirationDate")}</Label>
+                  <Input
+                    id="expiration-date"
+                    type="datetime-local"
+                    value={expirationDate}
+                    onChange={(e) => setExpirationDate(e.target.value)}
+                    min={new Date().toISOString().slice(0, 16)}
+                  />
+                </div>
+
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <p>{t("shareExpiration.info.title")}</p>
+                  <ul className="list-disc list-inside space-y-1 ms-2">
+                    <li>{t("shareExpiration.info.willBeInaccessible")}</li>
+                    <li>{t("shareExpiration.info.canBeChanged")}</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {!hasExpiration && (
+              <div className="ps-6 border-s-2 border-muted">
+                <div className="bg-muted/50 border border-border rounded-lg p-3">
+                  <p className="text-sm text-muted-foreground">
+                    {t("shareExpiration.info.noExpiration")}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+            {t("common.cancel")}
+          </Button>
+          <Button onClick={handleSave} disabled={isLoading}>
+            {getButtonText()}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

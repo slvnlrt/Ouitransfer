@@ -1,0 +1,603 @@
+import {
+  Check,
+  Copy,
+  EllipsisVertical,
+  ExternalLink,
+  Eye,
+  File,
+  FileQuestion,
+  Link,
+  Lock,
+  LockOpen,
+  Pencil,
+  QrCode,
+  ToggleLeft,
+  ToggleRight,
+  Trash2,
+  X,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { logger } from "@/lib/logger";
+import type { ReverseShare } from "../hooks/use-reverse-shares";
+import { EditPasswordModal } from "./edit-password-modal";
+
+interface ReverseShareCardProps {
+  reverseShare: ReverseShare;
+  onCopyLink: (reverseShare: ReverseShare) => void;
+  onDelete: (reverseShare: ReverseShare) => void;
+  onGenerateLink: (reverseShare: ReverseShare) => void;
+  onViewDetails: (reverseShare: ReverseShare) => void;
+  onViewFiles: (reverseShare: ReverseShare) => void;
+  onViewQrCode?: (reverseShare: ReverseShare) => void;
+  onUpdateReverseShare?: (id: string, data: Record<string, unknown>) => Promise<unknown>;
+  onToggleActive?: (id: string, isActive: boolean) => Promise<unknown>;
+  onUpdatePassword?: (
+    id: string,
+    data: { hasPassword: boolean; password?: string },
+  ) => Promise<unknown>;
+}
+
+export function ReverseShareCard({
+  reverseShare,
+  onCopyLink,
+  onDelete,
+  onGenerateLink,
+  onViewDetails,
+  onViewFiles,
+  onViewQrCode,
+  onUpdateReverseShare,
+  onToggleActive,
+  onUpdatePassword,
+}: ReverseShareCardProps) {
+  const t = useTranslations();
+  const [origin, setOrigin] = useState("");
+  const [editingField, setEditingField] = useState<{ field: string } | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [pendingChanges, setPendingChanges] = useState<Record<string, unknown>>({});
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
+
+  useEffect(() => {
+    if (editingField && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editingField]);
+
+  const fileCount = reverseShare.files?.length || 0;
+  const hasAlias = Boolean(reverseShare.alias?.alias);
+  const isExpired = reverseShare.expiration
+    ? new Date(reverseShare.expiration) < new Date()
+    : false;
+  const hasPassword = reverseShare.hasPassword;
+
+  const formatFileSize = (sizeInBytes: number) => {
+    if (sizeInBytes === 0) return "0 B";
+    const units = ["B", "KB", "MB", "GB"];
+    const k = 1024;
+    const i = Math.floor(Math.log(sizeInBytes) / Math.log(k));
+    return `${parseFloat((sizeInBytes / k ** i).toFixed(1))} ${units[i]}`;
+  };
+
+  const totalSize =
+    reverseShare.files?.reduce((acc, file) => acc + parseInt(file.size, 10), 0) || 0;
+
+  const startEdit = (field: string, currentValue: unknown) => {
+    setEditingField({ field });
+    setEditValue(currentValue?.toString() || "");
+  };
+
+  const saveEdit = async () => {
+    if (!editingField || !onUpdateReverseShare) return;
+
+    const { field } = editingField;
+    let processedValue: string | number | null | boolean = editValue;
+
+    if (field === "isActive") {
+      processedValue = editValue === "true";
+    }
+
+    setPendingChanges((prev) => ({
+      ...prev,
+      [field]: processedValue,
+    }));
+
+    try {
+      await onUpdateReverseShare(reverseShare.id, { [field]: processedValue });
+    } catch (error) {
+      logger.error("Failed to update:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+      setPendingChanges((prev) => {
+        const newState = { ...prev };
+        delete newState[field];
+        return newState;
+      });
+    }
+
+    setEditingField(null);
+    setEditValue("");
+  };
+
+  const cancelEdit = () => {
+    setEditingField(null);
+    setEditValue("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      saveEdit();
+    } else if (e.key === "Escape") {
+      cancelEdit();
+    }
+  };
+
+  const getDisplayValue = (field: string): string | undefined => {
+    const pendingChange = pendingChanges[field];
+    if (pendingChange !== undefined) {
+      return pendingChange != null ? String(pendingChange) : undefined;
+    }
+    const val = (reverseShare as unknown as Record<string, unknown>)?.[field];
+    return val != null ? String(val) : undefined;
+  };
+
+  const handleToggleActive = async () => {
+    if (onToggleActive) {
+      await onToggleActive(reverseShare.id, !reverseShare.isActive);
+    }
+  };
+
+  const handleTogglePassword = async () => {
+    if (onUpdatePassword) {
+      setShowPasswordModal(true);
+    }
+  };
+
+  const handleOpenInNewTab = () => {
+    if (hasAlias && origin) {
+      const url = `${origin}/r/${reverseShare.alias?.alias}`;
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  return (
+    <>
+      <Card className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 bg-background/50 dark:bg-foreground/5 border border-border/50 py-1">
+        <CardContent className="p-4 space-y-3">
+          {/* Header: Name, Status and Actions */}
+          <div className="flex items-start justify-between gap-1">
+            <div className="flex-1 min-w-0">
+              {editingField?.field === "name" ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    ref={inputRef}
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    className="h-8 text-lg font-bold border-primary/50 focus:border-primary"
+                  />
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6 text-emerald-600 hover:text-emerald-700"
+                    onClick={saveEdit}
+                  >
+                    <Check className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6 text-destructive hover:text-destructive"
+                    onClick={cancelEdit}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 group/title">
+                  {/* Bolinha de status */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className={`w-2 h-2 rounded-full shrink-0 shadow-sm ${
+                          isExpired
+                            ? "bg-red-500"
+                            : reverseShare.isActive
+                              ? "bg-green-500"
+                              : "bg-red-500"
+                        }`}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {isExpired
+                        ? t("reverseShares.status.expired")
+                        : reverseShare.isActive
+                          ? t("reverseShares.status.active")
+                          : t("reverseShares.status.inactive")}
+                    </TooltipContent>
+                  </Tooltip>
+                  <h3 className="text-lg font-bold text-foreground truncate">
+                    {getDisplayValue("name") || t("reverseShares.card.untitled")}
+                  </h3>
+                  {onUpdateReverseShare && (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-4 w-4 opacity-0 group-hover/title:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
+                      onClick={() => startEdit("name", getDisplayValue("name"))}
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1">
+              {hasAlias && onViewQrCode && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 w-6 p-0 hover:bg-background/80 rounded-sm"
+                      onClick={() => onViewQrCode(reverseShare)}
+                    >
+                      <QrCode className="h-3 w-3" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("reverseShares.card.viewQrCode")}</TooltipContent>
+                </Tooltip>
+              )}
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 w-6 p-0 hover:bg-background/80 rounded-sm"
+                    onClick={() => onViewDetails(reverseShare)}
+                  >
+                    <Eye className="h-3 w-3" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t("reverseShares.card.viewDetails")}</TooltipContent>
+              </Tooltip>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 w-6 p-0 hover:bg-background/80 rounded-sm"
+                  >
+                    <EllipsisVertical className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => onViewDetails(reverseShare)}>
+                    <Eye className="h-4 w-4" />
+                    {t("reverseShares.card.viewDetails")}
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem onClick={() => onCopyLink(reverseShare)}>
+                    <Copy className="h-4 w-4" />
+                    {t("reverseShares.card.copyLink")}
+                  </DropdownMenuItem>
+
+                  {hasAlias && (
+                    <DropdownMenuItem onClick={handleOpenInNewTab}>
+                      <ExternalLink className="h-4 w-4" />
+                      {t("reverseShares.card.openInNewTab")}
+                    </DropdownMenuItem>
+                  )}
+
+                  {hasAlias && (
+                    <DropdownMenuItem onClick={() => onGenerateLink(reverseShare)}>
+                      <Link className="h-4 w-4" />
+                      {hasAlias
+                        ? t("reverseShares.card.editLink")
+                        : t("reverseShares.card.createLink")}
+                    </DropdownMenuItem>
+                  )}
+
+                  <DropdownMenuItem onClick={() => onViewFiles(reverseShare)}>
+                    <File className="h-4 w-4" />
+                    {t("reverseShares.actions.viewFiles")}
+                  </DropdownMenuItem>
+
+                  {hasAlias && onViewQrCode && (
+                    <DropdownMenuItem onClick={() => onViewQrCode(reverseShare)}>
+                      <QrCode className="h-4 w-4" />
+                      {t("reverseShares.actions.viewQrCode")}
+                    </DropdownMenuItem>
+                  )}
+
+                  <DropdownMenuItem
+                    className="text-destructive"
+                    onClick={() => onDelete(reverseShare)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {t("reverseShares.card.delete")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+
+          {/* Compact description */}
+          {editingField?.field === "description" ? (
+            <div className="flex items-center gap-2">
+              <Input
+                ref={inputRef}
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="h-7 text-sm border-primary/50 focus:border-primary"
+                placeholder={t("reverseShares.card.addDescriptionPlaceholder")}
+              />
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-5 w-5 text-emerald-600 hover:text-emerald-700"
+                onClick={saveEdit}
+              >
+                <Check className="h-3 w-3" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-5 w-5 text-destructive hover:text-destructive"
+                onClick={cancelEdit}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-start gap-2 group/desc">
+              <p className="text-xs text-muted-foreground line-clamp-1 flex-1">
+                {getDisplayValue("description") || t("reverseShares.card.noDescription")}
+              </p>
+              {onUpdateReverseShare && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-4 w-4 opacity-0 group-hover/desc:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
+                  onClick={() => startEdit("description", getDisplayValue("description"))}
+                >
+                  <Pencil className="h-3 w-3" />
+                </Button>
+              )}
+            </div>
+          )}
+
+          {/* Link em destaque */}
+          {hasAlias && (
+            <div
+              className={`rounded-md p-2 ${
+                reverseShare.isActive && !isExpired
+                  ? "bg-primary/5 border border-primary/20"
+                  : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <Link
+                  className={`h-3 w-3 shrink-0 ${
+                    reverseShare.isActive && !isExpired ? "text-primary" : "text-red-500"
+                  }`}
+                />
+                <code
+                  className={`text-xs font-mono px-2 py-1 rounded flex-1 truncate ${
+                    reverseShare.isActive && !isExpired
+                      ? "text-primary bg-primary/10"
+                      : "text-red-500 bg-red-100 dark:bg-red-900/30"
+                  }`}
+                >
+                  {origin}/r/{reverseShare.alias?.alias}
+                </code>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={`h-5 w-5 p-0 ${
+                        reverseShare.isActive && !isExpired
+                          ? "text-primary hover:text-primary/80"
+                          : "text-red-500 hover:text-red-600"
+                      }`}
+                      onClick={() => onCopyLink(reverseShare)}
+                    >
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("reverseShares.card.copyLinkTitle")}</TooltipContent>
+                </Tooltip>
+              </div>
+            </div>
+          )}
+
+          {/* Compact grid: Statistics + Controls */}
+          <div className="grid grid-cols-4 gap-2">
+            {/* Files */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="bg-muted/20 rounded-md p-2 text-center border border-border/50 hover:bg-muted/40 transition-colors h-auto"
+                  onClick={() => onViewFiles(reverseShare)}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <File className="h-4 w-4 text-primary" />
+                    <p className="text-xs font-medium text-foreground leading-none">{fileCount}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {t("reverseShares.labels.files")}
+                    </p>
+                  </div>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{t("reverseShares.actions.viewFiles")}</TooltipContent>
+            </Tooltip>
+
+            {/* Size */}
+            <div className="bg-muted/20 rounded-md p-2 text-center border border-border/50">
+              <div className="flex items-center justify-center mb-2">
+                <FileQuestion className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <p className="text-xs font-medium text-foreground leading-none">
+                {formatFileSize(totalSize)}
+              </p>
+              <p className="text-xs text-muted-foreground">{t("reverseShares.labels.size")}</p>
+            </div>
+
+            {/* Active status toggle */}
+            <div className="bg-muted/20 rounded-md overflow-hidden border border-border/50">
+              {onToggleActive ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="w-full h-full p-2 hover:bg-muted/40 transition-colors text-center"
+                      onClick={handleToggleActive}
+                    >
+                      <div className="flex flex-col items-center gap-1">
+                        {reverseShare.isActive ? (
+                          <ToggleRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        ) : (
+                          <ToggleLeft className="h-4 w-4 text-destructive" />
+                        )}
+                        <p className="text-xs font-medium leading-none">
+                          {reverseShare.isActive
+                            ? t("reverseShares.status.active")
+                            : t("reverseShares.status.inactive")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("reverseShares.labels.status")}
+                        </p>
+                      </div>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {reverseShare.isActive
+                      ? t("common.clickToDeactivate")
+                      : t("common.clickToActivate")}
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <div className="p-2 text-center">
+                  <div className="flex flex-col items-center gap-1">
+                    {reverseShare.isActive ? (
+                      <ToggleRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    ) : (
+                      <ToggleLeft className="h-4 w-4 text-destructive" />
+                    )}
+                    <p className="text-xs font-medium leading-none">
+                      {reverseShare.isActive
+                        ? t("reverseShares.status.active")
+                        : t("reverseShares.status.inactive")}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {t("reverseShares.labels.status")}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Password protection toggle */}
+            <div className="bg-muted/20 rounded-md overflow-hidden border border-border/50">
+              {onUpdatePassword ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="w-full h-full p-2 hover:bg-muted/40 transition-colors text-center"
+                      onClick={handleTogglePassword}
+                    >
+                      <div className="flex flex-col items-center gap-1">
+                        {hasPassword ? (
+                          <Lock className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                        ) : (
+                          <LockOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        )}
+                        <p className="text-xs font-medium leading-none">
+                          {hasPassword
+                            ? t("reverseShares.status.protected")
+                            : t("reverseShares.status.public")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("reverseShares.labels.access")}
+                        </p>
+                      </div>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("reverseShares.labels.configureProtection")}</TooltipContent>
+                </Tooltip>
+              ) : (
+                <div className="p-2 text-center">
+                  <div className="flex flex-col items-center gap-1">
+                    {hasPassword ? (
+                      <Lock className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                    ) : (
+                      <LockOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    )}
+                    <p className="text-xs font-medium leading-none">
+                      {hasPassword
+                        ? t("reverseShares.status.protected")
+                        : t("reverseShares.status.public")}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {t("reverseShares.labels.access")}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* CTA para criar link */}
+          {!hasAlias && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onGenerateLink(reverseShare)}
+              className="w-full h-8 text-sm"
+            >
+              <Link className="h-3 w-3" />
+              {t("reverseShares.card.createLinkCTA")}
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Modal de Senha */}
+      {showPasswordModal && onUpdatePassword && (
+        <EditPasswordModal
+          reverseShare={reverseShare}
+          isOpen={showPasswordModal}
+          onClose={() => setShowPasswordModal(false)}
+          onUpdatePassword={async (
+            id: string,
+            data: { hasPassword: boolean; password?: string },
+          ) => {
+            await onUpdatePassword(id, data);
+            setShowPasswordModal(false);
+          }}
+        />
+      )}
+    </>
+  );
+}

@@ -1,0 +1,206 @@
+{
+  "common": {
+    "footer": "This email was sent by <strong>{appName}</strong>",
+    "footerIgnore": "If you didn't expect this email, you can safely ignore it.",
+    "poweredBy": "Powered by {appName}",
+    "unsubscribe": "Unsubscribe from these notifications",
+    "viewShare": "View Share"
+  },
+  "welcome": {
+    "subject": "{appName} - Welcome!",
+    "subtitle": "Welcome",
+    "body": "Hello {firstName},\n\nYour account has been successfully created and is ready to use.",
+    "cta": "Sign in"
+  },
+  "passwordReset": {
+    "subject": "{appName} - Password Reset Request",
+    "subtitle": "Password Reset",
+    "body": "We received a request to reset your password. This link will expire in {expiresInMinutes} minutes.",
+    "cta": "Reset My Password",
+    "info": "If you did not request a password reset, you can safely ignore this email. Your password will not change."
+  },
+  "accountDeactivated": {
+    "subject": "{appName} - Account Deactivated",
+    "subtitle": "Account Deactivated",
+    "body": "Hello {firstName},\n\nYour account has been deactivated. You will no longer be able to sign in.",
+    "info": "If you believe this was done in error, please contact your administrator.",
+    "infoContact": "If you believe this was done in error, please contact your administrator at {adminContactEmail}."
+  },
+  "accountReactivated": {
+    "subject": "{appName} - Account Reactivated",
+    "subtitle": "Account Reactivated",
+    "body": "Hello {firstName},\n\nGreat news! Your account has been reactivated. You can now sign in and access all your files.",
+    "cta": "Sign In"
+  },
+  "userInvitation": {
+    "subject": "{appName} - You have been invited to join",
+    "subtitle": "You are invited",
+    "body": "{inviterName} has invited you to create an account on {appName}. Click the button below to set up your account.",
+    "cta": "Create your account",
+    "info": "This invitation link expires in {expiresInMinutes} minutes. If it expires, ask your administrator for a new one."
+  },
+  "shareInvitation": {
+    "subject": "{appName} - {senderName} shared files with you",
+    "subtitle": "Files Shared With You",
+    "body": "{senderName} has shared <strong>{shareName}</strong> with you.",
+    "cta": "View Shared Files",
+    "info": "This share is available to anyone with the link.",
+    "infoPassword": "This share is password-protected. You will be prompted to enter a password.",
+    "infoExpires": "This share link will expire on {expiresAt}.",
+    "infoPasswordExpires": "This share is password-protected and will expire on {expiresAt}."
+  },
+  "shareDownloadReminder": {
+    "subject": "{appName} - Reminder: files from {senderName} are waiting for you",
+    "subtitle": "Files Are Waiting For You",
+    "body": "Just a reminder: {senderName} shared <strong>{shareName}</strong> with you, but it looks like you haven't downloaded it yet.",
+    "cta": "Download Files",
+    "info": "This share is available to anyone with the link.",
+    "infoPassword": "This share is password-protected. You will be prompted to enter a password.",
+    "infoExpires": "Don't miss out: this share link will expire on {expiresAt}.",
+    "infoPasswordExpires": "This share is password-protected and will expire on {expiresAt}, so download it before then."
+  },
+  "shareAccessed": {
+    "subject": "{appName} - Your share was accessed",
+    "subtitle": "Share Accessed",
+    "bodyIdentified": "<strong>{visitorName}</strong> accessed your share <strong>{shareName}</strong> on {accessedAt}.",
+    "bodyAnonymous": "Someone accessed your share <strong>{shareName}</strong> on {accessedAt}."
+  },
+  "shareDownloaded": {
+    "subject": "{appName} - A file was downloaded from your share",
+    "subtitle": "File Downloaded",
+    "bodyIdentified": "<strong>{visitorName}</strong> downloaded <strong>{fileName}</strong> from your share <strong>{shareName}</strong> on {downloadedAt}.",
+    "bodyAnonymous": "Someone downloaded <strong>{fileName}</strong> from your share <strong>{shareName}</strong> on {downloadedAt}."
+  },
+  "shareExpiring": {
+    "subject": "{appName} - Your share is expiring soon",
+    "subtitle": "Share Expiring Soon",
+    "body": "Your share <strong>{shareName}</strong> will expire on {expiresAt}. After expiration, recipients will no longer be able to access the files.",
+    "cta": "Manage Share"
+  },
+  "shareExpired": {
+    "subject": "{appName} - Your share has expired",
+    "subtitle": "Share Expired",
+    "body": "Your share <strong>{shareName}</strong> expired on {expiredAt}. Recipients can no longer access the files.",
+    "cta": "Manage Share"
+  },
+  "shareMaxViewsReached": {
+    "subject": "{appName} - Your share has reached its view limit",
+    "subtitle": "Share View Limit Reached",
+    "body": "Your share <strong>{shareName}</strong> has reached its maximum view count of {maxViews}. The share is now inaccessible to new visitors.",
+    "cta": "Manage Share"
+  },
+  "shareNoActivity": {
+    "subject": "{appName} - Your share has had no recent activity",
+    "subtitle": "No Recent Activity",
+    "body": "Your share <strong>{shareName}</strong> has had no activity for {inactivityDays} days. Consider renewing or removing it.",
+    "cta": "Manage Share"
+  },
+  "reverseShareInvitation": {
+    "subject": "{appName} - {senderName} is requesting files from you",
+    "subtitle": "File Upload Request",
+    "body": "{senderName} is requesting files via <strong>{reverseShareName}</strong>. Click the button below to upload your files.",
+    "cta": "Upload Files",
+    "info": "Anyone with this link can upload files.",
+    "infoPassword": "This upload link is password-protected. You will be prompted to enter a password.",
+    "infoExpires": "This upload link will expire on {expiresAt}.",
+    "infoPasswordExpires": "This upload link is password-protected and will expire on {expiresAt}."
+  },
+  "reverseShareUploaded": {
+    "subject": "{appName} - New files uploaded to your request",
+    "subtitle": "Files Uploaded",
+    "bodyIdentified": "<strong>{uploaderName}</strong> uploaded {fileCount} file(s) to <strong>{reverseShareName}</strong>: {fileList}.",
+    "bodyAnonymous": "Someone uploaded {fileCount} file(s) to <strong>{reverseShareName}</strong>: {fileList}."
+  },
+  "reverseShareExpiring": {
+    "subject": "{appName} - Your file request link is expiring soon",
+    "subtitle": "Upload Request Expiring Soon",
+    "body": "Your file request <strong>{reverseShareName}</strong> will expire on {expiresAt}. After expiration, no one will be able to upload files using this link."
+  },
+  "reverseShareExpired": {
+    "subject": "{appName} - Your file request link has expired",
+    "subtitle": "Upload Request Expired",
+    "body": "Your file request <strong>{reverseShareName}</strong> expired on {expiredAt}. No more files can be uploaded using this link."
+  },
+  "quotaWarning": {
+    "subject": "{appName} - Storage quota warning",
+    "subtitle": "Storage Quota Warning",
+    "body": "You are using {usedPercent}% of your storage quota ({usedBytes} bytes of {maxBytes} bytes). Consider removing old files to free up space.",
+    "info": "You have used {usedPercent}% of your available storage."
+  },
+  "quotaExceeded": {
+    "subject": "{appName} - Storage quota exceeded",
+    "subtitle": "Storage Quota Exceeded",
+    "body": "You have exceeded your storage quota. You are currently using {usedBytes} bytes out of {maxBytes} bytes. New uploads will be blocked until you free up space.",
+    "bodyGrace": "You have exceeded your storage quota. You are currently using {usedBytes} bytes out of {maxBytes} bytes. You have {gracePeriodDays} day(s) to free up space before uploads are blocked.",
+    "info": "Please delete old files to restore your upload capability."
+  },
+  "filesAutoDeleted": {
+    "subject": "{appName} - Files automatically deleted",
+    "subtitle": "Files Automatically Deleted",
+    "body": "The following files were automatically deleted: {fileList}. Reason: {reason}.",
+    "bodyAccount": "All files associated with your deactivated account were automatically deleted. Reason: {reason}.",
+    "info": "This action was performed automatically by the system cleanup policy."
+  },
+  "shareAutoDeleted": {
+    "subject": "{appName} - Share automatically deleted",
+    "subtitle": "Share Automatically Deleted",
+    "body": "Your share <strong>{shareName}</strong> was automatically deleted. Reason: {reason}.",
+    "info": "This action was performed automatically by the system cleanup policy."
+  },
+  "cleanupReason": {
+    "expired": "expired",
+    "viewLimitReached": "view limit reached",
+    "accountDeactivated": "account deactivated",
+    "quotaExceeded": "storage quota exceeded"
+  },
+  "sharePendingDeletion": {
+    "subject": "{appName} - Your share will be permanently deleted soon",
+    "subtitle": "Share Scheduled for Deletion",
+    "body": "Your expired share <strong>{shareName}</strong> will be permanently deleted on {deletionAt}. Download or renew it before then if you still need it.",
+    "cta": "Manage Share",
+    "info": "This is performed automatically by the system cleanup policy. Renewing the share cancels the deletion."
+  },
+  "reverseSharePendingDeletion": {
+    "subject": "{appName} - Your file request and its files will be deleted soon",
+    "subtitle": "Upload Request Scheduled for Deletion",
+    "body": "Your expired file request <strong>{reverseShareName}</strong> and the files uploaded to it will be permanently deleted on {deletionAt}. Download the files or renew the request before then if you still need them.",
+    "cta": "Manage Request",
+    "info": "This is performed automatically by the system cleanup policy. Renewing the request cancels the deletion."
+  },
+  "reverseShareAutoDeleted": {
+    "subject": "{appName} - Your file request was automatically deleted",
+    "subtitle": "Upload Request Automatically Deleted",
+    "body": "Your expired file request <strong>{reverseShareName}</strong> and the files uploaded to it were permanently deleted on {deletedAt}.",
+    "info": "This action was performed automatically by the system cleanup policy."
+  },
+  "adminUserRegistered": {
+    "subject": "{appName} - New user registration",
+    "subtitle": "New User Registered",
+    "body": "A new user has registered on {appName}.\n\nName: {userName}\nEmail: {userEmail}\nRegistration method: {registrationMethod}"
+  },
+  "adminQuotaAlert": {
+    "subject": "{appName} - User quota alert",
+    "subtitle": "User Storage Quota Alert",
+    "body": "A user has reached a high storage usage level.\n\nName: {userName}\nEmail: {userEmail}\nUsage: {usedPercent}% ({usedBytes} bytes of {maxBytes} bytes)",
+    "info": "This user has used {usedPercent}% of their storage quota."
+  },
+  "testEmail": {
+    "subject": "{appName} - Test Email",
+    "subtitle": "Test Email",
+    "body": "This is a test email sent from {appName}. If you received this message, your email configuration is working correctly.",
+    "bodyCustom": "This is a test email sent from {appName}.\n\n{testMessage}",
+    "info": "This email was sent as a test. No action is required."
+  },
+  "unsubscribe": {
+    "confirmTitle": "Unsubscribe from notifications",
+    "confirmAbout": "You are about to unsubscribe from:",
+    "confirmAction": "You will no longer receive emails for this notification type.",
+    "confirmButton": "Confirm Unsubscribe",
+    "successTitle": "Successfully unsubscribed",
+    "successMessage": "You have been unsubscribed from <strong>{type}</strong> notifications.",
+    "successManage": "You can manage all your notification preferences in your account settings.",
+    "errorTitle": "Invalid or expired unsubscribe link",
+    "errorMessage": "This unsubscribe link is no longer valid. It may have expired or already been used.",
+    "errorManage": "You can manage your notification preferences directly from your account settings."
+  }
+}

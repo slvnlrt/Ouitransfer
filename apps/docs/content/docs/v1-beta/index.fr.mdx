@@ -1,0 +1,62 @@
+---
+title: Bienvenue sur OUITRANSFER
+icon: Share2
+---
+
+import { Ban, Palette, Shield, Star, Users, Zap } from "lucide-react";
+
+{/* TODO: add current banner screenshot once new screenshots are taken */}
+
+**OUITRANSFER** est votre **alternative open source** de référence pour le partage de fichiers, face à des services tels que **WeTransfer**, **SendGB**, **Send Anywhere** ou **Files.fm**. Ce qui distingue OUITRANSFER ? Vous pouvez l'**héberger sur votre propre infrastructure** (un **serveur dédié** ou un **VPS**), et garder ainsi la maîtrise totale de la sécurité de vos données et de vos fichiers. Fini les dépendances tierces, les limites contraignantes et les frais excessifs !
+
+## Pourquoi choisir OUITRANSFER ?
+
+### Aucune limite, vraiment
+
+Oubliez les restrictions arbitraires sur la taille ou le nombre de fichiers. Avec OUITRANSFER, la seule limite est l'**espace de stockage de votre serveur**. Si vous avez la capacité, transférez des fichiers de toute taille ou en toute quantité sans contrainte. Pas d'offre premium à débloquer, pas de publicités intrusives à esquiver, et certainement pas de frais cachés. Votre liberté de partage de fichiers ne dépend que de votre infrastructure, non de restrictions artificielles.
+
+### Open source & totalement gratuit
+
+OUITRANSFER est 100 % **open source** et gratuit: sans licence, sans abonnement, sans coût surprise. Cette transparence vous donne un contrôle total sur son utilisation. Concrètement :
+
+- Déployez où vous le souhaitez : **VPS**, **serveur dédié**, **Docker** ou toute plateforme cloud de votre choix.
+- Inspectez le **code source** pour vous assurer qu'il est sécurisé et répond à vos exigences.
+- Contribuez avec des **améliorations** ou des fonctionnalités personnalisées pour rendre OUITRANSFER encore meilleur.
+- Adaptez-le à n'importe quel cas d'usage, du partage personnel aux besoins professionnels ou aux applications de niche.
+
+### Vos données, vos règles
+
+Hébergez OUITRANSFER sur votre propre infrastructure et conservez un **contrôle total sur vos données**. En gérant vous-même le stockage et les transferts, vous éliminez les risques liés aux tiers. Vos fichiers restent dans votre environnement. Aucun service externe ne les touche ni ne les stocke, ce qui garantit une **confidentialité** et une **sécurité** optimales. Mettez en place les mesures de sécurité adaptées à vos besoins, avec la certitude qu'aucun tiers n'a accès à vos données. OUITRANSFER vous donne les rênes pour une tranquillité d'esprit absolue, idéal pour les organisations soumises à un contrôle strict des données ou à des obligations réglementaires.
+
+### Personnalisez à votre image
+
+OUITRANSFER est une toile vierge pour la personnalisation, vous permettant d'adapter chaque détail à votre **marque** et à l'**expérience utilisateur** souhaitée :
+
+- Ajoutez votre **logo** pour une identité visuelle cohérente sur toute la plateforme.
+- Choisissez un **nom d'application personnalisé** qui reflète votre identité.
+- Connectez un **serveur SMTP** pour des notifications email fluides concernant les transferts ou les mises à jour.
+- Rédigez les **textes de l'interface** en accord avec votre audience et la voix de votre marque.
+
+### Notifications par email
+
+Restez informé de ce qui se passe avec vos fichiers partagés. Ouitransfer envoie des notifications par email lors de l'accès à un partage, des téléchargements, des alertes de quota, des alertes d'expiration, et plus encore. Chaque utilisateur peut choisir les notifications qu'il souhaite recevoir depuis la page [Préférences de notification](/docs/v1-beta/notification-preferences), et les partages individuels peuvent remplacer les paramètres globaux.
+
+Les emails sont envoyés via une file d'attente asynchrone avec relance automatique. Consultez [Configuration SMTP](/docs/v1-beta/configuring-smtp) pour configurer l'envoi d'emails.
+
+### Barre d'état système
+
+Le tableau de bord inclut une **Barre d'état système** rétractable sous la barre de navigation. Elle affiche en un coup d'œil l'état du système (connectivité de la base de données et du stockage), l'utilisation de l'espace disque et votre indicateur de quota de stockage personnel. Développez-la pour voir les détails ; un badge d'avertissement apparaît sur l'onglet replié lorsque votre quota est presque atteint.
+
+### Gérez vos utilisateurs comme un pro
+
+Prenez les commandes de votre univers de partage de fichiers avec le système robuste de **gestion des utilisateurs et des administrateurs** d'OUITRANSFER :
+
+- Configurez plusieurs **administrateurs** pour répartir la charge et assurer un fonctionnement fluide.
+- Ajoutez autant d'**utilisateurs** que nécessaire, des petites équipes aux grandes organisations.
+- Suivez l'**utilisation du stockage** grâce à des analyses pratiques pour une meilleure planification des ressources.
+- Organisez les utilisateurs en **groupes** avec des politiques de quota de stockage par groupe.
+- Synchronisez les utilisateurs depuis **Active Directory** via LDAP: intégration automatique et mappage de groupes.
+
+### Rapide comme l'éclair et léger comme une plume
+
+OUITRANSFER est conçu pour la vitesse, avec une architecture élégante et évolutive qui gère les transferts de gros fichiers et les charges utilisateur importantes sans broncher. Il maintient des vitesses de transfert élevées et s'adapte sans effort à une demande croissante. Grâce à une utilisation intelligente des ressources et un code soigné, vous bénéficiez d'une expérience réactive qui évolue avec vos besoins tout en restant robuste et stable.

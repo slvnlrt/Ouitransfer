@@ -1,0 +1,568 @@
+/**
+ * @vitest-environment node
+ */
+import { SignJWT } from "jose";
+import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from "vitest";
+
+// ---------------------------------------------------------------------------
+// Hoisted values — available in vi.mock factories
+// ---------------------------------------------------------------------------
+const { TEST_SECRET, WRONG_SECRET, TEST_SECRET_KEY, WRONG_SECRET_KEY, BASE_URL } = vi.hoisted(
+  () => {
+    const TEST_SECRET = "a]#Fq9K!mZ3Tv&bW8xR2pL7jY0sN5dH6"; // 32+ chars
+    const WRONG_SECRET = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+    return {
+      TEST_SECRET,
+      WRONG_SECRET,
+      TEST_SECRET_KEY: new TextEncoder().encode(TEST_SECRET),
+      WRONG_SECRET_KEY: new TextEncoder().encode(WRONG_SECRET),
+      BASE_URL: "http://localhost:3000",
+    };
+  },
+);
+
+// ---------------------------------------------------------------------------
+// Mock fns — also hoisted so they can be used in vi.mock factories
+// ---------------------------------------------------------------------------
+const { mockRedirect, mockNext, mockRewrite, mockCookiesDelete } = vi.hoisted(() => ({
+  mockRedirect: vi.fn(),
+  mockNext: vi.fn(),
+  mockRewrite: vi.fn(),
+  mockCookiesDelete: vi.fn(),
+}));
+
+// ---------------------------------------------------------------------------
+// Shared mock factory for next/server
+// ---------------------------------------------------------------------------
+function nextServerMockFactory() {
+  class MockNextResponse {
+    cookies = { delete: mockCookiesDelete };
+    headers = new Map();
+    status = 307;
+  }
+  return {
+    NextRequest: vi.fn(),
+    NextResponse: {
+      redirect: (...args: unknown[]) => {
+        mockRedirect(...args);
+        return new MockNextResponse();
+      },
+      next: (...args: unknown[]) => {
+        mockNext(...args);
+        return new MockNextResponse();
+      },
+      rewrite: (...args: unknown[]) => {
+        mockRewrite(...args);
+        return new MockNextResponse();
+      },
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Mock next/server and env module
+// ---------------------------------------------------------------------------
+vi.mock("next/server", nextServerMockFactory);
+vi.mock("@/env", () => ({
+  env: {
+    JWT_SECRET: TEST_SECRET,
+    API_BASE_URL: "http://api.internal:3333",
+    CSP_STORAGE_ORIGINS: "http://storage:9000",
+  },
+}));
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Creates a minimal NextRequest-like object for the middleware. */
+function createRequest(
+  path: string,
+  token?: string,
+): {
+  nextUrl: { pathname: string };
+  url: string;
+  cookies: { get: Mock };
+  headers: Headers;
+} {
+  return {
+    nextUrl: { pathname: path },
+    url: `${BASE_URL}${path}`,
+    cookies: {
+      get: vi.fn((name: string) => (name === "token" && token ? { value: token } : undefined)),
+    },
+    headers: new Headers(),
+  };
+}
+
+/** Signs a JWT with HS256 using the given secret key. */
+async function signToken(
+  claims: Record<string, unknown>,
+  secretKey: Uint8Array = TEST_SECRET_KEY,
+): Promise<string> {
+  return new SignJWT(claims)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("1h")
+    .sign(secretKey);
+}
+
+/** Signs an already-expired JWT. */
+async function signExpiredToken(
+  claims: Record<string, unknown>,
+  secretKey: Uint8Array = TEST_SECRET_KEY,
+): Promise<string> {
+  const pastExp = Math.floor(Date.now() / 1000) - 3600;
+  return new SignJWT({ ...claims, exp: pastExp })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt(pastExp - 3600)
+    .sign(secretKey);
+}
+
+// ---------------------------------------------------------------------------
+// Middleware tests — standard scenarios (JWT_SECRET is set correctly)
+// ---------------------------------------------------------------------------
+describe("proxy", () => {
+  let proxy: (request: unknown) => Promise<unknown>;
+
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    const mod = await import("@/proxy");
+    proxy = mod.proxy as (request: unknown) => Promise<unknown>;
+  });
+
+  // -----------------------------------------------------------------------
+  // Test 1: Unauthenticated access to protected path → redirect to /login
+  // -----------------------------------------------------------------------
+  it("redirects unauthenticated users on protected paths to /login", async () => {
+    const req = createRequest("/dashboard");
+    await proxy(req);
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
+    const url = mockRedirect.mock.calls[0][0] as URL;
+    expect(url.pathname).toBe("/login");
+  });
+
+  // -----------------------------------------------------------------------
+  // Test 2: Valid JWT → access granted
+  // -----------------------------------------------------------------------
+  it("allows access with a valid JWT on protected paths", async () => {
+    const token = await signToken({ userId: "user-1", isAdmin: false });
+    const req = createRequest("/dashboard", token);
+    await proxy(req);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  // -----------------------------------------------------------------------
+  // Test 2b: Signed cookie (Fastify cookie-signature format) → access granted
+  // -----------------------------------------------------------------------
+  it("allows access with a signed JWT cookie (jwt.cookieHmac format)", async () => {
+    const token = await signToken({ userId: "user-1", isAdmin: false });
+    // Simulate @fastify/cookie signed format: jwt_value.cookie_hmac_signature
+    const signedToken = `${token}.fakeCookieHmacSignature123`;
+    const req = createRequest("/dashboard", signedToken);
+    await proxy(req);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  // -----------------------------------------------------------------------
+  // Test 3: Expired JWT → redirect to /login, cookie deleted
+  // -----------------------------------------------------------------------
+  it("rejects expired JWT, clears cookie, and redirects to /login", async () => {
+    const token = await signExpiredToken({ userId: "user-1", isAdmin: false });
+    const req = createRequest("/dashboard", token);
+    await proxy(req);
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
+    const url = mockRedirect.mock.calls[0][0] as URL;
+    expect(url.pathname).toBe("/login");
+    expect(mockCookiesDelete).toHaveBeenCalledWith("token");
+  });
+
+  // -----------------------------------------------------------------------
+  // Test 5: Tampered JWT (signed with wrong key) → rejected
+  // -----------------------------------------------------------------------
+  it("rejects JWT signed with a wrong key", async () => {
+    const token = await signToken({ userId: "user-1", isAdmin: false }, WRONG_SECRET_KEY);
+    const req = createRequest("/dashboard", token);
+    await proxy(req);
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
+    const url = mockRedirect.mock.calls[0][0] as URL;
+    expect(url.pathname).toBe("/login");
+    expect(mockCookiesDelete).toHaveBeenCalledWith("token");
+  });
+
+  // -----------------------------------------------------------------------
+  // Test 6: Path matching — /login is public, /loginadmin is NOT public
+  // -----------------------------------------------------------------------
+  it("treats /login as public (no auth required)", async () => {
+    const req = createRequest("/login");
+    await proxy(req);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  it("treats /loginadmin as protected (requires auth)", async () => {
+    const req = createRequest("/loginadmin");
+    await proxy(req);
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
+    const url = mockRedirect.mock.calls[0][0] as URL;
+    expect(url.pathname).toBe("/login");
+  });
+
+  // -----------------------------------------------------------------------
+  // Test 7: /s/xxx (share path with trailing slash in array) is public
+  // -----------------------------------------------------------------------
+  it("treats /s/xxx as public (share path)", async () => {
+    const req = createRequest("/s/abc123");
+    await proxy(req);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  it("treats /s/ as public", async () => {
+    const req = createRequest("/s/");
+    await proxy(req);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  // -----------------------------------------------------------------------
+  // Test 8: Admin path — non-admin JWT → redirect to /dashboard
+  // -----------------------------------------------------------------------
+  it("redirects non-admin users from admin paths to /dashboard", async () => {
+    const token = await signToken({ userId: "user-1", isAdmin: false });
+    const req = createRequest("/admin/settings", token);
+    await proxy(req);
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
+    const url = mockRedirect.mock.calls[0][0] as URL;
+    expect(url.pathname).toBe("/dashboard");
+  });
+
+  it("redirects non-admin users from /admin/users to /dashboard", async () => {
+    const token = await signToken({ userId: "user-1", isAdmin: false });
+    const req = createRequest("/admin/users", token);
+    await proxy(req);
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
+    const url = mockRedirect.mock.calls[0][0] as URL;
+    expect(url.pathname).toBe("/dashboard");
+  });
+
+  // -----------------------------------------------------------------------
+  // Test 9: Admin path — admin JWT → access granted
+  // -----------------------------------------------------------------------
+  it("allows admin users to access admin paths", async () => {
+    const token = await signToken({ userId: "admin-1", isAdmin: true });
+    const req = createRequest("/admin/settings", token);
+    await proxy(req);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  it("allows admin users to access /admin/users", async () => {
+    const token = await signToken({ userId: "admin-1", isAdmin: true });
+    const req = createRequest("/admin/users", token);
+    await proxy(req);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  // -----------------------------------------------------------------------
+  // Test 10: Unauthenticated-only path with valid JWT → redirect to /dashboard
+  // -----------------------------------------------------------------------
+  it("redirects authenticated users from /login to /dashboard", async () => {
+    const token = await signToken({ userId: "user-1", isAdmin: false });
+    const req = createRequest("/login", token);
+    await proxy(req);
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
+    const url = mockRedirect.mock.calls[0][0] as URL;
+    expect(url.pathname).toBe("/dashboard");
+  });
+
+  it("redirects authenticated users from /forgot-password to /dashboard", async () => {
+    const token = await signToken({ userId: "user-1", isAdmin: false });
+    const req = createRequest("/forgot-password", token);
+    await proxy(req);
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
+    const url = mockRedirect.mock.calls[0][0] as URL;
+    expect(url.pathname).toBe("/dashboard");
+  });
+
+  // -----------------------------------------------------------------------
+  // Additional edge cases
+  // -----------------------------------------------------------------------
+  it("redirects authenticated users on / to /dashboard", async () => {
+    const token = await signToken({ userId: "user-1", isAdmin: false });
+    const req = createRequest("/", token);
+    await proxy(req);
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
+    const url = mockRedirect.mock.calls[0][0] as URL;
+    expect(url.pathname).toBe("/dashboard");
+  });
+
+  it("allows unauthenticated users on /", async () => {
+    const req = createRequest("/");
+    await proxy(req);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  it("treats /login/subpath as public (matches with slash boundary)", async () => {
+    const req = createRequest("/login/subpath");
+    await proxy(req);
+
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  it("treats /admin/settings/subpath as admin path", async () => {
+    const token = await signToken({ userId: "user-1", isAdmin: false });
+    const req = createRequest("/admin/settings/subpath", token);
+    await proxy(req);
+
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
+    const url = mockRedirect.mock.calls[0][0] as URL;
+    expect(url.pathname).toBe("/dashboard");
+  });
+
+  it("treats /administrator as a regular protected path (not admin)", async () => {
+    const token = await signToken({ userId: "user-1", isAdmin: false });
+    const req = createRequest("/administrator", token);
+    await proxy(req);
+
+    // Non-admin user on a non-admin path → should be allowed
+    expect(mockNext).toHaveBeenCalledTimes(1);
+    expect(mockRedirect).not.toHaveBeenCalled();
+  });
+
+  // -----------------------------------------------------------------------
+  // R2 (A3-03 / A7-07): /api/* rewrites carry restrictive security headers
+  // -----------------------------------------------------------------------
+  it("rewrites /api/* to the API and applies sandbox CSP + nosniff (no auth needed)", async () => {
+    const req = {
+      nextUrl: { pathname: "/api/files/download-url", search: "" },
+      url: `${BASE_URL}/api/files/download-url`,
+      cookies: { get: vi.fn(() => undefined) },
+    };
+    const res = (await proxy(req)) as { headers: Map<string, string> };
+
+    expect(mockRewrite).toHaveBeenCalledTimes(1);
+    expect(mockNext).not.toHaveBeenCalled();
+    expect(mockRedirect).not.toHaveBeenCalled();
+
+    const csp = res.headers.get("Content-Security-Policy");
+    expect(csp).toContain("sandbox");
+    expect(csp).toContain("default-src 'none'");
+    expect(res.headers.get("X-Content-Type-Options")).toBe("nosniff");
+    expect(res.headers.get("X-Frame-Options")).toBe("DENY");
+  });
+
+  // -----------------------------------------------------------------------
+  // R6 (A7-02 / A7-03 / A7-04): page-response CSP — nonce script-src,
+  // hardened directives, storage-origin propagation
+  // -----------------------------------------------------------------------
+  describe("page-response CSP", () => {
+    /** Extracts the page CSP from a public-path response. */
+    async function getPageCsp(path = "/login"): Promise<string> {
+      const req = createRequest(path);
+      const res = (await proxy(req)) as { headers: Map<string, string> };
+      const csp = res.headers.get("Content-Security-Policy");
+      if (!csp) throw new Error("no CSP set");
+      return csp;
+    }
+
+    it("uses a per-request nonce + strict-dynamic in script-src (no 'unsafe-inline')", async () => {
+      const csp = await getPageCsp();
+      const scriptSrc = csp.split(";").find((d) => d.trim().startsWith("script-src"));
+      expect(scriptSrc).toBeDefined();
+      expect(scriptSrc).toMatch(/'nonce-[A-Za-z0-9+/=]+'/);
+      expect(scriptSrc).toContain("'strict-dynamic'");
+      expect(scriptSrc).not.toContain("'unsafe-inline'");
+    });
+
+    it("generates a fresh nonce per request", async () => {
+      const csp1 = await getPageCsp();
+      const csp2 = await getPageCsp();
+      const nonce = (s: string) => s.match(/'nonce-([A-Za-z0-9+/=]+)'/)?.[1];
+      expect(nonce(csp1)).toBeTruthy();
+      expect(nonce(csp1)).not.toBe(nonce(csp2));
+    });
+
+    it("forwards the nonce to the app via the request Content-Security-Policy + x-nonce headers", async () => {
+      const req = createRequest("/login");
+      await proxy(req);
+      // NextResponse.next is called with { request: { headers } }
+      const arg = mockNext.mock.calls.at(-1)?.[0] as
+        | { request?: { headers?: Headers } }
+        | undefined;
+      const fwd = arg?.request?.headers;
+      expect(fwd).toBeInstanceOf(Headers);
+      const nonce = fwd?.get("x-nonce");
+      expect(nonce).toBeTruthy();
+      // The forwarded CSP must carry the same nonce so Next.js stamps its scripts.
+      expect(fwd?.get("content-security-policy")).toContain(`'nonce-${nonce}'`);
+    });
+
+    it("adds object-src 'none', frame-src, worker-src, manifest-src (A7-02)", async () => {
+      const csp = await getPageCsp();
+      expect(csp).toContain("object-src 'none'");
+      expect(csp).toContain("frame-src 'self' blob:");
+      expect(csp).toContain("worker-src 'self' blob:");
+      expect(csp).toContain("manifest-src 'self'");
+    });
+
+    it("propagates the storage origin into img-src and connect-src (A7-04)", async () => {
+      const csp = await getPageCsp();
+      const imgSrc = csp.split(";").find((d) => d.trim().startsWith("img-src"));
+      const connectSrc = csp.split(";").find((d) => d.trim().startsWith("connect-src"));
+      expect(imgSrc).toContain("http://storage:9000");
+      expect(connectSrc).toContain("http://storage:9000");
+    });
+
+    it("keeps frame-ancestors 'none' and base-uri 'self'", async () => {
+      const csp = await getPageCsp();
+      expect(csp).toContain("frame-ancestors 'none'");
+      expect(csp).toContain("base-uri 'self'");
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Test 4: Mismatched JWT_SECRET — isolated in its own describe to avoid
+// module cache pollution (requires vi.resetModules + vi.doMock).
+// Note: The primary protection against missing JWT_SECRET is env.ts Zod
+// validation (tested below). This test verifies that if the secret differs
+// from the signing key, tokens are still rejected.
+// ---------------------------------------------------------------------------
+describe("middleware — mismatched JWT_SECRET", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("rejects tokens when middleware secret differs from signing key", async () => {
+    vi.resetModules();
+
+    vi.doMock("@/env", () => ({
+      env: { JWT_SECRET: WRONG_SECRET },
+    }));
+    vi.doMock("next/server", nextServerMockFactory);
+
+    const { proxy } = await import("@/proxy");
+    const token = await signToken({ userId: "user-1", isAdmin: false });
+    const req = createRequest("/dashboard", token);
+    await proxy(req as never);
+
+    // Token signed with TEST_SECRET rejected by middleware using WRONG_SECRET
+    expect(mockRedirect).toHaveBeenCalledTimes(1);
+    const url = mockRedirect.mock.calls[0][0] as URL;
+    expect(url.pathname).toBe("/login");
+    expect(mockCookiesDelete).toHaveBeenCalledWith("token");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// matchesPath unit tests
+// ---------------------------------------------------------------------------
+describe("matchesPath", () => {
+  let matchesPath: (pathname: string, paths: readonly string[]) => boolean;
+
+  beforeEach(async () => {
+    const mod = await import("@/components/auth/paths/match-path");
+    matchesPath = mod.matchesPath;
+  });
+
+  it("matches exact path", () => {
+    expect(matchesPath("/login", ["/login"])).toBe(true);
+  });
+
+  it("matches path with trailing subpath", () => {
+    expect(matchesPath("/login/extra", ["/login"])).toBe(true);
+  });
+
+  it("does not match path that shares prefix without slash boundary", () => {
+    expect(matchesPath("/loginadmin", ["/login"])).toBe(false);
+  });
+
+  it("matches paths ending with slash (e.g. /s/)", () => {
+    expect(matchesPath("/s/abc123", ["/s/"])).toBe(true);
+  });
+
+  it("matches exact path ending with slash", () => {
+    expect(matchesPath("/s/", ["/s/"])).toBe(true);
+  });
+
+  it("does not match shorter path", () => {
+    expect(matchesPath("/s", ["/s/"])).toBe(false);
+  });
+
+  it("returns false for empty paths array", () => {
+    expect(matchesPath("/anything", [])).toBe(false);
+  });
+
+  it("matches first applicable path in array", () => {
+    expect(matchesPath("/login", ["/register", "/login", "/other"])).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// env.ts validation tests
+//
+// env.ts uses lazy validation via a Proxy — the Zod parse runs on first
+// property access, not at import time. This means `import("@/env")` succeeds
+// even when env vars are missing; the throw happens on `env.JWT_SECRET`.
+// ---------------------------------------------------------------------------
+describe("env validation", () => {
+  it("throws on first access when JWT_SECRET is missing", async () => {
+    const originalSecret = process.env.JWT_SECRET;
+    delete process.env.JWT_SECRET;
+
+    vi.resetModules();
+    vi.doUnmock("@/env");
+
+    try {
+      const { env } = await import("@/env");
+      // Import succeeds; accessing a property triggers validation
+      expect(() => env.JWT_SECRET).toThrow();
+    } finally {
+      if (originalSecret !== undefined) {
+        process.env.JWT_SECRET = originalSecret;
+      }
+    }
+  });
+
+  it("throws on first access when JWT_SECRET is too short", async () => {
+    const originalSecret = process.env.JWT_SECRET;
+    process.env.JWT_SECRET = "short";
+
+    vi.resetModules();
+    vi.doUnmock("@/env");
+
+    try {
+      const { env } = await import("@/env");
+      expect(() => env.JWT_SECRET).toThrow();
+    } finally {
+      if (originalSecret !== undefined) {
+        process.env.JWT_SECRET = originalSecret;
+      } else {
+        delete process.env.JWT_SECRET;
+      }
+    }
+  });
+});

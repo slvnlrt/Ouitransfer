@@ -1,0 +1,3004 @@
+{
+  "a11y": {
+    "skipToContent": "رفتن به محتوا"
+  },
+  "auth": {
+    "successfullyAuthenticated": "با موفقیت وارد شدید!",
+    "authenticationFailed": "احراز هویت ناموفق بود",
+    "errors": {
+      "account_inactive": "حساب کاربری غیرفعال است. لطفاً با مدیر تماس بگیرید.",
+      "registration_disabled": "ثبت‌نام از طریق SSO غیرفعال است.",
+      "token_expired": "توکن منقضی شده است. لطفاً دوباره تلاش کنید.",
+      "config_error": "خطای پیکربندی. لطفاً با پشتیبانی تماس بگیرید.",
+      "auth_failed": "احراز هویت ناموفق بود. لطفاً دوباره تلاش کنید."
+    },
+    "sessionExpired": "نشست شما منقضی شده است. لطفاً دوباره وارد شوید.",
+    "callback": {
+      "errors": {
+        "oauth_error": "احراز هویت OAuth ناموفق بود",
+        "missing_parameters": "پارامترهای احراز هویت موجود نیست",
+        "missing_code": "کد مجوز موجود نیست",
+        "registration_disabled": "ثبت‌نام برای این ارائه‌دهنده غیرفعال است",
+        "provider_disabled": "این ارائه‌دهنده احراز هویت غیرفعال است",
+        "state_expired": "نشست احراز هویت منقضی شده است",
+        "account_inactive": "حساب کاربری شما غیرفعال است",
+        "no_email": "آدرس ایمیلی در حساب شما یافت نشد",
+        "token_exchange_failed": "احراز هویت با ارائه‌دهنده ناموفق بود",
+        "missing_user_info": "اطلاعات کاربری ناقص از ارائه‌دهنده"
+      }
+    }
+  },
+  "contextMenu": {
+    "newFolder": "پوشه جدید",
+    "uploadFile": "بارگذاری فایل"
+  },
+  "authProviders": {
+    "title": "ارائه‌دهندگان احراز هویت",
+    "description": "ارائه‌دهندگان احراز هویت خارجی را برای SSO پیکربندی کنید",
+    "enabledCount": "{count} فعال",
+    "loadingProviders": "در حال بارگذاری ارائه‌دهندگان...",
+    "providersConfigured": "{count} ارائه‌دهنده پیکربندی شد",
+    "enabledOfTotal": "{enabled} فعال از {total} ارائه‌دهنده",
+    "hideDisabledProviders": "پنهان کردن ارائه‌دهندگان غیرفعال",
+    "addProvider": "افزودن ارائه‌دهنده",
+    "addProviderTitle": "افزودن ارائه‌دهنده",
+    "editProvider": "ویرایش ارائه‌دهنده",
+    "deleteProvider": "حذف ارائه‌دهنده",
+    "enabled": "فعال",
+    "disabled": "غیرفعال",
+    "officialProvider": "ارائه‌دهنده رسمی",
+    "dragToReorder": "برای تغییر ترتیب بکشید",
+    "dragDisabledMessage": "در هنگام فیلتر کردن ارائه‌دهندگان، کشیدن و رها کردن غیرفعال است. برای تغییر ترتیب، همه را نمایش دهید.",
+    "dragEnabledMessage": "برای تغییر ترتیب ارائه‌دهندگان را بکشید. این ترتیب در صفحه ورود نمایش داده می‌شود.",
+    "noProvidersEnabled": "هیچ ارائه‌دهنده احراز هویت فعالی وجود ندارد",
+    "noProvidersConfigured": "هیچ ارائه‌دهنده احراز هویتی پیکربندی نشده است",
+    "form": {
+      "providerName": "نام ارائه‌دهنده",
+      "providerNamePlaceholder": "مثلاً: mycompany",
+      "displayName": "نام نمایشی",
+      "displayNamePlaceholder": "مثلاً: My Company SSO",
+      "type": "نوع",
+      "typeOidc": "OIDC (OpenID Connect)",
+      "typeOauth2": "OAuth 2.0",
+      "icon": "آیکون",
+      "iconPlaceholder": "یک آیکون انتخاب کنید",
+      "clientId": "Client ID",
+      "clientIdPlaceholder": "Client ID مربوط به OAuth شما",
+      "clientSecret": "Client Secret",
+      "clientSecretPlaceholder": "Client Secret مربوط به OAuth شما",
+      "oauthScopes": "Scopes در OAuth",
+      "scopesPlaceholder": "Scopes را وارد کنید (مثلاً: openid, profile, email)",
+      "scopesHelpOidc": "Scopes بر اساس URL ارائه‌دهنده به‌صورت خودکار پیشنهاد می‌شوند. Scopes رایج OIDC: openid، profile، email، groups",
+      "scopesHelpOauth2": "Scopes بر اساس URL ارائه‌دهنده به‌صورت خودکار پیشنهاد می‌شوند. Scopes رایج OAuth2 بسته به ارائه‌دهنده متفاوت است",
+      "providerUrl": "URL ارائه‌دهنده",
+      "providerUrlPlaceholder": "https://auth.example.ir",
+      "providerUrlAutoPlaceholder": "https://your-provider.com (نقاط پایانی به‌صورت خودکار کشف می‌شوند)",
+      "providerUrlManualPlaceholder": "https://your-provider.com",
+      "autoDiscoveryHelp": "سیستم به‌صورت خودکار نقاط پایانی Authorization، Token و UserInfo را کشف می‌کند",
+      "manualConfigurationHelp": "URL پایه ارائه‌دهنده شما (نقاط پایانی نسبت به این تنظیم می‌شوند)",
+      "authorizationEndpoint": "Endpoint مجوز (Authorization)",
+      "authorizationEndpointPlaceholder": "https://auth.example.ir/auth",
+      "tokenEndpoint": "Endpoint توکن",
+      "tokenEndpointPlaceholder": "https://auth.example.ir/token",
+      "userInfoEndpoint": "Endpoint اطلاعات کاربر (User Info)",
+      "userInfoEndpointPlaceholder": "https://auth.example.ir/userinfo",
+      "configurationMethod": "روش پیکربندی",
+      "autoDiscovery": "کشف خودکار",
+      "autoDiscoveryDescription": "کشف خودکار نقاط پایانی از طریق URL ارائه‌دهنده",
+      "manualEndpoints": "نقاط پایانی دستی (پیشنهادی)",
+      "manualEndpointsDescription": "پیکربندی دستی نقاط پایانی Authorization، Token و User Info",
+      "callbackUrl": "Callback URL",
+      "callbackUrlDescription": "این URL را در پیکربندی ارائه‌دهنده OAuth خود استفاده کنید",
+      "copyCallbackUrl": "کپی Callback URL",
+      "callbackUrlCopied": "Callback URL در کلیپ‌بورد کپی شد!",
+      "adminEmailDomains": "دامنه‌های ایمیل مدیر",
+      "adminEmailDomainsPlaceholder": "دامنه‌ها را وارد کنید (مثلاً: admin.company.com)",
+      "adminEmailDomainsHelp": "کاربرانی که ایمیل آن‌ها از این دامنه‌ها است، دسترسی مدیر دریافت می‌کنند",
+      "autoRegister": "ثبت‌نام خودکار کاربران جدید",
+      "officialProviderUrlPlaceholder": "جای‌نگهدار را با URL مربوط به {displayName} جایگزین کنید",
+      "officialProviderHelp": "این یک ارائه‌دهنده رسمی است. نقاط پایانی از پیش پیکربندی شده‌اند. فقط می‌توانید این URL را ویرایش کنید.",
+      "officialProviderIconHelp": "می‌توانید آیکون این ارائه‌دهنده رسمی را شخصی‌سازی کنید."
+    },
+    "buttons": {
+      "cancel": "انصراف",
+      "save": "ذخیره",
+      "saving": "در حال ذخیره...",
+      "adding": "در حال افزودن...",
+      "updating": "در حال به‌روزرسانی...",
+      "saveProvider": "ذخیره ارائه‌دهنده",
+      "delete": "حذف",
+      "deleting": "در حال حذف...",
+      "edit": "ویرایش",
+      "enable": "فعال‌سازی",
+      "disable": "غیرفعال‌سازی"
+    },
+    "messages": {
+      "providerAdded": "ارائه‌دهنده با موفقیت افزوده شد",
+      "providerUpdated": "ارائه‌دهنده با موفقیت به‌روزرسانی شد",
+      "providerDeleted": "ارائه‌دهنده با موفقیت حذف شد",
+      "providerOrderUpdated": "ترتیب ارائه‌دهندگان با موفقیت به‌روزرسانی شد",
+      "fillRequiredFields": "لطفاً همه فیلدهای ضروری (نام، نام نمایشی، Client ID، Client Secret) را پر کنید",
+      "provideUrlOrEndpoints": "یا URL ارائه‌دهنده را برای کشف خودکار وارد کنید یا هر سه نقطه پایانی سفارشی را فراهم کنید",
+      "chooseDiscoveryOrManual": "یا کشف خودکار (URL ارائه‌دهنده) یا نقاط پایانی دستی را انتخاب کنید؛ نه هر دو",
+      "loadFailed": "بارگذاری ارائه‌دهندگان ناموفق بود",
+      "addFailed": "افزودن ارائه‌دهنده ناموفق بود",
+      "updateFailed": "به‌روزرسانی ارائه‌دهنده ناموفق بود",
+      "deleteFailed": "حذف ارائه‌دهنده ناموفق بود",
+      "orderUpdateFailed": "به‌روزرسانی ترتیب ارائه‌دهندگان ناموفق بود"
+    },
+    "info": {
+      "title": "اطلاعات",
+      "officialProvidersRecommended": "برای عملکرد بهتر، استفاده از ارائه‌دهندگان رسمی را در نظر بگیرید. اگر با ارائه‌دهنده سفارشی مشکلی دارید، یک Issue در",
+      "github": "GitHub",
+      "officialProvider": "ارائه‌دهنده رسمی",
+      "officialProviderDescription": "این ارائه‌دهنده توسط OUITRANSFER بهینه شده است. فقط می‌توانید اعتبارنامه‌ها و پیکربندی را تغییر دهید.",
+      "manualConfigTitle": "پیکربندی دستی",
+      "manualConfigDescription": "شما همه نقاط پایانی را به‌صورت دستی وارد می‌کنید. مطمئن شوید برای ارائه‌دهنده شما صحیح هستند."
+    },
+    "deleteModal": {
+      "title": "حذف ارائه‌دهنده احراز هویت",
+      "confirmMessage": "آیا از حذف ارائه‌دهنده \"{displayName}\" مطمئن هستید؟ این عمل قابل بازگشت نیست.",
+      "providerId": "شناسه ارائه‌دهنده: {name}",
+      "cancel": "انصراف",
+      "delete": "حذف ارائه‌دهنده",
+      "deleting": "در حال حذف..."
+    }
+  },
+  "bulkDownload": {
+    "title": "دانلود دسته‌جمعی",
+    "zipNameLabel": "نام فایل ZIP",
+    "zipNamePlaceholder": "نام فایل را وارد کنید",
+    "description": "{count, plural, =1 {۱ فایل فشرده خواهد شد} other {# فایل فشرده خواهد شد}}",
+    "download": "دانلود ZIP"
+  },
+  "common": {
+    "loading": "در حال بارگذاری، لطفاً صبر کنید...",
+    "loadingSimple": "در حال بارگذاری...",
+    "cancel": "انصراف",
+    "save": "ذخیره",
+    "saving": "در حال ذخیره...",
+    "update": "به‌روزرسانی",
+    "updating": "در حال به‌روزرسانی...",
+    "delete": "حذف",
+    "deleting": "در حال حذف...",
+    "close": "بستن",
+    "download": "دانلود",
+    "unexpectedError": "خطای غیرمنتظره‌ای رخ داد. لطفاً دوباره تلاش کنید.",
+    "yes": "بله",
+    "no": "خیر",
+    "dashboard": "داشبورد",
+    "back": "بازگشت",
+    "clickToActivate": "برای فعال‌سازی کلیک کنید",
+    "clickToDeactivate": "برای غیرفعال‌سازی کلیک کنید",
+    "creating": "در حال ایجاد...",
+    "create": "ایجاد",
+    "rename": "تغییر نام",
+    "move": "انتقال",
+    "share": "اشتراک‌گذاری",
+    "search": "جست‌وجو",
+    "copy": "کپی",
+    "copied": "کپی شد",
+    "retry": "Retry",
+    "unavailable": "در دسترس نیست",
+    "days": "روز",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    },
+    "moving": "در حال انتقال…"
+  },
+  "createShare": {
+    "title": "ایجاد اشتراک",
+    "nameLabel": "نام اشتراک",
+    "namePlaceholder": "نامی برای اشتراک خود وارد کنید",
+    "descriptionLabel": "توضیحات",
+    "descriptionPlaceholder": "توضیحات وارد کنید (اختیاری)",
+    "expirationLabel": "تاریخ انقضا",
+    "expirationPlaceholder": "YYYY/MM/DD HH:MM",
+    "maxViewsLabel": "حداکثر بازدید",
+    "maxViewsPlaceholder": "برای نامحدود خالی بگذارید",
+    "passwordProtection": "محافظت با گذرواژه",
+    "passwordLabel": "گذرواژه",
+    "passwordPlaceholder": "گذرواژه را وارد کنید",
+    "create": "ایجاد اشتراک",
+    "success": "اشتراک با موفقیت ایجاد شد",
+    "error": "ایجاد اشتراک ناموفق بود",
+    "errors": {
+      "nameRequired": "نام اشتراک الزامی است"
+    },
+    "itemsSelected": "{count} مورد انتخاب شد",
+    "tabs": {
+      "shareDetails": "جزئیات اشتراک",
+      "selectFiles": "انتخاب فایل‌ها",
+      "shareLink": "پیوند اشتراک‌گذاری"
+    },
+    "nextSelectFiles": "بعدی: انتخاب فایل‌ها",
+    "searchLabel": "جست‌وجو",
+    "privacySection": "حریم خصوصی و اطلاع‌رسانی",
+    "nameFieldRequired": "نام بازدیدکننده الزامی است",
+    "emailFieldRequired": "ایمیل بازدیدکننده الزامی است",
+    "notifyOnDownload": "من را در هر دانلود مطلع کنید",
+    "notifyOnDownloadHelp": "هنگام فعال‌سازی، هر گاه فایل‌ها از این اشتراک‌گذاری دانلود شوند، بدون توجه به تفضیلات اطلاع‌رسانی عمومی شما، ایمیل دریافت خواهید کرد.",
+    "inactivityAlertDays": "اگر دانلودی بعد از",
+    "inactivityAlertPlaceholder": "برای غیرفعال کردن خالی بگذارید",
+    "fieldHidden": "مخفی",
+    "fieldOptional": "اختیاری",
+    "fieldRequired": "الزامی",
+    "filesOptionalHint": "افزودن فایل اختیاری است, می‌توانید اکنون یک اشتراک‌گذاری خالی ایجاد کنید و فایل‌ها را بعداً اضافه کنید.",
+    "nextGenerateLink": "بعدی: پیوند",
+    "linkStepDescription": "یک پیوند سفارشی ایجاد کنید تا دیگران بتوانند به این اشتراک دسترسی پیدا کنند, یا این مرحله را رد کنید و بعداً آن را اضافه کنید.",
+    "nameFieldRequiredHelp": "تعیین می‌کند که آیا هنگام باز کردن اشتراک، نام از بازدیدکنندگان خواسته شود.",
+    "emailFieldRequiredHelp": "تعیین می‌کند که آیا هنگام باز کردن اشتراک، ایمیل از بازدیدکنندگان خواسته شود."
+  },
+  "customization": {
+    "breadcrumb": "شخصی‌سازی",
+    "colors": {
+      "title": "رنگ‌های تم",
+      "description": "رنگ اصلی تم ترجیحی خود را انتخاب کنید",
+      "presets": "رنگ‌های موجود",
+      "presetsDescription": "از تم‌های رنگی موجود انتخاب کنید",
+      "reset": "بازنشانی به پیش‌فرض"
+    },
+    "fonts": {
+      "title": "تایپوگرافی",
+      "description": "خانواده فونت ترجیحی خود را انتخاب کنید",
+      "available": "فونت‌های موجود",
+      "availableDescription": "از خانواده‌های فونت موجود انتخاب کنید",
+      "reset": "بازنشانی به پیش‌فرض"
+    },
+    "radius": {
+      "title": "شعاع گوشه",
+      "description": "میزان گردی عناصر رابط کاربری را تنظیم کنید",
+      "available": "گزینه‌های گردی",
+      "availableDescription": "انتخاب کنید گوشه‌ها چقدر گرد باشند",
+      "reset": "بازنشانی به پیش‌فرض"
+    },
+    "background": {
+      "title": "رنگ‌های پس‌زمینه",
+      "description": "رنگ‌های پس‌زمینه برای حالت روشن و تیره را تنظیم کنید",
+      "lightMode": "حالت روشن",
+      "darkMode": "حالت تیره",
+      "availableDescription": "رنگ‌های پس‌زمینه را برای تم‌های روشن و تیره انتخاب کنید",
+      "reset": "بازنشانی به پیش‌فرض"
+    },
+    "theme": {
+      "title": "حالت تم",
+      "description": "بین تم روشن، تیره یا سیستم انتخاب کنید",
+      "selectTheme": "ترجیح تم",
+      "availableDescription": "حالت تم ترجیحی خود را انتخاب کنید",
+      "reset": "بازنشانی به سیستم"
+    },
+    "pageTitle": "شخصی‌سازی"
+  },
+  "dashboard": {
+    "loadError": "بارگذاری داده‌های داشبورد ناموفق بود",
+    "linkCopied": "لینک در کلیپ‌بورد کپی شد",
+    "pageTitle": "داشبورد",
+    "breadcrumb": "داشبورد",
+    "recentFiles": {
+      "title": "فایل‌های اخیر",
+      "description": "آخرین فایل‌های بارگذاری‌شده شما"
+    },
+    "systemStatus": {
+      "title": "وضعیت سیستم",
+      "refresh": "بازخوانی",
+      "status": {
+        "healthy": "سالم",
+        "degraded": "کاهش‌یافته",
+        "unhealthy": "ناسالم"
+      },
+      "checks": {
+        "database": "پایگاه داده",
+        "storage": "ذخیره‌سازی",
+        "ok": "تأیید",
+        "error": "خطا",
+        "notConfigured": "پیکربندی نشده"
+      },
+      "uptime": "مدت فعالیت",
+      "diskSpace": {
+        "label": "فضای دیسک",
+        "ariaLabel": "نوار پیشرفت استفاده از فضای دیسک"
+      },
+      "quota": {
+        "label": "سهمیه ذخیره‌سازی",
+        "ariaLabel": "نوار پیشرفت سهمیه ذخیره‌سازی",
+        "notConfigured": "سهمیه‌ها پیکربندی نشده‌اند",
+        "unlimited": "نامحدود",
+        "used": "{used} از {total} استفاده شده",
+        "usedOnly": "{used} استفاده شده",
+        "exceeded": {
+          "banner": "سهمیه ذخیره‌سازی شما تجاوز کرده است. تا زمانی که با حذف فایل‌ها یا اشتراک‌گذاری‌های موجود فضا آزاد نکنید، نمی‌توانید فایل جدید بارگذاری کنید."
+        },
+        "warning": {
+          "banner": "شما {percentage}% از سهمیه ذخیره‌سازی خود را استفاده می‌کنید."
+        }
+      },
+      "metrics": {
+        "users": "کاربران",
+        "files": "فایل‌ها",
+        "shares": "اشتراک‌ها",
+        "reverseShares": "اشتراک‌های معکوس",
+        "myFiles": "فایل‌های من",
+        "activeShares": "اشتراک‌های فعال"
+      },
+      "email": {
+        "label": "ایمیل / اعلان‌ها",
+        "status": {
+          "ok": "فعال",
+          "disabled": "پیکربندی‌نشده",
+          "degraded": "افت‌کرده",
+          "down": "آفلاین"
+        },
+        "queue": {
+          "pending": "در انتظار",
+          "failed": "ناموفق",
+          "sent24h": "ارسال‌شده ۲۴ ساعت"
+        },
+        "lastError": "آخرین خطا",
+        "userDisrupted": "اعلان‌ها مختل شده‌اند",
+        "userOffline": "اعلان‌ها آفلاین هستند"
+      },
+      "errors": {
+        "title": "وضعیت در دسترس نیست",
+        "fetchFailed": "دریافت وضعیت سیستم ممکن نیست. لطفاً بعداً دوباره تلاش کنید.",
+        "diskSpaceError": "دریافت اطلاعات فضای دیسک ممکن نیست.",
+        "statsError": "بارگذاری آمار پلتفرم ممکن نیست.",
+        "emailStatsError": "بارگذاری آمار اعلان‌های ایمیل ممکن نیست."
+      },
+      "collapse": "بستن وضعیت سیستم",
+      "expand": "باز کردن وضعیت سیستم"
+    }
+  },
+  "deleteConfirmation": {
+    "filesToDelete": "فایل‌های قابل حذف",
+    "foldersToDelete": "پوشه‌های قابل حذف",
+    "itemsToDelete": "موارد قابل حذف",
+    "sharesToDelete": "اشتراک‌های قابل حذف"
+  },
+  "downloadQueue": {
+    "downloadQueued": "دانلود در صف قرار گرفت: {fileName}",
+    "queuedDescription": "دانلود شما به صورت خودکار شروع خواهد شد وقتی جایی خالی شود",
+    "queuePosition": "دانلود در موقعیت {position} قرار گرفت: {fileName}",
+    "estimatedWait": "زمان انتظار تخمینی: {time}",
+    "queueFull": "صف دانلود پر است",
+    "queueFullDescription": "لطفاً چند دقیقه دیگر دوباره امتحان کنید وقتی صف جای خالی داشت",
+    "cancelSuccess": "دانلود با موفقیت لغو شد",
+    "cancelError": "لغو دانلود ناموفق بود: {error}",
+    "status": {
+      "pending": "در حال آماده‌سازی...",
+      "queued": "در صف",
+      "downloading": "در حال دانلود",
+      "completed": "کامل شد",
+      "failed": "ناموفق"
+    },
+    "waitTime": {
+      "seconds": "{seconds} ثانیه",
+      "minutes": "{minutes} دقیقه",
+      "hoursMinutes": "{hours} ساعت {minutes} دقیقه"
+    },
+    "indicator": {
+      "title": "دانلودها",
+      "downloads": "صف دانلود",
+      "active": "فعال",
+      "queued": "در صف",
+      "position": "موقعیت {position}",
+      "estimatedWait": "انتظار: {time}",
+      "unknownFile": "فایل ناشناخته",
+      "noDownloads": "هیچ دانلودی در حال انجام نیست",
+      "refresh": "بروزرسانی صف"
+    }
+  },
+  "emptyState": {
+    "noFiles": "هنوز فایلی بارگذاری نشده است",
+    "uploadFile": "بارگذاری فایل"
+  },
+  "errors": {
+    "invalidCredentials": "ایمیل یا گذرواژه نامعتبر است",
+    "networkError": "اتصال به سرور ممکن نیست. لطفاً اتصال خود را بررسی کنید.",
+    "userNotFound": "کاربر یافت نشد",
+    "accountLocked": "حساب شما به دلیل تلاش‌های ناموفق متعدد برای ورود، موقتاً قفل شده است. لطفاً پس از {minutes} دقیقه دوباره تلاش کنید.",
+    "unexpectedError": "خطای غیرمنتظره‌ای رخ داد. لطفاً دوباره امتحان کنید",
+    "Invalid verification code": "کد تأیید نامعتبر است",
+    "Two-factor authentication is already enabled": "احراز هویت دو مرحله‌ای قبلاً فعال شده است",
+    "Two-factor authentication is not enabled": "احراز هویت دو مرحله‌ای فعال نیست",
+    "Invalid password": "گذرواژه نامعتبر است",
+    "Password verification required": "تأیید گذرواژه الزامی است",
+    "Invalid two-factor authentication code": "کد احراز هویت دو مرحله‌ای نامعتبر است",
+    "Two-factor authentication required": "احراز هویت دو مرحله‌ای الزامی است",
+    "noUserData": "داده کاربری وجود ندارد",
+    "somethingWentWrong": "مشکلی پیش آمد",
+    "tryAgain": "تلاش دوباره",
+    "goHome": "رفتن به خانه",
+    "pageNotFound": "صفحه یافت نشد",
+    "pageNotFoundMessage": "صفحه‌ای که دنبال آن می‌گردید وجود ندارد یا انتقال داده شده است.",
+    "shareUnavailable": "اشتراک غیرموجود",
+    "shareErrorMessage": "خطایی هنگام بارگذاری این اشتراک رخ داد.",
+    "uploadUnavailable": "بارگذاری غیرموجود",
+    "uploadErrorMessage": "خطایی هنگام بارگذاری صفحه بارگذاری رخ داد.",
+    "accessDenied": "دسترسی رد شد",
+    "accessDeniedMessage": "شما دسترسی مدیر برای دسترسی به این صفحه ندارید.",
+    "errorLoadingSettings": "خطا در بارگذاری تنظیمات",
+    "refreshPage": "بازخوانی صفحه"
+  },
+  "fileActions": {
+    "editFile": "ویرایش فایل",
+    "nameLabel": "نام",
+    "namePlaceholder": "نام جدید را وارد کنید",
+    "extension": "پسوند",
+    "descriptionLabel": "توضیحات",
+    "descriptionPlaceholder": "توضیحات فایل را وارد کنید",
+    "addDescriptionPlaceholder": "افزودن توضیحات...",
+    "deleteFile": "حذف فایل",
+    "deleteConfirmation": "آیا از حذف این فایل اطمینان دارید؟",
+    "deleteWarning": "این عمل قابل بازگشت نیست.",
+    "inSharesWarningTitle": "این فایل در اشتراک‌ها شامل است",
+    "inSharesWarningBody": "این فایل در {count, plural, one {یک اشتراک} other {# اشتراک}} شامل است. حذف آن از تمام اشتراک‌ها برداشته خواهد شد.",
+    "deleteAnyway": "حذف کردن به هر حال",
+    "bulkInSharesWarningTitle": "برخی فایل‌ها در اشتراک‌ها شامل هستند",
+    "bulkInSharesWarningBody": "{count, plural, one {یک فایل} other {# فایل}} در اشتراک‌ها شامل است. حذف {count, plural, one {آن} other {آن‌ها}} از تمام اشتراک‌ها برداشته خواهد شد."
+  },
+  "fileManager": {
+    "downloadError": "دانلود فایل ناموفق بود",
+    "updateSuccess": "فایل با موفقیت به‌روز شد",
+    "updateError": "به‌روزرسانی فایل ناموفق بود",
+    "deleteSuccess": "فایل با موفقیت حذف شد",
+    "deleteError": "حذف فایل ناموفق بود"
+  },
+  "filePreview": {
+    "title": "پیش‌نمایش فایل",
+    "description": "پیش‌نمایش و دانلود فایل",
+    "loading": "در حال بارگذاری...",
+    "notAvailable": "پیش‌نمایش برای این نوع فایل در دسترس نیست",
+    "downloadToView": "از دکمه دانلود برای مشاهده این فایل استفاده کنید",
+    "loadError": "خطا در بارگذاری پیش‌نمایش فایل",
+    "downloadSuccess": "Download started",
+    "downloadError": "خطا در دانلود فایل",
+    "audioNotSupported": "مرورگر شما از پخش صوت پشتیبانی نمی‌کند",
+    "videoNotSupported": "مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند",
+    "pdfPreviewNotAvailable": "پیش‌نمایش PDF در دسترس نیست. نمایش جایگزین را امتحان کنید یا دانلود کنید",
+    "tryAlternativeView": "امتحان نمایش جایگزین",
+    "loadingAlternative": "در حال بارگذاری نمایش جایگزین...",
+    "loadingAudio": "در حال بارگذاری صوت...",
+    "downloading": "در حال دانلود..."
+  },
+  "fileSelector": {
+    "availableFiles": "فایل‌های موجود ({count})",
+    "shareFiles": "فایل‌های اشتراک‌گذاری شده ({count})",
+    "shareFilesDescription": "فایل‌های موجود در این اشتراک",
+    "availableFilesDescription": "فایل‌ها را برای افزودن به این اشتراک انتخاب کنید",
+    "searchPlaceholder": "جست‌وجوی فایل‌ها...",
+    "searchSelectedFiles": "جست‌وجوی فایل‌های انتخاب‌شده...",
+    "noMatchingFiles": "هیچ فایل مطابقی یافت نشد",
+    "noAvailableFiles": "هیچ فایلی موجود نیست",
+    "noFilesInShare": "هیچ فایلی در این اشتراک نیست",
+    "noFilesFound": "هیچ فایلی یافت نشد",
+    "noFilesFoundWith": "هیچ فایلی با \"{query}\" یافت نشد",
+    "addFilesFromList": "فایل‌ها را از لیست زیر اضافه کنید",
+    "tryDifferentSearch": "عبارت‌های جست‌وجوی متفاوتی امتحان کنید",
+    "allFilesInShare": "همه فایل‌ها از قبل در این اشتراک هستند",
+    "uploadNewFiles": "فایل‌های جدید را بارگذاری کنید تا اضافه شوند",
+    "fileCount": "{count, plural, =1 {فایل} other {فایل}}",
+    "filesSelected": "{count, plural, =0 {هیچ فایلی انتخاب نشده} =1 {۱ فایل انتخاب شده} other {# فایل انتخاب شده}}",
+    "itemsSelected": "{count} مورد انتخاب شده",
+    "editFile": "ویرایش فایل",
+    "editFolder": "ویرایش پوشه",
+    "previewFile": "پیش‌نمایش فایل",
+    "addToShare": "افزودن به اشتراک",
+    "removeFromShare": "حذف از اشتراک",
+    "saveChanges": "ذخیره تغییرات"
+  },
+  "files": {
+    "title": "همه فایل‌ها",
+    "uploadFile": "بارگذاری فایل",
+    "loadError": "بارگذاری فایل‌ها ناموفق بود",
+    "pageTitle": "فایل‌های من",
+    "breadcrumb": "فایل‌های من",
+    "downloadStart": "دانلود آغاز شد",
+    "downloadError": "دانلود فایل ناموفق بود",
+    "updateSuccess": "فایل با موفقیت به‌روز شد",
+    "updateError": "به‌روزرسانی فایل ناموفق بود",
+    "deleteSuccess": "فایل با موفقیت حذف شد",
+    "deleteError": "حذف فایل ناموفق بود",
+    "bulkDownloadSuccess": "دانلود فایل‌ها با موفقیت آغاز شد",
+    "bulkDownloadError": "خطا در ایجاد فایل ZIP",
+    "bulkDownloadFileError": "خطا در دانلود فایل {fileName}",
+    "bulkDeleteSuccess": "{count, plural, =1 {۱ مورد با موفقیت حذف شد} other {# مورد با موفقیت حذف شد}}",
+    "bulkDeleteError": "خطا در حذف موارد انتخاب‌شده",
+    "bulkDeleteTitle": "حذف موارد انتخاب‌شده",
+    "bulkDeleteConfirmation": "آیا از حذف {count, plural, =1 {۱ مورد} other {# مورد}} اطمینان دارید؟ این عمل قابل بازگشت نیست.",
+    "totalFiles": "{count, plural, =0 {هیچ فایلی} =1 {۱ فایل} other {# فایل}}",
+    "openFolder": "باز کردن پوشه",
+    "errors": {
+      "moveItemsFailed": "انتقال موارد ناموفق بود. لطفاً دوباره امتحان کنید.",
+      "cannotMoveHere": "نمی‌توان موارد را به این مکان منتقل کرد"
+    },
+    "empty": {
+      "title": "هنوز فایل یا پوشه‌ای وجود ندارد",
+      "description": "اولین فایل خود را بارگذاری کنید یا یک پوشه ایجاد کنید تا شروع کنید"
+    },
+    "files": "فایل‌ها",
+    "folders": "پوشه‌ها",
+    "actions": {
+      "open": "باز کردن",
+      "rename": "تغییر نام",
+      "delete": "حذف"
+    },
+    "viewMode": {
+      "table": "جدول",
+      "grid": "شبکه"
+    },
+    "drag": {
+      "folderMoved": "پوشه \"{name}\" به \"{target}\" منتقل شد",
+      "fileMoved": "فایل \"{name}\" به \"{target}\" منتقل شد",
+      "itemsMoved": "{count} مورد به \"{target}\" منتقل شد",
+      "folderMovedToRoot": "پوشه \"{name}\" به پوشه اصلی منتقل شد",
+      "fileMovedToRoot": "فایل \"{name}\" به پوشه اصلی منتقل شد",
+      "itemsMovedToRoot": "{count} مورد به پوشه اصلی منتقل شد"
+    }
+  },
+  "filesTable": {
+    "ariaLabel": "جدول فایل‌ها",
+    "selectAll": "انتخاب همه",
+    "selectFile": "انتخاب فایل {fileName}",
+    "columns": {
+      "name": "نام",
+      "description": "توضیحات",
+      "size": "اندازه",
+      "createdAt": "ایجاد شده در",
+      "updatedAt": "به‌روز شده در",
+      "actions": "اقدامات"
+    },
+    "actions": {
+      "menu": "منوی اقدامات فایل",
+      "preview": "پیش‌نمایش",
+      "edit": "ویرایش",
+      "share": "اشتراک‌گذاری",
+      "download": "دانلود",
+      "delete": "حذف"
+    },
+    "bulkActions": {
+      "selected": "{count, plural, =1 {۱ فایل انتخاب شده} other {# فایل انتخاب شده}}",
+      "actions": "اقدامات",
+      "download": "دانلود موارد انتخاب‌شده",
+      "share": "اشتراک‌گذاری موارد انتخاب‌شده",
+      "delete": "حذف موارد انتخاب‌شده"
+    }
+  },
+  "folderActions": {
+    "editFolder": "ویرایش پوشه",
+    "folderName": "نام پوشه",
+    "folderNamePlaceholder": "نام پوشه را وارد کنید",
+    "folderDescription": "توضیحات",
+    "folderDescriptionPlaceholder": "توضیحات پوشه را وارد کنید (اختیاری)",
+    "createFolder": "ایجاد پوشه",
+    "renameFolder": "تغییر نام پوشه",
+    "moveFolder": "انتقال پوشه",
+    "shareFolder": "اشتراک‌گذاری پوشه",
+    "deleteFolder": "حذف پوشه",
+    "moveTo": "انتقال به",
+    "selectDestination": "پوشه مقصد را انتخاب کنید",
+    "rootFolder": "ریشه",
+    "folderCreated": "پوشه با موفقیت ایجاد شد",
+    "folderRenamed": "پوشه با موفقیت تغییر نام یافت",
+    "folderMoved": "پوشه با موفقیت منتقل شد",
+    "folderDeleted": "پوشه با موفقیت حذف شد",
+    "folderShared": "پوشه با موفقیت به اشتراک گذاشته شد",
+    "createFolderError": "خطا در ایجاد پوشه",
+    "renameFolderError": "خطا در تغییر نام پوشه",
+    "moveFolderError": "خطا در انتقال پوشه",
+    "deleteFolderError": "خطا در حذف پوشه",
+    "shareFolderError": "خطا در اشتراک‌گذاری پوشه",
+    "deleteConfirmation": "آیا از حذف این پوشه اطمینان دارید؟",
+    "deleteWarning": "این عمل قابل بازگشت نیست.",
+    "inSharesWarningTitle": "این پوشه در اشتراک‌ها شامل است",
+    "inSharesWarningBody": "این پوشه (و محتوای آن) در {count, plural, one {یک اشتراک} other {# اشتراک}} شامل است. حذف آن از تمام اشتراک‌ها برداشته خواهد شد.",
+    "bulkInSharesWarningTitle": "برخی پوشه‌ها در اشتراک‌ها شامل هستند",
+    "bulkInSharesWarningBody": "{count, plural, one {یک پوشه} other {# پوشه}} در اشتراک‌ها شامل است. حذف {count, plural, one {آن} other {آن‌ها}} از تمام اشتراک‌ها برداشته خواهد شد.",
+    "deleteAnyway": "حذف کردن به هر حال"
+  },
+  "footer": {
+    "projectHomepage": "صفحه اصلی OUITRANSFER"
+  },
+  "forgotPassword": {
+    "emailLabel": "آدرس ایمیل",
+    "emailPlaceholder": "ایمیل خود را وارد کنید",
+    "sending": "در حال ارسال...",
+    "submit": "ارسال دستورالعمل‌های بازنشانی",
+    "backToLogin": "بازگشت به صفحه ورود",
+    "title": "فراموشی گذرواژه",
+    "description": "آدرس ایمیل خود را وارد کنید تا دستورالعمل‌های بازنشانی گذرواژه را برای شما ارسال کنیم",
+    "resetInstructions": "دستورالعمل‌های بازنشانی به ایمیل شما ارسال شد",
+    "pageTitle": "فراموشی گذرواژه",
+    "passwordAuthDisabled": "احراز هویت با گذرواژه غیرفعال است. لطفاً با مدیر خود تماس بگیرید یا از یک ارائه‌دهنده احراز هویت خارجی استفاده کنید."
+  },
+  "generateShareLink": {
+    "generateTitle": "تولید لینک اشتراک",
+    "updateTitle": "به‌روزرسانی لینک اشتراک",
+    "generateDescription": "یک لینک سفارشی برای این اشتراک تولید کنید. می‌توانید URL را سفارشی کنید تا به‌یادماندنی‌تر شود.",
+    "updateDescription": "لینک سفارشی این اشتراک را به‌روز کنید. می‌توانید URL را سفارشی کنید تا به‌یادماندنی‌تر شود.",
+    "aliasPlaceholder": "شناسه سفارشی برای لینک",
+    "linkReady": "لینک اشتراک شما آماده است. می‌توانید اکنون آن را کپی کنید.",
+    "readyDescription": "لینک اشتراک شما آماده است. می‌توانید QR کد را مستقیماً اسکن کنید، آن را برای استفاده بعدی دانلود کنید، یا لینک زیر را کپی کنید.",
+    "generateButton": "تولید لینک",
+    "updateButton": "به‌روزرسانی لینک",
+    "copyButton": "کپی لینک",
+    "success": "لینک با موفقیت تولید شد",
+    "error": "تولید لینک ناموفق بود",
+    "copied": "لینک در کلیپ‌بورد کپی شد",
+    "tabs": {
+      "link": "لینک",
+      "qrcode": "QR کد"
+    },
+    "later": "بعداً"
+  },
+  "home": {
+    "pageTitle": "خانه",
+    "tagline": "انتقال فایل ایمن",
+    "subtitle": "فایل‌های خود را به طور ایمن ارسال و اشتراک کنید.",
+    "login": "ورود",
+    "partners": {
+      "title": "لینک دریافت کردید؟",
+      "description": "از لینک دریافتی خود برای دسترسی به فایل‌های خود استفاده کنید. اگر نمی‌توانید آن را پیدا کنید، با شخصی که برای شما فرستاده تماس بگیرید."
+    }
+  },
+  "iconPicker": {
+    "title": "انتخاب آیکون",
+    "placeholder": "یک آیکون انتخاب کنید",
+    "searchPlaceholder": "جست‌وجوی آیکون‌ها...",
+    "loadingMore": "بارگذاری آیکون‌های بیشتر...",
+    "allIconsLoaded": "همه {count} آیکون بارگذاری شد",
+    "noIconsFound": "هیچ آیکونی برای \"{search}\" یافت نشد",
+    "tabs": {
+      "all": "همه آیکون‌ها",
+      "popular": "محبوب",
+      "auth": "ارائه‌دهندگان احراز هویت"
+    },
+    "stats": "{iconCount} آیکون از {libraryCount} کتابخانه",
+    "categoryBadge": "{category} ({count} آیکون)"
+  },
+  "imageEdit": {
+    "title": "ویرایش تصویر",
+    "rotate": "چرخش",
+    "zoom": "زوم",
+    "cropInstructions": "برای تغییر موقعیت بکشید، گوشه‌ها را برای تنظیم ناحیه برش تغییر اندازه دهید",
+    "cropAlt": "تصویر برای برش"
+  },
+  "login": {
+    "welcome": "خوش آمدید به",
+    "signInToContinue": "برای ادامه وارد شوید",
+    "emailOrUsernameLabel": "ایمیل یا نام کاربری",
+    "emailOrUsernamePlaceholder": "ایمیل یا نام کاربری خود را وارد کنید",
+    "emailLabel": "آدرس ایمیل",
+    "emailPlaceholder": "ایمیل خود را وارد کنید",
+    "passwordLabel": "گذرواژه",
+    "passwordPlaceholder": "گذرواژه خود را وارد کنید",
+    "signIn": "ورود",
+    "signingIn": "در حال ورود...",
+    "forgotPassword": "گذرواژه را فراموش کردید؟",
+    "pageTitle": "ورود",
+    "or": "یا",
+    "continueWithSSO": "ادامه با SSO",
+    "processing": "در حال پردازش احراز هویت...",
+    "orContinueWith": "یا ادامه دهید با",
+    "continueWith": "ادامه با {name}",
+    "providerNotConfigured": "{name} به درستی پیکربندی نشده است"
+  },
+  "logo": {
+    "labels": {
+      "appLogo": "لوگوی برنامه"
+    },
+    "buttons": {
+      "upload": "بارگذاری لوگو",
+      "remove": "حذف لوگو"
+    },
+    "messages": {
+      "uploadSuccess": "لوگو با موفقیت بارگذاری شد",
+      "removeSuccess": "لوگو با موفقیت حذف شد"
+    },
+    "errors": {
+      "uploadFailed": "بارگذاری لوگو ناموفق بود",
+      "removeFailed": "حذف لوگو ناموفق بود"
+    }
+  },
+  "moveItems": {
+    "itemsToMove": "موارد قابل انتقال:",
+    "movingToFolder": "انتقال به: {folder}",
+    "title": "انتقال {count, plural, =1 {مورد} other {موارد}}",
+    "description": "انتقال {count, plural, =1 {مورد} other {موارد}} به مکان جدید",
+    "success": "{count} {count, plural, =1 {مورد} other {مورد}} با موفقیت منتقل شد",
+    "errors": {
+      "moveFailed": "انتقال موارد ناموفق بود"
+    }
+  },
+  "audit": {
+    "pageTitle": "سجل فعالیت",
+    "pageDescription": "مشاهده و جستجو در تمام فعالیت‌های سیستم",
+    "table": {
+      "date": "تاریخ",
+      "user": "کاربر",
+      "action": "عمل",
+      "target": "هدف",
+      "ipAddress": "آدرس IP",
+      "details": "جزئیات",
+      "noResults": "هیچ سجل حسابرسی یافت نشد",
+      "anonymous": "ناشناس",
+      "system": "سیستم",
+      "resultCount": "{count, plural, one {# نتیجه} other {# نتیجه}}"
+    },
+    "filters": {
+      "action": "عمل",
+      "user": "کاربر",
+      "targetType": "نوع هدف",
+      "dateFrom": "از",
+      "dateTo": "تا",
+      "search": "جست‌وجو",
+      "searchPlaceholder": "جستجو براساس IP یا عمل...",
+      "clearAll": "پاک کردن فیلترها"
+    },
+    "export": {
+      "button": "صادرات",
+      "csv": "CSV",
+      "json": "JSON",
+      "dateRangeRequired": "برای صادرات یک نطاق تاریخ انتخاب کنید"
+    },
+    "actions": {
+      "LOGIN_SUCCESS": "ورود موفق",
+      "LOGIN_FAILURE": "ورود ناموفق",
+      "LOGOUT": "خروج",
+      "PASSWORD_CHANGE": "تغییر گذرواژه",
+      "PASSWORD_RESET": "بازنشانی گذرواژه",
+      "PASSWORD_RESET_REQUEST": "درخواست بازنشانی گذرواژه",
+      "ACCOUNT_LOCKED": "حساب قفل شد",
+      "LOGIN_LOCKED": "ورود قفل شد",
+      "TRUSTED_DEVICE_REMOVE": "دستگاه معتمد حذف شد",
+      "TRUSTED_DEVICE_REMOVE_ALL": "تمام دستگاه‌های معتمد حذف شدند",
+      "AUTH_PROVIDER_LOGIN": "ورود SSO",
+      "TWO_FACTOR_ENABLE": "احراز هویت دو مرحله‌ای فعال شد",
+      "TWO_FACTOR_DISABLE": "احراز هویت دو مرحله‌ای غیرفعال شد",
+      "TWO_FACTOR_BACKUP_REGENERATED": "کدهای نسخه پشتیبان احراز هویت دو مرحله‌ای دوباره ایجاد شدند",
+      "USER_CREATE": "کاربر ایجاد شد",
+      "USER_UPDATE": "کاربر به‌روز شد",
+      "USER_DELETE": "کاربر حذف شد",
+      "USER_ROLE_CHANGE": "نقش کاربر تغییر کرد",
+      "USER_QUOTA_CHANGE": "سهمیه کاربر تغییر کرد",
+      "USER_ACTIVATE": "کاربر فعال شد",
+      "USER_DEACTIVATE": "کاربر غیرفعال شد",
+      "SHARE_CREATE": "اشتراک ایجاد شد",
+      "SHARE_UPDATE": "اشتراک به‌روز شد",
+      "SHARE_DELETE": "اشتراک حذف شد",
+      "SHARE_ACCESS": "اشتراک دسترسی پیدا کرد",
+      "SHARE_PASSWORD_VERIFIED": "گذرواژه اشتراک تأیید شد",
+      "SHARE_PASSWORD_FAILED": "گذرواژه اشتراک ناموفق بود",
+      "SHARE_PASSWORD_UPDATE": "گذرواژه اشتراک به‌روز شد",
+      "SHARE_RECIPIENT_ADD": "دریافت‌کنندگان اشتراک اضافه شدند",
+      "SHARE_RECIPIENT_REMOVE": "دریافت‌کنندگان اشتراک حذف شدند",
+      "SHARE_RECIPIENT_NOTIFY": "دریافت‌کنندگان اشتراک مطلع شدند",
+      "SHARE_RECIPIENT_REMIND": "گیرندگان اشتراک‌گذاری یادآوری شدند",
+      "SHARE_ITEMS_ADD": "موارد اشتراک اضافه شدند",
+      "SHARE_ITEMS_REMOVE": "موارد اشتراک حذف شدند",
+      "FILE_UPLOAD": "فایل آپلود شد",
+      "FILE_DOWNLOAD": "فایل دانلود شد",
+      "FILE_DELETE": "فایل حذف شد",
+      "FILE_MOVE": "فایل منتقل شد",
+      "FILE_UPDATE": "فایل به‌روز شد",
+      "FOLDER_CREATE": "پوشه ایجاد شد",
+      "FOLDER_UPDATE": "پوشه به‌روز شد",
+      "FOLDER_MOVE": "پوشه منتقل شد",
+      "FOLDER_DELETE": "پوشه حذف شد",
+      "REVERSE_SHARE_CREATE": "اشتراک معکوس ایجاد شد",
+      "REVERSE_SHARE_UPDATE": "اشتراک معکوس به‌روز شد",
+      "REVERSE_SHARE_DELETE": "اشتراک معکوس حذف شد",
+      "REVERSE_SHARE_ACCESS": "اشتراک معکوس دسترسی پیدا کرد",
+      "REVERSE_SHARE_PASSWORD_VERIFIED": "گذرواژه اشتراک معکوس تأیید شد",
+      "REVERSE_SHARE_PASSWORD_FAILED": "گذرواژه اشتراک معکوس ناموفق بود",
+      "REVERSE_SHARE_PASSWORD_UPDATE": "گذرواژه اشتراک معکوس به‌روز شد",
+      "REVERSE_SHARE_UPLOAD": "فایل به اشتراک معکوس آپلود شد",
+      "REVERSE_SHARE_FILE_DELETE": "فایل اشتراک معکوس حذف شد",
+      "REVERSE_SHARE_FILE_COPY": "فایل اشتراک معکوس کپی شد",
+      "REVERSE_SHARE_FILE_DOWNLOAD": "فایل اشتراک معکوس دانلود شد",
+      "GROUP_CREATE": "گروه ایجاد شد",
+      "GROUP_UPDATE": "گروه به‌روز شد",
+      "GROUP_DELETE": "گروه حذف شد",
+      "GROUP_MEMBER_ADD": "عضو گروه اضافه شد",
+      "GROUP_MEMBER_REMOVE": "عضو گروه حذف شد",
+      "LDAP_CONFIG_UPDATE": "پیکربندی LDAP به‌روز شد",
+      "LDAP_SYNC_TRIGGERED": "مزامنه LDAP آغاز شد",
+      "LDAP_SYNC_COMPLETED": "مزامنه LDAP کامل شد",
+      "LDAP_SYNC_ERROR": "خطای مزامنه LDAP",
+      "AUTH_PROVIDER_CREATE": "مزود احراز هویت ایجاد شد",
+      "AUTH_PROVIDER_UPDATE": "مزود احراز هویت به‌روز شد",
+      "AUTH_PROVIDER_DELETE": "مزود احراز هویت حذف شد",
+      "INVITE_TOKEN_CREATE": "توکن دعوت ایجاد شد",
+      "INVITE_TOKEN_USED": "توکن دعوت استفاده شد",
+      "ADMIN_CONFIG_CHANGE": "پیکربندی تغییر کرد",
+      "LOGO_UPLOAD": "لوگو آپلود شد",
+      "LOGO_REMOVE": "لوگو حذف شد",
+      "SMTP_TEST": "آزمایش SMTP انجام شد",
+      "BACKGROUND_IMAGE_UPLOAD": "تصویر پس‌زمینه آپلود شد",
+      "BACKGROUND_IMAGE_DELETE": "تصویر پس‌زمینه حذف شد",
+      "AUDIT_RETENTION_CLEANUP": "تمیزکاری سجل حسابرسی",
+      "SHARE_DEACTIVATED": "اشتراک‌گذاری غیرفعال شد",
+      "SHARE_REACTIVATED": "اشتراک‌گذاری دوباره فعال شد",
+      "REVERSE_SHARE_DEACTIVATED": "پیوند دریافت غیرفعال شد",
+      "REVERSE_SHARE_REACTIVATED": "پیوند دریافت دوباره فعال شد",
+      "SHARE_AUTO_DELETED": "اشتراک‌گذاری به طور خودکار حذف شد",
+      "REVERSE_SHARE_AUTO_DELETED": "پیوند دریافت به طور خودکار حذف شد",
+      "ACCOUNT_FILES_CLEANED": "فایل‌های حساب پاک شدند",
+      "ORPHAN_S3_DELETED": "شی ذخیره‌سازی یتیم حذف شد",
+      "ORPHAN_DB_DELETED": "رکورد پایگاه داده یتیم حذف شد",
+      "ORPHAN_MULTIPART_ABORTED": "آپلود چندبخشی ناقص لغو شد",
+      "QUOTA_FILES_DELETED": "فایل‌های خارج سهمیه حذف شدند"
+    },
+    "targetTypes": {
+      "user": "کاربر",
+      "share": "اشتراک",
+      "reverse_share": "اشتراک معکوس",
+      "file": "فایل",
+      "folder": "پوشه",
+      "group": "گروه",
+      "ldap_config": "LDAP Config",
+      "ldap_sync_log": "مزامنه LDAP",
+      "setting": "تنظیم",
+      "auth_provider": "مزود احراز هویت",
+      "background_image": "تصویر پس‌زمینه",
+      "invite_token": "توکن دعوت",
+      "trusted_device": "دستگاه معتمد",
+      "logo": "لوگو"
+    },
+    "actionCategories": {
+      "auth": "احراز هویت",
+      "share": "اشتراک‌ها",
+      "file": "فایل‌ها",
+      "folder": "پوشه‌ها",
+      "reverseShare": "اشتراک‌های معکوس",
+      "user": "کاربر",
+      "group": "گروه‌ها",
+      "ldap": "LDAP",
+      "admin": "مدیریت",
+      "system": "سیستم"
+    },
+    "metadata": {
+      "method": "روش",
+      "reason": "دلیل",
+      "email": "ایمیل",
+      "count": "تعداد",
+      "via": "ایجاد شده از طریق",
+      "fields": "فیلدهای تغییریافته",
+      "oldRole": "نقش قدیم",
+      "newRole": "نقش جدید",
+      "oldQuota": "سهمیه قدیم",
+      "newQuota": "سهمیه جدید",
+      "name": "نام",
+      "fileName": "نام فایل",
+      "fileSize": "اندازه فایل",
+      "fileCount": "تعداد فایل",
+      "folderCount": "تعداد پوشه",
+      "hasPassword": "محافظت‌شده با گذرواژه",
+      "expiration": "انقضا",
+      "shareId": "اشتراک",
+      "emails": "ایمیل‌ها",
+      "recipientCount": "تعداد دریافت‌کنندگان",
+      "fromFolderId": "از پوشه",
+      "toFolderId": "به پوشه",
+      "maxFiles": "حداکثر فایل‌ها",
+      "maxFileSize": "حداکثر اندازه فایل",
+      "uploaderEmail": "ایمیل آپلوادکننده",
+      "uploaderName": "نام آپلوادکننده",
+      "targetFileId": "فایل هدف",
+      "providerType": "نوع مزود",
+      "providerName": "نام مزود",
+      "deletedCount": "ورودی‌های حذف‌شده",
+      "olderThan": "قدیم‌تر از",
+      "syncLogId": "سجل مزامنه",
+      "error": "خطا",
+      "manual": "فعال‌سازی دستی",
+      "recipientEmail": "ایمیل دریافت‌کننده",
+      "fromParentId": "از والد",
+      "toParentId": "به والد",
+      "oldMaxFileSize": "حداکثر اندازه فایل قدیم",
+      "newMaxFileSize": "حداکثر اندازه فایل جدید",
+      "oldMaxTotalStorage": "حداکثر ذخیره‌سازی کل قدیم",
+      "newMaxTotalStorage": "حداکثر ذخیره‌سازی کل جدید",
+      "changedFields": "فیلدهای تغییریافته",
+      "unassignedCount": "اعضای تعیین‌نشده",
+      "previousGroupId": "گروه قبلی",
+      "memberId": "عضو",
+      "parentId": "پوشه والد",
+      "targetFolderId": "پوشه هدف",
+      "extension": "پسوند",
+      "size": "اندازه",
+      "enabled": "فعال",
+      "passwordCleared": "گذرواژه پاک شد",
+      "trigger": "محرک",
+      "status": "وضعیت",
+      "usersCreated": "کاربران ایجاد‌شده",
+      "usersUpdated": "کاربران به‌روز‌شده",
+      "usersDeactivated": "کاربران غیرفعال‌شده",
+      "usersReactivated": "کاربران دوباره فعال‌شده",
+      "usersSkipped": "کاربران رد‌شده",
+      "createdUserId": "کاربر ایجاد‌شده",
+      "deletedUserId": "کاربر حذف‌شده",
+      "emailOrUsername": "ایمیل/نام کاربری",
+      "remainingMinutes": "دقایق باقی‌مانده",
+      "keys": "کلیدهای تکوین",
+      "type": "نوع",
+      "yes": "بله",
+      "no": "خیر",
+      "key": "[TO_TRANSLATE] Setting",
+      "usingCustomConfig": "[TO_TRANSLATE] Custom config",
+      "smtpHost": "[TO_TRANSLATE] SMTP host",
+      "files": "[TO_TRANSLATE] Files",
+      "shares": "[TO_TRANSLATE] Shares",
+      "reverseShares": "[TO_TRANSLATE] Reverse shares",
+      "folders": "[TO_TRANSLATE] Folders",
+      "s3Errors": "[TO_TRANSLATE] Storage errors",
+      "recipientId": "[TO_TRANSLATE] Recipient",
+      "identificationSource": "[TO_TRANSLATE] Identification",
+      "expiresAt": "[TO_TRANSLATE] Expires at",
+      "userId": "[TO_TRANSLATE] User",
+      "shareName": "[TO_TRANSLATE] Share",
+      "reverseShareName": "[TO_TRANSLATE] Reverse share",
+      "filesDeleted": "[TO_TRANSLATE] Files deleted",
+      "bytesFreed": "[TO_TRANSLATE] Storage freed",
+      "objectName": "[TO_TRANSLATE] Object",
+      "fileId": "[TO_TRANSLATE] File"
+    }
+  },
+  "navbar": {
+    "logoAlt": "لوگوی برنامه",
+    "profileMenu": "منوی پروفایل",
+    "profile": "پروفایل",
+    "customization": "شخصی‌سازی",
+    "settings": "تنظیمات",
+    "usersManagement": "مدیریت کاربران",
+    "groupsManagement": "گروه‌ها",
+    "ldap": "LDAP",
+    "activityLog": "سجل فعالیت",
+    "logout": "خروج",
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
+  },
+  "navigation": {
+    "dashboard": "داشبورد"
+  },
+  "notifications": {
+    "permissionGranted": "اعلان‌های دانلود فعال شد",
+    "permissionDenied": "اعلان‌های دانلود غیرفعال شد",
+    "downloadComplete": {
+      "title": "دانلود کامل شد",
+      "body": "دانلود {fileName} به پایان رسید"
+    },
+    "downloadFailed": {
+      "title": "دانلود ناموفق بود",
+      "body": "دانلود {fileName} ناموفق بود: {error}",
+      "unknownError": "خطای ناشناخته"
+    },
+    "queueProcessing": {
+      "title": "شروع دانلود",
+      "body": "{fileName} اکنون در حال دانلود است{position}",
+      "position": " (در موقعیت #{position} صف بود)"
+    }
+  },
+  "profile": {
+    "password": {
+      "title": "تغییر گذرواژه",
+      "newPassword": "گذرواژه جدید",
+      "confirmPassword": "تأیید گذرواژه جدید",
+      "updateButton": "به‌روزرسانی گذرواژه"
+    },
+    "form": {
+      "title": "اطلاعات پروفایل",
+      "firstName": "نام",
+      "lastName": "نام خانوادگی",
+      "username": "نام کاربری",
+      "email": "ایمیل",
+      "updateButton": "به‌روزرسانی پروفایل"
+    },
+    "header": {
+      "title": "پروفایل",
+      "subtitle": "مدیریت اطلاعات شخصی و گذرواژه خود"
+    },
+    "picture": {
+      "title": "عکس پروفایل",
+      "description": "روی آیکون دوربین کلیک کنید تا عکس پروفایل خود را تغییر دهید",
+      "uploadPhoto": "بارگذاری عکس",
+      "removePhoto": "حذف عکس"
+    },
+    "errors": {
+      "loadFailed": "بارگذاری داده‌های کاربر ناموفق بود",
+      "updateFailed": "به‌روزرسانی پروفایل ناموفق بود",
+      "passwordFailed": "به‌روزرسانی گذرواژه ناموفق بود",
+      "imageFailed": "به‌روزرسانی تصویر پروفایل ناموفق بود",
+      "imageRemoveFailed": "حذف تصویر پروفایل ناموفق بود"
+    },
+    "messages": {
+      "noChanges": "تغییری برای ذخیره وجود ندارد",
+      "updateSuccess": "پروفایل با موفقیت به‌روز شد",
+      "fillPasswords": "لطفاً هر دو فیلد گذرواژه را پر کنید",
+      "passwordSuccess": "گذرواژه با موفقیت به‌روز شد",
+      "imageSuccess": "تصویر پروفایل با موفقیت به‌روز شد",
+      "imageRemoved": "تصویر پروفایل با موفقیت حذف شد"
+    },
+    "pageTitle": "پروفایل"
+  },
+  "qrCodeModal": {
+    "title": "اشتراک‌گذاری QR کد",
+    "description": "این QR کد را اسکن کنید تا به لینک دسترسی پیدا کنید.",
+    "download": "دانلود QR کد"
+  },
+  "quickAccess": {
+    "files": {
+      "title": "فایل‌های من",
+      "description": "دسترسی و مدیریت فایل‌های بارگذاری‌شده شما"
+    },
+    "shares": {
+      "title": "اشتراک‌های من",
+      "description": "مشاهده و مدیریت فایل‌های به اشتراک‌گذاری‌شده شما"
+    },
+    "reverseShares": {
+      "title": "دریافت فایل‌ها",
+      "description": "ایجاد لینک برای دیگران تا فایل برای شما ارسال کنند"
+    }
+  },
+  "recentFiles": {
+    "title": "بارگذاری‌های اخیر",
+    "viewAll": "مشاهده همه",
+    "upload": "بارگذاری",
+    "uploadFile": "بارگذاری فایل",
+    "noFiles": "هنوز فایلی بارگذاری نشده است"
+  },
+  "recentShares": {
+    "title": "اشتراک‌های اخیر",
+    "viewAll": "مشاهده همه",
+    "createShare": "ایجاد اشتراک",
+    "noShares": "هنوز اشتراکی ایجاد نشده است",
+    "createFirst": "اولین اشتراک خود را ایجاد کنید"
+  },
+  "recipientSelector": {
+    "emailPlaceholder": "ایمیل گیرنده را وارد کنید",
+    "add": "افزودن",
+    "recipients": "گیرندگان ({count})",
+    "notifyAll": "اطلاع‌رسانی به همه",
+    "noRecipients": "هنوز گیرنده‌ای اضافه نشده است",
+    "addSuccess": "گیرنده با موفقیت اضافه شد",
+    "addError": "افزودن گیرنده ناموفق بود",
+    "removeSuccess": "گیرنده با موفقیت حذف شد",
+    "removeError": "حذف گیرنده ناموفق بود",
+    "sendingNotifications": "در حال ارسال اعلان‌ها...",
+    "notifySuccess": "گیرندگان با موفقیت مطلع شدند",
+    "notifyError": "اطلاع‌رسانی به گیرندگان ناموفق بود",
+    "selectAll": "انتخاب همه",
+    "selectedCount": "{count} انتخاب شده",
+    "selectRecipient": "انتخاب {email}",
+    "notifySelected": "اطلاع‌رسانی به موارد انتخاب‌شده",
+    "removeSelected": "حذف موارد انتخاب‌شده",
+    "notifySingle": "اطلاع‌رسانی به این گیرنده",
+    "removeSingle": "حذف این گیرنده",
+    "bulkRemoveSuccess": "{count} گیرنده با موفقیت حذف شد",
+    "bulkRemoveError": "حذف گیرندگان انتخاب‌شده ناموفق بود",
+    "bulkNotifySuccess": "اعلان‌ها به {count} گیرنده ارسال شد",
+    "bulkNotifyError": "اطلاع‌رسانی به گیرندگان انتخاب‌شده ناموفق بود",
+    "singleNotifySuccess": "اعلان به {email} ارسال شد",
+    "singleNotifyError": "اطلاع‌رسانی به گیرنده ناموفق بود",
+    "modalDescription": "افزودن و مدیریت گیرندگان برای این اشتراک. می‌توانید همه یا گیرندگان خاصی را وقتی SMTP پیکربندی شده مطلع کنید.",
+    "addRecipient": "افزودن گیرنده",
+    "invalidEmail": "لطفاً یک آدرس ایمیل معتبر وارد کنید",
+    "duplicateEmail": "این گیرنده قبلاً اضافه شده است",
+    "noRecipientsDescription": "گیرندگان را اضافه کنید تا این محتوا را از طریق ایمیل به اشتراک بگذارید",
+    "notified": "اطلاع داده شد",
+    "views": "{count, plural, one {# نمایش} other {# نمایش}}",
+    "notifyPartial": "تنها {sent} از {total} گیرندگان اطلاع داده شدند",
+    "neverAccessed": "هرگز دسترسی نداشت",
+    "namePlaceholder": "نام (اختیاری)",
+    "downloaded": "دانلود شد",
+    "pending": "در انتظار",
+    "downloadedAt": "دانلود شد در {date}",
+    "uploaded": "آپلود شد",
+    "uploadedAt": "آپلود شد در {date}",
+    "uploadApproximateHint": "تقریبی: آپلودکنندگان می‌توانند فایل‌ها را بدون ارائه ایمیل ارسال کنند وقتی مورد نیاز نباشد",
+    "remindNonDownloaders": "یادآوری ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {هیچ گیرنده‌ای در انتظار نیست, همگی دانلود کرده‌اند} one {یادآوری # گیرنده‌ای که هنوز دانلود نکرده است} other {یادآوری # گیرنده‌ای که هنوز دانلود نکرده‌اند}}",
+    "sendingReminders": "ارسال یادآوری‌ها...",
+    "remindSuccess": "{count, plural, one {یادآوری برای # گیرنده ارسال شد} other {یادآوری‌ها برای # گیرنده ارسال شد}}",
+    "remindNoneSent": "هیچ یادآوری‌ای ارسال نشد",
+    "remindError": "ارسال یادآوری‌ها ناموفق بود"
+  },
+  "register": {
+    "validation": {
+      "firstNameRequired": "نام الزامی است",
+      "lastNameRequired": "نام خانوادگی الزامی است",
+      "usernameMinLength": "نام کاربری باید حداقل ۳ کاراکتر باشد",
+      "invalidEmail": "ایمیل نامعتبر است",
+      "passwordMinLength": "گذرواژه باید حداقل ۸ کاراکتر باشد",
+      "success": "کاربر مدیر با موفقیت ایجاد شد!",
+      "error": "خطا در ایجاد کاربر مدیر",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "labels": {
+      "firstName": "نام",
+      "lastName": "نام خانوادگی",
+      "username": "نام کاربری",
+      "email": "ایمیل",
+      "password": "گذرواژه"
+    },
+    "buttons": {
+      "creating": "در حال ایجاد...",
+      "createAdmin": "ایجاد حساب مدیر"
+    }
+  },
+  "resetPassword": {
+    "pageTitle": "بازنشانی گذرواژه",
+    "header": {
+      "title": "بازنشانی گذرواژه",
+      "description": "گذرواژه جدید خود را در زیر وارد کنید"
+    },
+    "form": {
+      "newPassword": "گذرواژه جدید",
+      "newPasswordPlaceholder": "گذرواژه جدید خود را وارد کنید",
+      "confirmPassword": "تأیید گذرواژه جدید",
+      "confirmPasswordPlaceholder": "گذرواژه جدید خود را تأیید کنید",
+      "resetting": "در حال بازنشانی گذرواژه...",
+      "submit": "بازنشانی گذرواژه",
+      "backToLogin": "بازگشت به صفحه ورود"
+    },
+    "messages": {
+      "success": "گذرواژه با موفقیت بازنشانی شد"
+    },
+    "errors": {
+      "serverError": "بازنشانی گذرواژه ناموفق بود. لطفاً دوباره امتحان کنید.",
+      "invalidToken": "توکن بازنشانی نامعتبر یا وجود ندارد"
+    }
+  },
+  "reverseShares": {
+    "pageTitle": "دریافت فایل‌ها",
+    "search": {
+      "title": "مدیریت لینک‌های دریافت",
+      "createButton": "ایجاد لینک",
+      "placeholder": "جست‌وجوی لینک‌های دریافت...",
+      "results": "‏{filtered} از {total} لینک دریافت پیدا شد"
+    },
+    "labels": {
+      "files": "فایل‌ها",
+      "size": "حجم",
+      "status": "وضعیت",
+      "access": "دسترسی",
+      "description": "توضیحات",
+      "pageLayout": "چیدمان صفحه",
+      "security": "امنیت و وضعیت",
+      "limits": "محدودیت‌ها",
+      "maxFiles": "حداکثر تعداد فایل",
+      "maxFileSize": "حداکثر حجم",
+      "allowedTypes": "انواع مجاز",
+      "filesReceived": "فایل‌های دریافت‌شده",
+      "fileLimit": "محدودیت فایل",
+      "noLimit": "بدون محدودیت",
+      "noLinkCreated": "هیچ لینکی ایجاد نشده است",
+      "publicAccess": "دسترسی عمومی",
+      "protectedByPassword": "محافظت‌شده با گذرواژه",
+      "configureProtection": "برای پیکربندی حفاظت کلیک کنید",
+      "enterPassword": "گذرواژه را وارد کنید",
+      "thisLinkProtected": "این لینک با گذرواژه محافظت خواهد شد",
+      "thisLinkPublic": "این لینک به‌صورت عمومی در دسترس خواهد بود",
+      "configureExpiration": "تنظیم تاریخ انقضا",
+      "configureLimits": "تنظیم محدودیت‌های فایل",
+      "protectWithPassword": "محافظت با گذرواژه",
+      "layoutOptions": {
+        "default": "پیش‌فرض",
+        "wetransfer": "WeTransfer"
+      },
+      "noFilesLimit": "بدون محدودیت تعداد فایل",
+      "noSizeLimit": "بدون محدودیت حجم",
+      "allFileTypes": "همهٔ انواع فایل",
+      "fileTypesHelp": "پسوندها را بدون نقطه و با فاصله، ویرگول، خط تیره یا خط عمودی جدا کنید",
+      "fieldRequirements": "الزامات فیلدها",
+      "nameFieldRequired": "فیلد نام",
+      "emailFieldRequired": "فیلد ایمیل",
+      "fieldOptions": {
+        "hidden": "مخفی",
+        "optional": "اختیاری",
+        "required": "ضروری"
+      }
+    },
+    "card": {
+      "untitled": "لینک بدون عنوان",
+      "noDescription": "بدون توضیح",
+      "addDescriptionPlaceholder": "افزودن توضیح...",
+      "files": "فایل‌ها",
+      "progress": "پیشرفت",
+      "created": "ایجاد شد",
+      "expired": "منقضی شد",
+      "expires": "منقضی می‌شود",
+      "viewDetails": "مشاهده جزئیات",
+      "viewQrCode": "مشاهده کد QR",
+      "copyLink": "کپی لینک",
+      "openInNewTab": "باز کردن در زبانه جدید",
+      "editLink": "ویرایش لینک",
+      "createLink": "ایجاد لینک",
+      "delete": "حذف",
+      "copyLinkTitle": "کپی لینک",
+      "createLinkCTA": "ایجاد لینک دریافت"
+    },
+    "status": {
+      "active": "فعال",
+      "inactive": "غیرفعال",
+      "expired": "منقضی شده",
+      "protected": "محافظت‌شده",
+      "public": "عمومی"
+    },
+    "actions": {
+      "copyLink": "کپی لینک",
+      "editAlias": "ویرایش نام مستعار",
+      "createAlias": "ایجاد نام مستعار",
+      "viewDetails": "مشاهده جزئیات",
+      "edit": "ویرایش",
+      "delete": "حذف",
+      "viewFiles": "فایل‌های دریافت‌شده",
+      "viewQrCode": "مشاهده کد QR"
+    },
+    "empty": {
+      "title": "هیچ لینک دریافتی ایجاد نشده است",
+      "description": "برای اینکه دیگران بتوانند به‌صورت امن و منظم مستقیم برای شما فایل بفرستند، لینک‌های سفارشی ایجاد کنید.",
+      "createButton": "ایجاد اولین لینک"
+    },
+    "modals": {
+      "create": {
+        "title": "ایجاد لینک دریافت",
+        "description": "یک لینک سفارشی برای دریافت فایل از دیگران پیکربندی کنید"
+      },
+      "edit": {
+        "title": "ویرایش لینک دریافت",
+        "description": "تنظیمات این لینک دریافت را به‌روزرسانی کنید",
+        "updating": "در حال به‌روزرسانی...",
+        "saveChanges": "ذخیره تغییرات"
+      },
+      "details": {
+        "title": "جزئیات لینک",
+        "description": "اطلاعات لینک دریافت خود را مشاهده و ویرایش کنید",
+        "pageLayout": "چیدمان صفحه",
+        "linkSection": "لینک دریافت",
+        "noLinkCreated": "هیچ لینکی ایجاد نشده است",
+        "limits": "محدودیت‌ها",
+        "maxFiles": "حداکثر تعداد فایل",
+        "maxFileSize": "حداکثر حجم",
+        "allowedTypes": "انواع مجاز",
+        "noLimit": "بدون محدودیت",
+        "security": "امنیت",
+        "status": "وضعیت",
+        "password": "گذرواژه",
+        "files": "فایل‌های دریافت‌شده",
+        "noFiles": "هنوز فایلی دریافت نشده است",
+        "copyLink": "کپی لینک",
+        "openLink": "باز کردن لینک",
+        "editAlias": "ویرایش نام مستعار",
+        "createAlias": "ایجاد نام مستعار",
+        "editPassword": "ویرایش محافظت با گذرواژه",
+        "basicInfo": "اطلاعات پایه",
+        "securityAndStatus": "امنیت و وضعیت",
+        "protection": "حفاظت",
+        "protectedByPassword": "محافظت‌شده با گذرواژه",
+        "publicAccess": "دسترسی عمومی",
+        "active": "فعال",
+        "inactive": "غیرفعال",
+        "deactivate": "غیرفعال کردن",
+        "activate": "فعال کردن",
+        "expiration": "انقضا",
+        "dates": "تاریخ‌ها",
+        "createdAt": "ایجاد در",
+        "updatedAt": "به‌روزرسانی در",
+        "allTypes": "همه انواع",
+        "placeholderTypes": ".pdf,.jpg,.png (با ویرگول جدا کنید)",
+        "downloadSuccess": "دانلود شروع شد",
+        "downloadError": "خطا در دانلود فایل",
+        "editSuccess": "فایل با موفقیت به‌روزرسانی شد",
+        "editError": "خطا در به‌روزرسانی فایل",
+        "previewNotAvailable": "پیش‌نمایش در دسترس نیست",
+        "notAvailable": "ناموجود",
+        "invalidDate": "تاریخ نامعتبر",
+        "downloading": "در حال دانلود..."
+      },
+      "alias": {
+        "editTitle": "ویرایش نام مستعار",
+        "createTitle": "ایجاد نام مستعار",
+        "editDescription": "نام مستعار این لینک دریافت را به‌روزرسانی کنید",
+        "createDescription": "یک نام مستعار سفارشی برای این لینک دریافت ایجاد کنید",
+        "aliasLabel": "نام مستعار لینک",
+        "aliasPlaceholder": "لینک-سفارشی-من",
+        "preview": "پیش‌نمایش:",
+        "currentLink": "لینک فعلی:",
+        "copyCurrentLink": "کپی لینک فعلی",
+        "randomTooltip": "تولید نام مستعار تصادفی",
+        "cancel": "انصراف",
+        "creating": "در حال ایجاد...",
+        "updating": "در حال به‌روزرسانی...",
+        "create": "ایجاد نام مستعار",
+        "update": "به‌روزرسانی نام مستعار",
+        "help": "۸ تا ۳۰ کاراکتر. فاصله‌ها به‌صورت خودکار به خط تیره تبدیل می‌شوند."
+      },
+      "password": {
+        "title": "ویرایش محافظت با گذرواژه",
+        "description": "محافظت با گذرواژه را برای این لینک پیکربندی کنید",
+        "hasPassword": "محافظت‌شده با گذرواژه",
+        "password": "گذرواژه",
+        "cancel": "انصراف",
+        "save": "ذخیره",
+        "saving": "در حال ذخیره..."
+      },
+      "receivedFiles": {
+        "title": "فایل‌های دریافت‌شده",
+        "description": "مشاهده و مدیریت فایل‌هایی که به این لینک ارسال شده‌اند",
+        "noFiles": "هنوز فایلی دریافت نشده است",
+        "noFilesDescription": "فایل‌هایی که از طریق این لینک ارسال شوند اینجا نمایش داده می‌شوند",
+        "fileCount": "{count, plural, =0 {بدون فایل} =1 {۱ فایل} other {# فایل}}",
+        "invalidDate": "تاریخ نامعتبر",
+        "totalSize": "حجم کل: {size}",
+        "columns": {
+          "file": "فایل",
+          "size": "حجم",
+          "sender": "ارسال‌شده توسط",
+          "date": "تاریخ",
+          "actions": "اقدامات"
+        },
+        "actions": {
+          "preview": "پیش‌نمایش",
+          "download": "دانلود",
+          "copyToMyFiles": "کپی به فایل‌های من",
+          "copying": "در حال کپی..."
+        },
+        "uploadedBy": "بارگذاری‌شده توسط {name}",
+        "anonymous": "ناشناس",
+        "downloadSuccess": "دانلود شروع شد",
+        "downloadError": "خطا در دانلود فایل",
+        "editSuccess": "فایل با موفقیت به‌روزرسانی شد",
+        "editError": "خطا در به‌روزرسانی فایل",
+        "previewNotAvailable": "پیش‌نمایش در دسترس نیست",
+        "copySuccess": "فایل با موفقیت به فایل‌های شما کپی شد",
+        "copyError": "خطا در کپی فایل به فایل‌های شما",
+        "deleteSuccess": "فایل با موفقیت حذف شد",
+        "deleteError": "خطا در حذف فایل",
+        "bulkCopySuccess": "{count, plural, =1 {۱ فایل با موفقیت به فایل‌های شما کپی شد} other {# فایل با موفقیت به فایل‌های شما کپی شد}}",
+        "bulkDeleteSuccess": "{count, plural, =1 {۱ فایل با موفقیت حذف شد} other {# فایل با موفقیت حذف شد}}",
+        "bulkCopyProgress": "در حال کپی {count, plural, =1 {۱ فایل} other {# فایل}} به فایل‌های شما...",
+        "bulkDeleteProgress": "در حال حذف {count, plural, =1 {۱ فایل} other {# فایل}}...",
+        "bulkDeleteConfirmTitle": "حذف فایل‌های انتخاب‌شده",
+        "bulkDeleteConfirmMessage": "آیا از حذف {count, plural, =1 {این فایل} other {این # فایل}} مطمئن هستید؟ این عمل قابل بازگشت نیست.",
+        "bulkDeleteConfirmButton": "حذف {count, plural, =1 {فایل} other {فایل‌ها}}",
+        "bulkActions": {
+          "selected": "{count, plural, =1 {۱ فایل انتخاب شد} other {# فایل انتخاب شد}}",
+          "actions": "اقدامات",
+          "download": "دانلود موارد انتخاب‌شده",
+          "copyToMyFiles": "کپی موارد انتخاب‌شده به فایل‌های من",
+          "delete": "حذف موارد انتخاب‌شده"
+        },
+        "selectAll": "انتخاب همه",
+        "selectFile": "انتخاب فایل {fileName}",
+        "bulkDeleteError": "خطا در حذف موارد انتخاب‌شده",
+        "copyErrors": {
+          "timeout": "عملیات کپی به دلیل اتمام مهلت زمانی متوقف شد. لطفاً با فایل کوچک‌تر تلاش کنید یا اتصال خود را بررسی کنید.",
+          "failed": "عملیات کپی ناموفق بود. لطفاً دوباره تلاش کنید.",
+          "aborted": "عملیات کپی به دلیل اتمام مهلت زمانی لغو شد."
+        },
+        "downloading": "در حال دانلود..."
+      },
+      "delete": {
+        "linkLabel": "لینک: /r/{alias}"
+      }
+    },
+    "form": {
+      "name": {
+        "label": "نام لینک",
+        "placeholder": "مثلاً: مدارک پروژه، عکس‌های خانوادگی..."
+      },
+      "description": {
+        "label": "توضیحات",
+        "placeholder": "توضیح دهید چه نوع فایل‌هایی انتظار دریافت دارید...",
+        "description": "اختیاری. به افراد کمک می‌کند بدانند چه چیزی ارسال کنند."
+      },
+      "status": {
+        "label": "وضعیت لینک",
+        "description": "این لینک دریافت را فعال یا غیرفعال کنید"
+      },
+      "expiration": {
+        "label": "تاریخ انقضا",
+        "description": "اختیاری. پس از این تاریخ لینک غیرفعال می‌شود.",
+        "configure": "تنظیم تاریخ انقضا"
+      },
+      "fileLimits": {
+        "configure": "تنظیم محدودیت‌های فایل"
+      },
+      "maxFiles": {
+        "label": "حداکثر تعداد فایل",
+        "placeholder": "مثلاً: 10",
+        "description": "اختیاری. محدود کردن تعداد کل فایل‌هایی که می‌توان ارسال کرد.",
+        "noLimit": "بدون محدودیت تعداد فایل"
+      },
+      "maxFileSize": {
+        "label": "حداکثر اندازه فایل",
+        "placeholder": "مثلاً: 100",
+        "description": "اختیاری. محدود کردن اندازه هر فایل.",
+        "noLimit": "بدون محدودیت اندازه"
+      },
+      "allowedFileTypes": {
+        "label": "انواع فایل مجاز",
+        "placeholder": "مثلاً: pdf, jpg, png, docx",
+        "description": "پسوندها را بدون نقطه و با فاصله، ویرگول، خط تیره یا خط عمودی جدا کنید",
+        "allTypes": "همهٔ انواع فایل"
+      },
+      "pageLayout": {
+        "label": "چیدمان صفحه",
+        "placeholder": "انتخاب چیدمان",
+        "description": "چگونه صفحه بارگذاری به کاربران نمایش داده شود.",
+        "options": {
+          "default": "چیدمان پیش‌فرض",
+          "wetransfer": "سبک WeTransfer"
+        }
+      },
+      "backgroundImage": {
+        "title": "تصویر پس‌زمینه",
+        "description": "یک تصویر پس‌زمینه برای صفحه بارگذاری انتخاب کنید",
+        "random": "تصادفی",
+        "none": "هیچ تصویر پس‌زمینه‌ای در دسترس نیست. یک مدیر می‌تواند تصاویر را در تنظیمات بارگذاری کند."
+      },
+      "password": {
+        "label": "گذرواژه محافظتی",
+        "placeholder": "اختیاری. برای محافظت از لینک گذرواژه اضافه کنید",
+        "description": "اختیاری. کاربران برای دسترسی به لینک به این گذرواژه نیاز دارند.",
+        "configurePassword": "تنظیم گذرواژه",
+        "protectWithPassword": "محافظت با گذرواژه",
+        "passwordHelp": "گذرواژه باید حداقل ۴ کاراکتر باشد",
+        "passwordPlaceholder": "یک گذرواژه برای محافظت از لینک وارد کنید"
+      },
+      "nameFieldRequired": {
+        "label": "الزام فیلد نام",
+        "description": "تنظیم کنید آیا فیلد نام ارسال‌کننده نمایش داده شود و آیا ضروری باشد"
+      },
+      "emailFieldRequired": {
+        "label": "الزام فیلد ایمیل",
+        "description": "تنظیم کنید آیا فیلد ایمیل ارسال‌کننده نمایش داده شود و آیا ضروری باشد"
+      },
+      "fieldRequirements": {
+        "title": "الزامات فیلدها",
+        "description": "مشخص کنید کدام فیلدها در فرم بارگذاری نمایش داده شوند",
+        "configurationTitle": "پیکربندی فیلدها:",
+        "hiddenDescription": "پنهان: فیلد در فرم آپلود نمایش داده نمی‌شود",
+        "optionalDescription": "اختیاری: فیلد نمایش داده می‌شود اما اجباری نیست",
+        "requiredDescription": "اجباری: فیلد باید قبل از آپلود تکمیل شود"
+      },
+      "notifyOnUpload": "هنگام هر آپلود مرا مطلع کن",
+      "notifyOnUploadHelp": "هنگام فعال‌سازی، زمانی که فایل‌ها به این پیوند دریافت آپلود شوند، صرف‌نظر از تنظیمات اطلاع‌رسانی سراسری، ایمیل دریافت خواهید کرد.",
+      "submit": "ایجاد لینک دریافت",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
+    },
+    "messages": {
+      "created": "لینک دریافت با موفقیت ایجاد شد!",
+      "createSuccess": "لینک دریافت با موفقیت ایجاد شد!",
+      "updateSuccess": "لینک دریافت با موفقیت به‌روزرسانی شد!",
+      "linkCopied": "لینک در کلیپ‌بورد کپی شد!",
+      "deleteSuccess": "لینک دریافت با موفقیت حذف شد!",
+      "aliasCreated": "نام مستعار با موفقیت ایجاد شد!",
+      "activateSuccess": "لینک دریافت با موفقیت فعال شد!",
+      "deactivateSuccess": "لینک دریافت با موفقیت غیرفعال شد!",
+      "passwordProtectionEnabled": "محافظت با گذرواژه با موفقیت فعال شد!",
+      "passwordProtectionDisabled": "محافظت با گذرواژه با موفقیت حذف شد!"
+    },
+    "defaultLinkName": "فایل‌های دریافت‌شده",
+    "errors": {
+      "loadFailed": "بارگذاری لینک‌های دریافت ناموفق بود",
+      "createFailed": "ایجاد لینک دریافت ناموفق بود. لطفاً دوباره تلاش کنید.",
+      "updateFailed": "به‌روزرسانی لینک دریافت ناموفق بود. لطفاً دوباره تلاش کنید.",
+      "deleteFailed": "حذف لینک دریافت ناموفق بود. لطفاً دوباره تلاش کنید.",
+      "aliasCreateFailed": "ایجاد نام مستعار ناموفق بود. لطفاً دوباره تلاش کنید.",
+      "passwordUpdateFailed": "به‌روزرسانی محافظت با گذرواژه ناموفق بود"
+    },
+    "delete": {
+      "title": "حذف لینک دریافت",
+      "description": "این عمل قابل بازگشت نیست. لینک به‌طور دائم حذف می‌شود و دیگر قادر به دریافت فایل نخواهد بود.",
+      "confirmButton": "حذف لینک",
+      "cancelButton": "انصراف",
+      "deleting": "در حال حذف..."
+    },
+    "upload": {
+      "metadata": {
+        "title": "ارسال فایل‌ها - OUITRANSFER",
+        "description": "ارسال فایل از طریق لینک اشتراکی",
+        "descriptionWithLimit": "بارگذاری فایل‌ها (حداکثر {limit} فایل)"
+      },
+      "layout": {
+        "defaultTitle": "ارسال فایل‌ها",
+        "importantInfo": "اطلاعات مهم:",
+        "maxFiles": "حداکثر {count} فایل",
+        "maxFileSize": "حداکثر اندازه فایل: {size}MB",
+        "allowedTypes": "انواع مجاز: {types}",
+        "loading": "در حال بارگذاری..."
+      },
+      "password": {
+        "title": "لینک محافظت‌شده",
+        "description": "این لینک با گذرواژه محافظت می‌شود. برای ادامه، گذرواژه را وارد کنید.",
+        "label": "گذرواژه",
+        "placeholder": "گذرواژه را وارد کنید",
+        "cancel": "انصراف",
+        "submit": "ادامه",
+        "verifying": "در حال بررسی..."
+      },
+      "errors": {
+        "loadFailed": "خطا در بارگذاری اطلاعات. لطفاً دوباره تلاش کنید.",
+        "passwordIncorrect": "گذرواژه اشتباه است. لطفاً دوباره تلاش کنید.",
+        "linkNotFound": "لینک پیدا نشد یا منقضی شده است.",
+        "linkInactive": "این لینک غیرفعال است.",
+        "linkExpired": "این لینک منقضی شده است.",
+        "uploadFailed": "خطا در بارگذاری فایل",
+        "retry": "تلاش مجدد",
+        "fileTooLarge": "فایل بیش از حد بزرگ است. حداکثر اندازه: {maxSize}",
+        "fileTypeNotAllowed": "نوع فایل مجاز نیست. انواع قابل قبول: {allowedTypes}",
+        "maxFilesExceeded": "حداکثر {maxFiles} فایل مجاز است",
+        "selectAtLeastOneFile": "حداقل یک فایل انتخاب کنید",
+        "provideNameOrEmail": "لطفاً نام یا ایمیل خود را وارد کنید",
+        "provideNameRequired": "نام الزامی است",
+        "provideEmailRequired": "ایمیل الزامی است"
+      },
+      "fileDropzone": {
+        "dragActive": "فایل‌ها را اینجا رها کنید",
+        "dragInactive": "فایل‌ها را اینجا بکشید یا برای انتخاب کلیک کنید",
+        "acceptedTypes": "انواع قابل قبول: {types}",
+        "maxFileSize": "حداکثر اندازه: {size}",
+        "maxFiles": "حداکثر {count} فایل",
+        "remainingFiles": "{remaining} از {max} فایل باقی‌مانده"
+      },
+      "fileList": {
+        "title": "فایل‌های انتخاب‌شده:",
+        "statusUploaded": "بارگذاری شد",
+        "statusError": "خطا",
+        "retry": "تلاش مجدد"
+      },
+      "form": {
+        "nameLabel": "نام",
+        "nameLabelOptional": "نام (اختیاری)",
+        "namePlaceholder": "نام شما",
+        "emailLabel": "ایمیل",
+        "emailLabelOptional": "ایمیل (اختیاری)",
+        "emailPlaceholder": "شما@email.ir",
+        "descriptionLabel": "توضیحات (اختیاری)",
+        "descriptionPlaceholder": "برای فایل‌ها توضیح اضافه کنید...",
+        "uploadButton": "ارسال {count} فایل",
+        "uploading": "در حال ارسال...",
+        "privacyNotice": "نام، ایمیل و آپلودهای شما می‌توانند برای مالک این پیوند دریافت قابل مشاهده باشند."
+      },
+      "success": {
+        "title": "فایل‌ها با موفقیت ارسال شدند! 🎉",
+        "description": "می‌توانید این صفحه را ببندید.",
+        "countMessage": "{count} فایل با موفقیت ارسال شد!"
+      },
+      "maxFilesReached": {
+        "title": "محدودیت تعداد فایل پر شد",
+        "description": "این لینک قبلاً حداکثر تعداد مجاز {maxFiles} فایل را دریافت کرده است.",
+        "contactOwner": "اگر خطایی رخ داده یا نیاز به ارسال فایل‌های بیشتری دارید، با صاحب لینک تماس بگیرید."
+      },
+      "linkInactive": {
+        "title": "لینک غیرفعال است",
+        "description": "این لینک دریافت به‌طور موقت غیرفعال است.",
+        "contactOwner": "برای اطلاعات بیشتر با صاحب لینک تماس بگیرید."
+      },
+      "linkNotFound": {
+        "title": "لینک پیدا نشد",
+        "description": "ممکن است این لینک حذف شده باشد یا هرگز وجود نداشته است."
+      },
+      "linkExpired": {
+        "title": "لینک منقضی شده",
+        "description": "این لینک دریافت منقضی شده و دیگر فایل‌ها را نمی‌پذیرد.",
+        "contactOwner": "اگر نیاز به ارسال فایل دارید، با صاحب لینک تماس بگیرید."
+      }
+    },
+    "components": {
+      "fileRow": {
+        "addDescription": "افزودن توضیح...",
+        "anonymous": "ناشناس"
+      },
+      "fileActions": {
+        "edit": "ویرایش",
+        "preview": "پیش‌نمایش",
+        "download": "دانلود",
+        "delete": "حذف",
+        "copyToMyFiles": "کپی به فایل‌های من",
+        "copying": "در حال کپی..."
+      },
+      "editField": {
+        "saveChanges": "ذخیره تغییرات",
+        "cancelEdit": "انصراف از ویرایش"
+      }
+    }
+  },
+  "searchBar": {
+    "placeholder": "جست‌وجوی فایل‌ها و پوشه‌ها...",
+    "placeholderFiles": "جست‌وجوی فایل‌ها...",
+    "placeholderFolders": "جست‌وجوی پوشه‌ها...",
+    "results": "نمایش {filtered} از {total} مورد",
+    "noResults": "هیچ نتیجه‌ای برای \"{query}\" یافت نشد"
+  },
+  "settings": {
+    "groups": {
+      "defaultDescription": "گزینه‌های پیکربندی",
+      "general": {
+        "title": "عمومی",
+        "description": "تنظیمات پایه برنامه"
+      },
+      "email": {
+        "title": "ایمیل",
+        "description": "پیکربندی سرور ایمیل"
+      },
+      "security": {
+        "title": "امنیت",
+        "description": "تنظیمات امنیت و احراز هویت"
+      },
+      "storage": {
+        "title": "ذخیره‌سازی",
+        "description": "پیکربندی ذخیره‌سازی فایل"
+      },
+      "oidc": {
+        "title": "OpenID Connect (SSO)",
+        "description": "پیکربندی احراز هویت SSO از طریق OpenID Connect"
+      },
+      "backgrounds": {
+        "title": "تصاویر پس‌زمینه",
+        "description": "مدیریت تصاویر پس‌زمینه برای صفحات بارگذاری سبک WeTransfer"
+      },
+      "cleanup": {
+        "title": "پاکسازی خودکار",
+        "description": "مدیریت چرخه حیات برای محتوای منقضی، حسابهای غیرفعال و فایلهای یتیم. حذف خودکار به‌طور پیش‌فرض خاموش است."
+      }
+    },
+    "fields": {
+      "noDescription": "توضیحی موجود نیست",
+      "appLogo": {
+        "title": "لوگوی برنامه",
+        "description": "تصویر لوگوی برنامه"
+      },
+      "appName": {
+        "title": "نام برنامه",
+        "description": "نام برنامه که به کاربران نمایش داده می‌شود"
+      },
+      "appUrl": {
+        "title": "نشانی اینترنتی برنامه",
+        "description": "نشانی اینترنتی عمومی برنامه، برای استفاده در پیوندهای ایمیل"
+      },
+      "appDescription": {
+        "title": "توضیحات برنامه",
+        "description": "توضیح مختصری از برنامه"
+      },
+      "showHomePage": {
+        "title": "صفحه فرود عمومی",
+        "description": "نمایش صفحه فرود عمومی برای بازدیدکنندگان. زمانی که غیرفعال باشد، بازدیدکنندگان به صفحه ورود منتقل می‌شوند."
+      },
+      "hideVersion": {
+        "title": "مخفی کردن نسخه",
+        "description": "مخفی کردن نسخه OUITRANSFER از فوتر در تمام صفحات"
+      },
+      "footerEnabled": {
+        "title": "نمایش پایین‌صفحه",
+        "description": "نمایش نوار پایین‌صفحه در انتهای تمام صفحات"
+      },
+      "footerText": {
+        "title": "متن پایین‌صفحه",
+        "description": "نام شرکت یا سازمان نمایش‌داده شده در پایین‌صفحه"
+      },
+      "footerUrl": {
+        "title": "URL پایین‌صفحه",
+        "description": "URL لینک برای متن پایین‌صفحه"
+      },
+      "smtpEnabled": {
+        "title": "فعال‌سازی SMTP",
+        "description": "فعال یا غیرفعال کردن قابلیت ایمیل SMTP"
+      },
+      "smtpHost": {
+        "title": "سرور SMTP",
+        "description": "آدرس سرور SMTP"
+      },
+      "smtpPort": {
+        "title": "پورت SMTP",
+        "description": "پورت سرور SMTP"
+      },
+      "smtpUser": {
+        "title": "نام کاربری SMTP",
+        "description": "نام کاربری برای احراز هویت SMTP"
+      },
+      "smtpPass": {
+        "title": "گذرواژه SMTP",
+        "description": "گذرواژه برای احراز هویت SMTP"
+      },
+      "smtpFromName": {
+        "title": "نام فرستنده",
+        "description": "نام نمایشی برای ایمیل‌های ارسالی"
+      },
+      "smtpFromEmail": {
+        "title": "ایمیل فرستنده",
+        "description": "آدرس ایمیل فرستنده"
+      },
+      "smtpSecure": {
+        "title": "امنیت اتصال",
+        "description": "روش امنیت اتصال SMTP - خودکار (توصیه می‌شود)، SSL، STARTTLS یا هیچ (ناامن)",
+        "options": {
+          "auto": "خودکار (توصیه می‌شود)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
+          "none": "هیچ (ناامن)"
+        }
+      },
+      "smtpNoAuth": {
+        "title": "بدون احراز هویت",
+        "description": "این را برای سرورهای داخلی که به نام کاربری/گذرواژه نیاز ندارند فعال کنید (فیلدهای احراز هویت را مخفی می‌کند)"
+      },
+      "smtpTrustSelfSigned": {
+        "title": "اعتماد به گواهینامه‌های خودامضا",
+        "description": "این را فعال کنید تا به گواهینامه‌های SSL/TLS خودامضا اعتماد شود (برای محیط‌های توسعه مفید است)"
+      },
+      "testSmtp": {
+        "title": "آزمایش اتصال SMTP",
+        "description": "آزمایش معتبر بودن پیکربندی SMTP"
+      },
+      "maxLoginAttempts": {
+        "title": "حداکثر تلاش‌های ورود",
+        "description": "حداکثر تعداد تلاش‌های ورود قبل از مسدودسازی"
+      },
+      "loginBlockDuration": {
+        "title": "مدت زمان مسدودسازی",
+        "description": "مدت زمان (به ثانیه) برای مسدودسازی پس از تجاوز از تلاش‌ها"
+      },
+      "passwordMinLength": {
+        "title": "حداقل طول گذرواژه",
+        "description": "حداقل تعداد کاراکترها برای گذرواژه‌ها"
+      },
+      "passwordResetTokenExpiration": {
+        "title": "انقضای توکن بازنشانی",
+        "description": "مدت زمان اعتبار (به ثانیه) برای توکن بازنشانی گذرواژه"
+      },
+      "maxFileSize": {
+        "title": "حداکثر اندازه فایل",
+        "description": "بیشترین اندازه فایل برای بارگذاری. می‌توان برای هر کاربر یا گروه نادیده گرفت."
+      },
+      "maxTotalStoragePerUser": {
+        "title": "حداکثر ذخیره‌سازی به ازای هر کاربر",
+        "description": "حد کل ذخیره‌سازی برای هر کاربر. می‌توان برای هر کاربر یا گروه نادیده گرفت."
+      },
+      "quotaWarningThresholds": {
+        "title": "آستانه‌های هشدار سهمیه (%)",
+        "description": "درصدهای جدا شده با کاما، مثلاً \"80,90\"، که در آنها هشدار سهمیه برای کاربر ارسال می‌شود. هر مقدار باید یک عدد صحیح بین 1 و 99 باشد. یک هشدار جداگانه هنگام رسیدن ذخیره‌سازی به 100% ارسال می‌شود."
+      },
+      "quotaGracePeriodDays": {
+        "title": "دوره تنفس سهمیه (روز)",
+        "description": "تعداد روزهایی که کاربر می‌تواند بالاتر از سهمیه خود بماند قبل اینکه حذف هوشمند کار کند (فقط هنگام فعال بودن حذف هوشمند در زیر). حداقل 0."
+      },
+      "quotaSmartDeletionEnabled": {
+        "title": "حذف هوشمند فایلهای فراتر از سهمیه",
+        "description": "به‌طور پیش‌فرض خاموش است. هنگام فعال بودن، پس از دوره تنفس، قدیمی‌ترین فایلهای ناایمن کاربری که سهمیه‌اش فراتر رفته به‌ترتیب ایمن حذف می‌شوند: ابتدا آپلودهای اشتراک‌نشده، سپس فایلهای در اشتراک‌های غیرفعال برای دوره زیر. فایلهای در اشتراک‌های فعال هرگز حذف نمی‌شوند, اگر فایل ایمن برای حذف وجود نداشته باشد، بارگذاریهای جدید صرفاً مسدود می‌شوند."
+      },
+      "quotaInactiveShareDays": {
+        "title": "آستانه بی‌فعالی اشتراک (روز)",
+        "description": "فایلهای یک اشتراک زمانی که اشتراک برای این تعداد روز بدون فعالیت بوده است برای حذف هوشمند واجد شرایط می‌شوند. حداقل 1."
+      },
+      "reverseShareQuotaSoftEnforcement": {
+        "title": "اجرای نرم سهمیه اشتراک معکوس",
+        "description": "به‌طور پیش‌فرض فعال است. اجازه می‌دهد میهمانهای خارجی به بارگذاری بر روی یک اشتراک معکوس ادامه دهند حتی اگر مالک سهمیه‌اش کمی فراتر برود، بنابراین مجموعه‌ها قطع نشوند. بارگذاریها زمانی مسدود می‌شوند که مالک تحمل تعریف شده در زیر را تجاوز کند، و مالک برای آزادسازی فضا هشدار می‌شود."
+      },
+      "reverseShareMaxOverageFactor": {
+        "title": "ضریب بیش‌رفته اشتراک معکوس",
+        "description": "اجرای نرم اجازه می‌دهد بارگذاریهای اشتراک معکوس تا وقتی که استفاده به این مضاعف سهمیه مالک برسد (مثلاً 3 = تا سه برابر حد). حداقل 1."
+      },
+      "reverseShareAbsoluteMaxBytes": {
+        "title": "حد مطلق اشتراک معکوس",
+        "description": "سقف سخت برای اجرای نرم اشتراک معکوس صرف‌نظر از ضریب بالا. برای بدون حد مطلق روی 0 تنظیم کنید."
+      },
+      "firstUserAccess": {
+        "title": "دسترسی اولین کاربر",
+        "description": "تنظیمات برای دسترسی اولیه کاربران جدید"
+      },
+      "serverUrl": {
+        "title": "URL سرور",
+        "description": "URL پایه سرور OUITRANSFER (مثلاً: https://OUITRANSFER.example.com)"
+      },
+      "passwordAuthEnabled": {
+        "title": "احراز هویت با گذرواژه",
+        "description": "فعال یا غیرفعال کردن احراز هویت مبتنی بر گذرواژه"
+      },
+      "emailDigestHour": {
+        "title": "ساعت ایمیل خلاصه",
+        "description": "ساعت روز (0-23) که ایمیل‌های خلاصه ارسال می‌شوند"
+      },
+      "emailJobRetentionDays": {
+        "title": "نگهداری کارهای ایمیل",
+        "description": "تعداد روزهای نگهداری کارهای ایمیل تکمیل‌شده قبل از پاکسازی"
+      },
+      "emailQueueIntervalSeconds": {
+        "title": "فاصله پردازش صف",
+        "description": "ثانیه بین چرخه‌های پردازش صف ایمیل"
+      },
+      "emailQueueMaxRetries": {
+        "title": "حداکثر تلاش مجدد ایمیل",
+        "description": "حداکثر تعداد تلاش‌های مجدد برای ایمیل‌های ناموفق"
+      },
+      "auditRetentionDays": {
+        "title": "نگهداری حسابرسی",
+        "description": "تعداد روزهای نگهداری گزارش‌های حسابرسی (۰ = برای همیشه، حداقل ۷)"
+      },
+      "autoCleanupEnabled": {
+        "title": "فعال‌سازی پاکسازی خودکار",
+        "description": "کلید اصلی برای پاکسازی برنامه‌ریزی‌شده پیوندهای اشتراک منقضی، فایلهای اشتراک معکوس منقضی و یتیمان. به‌طور پیش‌فرض خاموش است, تا زمانی که آن را فعال نکنید هیچ چیز خودکار حذف نمی‌شود."
+      },
+      "autoCleanupIntervalHours": {
+        "title": "فاصله پاکسازی (ساعت)",
+        "description": "چند بار کار پاکسازی اجرا می‌شود. حداقل 1 ساعت."
+      },
+      "autoCleanupGracePeriodDays": {
+        "title": "دوره تنفس (روز)",
+        "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
+      },
+      "autoCleanupNotifyDaysBefore": {
+        "title": "هشدار قبل از حذف (روز)",
+        "description": "ایمیل هشدار \"حذف دائمی زودرس\" را برای مالک این تعداد روز قبل از حذف محتوا ارسال کنید. 0 هشدار را غیرفعال می‌کند. نباید از دوره تنفس بیشتر باشد."
+      },
+      "accountDeactivationCleanupEnabled": {
+        "title": "حذف فایلهای حسابهای غیرفعال‌شده",
+        "description": "هنگام فعال بودن، فایلهای یک حساب غیرفعال‌شده به‌طور دائم پس از تأخیر زیر حذف می‌شوند. به‌طور پیش‌فرض خاموش است, غیرفعال‌سازی تنهایی هرگز فایلها را حذف نمی‌کند."
+      },
+      "accountDeactivationCleanupDays": {
+        "title": "تأخیر پاکسازی غیرفعال‌سازی (روز)",
+        "description": "روزهایی پس از غیرفعال‌سازی یک حساب قبل از حذف فایلهایش (فقط هنگام فعال بودن گزینه بالا). حداقل 1."
+      },
+      "autoCleanupOrphansEnabled": {
+        "title": "جاروب فایلهای یتیم",
+        "description": "هنگام فعال بودن، یک جاروب دوطرفه را اجرا می‌کند که رکوردهای پایگاه داده را که به اشیاء ذخیره‌سازی گمشده اشاره می‌کنند و اشیاء ذخیره‌سازی بدون رکورد حذف می‌کند. به‌طور پیش‌فرض خاموش است."
+      },
+      "autoCleanupOrphanMinAgeHours": {
+        "title": "حداقل سن یتیم (ساعت)",
+        "description": "فقط فایلها و اشیایی که از این تاریخ قدیمی‌تر هستند در طول جاروب یتیم در نظر گرفته می‌شوند، بارگذاریهای در حال انجام را محافظت می‌کند. حداقل 1."
+      }
+    },
+    "buttons": {
+      "save": "ذخیره {group}",
+      "testSmtp": "آزمایش اتصال",
+      "testing": "در حال آزمایش..."
+    },
+    "errors": {
+      "loadFailed": "بارگذاری تنظیمات ناموفق بود",
+      "updateFailed": "به‌روزرسانی تنظیمات ناموفق بود",
+      "passwordAuthRequiresProvider": "نمی‌توان احراز هویت با گذرواژه را بدون داشتن حداقل یک ارائه‌دهنده احراز هویت فعال غیرفعال کرد",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
+      "cleanupValueInvalid": "مقدار باید حداقل یک عدد صحیح {min} باشد",
+      "notifyDaysExceedsGrace": "زمان هشدار نباید از دوره تنفس تجاوز کند، وگرنه هیچ هشداری ارسال نمی‌شود",
+      "quotaThresholdsInvalid": "درصدهای جدا‌شده با کاما بین 1 و 99 وارد کنید، به‌عنوان مثال \"80,90\""
+    },
+    "messages": {
+      "noChanges": "تغییری برای ذخیره وجود ندارد",
+      "updateSuccess": "تنظیمات {group} با موفقیت به‌روز شد",
+      "smtpTestSuccess": "اتصال SMTP موفق بود! پیکربندی ایمیل شما به درستی کار می‌کند.",
+      "smtpTestFailed": "اتصال SMTP ناموفق بود: {error}",
+      "smtpTestGenericError": "آزمایش اتصال SMTP ناموفق بود. لطفاً تنظیمات خود را بررسی کنید و دوباره امتحان کنید.",
+      "smtpNotEnabled": "SMTP فعال نیست. لطفاً ابتدا SMTP را فعال کنید.",
+      "smtpMissingHostPort": "لطفاً قبل از آزمایش، هاست و پورت SMTP را پر کنید.",
+      "smtpMissingAuth": "لطفاً نام کاربری و گذرواژه SMTP را پر کنید، یا گزینه 'بدون احراز هویت' را فعال کنید."
+    },
+    "title": "تنظیمات",
+    "breadcrumb": "تنظیمات",
+    "pageTitle": "تنظیمات",
+    "tooltips": {
+      "testSmtp": "اتصال SMTP را با مقادیر وارد شده در فرم فعلی آزمایش می‌کند. برای دائمی کردن تغییرات، به یاد داشته باشید تنظیمات خود را پس از آزمایش ذخیره کنید.",
+      "defaultPlaceholder": "وارد کنید و Enter را فشار دهید"
+    },
+    "redirectUri": {
+      "placeholder": "https://mysite.ir",
+      "previewLabel": "URL کامل که ذخیره خواهد شد:"
+    },
+    "emailAdmin": {
+      "queueStatus": "وضعیت صف ایمیل",
+      "pending": "در انتظار",
+      "sentLast24h": "ارسال شده (24 ساعت)",
+      "failed": "ناموفق",
+      "digestQueue": "صف خلاصه",
+      "sendTest": "ارسال ایمیل آزمایشی",
+      "testPlaceholder": "گیرنده@example.ir",
+      "testSending": "در حال ارسال...",
+      "testSuccess": "ایمیل آزمایشی با موفقیت در صف قرار گرفت",
+      "testError": "ارسال ایمیل آزمایشی ناموفق بود"
+    }
+  },
+  "share": {
+    "errors": {
+      "invalidPassword": "گذرواژه نامعتبر است. لطفاً دوباره امتحان کنید.",
+      "loadFailed": "بارگذاری اشتراک ناموفق بود",
+      "downloadFailed": "دانلود فایل ناموفق بود"
+    },
+    "messages": {
+      "downloadStarted": "دانلود آغاز شد"
+    },
+    "password": {
+      "title": "اشتراک محافظت‌شده با گذرواژه",
+      "protected": "گذرواژه را برای دسترسی به فایل‌های مشترک وارد کنید.",
+      "incorrect": "گذرواژه اشتباه است. لطفاً دوباره امتحان کنید.",
+      "label": "گذرواژه",
+      "placeholder": "گذرواژه اشتراک را وارد کنید",
+      "submit": "ارسال"
+    },
+    "details": {
+      "untitled": "اشتراک بدون عنوان",
+      "created": "ایجاد شده: {date}",
+      "expires": "منقضی می‌شود: {date}"
+    },
+    "downloadAll": "دانلود همه",
+    "notFound": {
+      "title": "اشتراک یافت نشد",
+      "description": "این اشتراک ممکن است حذف شده یا منقضی شده باشد."
+    },
+    "pageTitle": "اشتراک",
+    "metadata": {
+      "defaultDescription": "اشتراک‌گذاری فایل‌ها به صورت امن",
+      "filesShared": "{count, plural, =1 {۱ فایل به اشتراک گذاشته شد} other {# فایل به اشتراک گذاشته شد}}"
+    },
+    "identification": {
+      "title": "شناسایی بازدیدکننده",
+      "subtitle": "لطفاً اطلاعات خود را برای دسترسی به این اشتراک‌گذاری ارائه دهید",
+      "nameLabel": "نام",
+      "emailLabel": "ایمیل",
+      "submit": "ادامه",
+      "error": "ارسال شناسایی ناموفق بود. لطفاً دوباره تلاش کنید.",
+      "optional": "اختیاری",
+      "nameRequired": "نام الزامی است",
+      "emailRequired": "ایمیل الزامی است",
+      "emailInvalid": "لطفاً یک آدرس ایمیل معتبر وارد کنید",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "دسترسی‌های و دانلودهای شما ممکن است برای فرستنده این اشتراک‌گذاری قابل مشاهده باشند."
+    }
+  },
+  "shareActions": {
+    "fileTitle": "اشتراک‌گذاری فایل",
+    "folderTitle": "اشتراک‌گذاری پوشه",
+    "linkTitle": "تولید لینک",
+    "linkDescriptionFile": "تولید یک لینک سفارشی برای اشتراک‌گذاری فایل",
+    "linkDescriptionFolder": "تولید یک لینک سفارشی برای اشتراک‌گذاری پوشه",
+    "aliasLabel": "نام مستعار لینک",
+    "aliasPlaceholder": "نام مستعار سفارشی وارد کنید",
+    "linkReady": "لینک اشتراک شما آماده است:",
+    "generateLink": "تولید لینک",
+    "copyLink": "کپی لینک",
+    "deleteTitle": "حذف اشتراک",
+    "deleteConfirmation": "آیا از حذف این اشتراک اطمینان دارید؟ این عمل قابل بازگشت نیست.",
+    "addDescriptionPlaceholder": "افزودن توضیح...",
+    "editTitle": "ویرایش اشتراک",
+    "newPasswordLabel": "گذرواژه جدید (برای حفظ فعلی خالی بگذارید)",
+    "newPasswordPlaceholder": "گذرواژه جدید را وارد کنید",
+    "manageFilesTitle": "مدیریت فایل‌ها",
+    "manageFilesDescription": "فایل‌ها و پوشه‌هایی را که می‌خواهید در این اشتراک باشند انتخاب کنید",
+    "manageRecipientsTitle": "مدیریت گیرندگان",
+    "itemsSelected": "{count} مورد انتخاب شده",
+    "editSuccess": "اشتراک با موفقیت به‌روز شد",
+    "editError": "به‌روزرسانی اشتراک ناموفق بود",
+    "editErrorMetadata": "به‌روزرسانی جزئیات اشتراک ناموفق بود",
+    "editErrorPassword": "به‌روزرسانی رمز عبور اشتراک ناموفق بود",
+    "bulkDeleteConfirmation": "آیا از حذف {count, plural, =1 {۱ اشتراک} other {# اشتراک}} اطمینان دارید؟ این عمل قابل بازگشت نیست.",
+    "bulkDeleteTitle": "حذف اشتراک‌های انتخاب‌شده",
+    "keepCurrentPasswordHint": "برای نگه‌داشتن رمز عبور فعلی خالی بگذارید",
+    "passwordRequired": "رمز عبور برای محافظت رمز عبور جدید مورد نیاز است"
+  },
+  "shareDetails": {
+    "title": "جزئیات اشتراک",
+    "subtitle": "مشاهده و مدیریت جزئیات این اشتراک",
+    "basicInfo": "اطلاعات پایه",
+    "name": "نام",
+    "description": "توضیحات",
+    "shareLink": "لینک اشتراک",
+    "dates": "تاریخ‌ها",
+    "security": "امنیت",
+    "files": "فایل‌ها",
+    "recipients": "گیرندگان",
+    "views": "بازدیدها",
+    "created": "ایجاد شد",
+    "expires": "منقضی می‌شود",
+    "never": "هرگز",
+    "untitled": "اشتراک بدون عنوان",
+    "noDescription": "بدون توضیح",
+    "notAvailable": "ناموجود",
+    "invalidDate": "تاریخ نامعتبر",
+    "passwordProtected": "محافظت‌شده با گذرواژه",
+    "publicAccess": "دسترسی عمومی",
+    "maxViews": "حداکثر بازدیدها:",
+    "noLink": "لینکی تولید نشده است",
+    "generateLink": "تولید لینک",
+    "editLink": "ویرایش لینک",
+    "copyLink": "کپی لینک",
+    "openLink": "باز کردن لینک",
+    "editSecurity": "ویرایش امنیت",
+    "editExpiration": "ویرایش انقضا",
+    "qrCode": "QR کد",
+    "downloadQrCode": "دانلود QR کد",
+    "clickToEnlargeQrCode": "برای بزرگ‌نمایی QR کد کلیک کنید",
+    "loadError": "بارگذاری جزئیات اشتراک ناموفق بود",
+    "activity": {
+      "title": "فعالیت",
+      "noActivity": "هنوز فعالیتی ثبت نشده است.",
+      "access": "مشاهده شد",
+      "download": "دانلود شد",
+      "anonymous": "ناشناس",
+      "loadMore": "بارگذاری بیشتر",
+      "showingCount": "نمایش {shown} از {total}",
+      "loadError": "بارگذاری داده‌های فعالیت ناموفق بود.",
+      "filterAll": "تمام اقدامات",
+      "filterAccess": "فقط مشاهدات",
+      "filterDownload": "فقط دانلودها",
+      "filterAllVisitors": "تمام بازدیدکنندگان",
+      "filterIdentified": "شناسایی‌شده",
+      "filterAnonymous": "ناشناس",
+      "you": "شما",
+      "source": {
+        "tracking_token": "از طریق پیوند گیرنده",
+        "cookie": "خود-شناسایی‌شده",
+        "selfDeclaredHint": "هویت خود‌اعلام‌شده، تایید‌نشده",
+        "authenticated_user": "کاربر ثبت‌نام‌شده"
+      }
+    },
+    "lastDownloaded": "آخرین دانلود",
+    "privacySummary": "حریم خصوصی",
+    "privacyNameField": "نام بازدیدکننده:",
+    "privacyEmailField": "ایمیل بازدیدکننده:",
+    "privacyNotifyOnDownload": "اعلان‌های دانلود فعال",
+    "privacyInactivityAlert": "هشدار عدم فعالیت بعد از {days} روز",
+    "fieldValue": {
+      "OPTIONAL": "اختیاری",
+      "REQUIRED": "الزامی"
+    },
+    "recipientNotified": "اطلاع داده شد",
+    "recipientAccess": "{count, plural, one {# دسترسی} other {# دسترسی}}",
+    "recipientAccessWithLast": "{count, plural, one {# دسترسی} other {# دسترسی}} · آخرین {lastAccess}"
+  },
+  "shareExpiration": {
+    "title": "تنظیمات انقضای اشتراک",
+    "subtitle": "پیکربندی زمان انقضای این اشتراک",
+    "currentStatus": "وضعیت فعلی",
+    "expires": "منقضی می‌شود:",
+    "neverExpires": "هرگز منقضی نمی‌شود",
+    "enableExpiration": "فعال‌سازی انقضا",
+    "expirationDate": "تاریخ انقضا",
+    "validation": {
+      "dateRequired": "لطفاً یک تاریخ انقضا انتخاب کنید",
+      "dateMustBeFuture": "تاریخ انقضا باید در آینده باشد"
+    },
+    "success": {
+      "expirationSet": "تاریخ انقضا با موفقیت تنظیم شد",
+      "expirationUpdated": "تاریخ انقضا با موفقیت به‌روز شد",
+      "expirationRemoved": "انقضا با موفقیت حذف شد - اشتراک اکنون دائمی است"
+    },
+    "error": {
+      "updateFailed": "به‌روزرسانی تنظیمات انقضا ناموفق بود"
+    },
+    "info": {
+      "title": "درباره انقضا:",
+      "willBeInaccessible": "اشتراک پس از این تاریخ غیرقابل دسترس خواهد شد",
+      "canBeChanged": "می‌توانید تاریخ انقضا را هر زمان تغییر دهید یا حذف کنید",
+      "noExpiration": "این اشتراک هرگز منقضی نخواهد شد و برای همیشه قابل دسترس خواهد ماند."
+    }
+  },
+  "shareManager": {
+    "deleteSuccess": "اشتراک با موفقیت حذف شد",
+    "deleteError": "حذف اشتراک ناموفق بود",
+    "updateSuccess": "اشتراک با موفقیت به‌روز شد",
+    "updateError": "به‌روزرسانی اشتراک ناموفق بود",
+    "securityUpdateSuccess": "تنظیمات امنیتی با موفقیت به‌روز شد",
+    "securityUpdateError": "به‌روزرسانی تنظیمات امنیتی ناموفق بود",
+    "expirationUpdateSuccess": "تنظیمات انقضا با موفقیت به‌روز شد",
+    "expirationUpdateError": "به‌روزرسانی تنظیمات انقضا ناموفق بود",
+    "filesUpdateSuccess": "فایل‌ها با موفقیت به‌روز شد",
+    "filesUpdateError": "به‌روزرسانی فایل‌ها ناموفق بود",
+    "recipientsUpdateSuccess": "گیرندگان با موفقیت به‌روز شدند",
+    "recipientsUpdateError": "به‌روزرسانی گیرندگان ناموفق بود",
+    "linkGenerateSuccess": "لینک اشتراک با موفقیت تولید شد",
+    "linkGenerateError": "تولید لینک اشتراک ناموفق بود",
+    "notifyLoading": "در حال ارسال اعلان‌ها...",
+    "notifySuccess": "گیرندگان با موفقیت مطلع شدند",
+    "notifyError": "اطلاع‌رسانی به گیرندگان ناموفق بود",
+    "bulkDeleteError": "حذف اشتراک‌ها ناموفق بود",
+    "bulkDeleteLoading": "در حال حذف {count, plural, =1 {۱ اشتراک} other {# اشتراک}}...",
+    "bulkDeleteSuccess": "{count, plural, =1 {۱ اشتراک با موفقیت حذف شد} other {# اشتراک با موفقیت حذف شد}}",
+    "downloadSuccess": "دانلود با موفقیت آغاز شد",
+    "downloadError": "دانلود فایل‌های اشتراک ناموفق بود",
+    "noFilesToDownload": "فایلی برای دانلود موجود نیست",
+    "creatingZip": "در حال ایجاد فایل ZIP...",
+    "zipDownloadSuccess": "فایل ZIP با موفقیت دانلود شد",
+    "zipDownloadError": "ایجاد فایل ZIP ناموفق بود",
+    "errors": {
+      "multipleDownloadNotSupported": "دانلود چند اشتراک هنوز پشتیبانی نمی‌شود - لطفاً اشتراک‌ها را به صورت جداگانه دانلود کنید"
+    },
+    "singleShareZipName": "{shareName}_files.zip",
+    "multipleSharesZipName": "{count}_shares_files.zip",
+    "defaultShareName": "اشتراک",
+    "pauseSuccess": "اشتراک‌گذاری متوقف شد",
+    "pauseError": "توقف اشتراک‌گذاری ناموفق بود",
+    "resumeSuccess": "اشتراک‌گذاری از سر گرفته شد",
+    "resumeError": "از سر گرفتن اشتراک‌گذاری ناموفق بود. اگر منقضی‌شده یا به حد نمایش رسیده، آن را تمدید کنید."
+  },
+  "shareMultipleFiles": {
+    "title": "اشتراک‌گذاری چند فایل",
+    "shareNameLabel": "نام اشتراک",
+    "shareNamePlaceholder": "نام اشتراک را وارد کنید",
+    "descriptionLabel": "توضیحات",
+    "descriptionPlaceholder": "توضیح وارد کنید (اختیاری)",
+    "filesToShare": "فایل‌ها برای اشتراک‌گذاری",
+    "files": "فایل‌ها",
+    "totalSize": "حجم کل: {size}",
+    "creating": "در حال ایجاد اشتراک...",
+    "create": "ایجاد اشتراک",
+    "itemsToShare": "موارد برای اشتراک‌گذاری ({count} {count, plural, =1 {مورد} other {مورد}})",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
+  },
+  "shareSecurity": {
+    "title": "تنظیمات امنیتی اشتراک",
+    "subtitle": "پیکربندی محافظت با گذرواژه و گزینه‌های امنیتی برای این اشتراک",
+    "currentStatus": "وضعیت فعلی",
+    "passwordProtection": "محافظت با گذرواژه",
+    "password": "گذرواژه",
+    "newPassword": "گذرواژه جدید",
+    "passwordPlaceholder": "یک گذرواژه امن وارد کنید",
+    "existingPasswordMessage": "این اشتراک از قبل گذرواژه دارد. اگر می‌خواهید آن را به‌روز کنید، گذرواژه جدید را در فیلد زیر وارد کرده و ذخیره کنید.",
+    "passwordRequirements": {
+      "title": "الزامات گذرواژه:",
+      "minLength": "حداقل ۲ کاراکتر"
+    },
+    "info": {
+      "title": "نحوه کار:",
+      "withPassword": "کاربران برای دسترسی به این اشتراک باید گذرواژه را وارد کنند.",
+      "withoutPassword": "هر کسی که لینک را داشته باشد می‌تواند بدون گذرواژه به این اشتراک دسترسی پیدا کند."
+    },
+    "validation": {
+      "passwordRequired": "گذرواژه الزامی است",
+      "passwordTooShort": "گذرواژه باید حداقل ۲ کاراکتر باشد"
+    },
+    "success": {
+      "passwordSet": "محافظت با گذرواژه با موفقیت فعال شد",
+      "passwordUpdated": "گذرواژه با موفقیت به‌روز شد",
+      "passwordRemoved": "محافظت با گذرواژه با موفقیت حذف شد"
+    },
+    "error": {
+      "updateFailed": "به‌روزرسانی تنظیمات امنیتی ناموفق بود"
+    }
+  },
+  "shares": {
+    "errors": {
+      "loadFailed": "بارگذاری اشتراک‌ها ناموفق بود",
+      "notifyFailed": "اطلاع‌رسانی به گیرندگان ناموفق بود",
+      "smtpConfigFailed": "بارگذاری پیکربندی SMTP ناموفق بود"
+    },
+    "messages": {
+      "linkCopied": "لینک در کلیپ‌بورد کپی شد",
+      "recipientsNotified": "گیرندگان با موفقیت مطلع شدند"
+    },
+    "empty": {
+      "message": "هنوز اشتراکی ایجاد نشده است",
+      "createButton": "ایجاد اشتراک"
+    },
+    "header": {
+      "title": "اشتراک‌های من",
+      "myShares": "اشتراک‌های من"
+    },
+    "search": {
+      "title": "همه اشتراک‌ها",
+      "createButton": "ایجاد اشتراک",
+      "placeholder": "جست‌وجوی اشتراک‌ها...",
+      "results": "{filtered} از {total} اشتراک پیدا شد"
+    },
+    "pageTitle": "اشتراک‌ها"
+  },
+  "sharesTable": {
+    "ariaLabel": "جدول اشتراک‌ها",
+    "never": "هرگز",
+    "columns": {
+      "name": "نام",
+      "description": "توضیحات",
+      "createdAt": "ایجاد شده در",
+      "expiresAt": "منقضی می‌شود در",
+      "status": "وضعیت",
+      "security": "امنیت",
+      "files": "فایل‌ها",
+      "recipients": "گیرندگان",
+      "actions": "اقدامات"
+    },
+    "status": {
+      "neverExpires": "هرگز منقضی نمی‌شود",
+      "active": "فعال",
+      "expired": "منقضی شده",
+      "paused": "متوقف",
+      "maxViewsReached": "حد نمایش رسیده است",
+      "noLink": "بدون پیوند",
+      "noLinkTooltip": "این اشتراک هنوز پیوندی ندارد و در دسترس نیست. برای اشتراک‌گذاری یک پیوند ایجاد کنید."
+    },
+    "security": {
+      "protected": "محافظت‌شده",
+      "public": "عمومی"
+    },
+    "filesCount": "فایل‌ها",
+    "folderCount": "پوشه‌ها",
+    "recipientsCount": "گیرندگان",
+    "actions": {
+      "menu": "منوی اقدامات اشتراک",
+      "edit": "ویرایش",
+      "manageFiles": "مدیریت فایل‌ها",
+      "manageRecipients": "مدیریت گیرندگان",
+      "viewDetails": "مشاهده جزئیات",
+      "generateLink": "تولید لینک",
+      "editLink": "ویرایش لینک",
+      "copyLink": "کپی لینک",
+      "viewQrCode": "مشاهده QR کد",
+      "notifyRecipients": "اطلاع‌رسانی به گیرندگان",
+      "downloadShareFiles": "دانلود همه فایل‌ها",
+      "delete": "حذف",
+      "pause": "توقف",
+      "resume": "از سر گرفتن",
+      "renew": "تمدید"
+    },
+    "bulkActions": {
+      "actions": "اقدامات",
+      "download": "دانلود موارد انتخاب‌شده",
+      "delete": "حذف",
+      "selected": "{count, plural, =1 {۱ اشتراک انتخاب شده} other {# اشتراک انتخاب شده}}"
+    },
+    "selectAll": "انتخاب همه",
+    "selectShare": "انتخاب اشتراک {shareName}"
+  },
+  "theme": {
+    "toggle": "تغییر تم",
+    "light": "روشن",
+    "dark": "تیره",
+    "system": "سیستم"
+  },
+  "twoFactor": {
+    "title": "احراز هویت دو مرحله‌ای",
+    "description": "لایه امنیتی اضافی به حساب خود اضافه کنید",
+    "enabled": "حساب شما با احراز هویت دو مرحله‌ای محافظت می‌شود",
+    "disabled": "احراز هویت دو مرحله‌ای فعال نیست",
+    "status": {
+      "label": "وضعیت:",
+      "enabled": "فعال",
+      "disabled": "غیرفعال"
+    },
+    "buttons": {
+      "enable2FA": "فعال‌سازی 2FA",
+      "disable2FA": "غیرفعال‌سازی 2FA"
+    },
+    "setup": {
+      "title": "فعال‌سازی احراز هویت دو مرحله‌ای",
+      "description": "QR کد را با برنامه احراز هویت خود اسکن کنید، سپس کد تأیید را وارد کنید.",
+      "qrCode": "QR کد",
+      "manualEntryKey": "کلید ورود دستی",
+      "verificationCode": "کد تأیید",
+      "verificationCodePlaceholder": "کد ۶ رقمی را وارد کنید",
+      "verificationCodeDescription": "کد ۶ رقمی را از برنامه احراز هویت خود وارد کنید",
+      "verifyAndEnable": "تأیید و فعال‌سازی",
+      "cancel": "انصراف",
+      "qrCodeAlt": "کد QR احراز هویت دو مرحله‌ای"
+    },
+    "disable": {
+      "title": "غیرفعال‌سازی احراز هویت دو مرحله‌ای",
+      "description": "برای تأیید غیرفعال‌سازی احراز هویت دو مرحله‌ای، گذرواژه خود را وارد کنید.",
+      "password": "گذرواژه",
+      "passwordPlaceholder": "گذرواژه خود را وارد کنید",
+      "totpLabel": "کد تأیید",
+      "totpHint": "کد احراز هویت ۶ رقمی یا کد پشتیبان خود را وارد کنید",
+      "confirm": "تأیید غیرفعال‌سازی",
+      "cancel": "انصراف",
+      "totpPlaceholder": "000 000"
+    },
+    "backupCodes": {
+      "title": "کدهای پشتیبان",
+      "description": "این کدهای پشتیبان را در مکانی امن ذخیره کنید. می‌توانید از آنها برای دسترسی به حساب خود در صورت گم شدن دستگاه احراز هویت استفاده کنید.",
+      "warning": "مهم:",
+      "warningText": "هر کد پشتیبان فقط یک بار قابل استفاده است. آنها را امن نگه دارید و با کسی به اشتراک نگذارید.",
+      "generateNew": "تولید کدهای پشتیبان جدید",
+      "download": "دانلود کدهای پشتیبان",
+      "copyToClipboard": "کپی در کلیپ‌بورد",
+      "savedMessage": "کدهای پشتیبان خود را ذخیره کردم",
+      "available": "{count} کد پشتیبان موجود",
+      "instructions": [
+        "• این کدها را در مکان امنی ذخیره کنید",
+        "• هر کد پشتیبان فقط یک بار قابل استفاده است",
+        "• می‌توانید هر زمان کدهای جدید تولید کنید"
+      ]
+    },
+    "verification": {
+      "title": "احراز هویت دو مرحله‌ای",
+      "description": "کد ۶ رقمی را از برنامه احراز هویت خود وارد کنید",
+      "backupDescription": "یکی از کدهای پشتیبان خود را برای ادامه وارد کنید",
+      "verificationCode": "کد تأیید",
+      "backupCode": "کد پشتیبان",
+      "verificationCodePlaceholder": "۰۰۰۰۰۰",
+      "backupCodePlaceholder": "XXXX-XXXX",
+      "verify": "تأیید",
+      "verifying": "در حال تأیید...",
+      "useBackupCode": "استفاده از کد پشتیبان",
+      "useAuthenticatorCode": "استفاده از کد احراز هویت",
+      "rememberDevice": "به خاطر سپاری این دستگاه برای ۳۰ روز",
+      "rememberDeviceDescription": "برای ۳۰ روز نیازی به وارد کردن کدهای 2FA در این دستگاه نخواهید داشت"
+    },
+    "trustedDevices": {
+      "title": "دستگاه‌های معتمد - 2FA",
+      "description": "دستگاه‌هایی که به تأیید 2FA نیاز ندارند",
+      "noDevices": "هیچ دستگاه معتمدی وجود ندارد",
+      "deviceName": "دستگاه",
+      "addedOn": "اضافه شده در",
+      "expiresOn": "منقضی می‌شود در",
+      "remove": "حذف",
+      "removeAll": "حذف همه",
+      "confirmRemove": "آیا از حذف این دستگاه معتمد اطمینان دارید؟",
+      "confirmRemoveAll": "آیا از حذف همه دستگاه‌های معتمد اطمینان دارید؟",
+      "deviceRemoved": "دستگاه معتمد با موفقیت حذف شد",
+      "allDevicesRemoved": "همه دستگاه‌های معتمد با موفقیت حذف شدند",
+      "loadFailed": "بارگذاری دستگاه‌های معتمد ناموفق بود",
+      "removeFailed": "حذف دستگاه معتمد ناموفق بود",
+      "removeAllFailed": "حذف همه دستگاه‌های معتمد ناموفق بود",
+      "loading": "در حال بارگذاری دستگاه‌های معتمد...",
+      "noDevicesDescription": "دستگاه‌ها وقتی که در طول تأیید 2FA آنها را معتمد کنید اینجا نمایش داده می‌شوند",
+      "tableHeaders": {
+        "device": "دستگاه",
+        "added": "اضافه شده",
+        "expires": "منقضی می‌شود",
+        "lastUsed": "آخرین استفاده",
+        "ipAddress": "آدرس IP",
+        "actions": "اقدامات"
+      },
+      "status": {
+        "never": "هرگز",
+        "expired": "منقضی شده"
+      },
+      "modals": {
+        "removeDevice": {
+          "title": "حذف دستگاه معتمد",
+          "added": "اضافه شده:",
+          "ip": "IP:"
+        },
+        "removeAllDevices": {
+          "title": "حذف همه دستگاه‌های معتمد",
+          "description": "این {count} دستگاه{count, plural, =1 {} other {}} معتمد را حذف خواهد کرد. باید دوباره 2FA را در همه دستگاه‌ها تأیید کنید."
+        },
+        "buttons": {
+          "cancel": "انصراف",
+          "removing": "در حال حذف...",
+          "removeDevice": "حذف دستگاه",
+          "removeAllDevices": "حذف همه دستگاه‌ها"
+        }
+      }
+    },
+    "messages": {
+      "enabledSuccess": "احراز هویت دو مرحله‌ای با موفقیت فعال شد!",
+      "disabledSuccess": "احراز هویت دو مرحله‌ای با موفقیت غیرفعال شد",
+      "backupCodesGenerated": "کدهای پشتیبان جدید با موفقیت تولید شد",
+      "backupCodesCopied": "کدهای پشتیبان در کلیپ‌بورد کپی شد",
+      "setupFailed": "تولید تنظیمات 2FA ناموفق بود",
+      "verificationFailed": "کد تأیید نامعتبر است",
+      "disableFailed": "غیرفعال‌سازی 2FA ناموفق بود. لطفاً گذرواژه خود را بررسی کنید.",
+      "backupCodesFailed": "تولید کدهای پشتیبان ناموفق بود",
+      "backupCodesCopyFailed": "کپی کدهای پشتیبان ناموفق بود",
+      "statusLoadFailed": "بارگذاری وضعیت 2FA ناموفق بود",
+      "enterVerificationCode": "لطفاً کد تأیید را وارد کنید",
+      "enterPassword": "لطفاً گذرواژه خود را وارد کنید",
+      "deviceTrusted": "این دستگاه به مدت ۳۰ روز به عنوان معتمد علامت‌گذاری شده است"
+    },
+    "errors": {
+      "invalidVerificationCode": "کد تأیید نامعتبر است",
+      "invalidTwoFactorCode": "کد احراز هویت دو مرحله‌ای نامعتبر است",
+      "twoFactorRequired": "احراز هویت دو مرحله‌ای الزامی است",
+      "twoFactorAlreadyEnabled": "احراز هویت دو مرحله‌ای قبلاً فعال شده است",
+      "twoFactorNotEnabled": "احراز هویت دو مرحله‌ای فعال نیست",
+      "passwordVerificationRequired": "تأیید گذرواژه الزامی است",
+      "invalidPassword": "گذرواژه نامعتبر است",
+      "userNotFound": "کاربر یافت نشد"
+    },
+    "deviceNames": {
+      "unknownDevice": "دستگاه ناشناخته",
+      "browsers": {
+        "chrome": "Chrome",
+        "firefox": "Firefox",
+        "safari": "Safari",
+        "edge": "Edge"
+      },
+      "platforms": {
+        "windows": " بر روی Windows",
+        "macos": " بر روی macOS",
+        "linux": " بر روی Linux",
+        "iphone": " بر روی iPhone",
+        "android": " بر روی Android"
+      }
+    }
+  },
+  "uploadFile": {
+    "title": "بارگذاری فایل",
+    "multipleTitle": "بارگذاری فایل‌ها",
+    "selectFile": "برای انتخاب فایل کلیک کنید",
+    "selectMultipleFiles": "برای انتخاب یک یا چند فایل کلیک کنید",
+    "dragAndDrop": "یا فایل‌ها را اینجا بکشید و رها کنید",
+    "filesQueued": "{count, plural, one {# فایل در صف بارگذاری} other {# فایل در صف بارگذاری}}",
+    "preview": "پیش‌نمایش",
+    "uploadProgress": "پیشرفت بارگذاری",
+    "upload": "بارگذاری",
+    "startUploads": "شروع بارگذاری",
+    "retry": "تلاش مجدد",
+    "finish": "پایان",
+    "success": "فایل با موفقیت بارگذاری شد",
+    "allSuccess": "{count, plural, =1 {فایل با موفقیت بارگذاری شد} other {# فایل با موفقیت بارگذاری شد}}",
+    "partialSuccess": "{success} فایل با موفقیت بارگذاری شد، {error} ناموفق",
+    "error": "بارگذاری فایل ناموفق بود",
+    "fileSizeExceeded": "حجم فایل از محدودیت {maxsizemb}MB تجاوز می‌کند.",
+    "insufficientStorage": "فضای ذخیره‌سازی کافی نیست. شما {availablespace}MB فضای موجود دارید.",
+    "storageFull": "فضای ذخیره‌سازی کافی نیست. موجود: {available} گیگابایت، مورد نیاز: {required} گیگابایت.",
+    "unauthorized": "غیرمجاز: برای دسترسی به این منبع به یک توکن معتبر نیاز است.",
+    "globalDrop": {
+      "title": "فایل‌ها را برای بارگذاری رها کنید",
+      "description": "برای بارگذاری فایل‌های خود رها کنید"
+    },
+    "confirmCancel": {
+      "title": "لغو بارگذاری",
+      "messageSingle": "یک بارگذاری در حال انجام است.",
+      "messageMultiple": "{count} بارگذاری در حال انجام است.",
+      "warning": "اگر اکنون ببندید، بارگذاری‌ها لغو خواهند شد و هر گونه پیشرفتی از دست خواهد رفت.",
+      "continue": "ادامه بارگذاری",
+      "cancel": "لغو بارگذاری"
+    },
+    "pasteSuccess": "{count, plural, =1 {تصویر چسبانده و با موفقیت بارگذاری شد} other {# تصویر چسبانده و با موفقیت بارگذاری شد}}",
+    "errors": {
+      "addFileFailed": "افزودن {name} ناموفق بود: {error}",
+      "uploadFailed": "آپلود ناموفق بود",
+      "networkError": "اتصال به سرور ممکن نیست. لطفاً اتصال خود را بررسی کنید.",
+      "storageUnavailable": "سرویس ذخیره‌سازی در دسترس نیست. لطفاً بعداً دوباره تلاش کنید."
+    }
+  },
+  "groups": {
+    "header": {
+      "title": "گروه‌ها",
+      "management": "مدیریت گروه‌ها",
+      "addGroup": "ایجاد گروه"
+    },
+    "table": {
+      "name": "نام",
+      "description": "توضیحات",
+      "members": "اعضا",
+      "maxFileSize": "حداکثر حجم فایل",
+      "maxStorage": "حداکثر فضای ذخیره‌سازی",
+      "storageUsed": "فضای استفاده‌شده",
+      "actions": "اقدامات",
+      "inherited": "به‌ارث‌رسیده",
+      "unlimited": "نامحدود",
+      "empty": "هنوز گروهی وجود ندارد. یکی ایجاد کنید تا شروع کنید."
+    },
+    "form": {
+      "titleCreate": "ایجاد گروه",
+      "titleEdit": "ویرایش گروه",
+      "name": "نام",
+      "namePlaceholder": "نام گروه را وارد کنید",
+      "description": "توضیحات",
+      "descriptionPlaceholder": "توضیحات اختیاری",
+      "ldapDn": {
+        "label": "LDAP Group DN",
+        "placeholder": "مثال: CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name گروه Active Directory برای نقشه‌برداری. اگر از LDAP استفاده نمی‌کنید خالی بگذارید."
+      },
+      "quota": {
+        "title": "سهمیه‌های ذخیره‌سازی",
+        "maxFileSize": "حداکثر حجم فایل",
+        "maxTotalStorage": "حداکثر فضای کل",
+        "inherit": "به ارث بردن (پیش‌فرض جهانی)",
+        "unlimited": "نامحدود",
+        "custom": "سفارشی"
+      },
+      "create": "ایجاد گروه",
+      "save": "ذخیره تغییرات"
+    },
+    "delete": {
+      "title": "حذف گروه",
+      "confirmationWithMembers": "این گروه دارای {count} عضو است. آن‌ها حذف خواهند شد و سهمیه‌هایشان به مقادیر پیش‌فرض جهانی بازخواهد گشت.",
+      "confirmation": "آیا مطمئن هستید که می‌خواهید این گروه را حذف کنید؟",
+      "confirm": "حذف گروه"
+    },
+    "detail": {
+      "title": "جزئیات گروه",
+      "members": "اعضا",
+      "addMember": "افزودن عضو",
+      "searchUsers": "جستجوی کاربران...",
+      "noMembers": "هیچ عضوی در این گروه وجود ندارد.",
+      "remove": "حذف",
+      "moveWarning": "این کاربر در حال حاضر در گروه \"{groupName}\" است. به این گروه منتقل خواهد شد.",
+      "storageUsed": "فضای استفاده‌شده",
+      "memberUser": "کاربر",
+      "memberEmail": "ایمیل",
+      "memberStorage": "فضای ذخیره‌سازی",
+      "selectUser": "یک کاربر انتخاب کنید...",
+      "add": "افزودن",
+      "userInOtherGroup": "این کاربر در حال حاضر در گروه \"{groupName}\" است. جابجا خواهد شد."
+    },
+    "validation": {
+      "nameRequired": "نام گروه الزامی است"
+    },
+    "messages": {
+      "createSuccess": "گروه با موفقیت ایجاد شد",
+      "updateSuccess": "گروه با موفقیت به‌روزرسانی شد",
+      "deleteSuccess": "گروه با موفقیت حذف شد",
+      "memberAdded": "عضو به گروه اضافه شد",
+      "memberRemoved": "عضو از گروه حذف شد"
+    },
+    "errors": {
+      "submitFailed": "خطا در {mode} گروه",
+      "deleteFailed": "خطا در حذف گروه",
+      "memberAddFailed": "خطا در افزودن عضو",
+      "memberRemoveFailed": "خطا در حذف عضو"
+    },
+    "actions": {
+      "viewDetails": "مشاهده جزئیات",
+      "edit": "ویرایش",
+      "delete": "حذف"
+    }
+  },
+  "users": {
+    "modes": {
+      "create": "ایجاد",
+      "edit": "ویرایش"
+    },
+    "errors": {
+      "loadFailed": "بارگذاری کاربران ناموفق بود",
+      "submitFailed": "{mode} کاربر ناموفق بود",
+      "deleteFailed": "حذف کاربر ناموفق بود",
+      "statusUpdateFailed": "به‌روزرسانی وضعیت کاربر ناموفق بود"
+    },
+    "messages": {
+      "createSuccess": "کاربر با موفقیت ایجاد شد",
+      "updateSuccess": "کاربر با موفقیت به‌روز شد",
+      "deleteSuccess": "کاربر با موفقیت حذف شد",
+      "activateSuccess": "کاربر با موفقیت فعال شد",
+      "deactivateSuccess": "کاربر با موفقیت غیرفعال شد"
+    },
+    "actions": {
+      "edit": "ویرایش",
+      "activate": "فعال‌سازی",
+      "deactivate": "غیرفعال‌سازی",
+      "delete": "حذف"
+    },
+    "delete": {
+      "title": "تأیید حذف کاربر",
+      "confirmation": "آیا از حذف کاربر {firstName} {lastName} اطمینان دارید؟ این عمل قابل بازگشت نیست.",
+      "confirm": "حذف کاربر"
+    },
+    "form": {
+      "titleCreate": "افزودن کاربر جدید",
+      "titleEdit": "ویرایش کاربر",
+      "firstName": "نام",
+      "lastName": "نام خانوادگی",
+      "username": "نام کاربری",
+      "email": "ایمیل",
+      "password": "گذرواژه",
+      "newPassword": "گذرواژه جدید (اختیاری)",
+      "passwordPlaceholder": "برای حفظ گذرواژه فعلی خالی بگذارید",
+      "role": "نقش",
+      "roleUser": "کاربر",
+      "roleAdmin": "مدیر",
+      "group": "گروه",
+      "noGroup": "بدون گروه",
+      "groupSaveError": "خطا در به‌روزرسانی تخصیص گروه",
+      "create": "ایجاد",
+      "save": "ذخیره",
+      "quota": {
+        "title": "سهمیه‌های ذخیره‌سازی",
+        "maxFileSize": "حداکثر اندازه فایل",
+        "maxTotalStorage": "حداکثر فضای ذخیره‌سازی کل",
+        "inherit": "استفاده از پیش‌فرض",
+        "unlimited": "نامحدود",
+        "custom": "سفارشی",
+        "saveSuccess": "سهمیه با موفقیت به‌روزرسانی شد",
+        "saveError": "خطا در به‌روزرسانی سهمیه",
+        "currentUsage": "مصرف فعلی",
+        "effectiveMaxFileSize": "حداکثر اندازه فایل مؤثر",
+        "effectiveMaxStorage": "حداکثر فضای ذخیره‌سازی کل مؤثر",
+        "usagePercent": "مصرف",
+        "sourceUser": "تجاوز کاربر",
+        "sourceGroup": "گروه",
+        "sourceGlobal": "پیش‌فرض جهانی",
+        "sourceAdminDefault": "پیش‌فرض مدیر"
+      }
+    },
+    "status": {
+      "title": "تأیید تغییر وضعیت",
+      "confirmation": "آیا از {action} کاربر {firstName} {lastName} اطمینان دارید؟",
+      "activate": "فعال‌سازی",
+      "deactivate": "غیرفعال‌سازی",
+      "user": "کاربر"
+    },
+    "header": {
+      "title": "مدیریت کاربران",
+      "addUser": "افزودن کاربر",
+      "management": "مدیریت کاربران"
+    },
+    "table": {
+      "user": "کاربر",
+      "userRole": "کاربر",
+      "email": "ایمیل",
+      "status": "وضعیت",
+      "role": "نقش",
+      "actions": "اقدامات",
+      "active": "فعال",
+      "inactive": "غیرفعال",
+      "admin": "مدیر",
+      "source": "منبع",
+      "ldap": "LDAP",
+      "local": "محلی"
+    },
+    "invite": {
+      "button": "تولید لینک دعوت",
+      "title": "تولید لینک دعوت کاربر",
+      "description": "یک لینک یک‌بار مصرف تولید کنید که به کسی اجازه می‌دهد حساب خود را ایجاد کند. لینک پس از ۱۵ دقیقه منقضی می‌شود.",
+      "generating": "در حال تولید...",
+      "generate": "تولید لینک",
+      "generated": "لینک دعوت با موفقیت تولید شد!",
+      "linkReady": "لینک دعوت آماده است",
+      "linkReadyDescription": "این لینک را با شخصی که می‌خواهید دعوت کنید به اشتراک بگذارید. آنها می‌توانند حساب خود را به عنوان یک کاربر معمولی ایجاد کنند.",
+      "copyLink": "کپی لینک",
+      "linkCopied": "لینک دعوت در کلیپ‌بورد کپی شد!",
+      "expiresIn": "پس از ۱۵ دقیقه منقضی می‌شود",
+      "close": "بستن",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
+      "errors": {
+        "generateFailed": "تولید لینک دعوت ناموفق بود",
+        "copyFailed": "کپی لینک ناموفق بود",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
+      }
+    }
+  },
+  "validation": {
+    "firstNameRequired": "نام الزامی است",
+    "lastNameRequired": "نام خانوادگی الزامی است",
+    "usernameLength": "نام کاربری باید حداقل ۳ کاراکتر باشد",
+    "usernameSpaces": "نام کاربری نمی‌تواند شامل فاصله باشد",
+    "invalidEmail": "لطفاً یک آدرس ایمیل معتبر وارد کنید",
+    "passwordLength": "گذرواژه باید حداقل ۸ کاراکتر باشد",
+    "passwordsMatch": "گذرواژه‌ها باید مطابقت داشته باشند",
+    "emailRequired": "ایمیل الزامی است",
+    "emailOrUsernameRequired": "ایمیل یا نام کاربری الزامی است",
+    "passwordRequired": "گذرواژه الزامی است",
+    "passwordMinLength": "گذرواژه باید حداقل ۶ کاراکتر باشد",
+    "nameRequired": "نام الزامی است",
+    "required": "این فیلد الزامی است",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+  },
+  "registerWithInvite": {
+    "title": "حساب خود را ایجاد کنید",
+    "description": "برای ایجاد حساب خود، اطلاعات زیر را پر کنید",
+    "labels": {
+      "firstName": "نام",
+      "firstNamePlaceholder": "نام خود را وارد کنید",
+      "lastName": "نام خانوادگی",
+      "lastNamePlaceholder": "نام خانوادگی خود را وارد کنید",
+      "username": "نام کاربری",
+      "usernamePlaceholder": "یک نام کاربری انتخاب کنید",
+      "email": "ایمیل",
+      "emailPlaceholder": "ایمیل خود را وارد کنید",
+      "password": "گذرواژه",
+      "passwordPlaceholder": "یک گذرواژه انتخاب کنید",
+      "confirmPassword": "تأیید گذرواژه",
+      "confirmPasswordPlaceholder": "گذرواژه خود را تأیید کنید"
+    },
+    "buttons": {
+      "creating": "در حال ایجاد حساب...",
+      "createAccount": "ایجاد حساب"
+    },
+    "validation": {
+      "firstNameRequired": "نام الزامی است",
+      "lastNameRequired": "نام خانوادگی الزامی است",
+      "usernameMinLength": "نام کاربری باید حداقل ۳ کاراکتر باشد",
+      "invalidEmail": "ایمیل نامعتبر است",
+      "passwordMinLength": "گذرواژه باید حداقل ۸ کاراکتر باشد",
+      "passwordsMatch": "گذرواژه‌ها باید مطابقت داشته باشند",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "messages": {
+      "success": "حساب با موفقیت ایجاد شد! در حال انتقال به صفحه ورود...",
+      "redirecting": "در حال انتقال به صفحه ورود..."
+    },
+    "errors": {
+      "invalidToken": "خطا در لینک دعوت",
+      "tokenUsed": "این لینک دعوت قبلاً استفاده شده است",
+      "tokenExpired": "این لینک دعوت منقضی شده است",
+      "usernameExists": "نام کاربری قبلاً وجود دارد",
+      "emailExists": "ایمیل قبلاً وجود دارد",
+      "createFailed": "ایجاد حساب ناموفق بود. لطفاً دوباره تلاش کنید."
+    },
+    "pageTitle": "ایجاد حساب"
+  },
+  "filesTree": {
+    "noItems": "موردی برای نمایش وجود ندارد"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "تغییر زبان"
+  },
+  "ldap": {
+    "pageTitle": "LDAP / Active Directory",
+    "pageDescription": "پیکربندی هماهنگ‌سازی LDAP برای درون‌ریزی کاربران از Active Directory",
+    "config": {
+      "title": "پیکربندی",
+      "description": "اتصال سرور LDAP و تنظیمات نقشه‌برداری ویژگی",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
+      "connection": "اتصال",
+      "serverUrl": "URL سرور",
+      "useTls": "استفاده از TLS (LDAPS)",
+      "tlsSkipVerify": "نادیده گرفتن تأیید TLS",
+      "tlsSkipVerifyWarning": "هشدار: غیرفعال کردن تأیید گواهینامه حملات مرد وسط را امکان‌پذیر می‌کند",
+      "bindDn": "Bind DN",
+      "bindPassword": "رمز Bind",
+      "bindPasswordPlaceholder": "برای آزمایش یا ذخیره رمز جدید، رمز را وارد کنید",
+      "search": "تنظیمات جستجو",
+      "searchBase": "پایگاه جستجو",
+      "syncGroupDn": "هماهنگ‌سازی Group DN",
+      "attributes": "نقشه‌برداری ویژگی",
+      "usernameAttr": "ویژگی نام کاربری",
+      "emailAttr": "ویژگی ایمیل",
+      "displayNameAttr": "ویژگی نام نمایشی",
+      "syncSettings": "تنظیمات هماهنگ‌سازی",
+      "syncInterval": "بازه هماهنگ‌سازی (دقیقه)",
+      "syncIntervalHelp": "بین ۱۵ دقیقه و ۷ روز (۱۰۰۸۰ دقیقه)",
+      "appUrl": "URL برنامه",
+      "appUrlHelp": "در ایمیل‌های خوش‌آمدگویی برای کاربران LDAP جدید استفاده می‌شود",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
+      "appUrlRequired": "URL برنامه هنگام فعال بودن LDAP الزامی است",
+      "bindPasswordRequired": "رمز Bind برای پیکربندی جدید الزامی است",
+      "members": "اعضا",
+      "save": "ذخیره پیکربندی",
+      "testConnection": "آزمایش اتصال",
+      "saveSuccess": "پیکربندی LDAP ذخیره شد",
+      "saveError": "خطا در ذخیره پیکربندی LDAP",
+      "testSuccess": "آزمایش اتصال موفق بود",
+      "testError": "آزمایش اتصال ناموفق بود"
+    },
+    "groupMapping": {
+      "title": "نقشه‌برداری گروه",
+      "description": "گروه‌های محلی نقشه‌برداری شده به گروه‌های Active Directory برای اختصاص سهمیه",
+      "manageGroups": "مدیریت گروه‌ها",
+      "groupName": "نام گروه",
+      "adGroupDn": "AD Group DN",
+      "noMapping": "هیچ نقشه‌برداری گروه پیکربندی‌نشده است. برای نقشه‌برداری گروه‌های AD به گروه‌های سهمیه محلی، LDAP DNها را در مدیریت گروه تعیین کنید."
+    },
+    "sync": {
+      "title": "عملیات هماهنگ‌سازی",
+      "description": "هماهنگ‌سازی دستی و سابقه هماهنگ‌سازی",
+      "syncNow": "هماهنگ‌سازی اکنون",
+      "triggered": "هماهنگ‌سازی LDAP شروع شد",
+      "error": "خطا در شروع هماهنگ‌سازی LDAP",
+      "lastSync": "آخرین هماهنگ‌سازی",
+      "nextSync": "هماهنگ‌سازی بعدی",
+      "noHistory": "هنوز سابقه هماهنگ‌سازی وجود ندارد",
+      "date": "تاریخ",
+      "trigger": "راه‌انداز",
+      "duration": "مدت زمان",
+      "created": "ایجاد شده",
+      "updated": "به‌روز شده",
+      "deactivated": "غیرفعال شده",
+      "reactivated": "دوباره فعال شده",
+      "skipped": "نادیده گرفته شده",
+      "status": "وضعیت",
+      "statusLabel": {
+        "success": "موفق",
+        "error": "خطا",
+        "partial": "جزئی",
+        "running": "در حال اجرا"
+      }
+    },
+    "syncDetail": {
+      "title": "جزئیات هماهنگ‌سازی",
+      "details": "نادیده گرفتن و جزئیات خطا",
+      "type": "نوع",
+      "username": "نام کاربری",
+      "email": "ایمیل",
+      "message": "پیام",
+      "detailType": {
+        "skip": "رد شده",
+        "error": "خطا"
+      }
+    },
+    "banner": {
+      "active": "هماهنگ‌سازی LDAP/AD فعال است",
+      "disabled": "هماهنگ‌سازی LDAP/AD غیرفعال است",
+      "configure": "پیکربندی"
+    },
+    "warnings": {
+      "title": "هشدارهای پیکربندی"
+    },
+    "time": {
+      "justNow": "همین الآن",
+      "minutesAgo": "{minutes} دقیقه پیش",
+      "hoursAgo": "{hours} ساعت پیش",
+      "daysAgo": "{days} روز پیش"
+    },
+    "browse": {
+      "retry": "Retry",
+      "error": "Something went wrong. Please try again.",
+      "directory": {
+        "title": "Browse Directory",
+        "description": "Pick a base DN from the live directory tree.",
+        "buttonLabel": "Browse directory",
+        "useDetectedBase": "Use detected base",
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "loading": "Loading directory…",
+        "noRoots": "No naming contexts found.",
+        "noSubContainers": "No sub-containers"
+      },
+      "groups": {
+        "title": "Find Group",
+        "description": "Search the directory for a group to sync.",
+        "buttonLabel": "Search groups",
+        "placeholder": "Type to search groups…",
+        "prompt": "Start typing to search for a group.",
+        "searching": "Searching…",
+        "empty": "No groups match your search.",
+        "truncated": "Too many results — refine your search.",
+        "resultCount": "{count, plural, =0 {No groups found} one {# group found} other {# groups found}}"
+      }
+    }
+  },
+  "backgroundImages": {
+    "empty": "هیچ تصویر پس‌زمینه‌ای بارگذاری نشده است. برای فعال‌سازی پس‌زمینه‌های سفارشی برای اشتراک‌های سبک WeTransfer تصاویر بارگذاری کنید.",
+    "add": "افزودن تصویر",
+    "uploading": "در حال بارگذاری...",
+    "uploadSuccess": "تصویر با موفقیت بارگذاری شد",
+    "uploadError": "خطا در بارگذاری تصویر",
+    "deleteConfirm": "آیا مطمئن هستید که می‌خواهید این تصویر پس‌زمینه را حذف کنید؟",
+    "deleteSuccess": "تصویر با موفقیت حذف شد",
+    "deleteError": "خطا در حذف تصویر",
+    "untitled": "بدون عنوان",
+    "rename": "برای تغییر نام کلیک کنید",
+    "renameSuccess": "تصویر با موفقیت تغییر نام یافت",
+    "renameError": "خطا در تغییر نام تصویر",
+    "moveUp": "حرکت به بالا",
+    "moveDown": "حرکت به پایین",
+    "reorderError": "خطا در تغییر ترتیب تصاویر"
+  },
+  "quickShare": {
+    "dropzone": {
+      "title": "اشتراک سریع",
+      "description": "فایل‌های خود را برای اشتراک سریع اینجا بکشید",
+      "browse": "یا برای مرور کلیک کنید",
+      "dragActive": "فایل‌ها را اینجا رها کنید"
+    },
+    "upload": {
+      "title": "اشتراک سریع",
+      "addMore": "افزودن فایل‌های بیشتر",
+      "dropToAdd": "فایل‌ها را برای اضافه برای رها کنید",
+      "namePlaceholder": "نام اشتراک",
+      "expiration": {
+        "label": "منقضی می‌شود در",
+        "1day": "۱ روز",
+        "7days": "۷ روز",
+        "30days": "۳۰ روز",
+        "never": "هرگز"
+      },
+      "password": {
+        "label": "محافظت با گذرواژه",
+        "placeholder": "گذرواژه را وارد کنید"
+      },
+      "recipients": {
+        "label": "گیرندگان",
+        "placeholder": "آدرس‌های ایمیل را اضافه کنید",
+        "hint": "برای افزودن Enter را فشار دهید"
+      },
+      "share": "اشتراک‌گذاری",
+      "sharing": "در حال اشتراک‌گذاری...",
+      "waitingUpload": "در حال بارگذاری... اشتراک به‌صورت خودکار ایجاد خواهد شد",
+      "defaultName": "{count, plural, one {# فایل} other {# فایل}}",
+      "error": "خطا در ایجاد اشتراک",
+      "uploadError": "برخی فایل‌ها در بارگذاری ناموفق بود",
+      "notifyError": "اشتراک ایجاد شد اما اطلاع‌رسانی به گیرندگان ناموفق بود",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
+      "invalidEmail": "لطفاً یک آدرس ایمیل معتبر وارد کنید"
+    },
+    "confirmation": {
+      "title": "اشتراک‌گذاری شد!",
+      "copyLink": "کپی لینک",
+      "copied": "لینک کپی شد!",
+      "summary": {
+        "files": "{count, plural, one {# فایل} other {# فایل}}",
+        "expires": "منقضی می‌شود در {duration}",
+        "noExpiry": "بدون انقضا",
+        "password": "محافظت‌شده با گذرواژه",
+        "noPassword": "بدون گذرواژه"
+      },
+      "newShare": "اشتراک جدید",
+      "downloadQr": "دانلود کد QR"
+    }
+  },
+  "notificationPreferences": {
+    "pageTitle": "تفضیلات اطلاع‌رسانی",
+    "description": "انتخاب کنید کدام اطلاع‌رسانی‌های ایمیل را دریافت می‌کنید",
+    "type": "نوع اطلاع‌رسانی",
+    "category": "دسته",
+    "frequency": "تکرار",
+    "immediate": "فوری",
+    "disabled": "غیرفعال",
+    "alwaysEnabled": "همیشه فعال",
+    "save": "ذخیره تفضیلات",
+    "saveSuccess": "تفضیلات اطلاع‌رسانی ذخیره شدند",
+    "saveError": "عدم موفقیت در ذخیره تفضیلات",
+    "noChanges": "تغییری برای ذخیره نیست",
+    "types": {
+      "password_reset": "بازنشانی رمز عبور",
+      "welcome": "ایمیل خوش‌آمدگویی",
+      "account_deactivated": "حساب غیرفعال شد",
+      "account_reactivated": "حساب دوباره فعال شد",
+      "share_invitation": "دعوت اشتراک‌گذاری",
+      "share_accessed": "اشتراک‌گذاری دسترسی‌پذیر شد",
+      "share_downloaded": "فایل از اشتراک‌گذاری دانلود شد",
+      "share_expiring": "اشتراک‌گذاری به زودی منقضی می‌شود",
+      "share_expired": "اشتراک‌گذاری منقضی شد",
+      "share_max_views_reached": "حداکثر نمایش اشتراک‌گذاری رسید",
+      "share_no_activity": "بدون فعالیت در اشتراک‌گذاری",
+      "reverse_share_invitation": "دعوت پیوند دریافت",
+      "reverse_share_uploaded": "فایل‌ها در پیوند دریافت آپلود شدند",
+      "reverse_share_expiring": "پیوند دریافت به زودی منقضی می‌شود",
+      "reverse_share_expired": "پیوند دریافت منقضی شد",
+      "quota_warning": "هشدار سهمیه",
+      "quota_exceeded": "سهمیه تجاوز شد",
+      "files_auto_deleted": "فایل‌ها به طور خودکار حذف شدند",
+      "share_auto_deleted": "اشتراک‌گذاری به طور خودکار حذف شد",
+      "admin_user_registered": "کاربر جدید ثبت‌شد (فقط برای مدیران)",
+      "admin_quota_alert": "هشدار سهمیه کاربر (فقط برای مدیران)",
+      "test_email": "ایمیل آزمایشی",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
+    },
+    "descriptions": {
+      "share_accessed": "وقتی کسی پیوند فایل‌های به‌اشتراک‌گذاشته‌شده شما را باز می‌کند",
+      "share_downloaded": "وقتی کسی فایل‌ها را از اشتراک شما دانلود می‌کند",
+      "share_expiring": "یادآوری پیش از انقضای پیوند اشتراک شما",
+      "share_expired": "وقتی پیوند اشتراک شما منقضی شده و دیگر قابل دسترسی نیست",
+      "share_pending_deletion": "وقتی اشتراک منقضی‌شده شما برای حذف دائم زمان‌بندی شده است",
+      "share_max_views_reached": "وقتی اشتراک شما به حداکثر تعداد بازدیدهای مجاز رسیده است",
+      "share_no_activity": "وقتی اشتراک شما مدتی است هیچ دانلودی نداشته است",
+      "reverse_share_uploaded": "وقتی کسی فایل‌هایی را از طریق پیوند دریافت فایل شما آپلود می‌کند",
+      "reverse_share_expiring": "یادآوری پیش از انقضای پیوند دریافت فایل شما",
+      "reverse_share_expired": "وقتی پیوند دریافت فایل شما منقضی شده است",
+      "reverse_share_pending_deletion": "وقتی پیوند دریافت فایل منقضی‌شده شما برای حذف زمان‌بندی شده است",
+      "reverse_share_auto_deleted": "وقتی پیوند دریافت فایل شما پس از انقضا به‌طور خودکار حذف شده است",
+      "quota_warning": "وقتی میزان استفاده از فضای ذخیره‌سازی شما به سقف سهمیه نزدیک می‌شود",
+      "quota_exceeded": "وقتی میزان استفاده از فضای ذخیره‌سازی شما از سقف سهمیه عبور کرده است",
+      "files_auto_deleted": "وقتی فایل‌ها به‌طور خودکار برای آزادسازی فضای سهمیه حذف شده‌اند",
+      "share_auto_deleted": "وقتی یک اشتراک به‌طور خودکار توسط سیستم پاک‌سازی حذف شده است",
+      "admin_user_registered": "وقتی کاربر جدیدی در سامانه ثبت‌نام می‌کند (فقط برای مدیران)",
+      "admin_quota_alert": "وقتی میزان استفاده از فضای ذخیره‌سازی یک کاربر از سهمیه‌اش فراتر می‌رود (فقط برای مدیران)"
+    },
+    "categories": {
+      "account": "حساب",
+      "shares": "اشتراک‌گذاری‌ها",
+      "reverseShares": "پیوندهای دریافت",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
+    },
+    "saving": "ذخیره‌سازی...",
+    "loadError": "عدم موفقیت در بارگذاری تفضیلات اطلاع‌رسانی",
+    "retry": "تلاش دوباره",
+    "unsavedChanges": "{count, plural, one {# تغییر ذخیره نشده} other {# تغییر ذخیره نشده}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP",
+      "label": "[TO_TRANSLATE] User management"
+    }
+  }
+}

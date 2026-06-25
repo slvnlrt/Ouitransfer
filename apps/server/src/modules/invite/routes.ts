@@ -1,0 +1,151 @@
+import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
+import { z } from "zod";
+
+import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
+import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
+import {
+  CreateInviteTokenResponseSchema,
+  CreateInviteTokenSchema,
+  RegisterWithInviteResponseSchema,
+  RegisterWithInviteSchema,
+  ValidateInviteTokenResponseSchema,
+} from "./dto.js";
+import { InviteService } from "./service.js";
+
+const inviteService = new InviteService();
+
+export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
+  app.route({
+    method: "POST",
+    url: "/invite-tokens",
+    schema: {
+      tags: ["Invite"],
+      operationId: "generateInviteToken",
+      summary: "Generate Invite Token",
+      description:
+        "Generate a one-time use invite token for user registration (admin only). " +
+        "When an email is provided, the invite link is also sent to that address.",
+      body: CreateInviteTokenSchema,
+      response: {
+        200: CreateInviteTokenResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        500: ErrorResponseSchema,
+      },
+    },
+    preValidation: createAdminPreValidation({ allowSetupBypass: false }),
+    handler: async (request, reply) => {
+      const email = request.body?.email;
+      const { id, token, expiresAt, emailSent, registrationUrl } =
+        await inviteService.generateInviteToken(request.user.userId, email);
+
+      // Audit invite token creation (fire-and-forget)
+      logAuditEvent({
+        action: "INVITE_TOKEN_CREATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        userId: request.user.userId,
+        targetType: "invite_token",
+        targetId: id,
+        metadata: email
+          ? { expiresAt: expiresAt.toISOString(), recipientEmail: email }
+          : { expiresAt: expiresAt.toISOString() },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
+      return reply.send({ token, expiresAt, emailSent, registrationUrl });
+    },
+  });
+
+  app.route({
+    method: "GET",
+    url: "/invite-tokens/:token",
+    config: {
+      // A6-08: strict per-IP limit on the unauthenticated validate oracle. Tokens
+      // are 256-bit (brute force infeasible) but this is an unthrottled probe that
+      // also feeds the bcrypt path indirectly; keyed by IP via the global keyGenerator.
+      rateLimit: {
+        max: 5,
+        timeWindow: "1 minute",
+      },
+    },
+    schema: {
+      tags: ["Invite"],
+      operationId: "validateInviteToken",
+      summary: "Validate Invite Token",
+      description: "Check if an invite token is valid and can be used",
+      params: z.object({
+        token: z.string().describe("Invite token"),
+      }),
+      response: {
+        200: ValidateInviteTokenResponseSchema,
+        500: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const validation = await inviteService.validateInviteToken(request.params.token);
+      return reply.send(validation);
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/register-with-invite",
+    config: {
+      csrfExempt: true,
+      // A6-02: strict per-IP limit on the unauthenticated registration endpoint.
+      // It runs bcrypt per request (CPU-heavy) and is otherwise bounded only by the
+      // shared global 100/min bucket — one source could exhaust the global budget.
+      // The cheap pre-flight token check (service.ts) still runs ahead of bcrypt so
+      // the bcrypt-DoS amplification stays bounded even within this limit. Keyed by
+      // IP via the global keyGenerator.
+      rateLimit: {
+        max: 5,
+        timeWindow: "1 minute",
+      },
+    },
+    schema: {
+      tags: ["Invite"],
+      operationId: "registerWithInvite",
+      summary: "Register with Invite",
+      description: "Create a new user account using an invite token",
+      body: RegisterWithInviteSchema,
+      response: {
+        200: RegisterWithInviteResponseSchema,
+        400: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+        409: ErrorResponseSchema,
+        410: ErrorResponseSchema,
+        500: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { token, firstName, lastName, username, email, password } = request.body;
+      const user = await inviteService.registerWithInvite({
+        token,
+        firstName,
+        lastName,
+        username,
+        email,
+        password,
+      });
+
+      // Audit invite token use (fire-and-forget)
+      logAuditEvent({
+        action: "INVITE_TOKEN_USED",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "invite_token",
+        targetId: user.inviteTokenId,
+        metadata: { email: user.email, userId: user.id },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
+      return reply.send({
+        message: "User registered successfully",
+        user,
+      });
+    },
+  });
+};

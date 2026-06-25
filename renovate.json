@@ -1,0 +1,65 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "minimumReleaseAge": "3 days",
+  "rangeStrategy": "bump",
+  "schedule": ["before 7am on monday"],
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "squash",
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "automerge": true,
+      "automergeStrategy": "squash"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    },
+    {
+      "matchPackageNames": ["@types/**"],
+      "rangeStrategy": "pin",
+      "groupName": "TypeScript type definitions"
+    },
+    {
+      "description": "A8-15 — security-critical dependencies require manual review (never automerge, even patch/minor). A malicious or regressed release of any of these is an auth/crypto/supply-chain risk. This also covers the deferred bcryptjs@3 bump (A8-14/A1-17) being human-reviewed. Listed LAST so it overrides the general automerge rules above (last matching rule wins in Renovate).",
+      "matchPackageNames": [
+        "@fastify/jwt",
+        "jose",
+        "@fastify/csrf-protection",
+        "bcryptjs",
+        "otpauth",
+        "@fastify/helmet",
+        "helmet",
+        "@fastify/rate-limit",
+        "ldapts",
+        "nodemailer"
+      ],
+      "automerge": false,
+      "groupName": "security-critical (manual review)",
+      "groupSlug": "security-critical"
+    },
+    {
+      "matchPackageNames": [
+        "!@fastify/jwt",
+        "!jose",
+        "!@fastify/csrf-protection",
+        "!bcryptjs",
+        "!otpauth",
+        "!@fastify/helmet",
+        "!helmet",
+        "!@fastify/rate-limit",
+        "!ldapts",
+        "!nodemailer"
+      ],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
+    }
+  ]
+}

@@ -1,0 +1,204 @@
+---
+title: Groupes
+icon: UsersRound
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Les groupes sont des unités organisationnelles qui vous permettent d'appliquer des politiques de quota à un ensemble d'utilisateurs en une seule fois. Plutôt que de définir des dérogations de quota sur chaque compte individuellement, vous créez un groupe, configurez ses limites une fois, puis affectez des utilisateurs. Chaque utilisateur ne peut appartenir qu'à un seul groupe à la fois.
+
+<Callout type="info">
+  Les groupes sont une fonctionnalité réservée aux administrateurs. Toutes les opérations de gestion des groupes nécessitent un compte administrateur.
+</Callout>
+
+## Création d'un groupe
+
+Accédez à **Groupes** (visible dans le menu de navigation pour les comptes administrateur) et cliquez sur **Créer un groupe**.
+
+| Champ | Requis | Description |
+|-------|--------|-------------|
+| Nom | Oui | Identifiant unique du groupe (100 caractères maximum) |
+| Description | Non | Note en texte libre à l'intention des administrateurs (500 caractères maximum) |
+| Taille maximale de fichier | Non | Dérogation de limite de taille de fichier par membre |
+| Stockage total maximal | Non | Dérogation de limite de stockage total par membre |
+
+### Valeurs des dérogations de quota
+
+Les champs de quota acceptent trois modes :
+
+- **Hériter** (`null`) : le groupe ne définit pas de limite ; chaque membre hérite du niveau suivant (valeur par défaut globale).
+- **Illimité** (`0`) : les membres de ce groupe n'ont aucune limite appliquée pour ce quota, quels que soient les paramètres globaux.
+- **Personnalisé** (une valeur positive en octets) : les membres de ce groupe sont plafonnés à cette valeur.
+
+<Callout type="warn">
+  Définir un quota de groupe sur **Illimité** ne signifie pas « utiliser la valeur par défaut globale ». Cela signifie que la limite est activement supprimée pour ces membres. Utilisez **Hériter** si vous souhaitez que la valeur par défaut globale s'applique.
+</Callout>
+
+## Gestion des membres
+
+### Depuis la page Groupes
+
+Ouvrez la vue de détail du groupe en cliquant sur le nom du groupe ou en sélectionnant **Voir les détails** dans le menu d'actions. La vue de détail affiche tous les membres actuels avec leur nom d'utilisateur, adresse e-mail et utilisation individuelle du stockage.
+
+Pour ajouter un membre, sélectionnez un utilisateur dans la liste déroulante de la section **Ajouter un membre** et cliquez sur **Ajouter**. Si l'utilisateur sélectionné est déjà membre d'un autre groupe, un avertissement s'affiche : il sera transféré vers le groupe actuel lorsque vous confirmerez.
+
+Pour retirer un membre, cliquez sur le bouton de suppression sur sa ligne. L'utilisateur est désassigné du groupe et sa résolution de quota revient aux valeurs par défaut globales.
+
+### Depuis la Gestion des utilisateurs
+
+Vous pouvez également assigner un groupe lors de la modification d'un utilisateur individuel. Accédez à **Admin → Gestion des utilisateurs**, modifiez l'utilisateur et sélectionnez un groupe dans la liste déroulante **Groupe**. Choisissez **Aucun** pour retirer l'utilisateur de tout groupe.
+
+<Callout type="info">
+  Un utilisateur ne peut appartenir qu'à un seul groupe à la fois. L'affectation d'un utilisateur à un nouveau groupe le retire automatiquement de son groupe précédent. Il n'est pas nécessaire de le désassigner au préalable.
+</Callout>
+
+## Héritage des quotas
+
+Lorsqu'Ouitransfer résout les limites de quota effectives d'un utilisateur, il applique la chaîne de priorité suivante :
+
+```
+Dérogation utilisateur  →  Dérogation de groupe  →  Valeur par défaut globale
+```
+
+Plus précisément :
+
+1. Si l'utilisateur a une dérogation personnelle définie, elle prime, indépendamment de tout paramètre de groupe.
+2. Si l'utilisateur n'a pas de dérogation personnelle mais appartient à un groupe qui en possède une, la valeur du groupe est utilisée.
+3. Si ni l'utilisateur ni son groupe ne disposent d'une dérogation, la valeur par défaut globale définie dans les Paramètres s'applique.
+4. Les administrateurs bénéficient toujours de quotas illimités, indépendamment des paramètres de groupe ou globaux.
+
+### Exemples de scénarios
+
+| Dérogation utilisateur | Dérogation de groupe | Valeur par défaut globale | Limite effective |
+|------------------------|----------------------|---------------------------|-----------------|
+| 5 Go | 10 Go | 2 Go | **5 Go** (l'utilisateur prime) |
+| Hériter | 10 Go | 2 Go | **10 Go** (le groupe prime) |
+| Hériter | Hériter | 2 Go | **2 Go** (valeur par défaut globale) |
+| Hériter | Illimité | 2 Go | **Illimité** (le groupe supprime activement la limite) |
+| Hériter | (aucun groupe) | 2 Go | **2 Go** (valeur par défaut globale) |
+
+Le quota effectif de chaque utilisateur est affiché dans le formulaire d'édition de la Gestion des utilisateurs, accompagné d'un libellé indiquant la source de la résolution (**Dérogation utilisateur**, **Groupe : \{nom\}**, ou **Valeur par défaut globale**).
+
+Pour une description complète du système de quotas, consultez la documentation [Quotas](/docs/v1-beta/quotas).
+
+## Suppression d'un groupe
+
+Sélectionnez **Supprimer** dans le menu d'actions du groupe. Si le groupe a des membres, la boîte de dialogue de confirmation indiquera le nombre d'utilisateurs concernés.
+
+La suppression d'un groupe **ne supprime pas ses membres**. Leur `groupId` est défini à `null` (base de données `SET NULL`) et ils reviennent aux valeurs par défaut globales de quota. Aucune donnée utilisateur ni fichier n'est supprimé.
+
+<Callout type="warn">
+  La suppression est définitive. Les membres précédemment soumis aux dérogations de quota au niveau du groupe reviendront immédiatement aux valeurs par défaut globales après la suppression du groupe. Si ces valeurs par défaut globales sont plus restrictives que les limites du groupe, les utilisateurs concernés pourraient voir leurs téléversements bloqués jusqu'à ce que vous les affectiez à un nouveau groupe ou définissiez des dérogations personnelles.
+</Callout>
+
+## Correspondance de groupes LDAP
+
+Les groupes peuvent être liés à des groupes Active Directory via le champ `ldapDn` du modèle Group. Lors d'une synchronisation LDAP, les utilisateurs appartenant au groupe AD correspondant sont automatiquement affectés au groupe Ouitransfer associé.
+
+Le champ **DN LDAP** est disponible dans l'interface Groupes (dans les dialogues Créer et Modifier un groupe) ainsi que dans le corps des requêtes API pour `POST /groups` et `PUT /groups/:id`. Définissez-le sur le nom distinctif du groupe Active Directory correspondant (ex. `CN=Finance,OU=Groups,DC=corp,DC=local`).
+
+La valeur `ldapDn` est également retournée dans les réponses API (`GET /groups`, `GET /groups/:id`) et dans le résumé des correspondances de groupes de la page de configuration LDAP.
+
+Pour les instructions de configuration, consultez la documentation [Configuration LDAP](/docs/v1-beta/ldap-configuration).
+
+<Callout type="info">
+  La synchronisation LDAP respecte la contrainte d'un groupe par utilisateur. Si un utilisateur correspond à plusieurs correspondances de groupes AD, l'un d'eux est assigné mais le choix n'est pas déterministe. Évitez les appartenances qui se chevauchent pour des résultats prévisibles.
+</Callout>
+
+## Référence API (administrateur)
+
+Tous les points de terminaison nécessitent une session administrateur valide. Les requêtes non administrateur reçoivent `403 Forbidden`.
+
+| Méthode | Chemin | Description |
+|---------|--------|-------------|
+| `GET` | `/groups` | Lister tous les groupes avec le nombre de membres et le stockage total utilisé |
+| `GET` | `/groups/:id` | Obtenir les détails d'un groupe, y compris la liste complète des membres |
+| `POST` | `/groups` | Créer un nouveau groupe |
+| `PUT` | `/groups/:id` | Mettre à jour un groupe existant |
+| `DELETE` | `/groups/:id` | Supprimer un groupe (les membres sont désassignés, non supprimés) |
+| `POST` | `/groups/:id/members` | Ajouter un utilisateur au groupe (le déplace s'il est déjà dans un autre groupe) |
+| `DELETE` | `/groups/:id/members/:userId` | Retirer un utilisateur du groupe |
+
+### Corps des requêtes
+
+**Créer un groupe** (`POST /groups`) :
+
+```json
+{
+  "name": "Engineering",
+  "description": "Engineering team",
+  "ldapDn": "CN=Engineering,OU=Groups,DC=corp,DC=local",
+  "maxFileSizeOverride": null,
+  "maxTotalStorageOverride": "21474836480"
+}
+```
+
+**Mettre à jour un groupe** (`PUT /groups/:id`) : tous les champs sont optionnels :
+
+```json
+{
+  "name": "Engineering",
+  "description": null,
+  "ldapDn": null,
+  "maxFileSizeOverride": "0",
+  "maxTotalStorageOverride": null
+}
+```
+
+**Ajouter un membre** (`POST /groups/:id/members`) :
+
+```json
+{
+  "userId": "clx..."
+}
+```
+
+### Formats des réponses
+
+**Élément de liste de groupes** (`GET /groups`) :
+
+```json
+{
+  "id": "clx...",
+  "name": "Engineering",
+  "description": "Engineering team",
+  "memberCount": 12,
+  "storageUsed": "5368709120",
+  "maxFileSizeOverride": null,
+  "maxTotalStorageOverride": "21474836480",
+  "ldapDn": null,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:00:00.000Z"
+}
+```
+
+**Détail d'un groupe** (`GET /groups/:id`) : mêmes champs plus un tableau `members` :
+
+```json
+{
+  "members": [
+    {
+      "id": "clx...",
+      "username": "jdoe",
+      "email": "jdoe@example.com",
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "image": null,
+      "storageUsed": "1073741824"
+    }
+  ]
+}
+```
+
+**Réponse de suppression** (`DELETE /groups/:id`) :
+
+```json
+{
+  "message": "Group deleted",
+  "unassignedCount": 12
+}
+```
+
+### Encodage des champs de quota
+
+`maxFileSizeOverride` et `maxTotalStorageOverride` sont des valeurs `BigInt` sérialisées sous forme de chaînes dans les réponses JSON. Lors de l'envoi de ces valeurs dans les corps de requête, vous pouvez les fournir sous forme de nombre, de chaîne numérique ou de `null`. La valeur maximale acceptée est 1 Po (1 125 899 906 842 624 octets).

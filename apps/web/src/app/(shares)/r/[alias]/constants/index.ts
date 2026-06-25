@@ -1,0 +1,46 @@
+export type ErrorType = "inactive" | "notFound" | "expired" | "generic" | null;
+
+export const STATUS_VARIANTS = {
+  success: {
+    iconBg: "bg-green-100 dark:bg-green-900/20",
+    iconColor: "text-green-600 dark:text-green-400",
+    titleColor: "text-green-800 dark:text-green-200",
+    descriptionColor: "text-green-600 dark:text-green-300",
+  },
+  warning: {
+    iconBg: "bg-amber-100 dark:bg-amber-900/20",
+    iconColor: "text-amber-600 dark:text-amber-400",
+    titleColor: "text-foreground",
+    descriptionColor: "text-muted-foreground",
+  },
+  error: {
+    iconBg: "bg-red-100 dark:bg-red-900/20",
+    iconColor: "text-red-600 dark:text-red-400",
+    titleColor: "text-foreground",
+    descriptionColor: "text-muted-foreground",
+  },
+  info: {
+    iconBg: "bg-orange-100 dark:bg-orange-900/20",
+    iconColor: "text-orange-600 dark:text-orange-400",
+    titleColor: "text-foreground",
+    descriptionColor: "text-muted-foreground",
+  },
+  neutral: {
+    iconBg: "bg-gray-100 dark:bg-gray-900/20",
+    iconColor: "text-gray-600 dark:text-gray-400",
+    titleColor: "text-foreground",
+    descriptionColor: "text-muted-foreground",
+  },
+};
+
+export const UPLOAD_CONFIG = {
+  TEXTAREA_ROWS: 3,
+} as const;
+
+export const MESSAGE_TYPES = {
+  SUCCESS: "SUCCESS",
+  MAX_FILES: "MAX_FILES",
+  INACTIVE: "INACTIVE",
+  NOT_FOUND: "NOT_FOUND",
+  EXPIRED: "EXPIRED",
+} as const;

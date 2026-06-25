@@ -1,0 +1,86 @@
+"use client";
+
+import { Download } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useFilePreview } from "@/hooks/use-file-preview";
+import { getFileIcon } from "@/utils/file-icons";
+import { FilePreviewRenderer } from "./previews";
+
+interface FilePreviewModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  file: {
+    name: string;
+    objectName: string;
+    type?: string;
+    id?: string;
+    description?: string;
+  };
+  isReverseShare?: boolean;
+  sharePassword?: string;
+  /** Share id (public share viewer only) — lets explicit downloads be tracked per-share. */
+  shareId?: string;
+}
+
+export function FilePreviewModal({
+  isOpen,
+  onClose,
+  file,
+  isReverseShare = false,
+  sharePassword,
+  shareId,
+}: FilePreviewModalProps) {
+  const t = useTranslations();
+  const previewState = useFilePreview({ file, isOpen, isReverseShare, sharePassword, shareId });
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            {(() => {
+              const FileIcon = getFileIcon(file.name).icon;
+              return <FileIcon className="size-6" />;
+            })()}
+            <span className="truncate">{file.name}</span>
+          </DialogTitle>
+          <DialogDescription className="sr-only">{t("filePreview.description")}</DialogDescription>
+        </DialogHeader>
+        <div className="flex-1 overflow-auto">
+          <FilePreviewRenderer
+            fileType={previewState.fileType}
+            fileName={file.name}
+            previewUrl={previewState.previewUrl}
+            videoBlob={previewState.videoBlob}
+            textContent={previewState.textContent}
+            isLoading={previewState.isLoading}
+            pdfAsBlob={previewState.pdfAsBlob}
+            pdfLoadFailed={previewState.pdfLoadFailed}
+            onPdfLoadError={previewState.handlePdfLoadError}
+            description={file.description}
+            onDownload={previewState.handleDownload}
+          />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            {t("common.close")}
+          </Button>
+          <Button onClick={previewState.handleDownload}>
+            <Download className="h-4 w-4" />
+            {t("common.download")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

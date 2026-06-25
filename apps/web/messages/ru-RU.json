@@ -1,0 +1,3004 @@
+{
+  "a11y": {
+    "skipToContent": "Перейти к содержимому"
+  },
+  "auth": {
+    "errors": {
+      "account_inactive": "Учётная запись неактивна. Обратитесь к администратору.",
+      "registration_disabled": "Регистрация через SSO отключена.",
+      "token_expired": "Токен истёк. Попробуйте ещё раз.",
+      "config_error": "Ошибка конфигурации. Обратитесь в поддержку.",
+      "auth_failed": "Ошибка аутентификации. Попробуйте ещё раз."
+    },
+    "authenticationFailed": "Ошибка аутентификации",
+    "successfullyAuthenticated": "Успешно аутентифицирован!",
+    "sessionExpired": "Ваша сессия истекла. Пожалуйста, войдите снова.",
+    "callback": {
+      "errors": {
+        "oauth_error": "Ошибка аутентификации OAuth",
+        "missing_parameters": "Отсутствуют параметры аутентификации",
+        "missing_code": "Отсутствует код авторизации",
+        "registration_disabled": "Регистрация отключена для этого провайдера",
+        "provider_disabled": "Этот провайдер аутентификации отключён",
+        "state_expired": "Сессия аутентификации истекла",
+        "account_inactive": "Ваш аккаунт неактивен",
+        "no_email": "Адрес электронной почты не найден в вашем аккаунте",
+        "token_exchange_failed": "Ошибка аутентификации у провайдера",
+        "missing_user_info": "Неполная информация о пользователе от провайдера"
+      }
+    }
+  },
+  "authProviders": {
+    "title": "Провайдеры аутентификации",
+    "description": "Настройка внешних провайдеров аутентификации для SSO",
+    "enabledCount": "{count} включено",
+    "loadingProviders": "Загрузка провайдеров...",
+    "providersConfigured": "Настроено {count} провайдеров",
+    "enabledOfTotal": "Включено {enabled} из {total} провайдеров",
+    "hideDisabledProviders": "Скрыть отключенные провайдеры",
+    "addProvider": "Добавить провайдера",
+    "addProviderTitle": "Добавить провайдера",
+    "editProvider": "Редактировать провайдера",
+    "deleteProvider": "Удалить провайдера",
+    "enabled": "Включен",
+    "disabled": "Отключен",
+    "officialProvider": "Официальный провайдер",
+    "dragToReorder": "Перетащите для изменения порядка",
+    "dragDisabledMessage": "Перетаскивание отключено при фильтрации провайдеров. Покажите всех провайдеров для изменения порядка.",
+    "dragEnabledMessage": "Перетащите провайдеров для изменения порядка. Этот порядок будет отображен на странице входа.",
+    "noProvidersEnabled": "Нет включенных провайдеров аутентификации",
+    "noProvidersConfigured": "Нет настроенных провайдеров аутентификации",
+    "form": {
+      "providerName": "Имя провайдера",
+      "providerNamePlaceholder": "например, mycompany",
+      "displayName": "Отображаемое имя",
+      "displayNamePlaceholder": "например, SSO моей компании",
+      "type": "Тип",
+      "typeOidc": "OIDC (OpenID Connect)",
+      "typeOauth2": "OAuth 2.0",
+      "icon": "Иконка",
+      "iconPlaceholder": "Выберите иконку",
+      "clientId": "ID клиента",
+      "clientIdPlaceholder": "Ваш ID клиента OAuth",
+      "clientSecret": "Секрет клиента",
+      "clientSecretPlaceholder": "Ваш секрет клиента OAuth",
+      "oauthScopes": "Области OAuth",
+      "scopesPlaceholder": "Введите области (например, openid, profile, email)",
+      "scopesHelpOidc": "Области автоматически предлагаются на основе URL провайдера. Общие области OIDC: openid, profile, email, groups",
+      "scopesHelpOauth2": "Области автоматически предлагаются на основе URL провайдера. Общие области OAuth2 зависят от провайдера",
+      "providerUrl": "URL провайдера",
+      "providerUrlPlaceholder": "https://auth.example.ru",
+      "providerUrlAutoPlaceholder": "https://your-provider.com (конечные точки будут обнаружены автоматически)",
+      "providerUrlManualPlaceholder": "https://your-provider.ru",
+      "autoDiscoveryHelp": "Система автоматически обнаружит конечные точки авторизации, токена и информации о пользователе",
+      "manualConfigurationHelp": "Базовый URL вашего провайдера (конечные точки будут относительно этого URL)",
+      "authorizationEndpoint": "Конечная точка авторизации",
+      "authorizationEndpointPlaceholder": "https://auth.example.ru/auth",
+      "tokenEndpoint": "Конечная точка токена",
+      "tokenEndpointPlaceholder": "https://auth.example.ru/token",
+      "userInfoEndpoint": "Конечная точка информации о пользователе",
+      "userInfoEndpointPlaceholder": "https://auth.example.ru/userinfo",
+      "configurationMethod": "Метод конфигурации",
+      "autoDiscovery": "Автоматическое обнаружение",
+      "autoDiscoveryDescription": "Автоматически обнаруживать конечные точки из URL провайдера",
+      "manualEndpoints": "Ручные конечные точки (Рекомендуется)",
+      "manualEndpointsDescription": "Вручную настроить конечные точки авторизации, токена и информации о пользователе",
+      "callbackUrl": "URL обратного вызова",
+      "callbackUrlDescription": "Используйте этот URL в конфигурации вашего OAuth провайдера",
+      "copyCallbackUrl": "Копировать URL обратного вызова",
+      "callbackUrlCopied": "URL обратного вызова скопирован в буфер обмена!",
+      "adminEmailDomains": "Домены электронной почты администраторов",
+      "adminEmailDomainsPlaceholder": "Введите домены (например, admin.company.com)",
+      "adminEmailDomainsHelp": "Пользователи с электронной почтой из этих доменов получат права администратора",
+      "autoRegister": "Автоматически регистрировать новых пользователей",
+      "officialProviderUrlPlaceholder": "Замените заполнитель вашим URL {displayName}",
+      "officialProviderHelp": "Это официальный провайдер. Конечные точки предварительно настроены. Вы можете редактировать только этот URL.",
+      "officialProviderIconHelp": "Вы можете настроить иконку для этого официального провайдера."
+    },
+    "buttons": {
+      "cancel": "Отмена",
+      "save": "Сохранить",
+      "saving": "Сохранение...",
+      "adding": "Добавление...",
+      "updating": "Обновление...",
+      "saveProvider": "Сохранить провайдера",
+      "delete": "Удалить",
+      "deleting": "Удаление...",
+      "edit": "Редактировать",
+      "enable": "Включить",
+      "disable": "Отключить"
+    },
+    "messages": {
+      "providerAdded": "Провайдер успешно добавлен",
+      "providerUpdated": "Провайдер успешно обновлен",
+      "providerDeleted": "Провайдер успешно удален",
+      "providerOrderUpdated": "Порядок провайдеров успешно обновлен",
+      "fillRequiredFields": "Пожалуйста, заполните все обязательные поля (имя, отображаемое имя, ID клиента, секрет клиента)",
+      "provideUrlOrEndpoints": "Укажите либо URL провайдера для автоматического обнаружения, ЛИБО все три пользовательские конечные точки",
+      "chooseDiscoveryOrManual": "Выберите либо автоматическое обнаружение (URL провайдера), ЛИБО ручные конечные точки, но не оба варианта",
+      "loadFailed": "Не удалось загрузить провайдеров",
+      "addFailed": "Не удалось добавить провайдера",
+      "updateFailed": "Не удалось обновить провайдера",
+      "deleteFailed": "Не удалось удалить провайдера",
+      "orderUpdateFailed": "Не удалось обновить порядок провайдеров"
+    },
+    "info": {
+      "title": "Информация",
+      "officialProvidersRecommended": "Для лучшей функциональности рекомендуется использовать официальных провайдеров. Если у вас возникли проблемы с пользовательским провайдером, рассмотрите возможность создания issue на",
+      "github": "GitHub",
+      "officialProvider": "Официальный провайдер",
+      "officialProviderDescription": "Этот провайдер оптимизирован OUITRANSFER. Можно изменять только учетные данные и конфигурацию.",
+      "manualConfigTitle": "Ручная настройка",
+      "manualConfigDescription": "Вы предоставляете все конечные точки вручную. Убедитесь, что они правильны для вашего провайдера."
+    },
+    "deleteModal": {
+      "title": "Удалить провайдера аутентификации",
+      "confirmMessage": "Вы уверены, что хотите удалить провайдера \"{displayName}\"? Это действие нельзя отменить.",
+      "providerId": "ID провайдера: {name}",
+      "cancel": "Отмена",
+      "delete": "Удалить провайдера",
+      "deleting": "Удаление..."
+    }
+  },
+  "bulkDownload": {
+    "title": "Массовая Загрузка",
+    "zipNameLabel": "Имя ZIP-файла",
+    "zipNamePlaceholder": "Введите имя файла",
+    "description": "{count, plural, =1 {1 файл будет сжат} other {# файлов будет сжато}}",
+    "download": "Скачать ZIP"
+  },
+  "common": {
+    "loading": "Загрузка, пожалуйста, подождите...",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "close": "Закрыть",
+    "download": "Скачать",
+    "unexpectedError": "Произошла неожиданная ошибка. Пожалуйста, попробуйте снова.",
+    "yes": "Да",
+    "no": "Нет",
+    "dashboard": "Панель управления",
+    "back": "Назад",
+    "updating": "Обновление...",
+    "saving": "Сохранение...",
+    "update": "Обновить",
+    "clickToActivate": "Нажмите для активации",
+    "clickToDeactivate": "Нажмите для деактивации",
+    "creating": "Создание...",
+    "loadingSimple": "Загрузка...",
+    "create": "Создать",
+    "deleting": "Удаление...",
+    "move": "Переместить",
+    "rename": "Переименовать",
+    "search": "Поиск",
+    "share": "Поделиться",
+    "copied": "Скопировано",
+    "copy": "Копировать",
+    "retry": "Retry",
+    "unavailable": "недоступно",
+    "days": "дней",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    },
+    "moving": "Перемещение…"
+  },
+  "createShare": {
+    "title": "Создать общий доступ",
+    "nameLabel": "Название общего доступа",
+    "expirationLabel": "Дата истечения",
+    "expirationPlaceholder": "ДД.ММ.ГГГГ ЧЧ:ММ",
+    "maxViewsLabel": "Максимальное количество просмотров",
+    "maxViewsPlaceholder": "Оставьте пустым для неограниченного доступа",
+    "passwordProtection": "Защита паролем",
+    "passwordLabel": "Пароль",
+    "create": "Создать общий доступ",
+    "success": "Общий доступ успешно создан",
+    "error": "Не удалось создать общий доступ",
+    "descriptionLabel": "Описание",
+    "descriptionPlaceholder": "Введите описание (опционально)",
+    "namePlaceholder": "Введите имя для вашего общего доступа",
+    "nextSelectFiles": "Далее: Выбор файлов",
+    "searchLabel": "Поиск",
+    "tabs": {
+      "shareDetails": "Детали общего доступа",
+      "selectFiles": "Выбрать файлы",
+      "shareLink": "Ссылка для доступа"
+    },
+    "errors": {
+      "nameRequired": "Требуется имя общего ресурса"
+    },
+    "itemsSelected": "Выбрано элементов: {count}",
+    "passwordPlaceholder": "Введите пароль",
+    "privacySection": "Конфиденциальность и уведомления",
+    "nameFieldRequired": "Требовать имя посетителя",
+    "emailFieldRequired": "Требовать электронную почту посетителя",
+    "notifyOnDownload": "Уведомлять меня при каждой загрузке",
+    "notifyOnDownloadHelp": "После включения вы будете получать уведомления по электронной почте при загрузке файлов из этого общего доступа, независимо от глобальных настроек уведомлений.",
+    "inactivityAlertDays": "Предупредить, если загрузок нет после",
+    "inactivityAlertPlaceholder": "Оставьте пусто для отключения",
+    "fieldHidden": "Скрыто",
+    "fieldOptional": "Опционально",
+    "fieldRequired": "Обязательно",
+    "filesOptionalHint": "Добавление файлов опционально, вы можете создать пустой общий доступ сейчас и добавить файлы позже.",
+    "nextGenerateLink": "Далее: ссылка",
+    "linkStepDescription": "Создайте пользовательскую ссылку, чтобы другие могли получить доступ к этому общему ресурсу, или пропустите этот шаг и добавьте её позже.",
+    "nameFieldRequiredHelp": "Определяет, запрашивается ли у посетителей имя при открытии общего доступа.",
+    "emailFieldRequiredHelp": "Определяет, запрашивается ли у посетителей электронная почта при открытии общего доступа."
+  },
+  "customization": {
+    "breadcrumb": "Настройка",
+    "colors": {
+      "title": "Цвета темы",
+      "description": "Выберите предпочтительный основной цвет темы",
+      "presets": "Доступные цвета",
+      "presetsDescription": "Выберите из доступных цветовых тем",
+      "reset": "Сбросить по умолчанию"
+    },
+    "fonts": {
+      "title": "Типография",
+      "description": "Выберите предпочтительное семейство шрифтов",
+      "available": "Доступные шрифты",
+      "availableDescription": "Выберите из доступных семейств шрифтов",
+      "reset": "Сбросить по умолчанию"
+    },
+    "radius": {
+      "title": "Радиус границ",
+      "description": "Настройте закругление элементов интерфейса",
+      "available": "Варианты закругления",
+      "availableDescription": "Выберите, как должны выглядеть закругленные углы",
+      "reset": "Сбросить по умолчанию"
+    },
+    "background": {
+      "title": "Цвета фона",
+      "description": "Настройте цвета фона для светлого и темного режимов",
+      "lightMode": "Светлый режим",
+      "darkMode": "Темный режим",
+      "availableDescription": "Выберите цвета фона для светлой и темной тем",
+      "reset": "Сбросить по умолчанию"
+    },
+    "theme": {
+      "title": "Режим темы",
+      "description": "Выберите между светлой, темной или системной темой",
+      "selectTheme": "Предпочтительная тема",
+      "availableDescription": "Выберите предпочтительный режим темы",
+      "reset": "Сбросить на системную"
+    },
+    "pageTitle": "Настройка"
+  },
+  "dashboard": {
+    "loadError": "Ошибка загрузки данных панели управления",
+    "linkCopied": "Ссылка скопирована в буфер обмена",
+    "pageTitle": "Панель управления",
+    "breadcrumb": "Панель управления",
+    "recentFiles": {
+      "title": "Недавние файлы",
+      "description": "Ваши недавно загруженные файлы"
+    },
+    "systemStatus": {
+      "title": "Состояние системы",
+      "refresh": "Обновить",
+      "status": {
+        "healthy": "Работает",
+        "degraded": "Ограничено",
+        "unhealthy": "Недоступно"
+      },
+      "checks": {
+        "database": "База данных",
+        "storage": "Хранилище",
+        "ok": "OK",
+        "error": "Ошибка",
+        "notConfigured": "Не настроено"
+      },
+      "uptime": "Время работы",
+      "diskSpace": {
+        "label": "Дисковое пространство",
+        "ariaLabel": "Индикатор использования дискового пространства"
+      },
+      "quota": {
+        "label": "Квота хранилища",
+        "ariaLabel": "Индикатор квоты хранилища",
+        "notConfigured": "Квоты не настроены",
+        "unlimited": "Без ограничений",
+        "used": "Использовано {used} из {total}",
+        "usedOnly": "Использовано {used}",
+        "exceeded": {
+          "banner": "Квота хранилища превышена. Вы не можете загружать новые файлы, пока не освободите место, удалив существующие файлы или общие папки."
+        },
+        "warning": {
+          "banner": "Вы используете {percentage}% своей квоты хранилища."
+        }
+      },
+      "metrics": {
+        "users": "Пользователи",
+        "files": "Файлы",
+        "shares": "Общие доступы",
+        "reverseShares": "Обратные доступы",
+        "myFiles": "Мои файлы",
+        "activeShares": "Активные доступы"
+      },
+      "email": {
+        "label": "Эл. почта / Уведомления",
+        "status": {
+          "ok": "Работает",
+          "disabled": "Не настроено",
+          "degraded": "Снижено",
+          "down": "Не в сети"
+        },
+        "queue": {
+          "pending": "В ожидании",
+          "failed": "Ошибки",
+          "sent24h": "Отправлено за 24ч"
+        },
+        "lastError": "Последняя ошибка",
+        "userDisrupted": "Уведомления нарушены",
+        "userOffline": "Уведомления не в сети"
+      },
+      "errors": {
+        "title": "Статус недоступен",
+        "fetchFailed": "Не удалось получить состояние системы. Повторите попытку позже.",
+        "diskSpaceError": "Не удалось получить информацию о дисковом пространстве.",
+        "statsError": "Не удалось загрузить статистику платформы.",
+        "emailStatsError": "Не удалось загрузить статистику уведомлений по электронной почте."
+      },
+      "collapse": "Свернуть состояние системы",
+      "expand": "Развернуть состояние системы"
+    }
+  },
+  "deleteConfirmation": {
+    "filesToDelete": "Файлы для удаления",
+    "sharesToDelete": "Общие папки, которые будут удалены",
+    "foldersToDelete": "Папки для удаления",
+    "itemsToDelete": "Элементы для удаления"
+  },
+  "downloadQueue": {
+    "downloadQueued": "Загрузка в очереди: {fileName}",
+    "queuedDescription": "Ваша загрузка начнется автоматически, когда освободится слот",
+    "queuePosition": "Загрузка в очереди на позиции {position}: {fileName}",
+    "estimatedWait": "Расчетное время ожидания: {time}",
+    "queueFull": "Очередь загрузки заполнена",
+    "queueFullDescription": "Пожалуйста, повторите попытку через несколько минут, когда в очереди появится место",
+    "cancelSuccess": "Загрузка успешно отменена",
+    "cancelError": "Не удалось отменить загрузку: {error}",
+    "status": {
+      "pending": "Подготовка...",
+      "queued": "В очереди",
+      "downloading": "Загрузка",
+      "completed": "Завершено",
+      "failed": "Не удалось"
+    },
+    "waitTime": {
+      "seconds": "{seconds} сек",
+      "minutes": "{minutes} мин",
+      "hoursMinutes": "{hours}ч {minutes}мин"
+    },
+    "indicator": {
+      "title": "Загрузки",
+      "downloads": "Очередь загрузки",
+      "active": "Активные",
+      "queued": "В очереди",
+      "position": "Позиция {position}",
+      "estimatedWait": "Ожидание: {time}",
+      "unknownFile": "Неизвестный файл",
+      "noDownloads": "Нет активных загрузок",
+      "refresh": "Обновить очередь"
+    }
+  },
+  "emptyState": {
+    "noFiles": "Файлы еще не загружены",
+    "uploadFile": "Загрузить файл"
+  },
+  "errors": {
+    "invalidCredentials": "Неверный адрес электронной почты или пароль",
+    "networkError": "Не удаётся подключиться к серверу. Проверьте подключение.",
+    "userNotFound": "Пользователь не найден",
+    "accountLocked": "Ваш аккаунт временно заблокирован из-за слишком большого количества неудачных попыток входа. Пожалуйста, попробуйте снова через {minutes} минут.",
+    "unexpectedError": "Произошла непредвиденная ошибка. Пожалуйста, попробуйте еще раз",
+    "Invalid password": "Неверный пароль",
+    "Invalid two-factor authentication code": "Неверный код двухфакторной аутентификации",
+    "Invalid verification code": "Неверный код подтверждения",
+    "Password verification required": "Требуется подтверждение пароля",
+    "Two-factor authentication is already enabled": "Двухфакторная аутентификация уже включена",
+    "Two-factor authentication is not enabled": "Двухфакторная аутентификация не включена",
+    "Two-factor authentication required": "Требуется двухфакторная аутентификация",
+    "noUserData": "Нет данных пользователя",
+    "somethingWentWrong": "Что-то пошло не так",
+    "tryAgain": "Попробовать снова",
+    "goHome": "На главную",
+    "pageNotFound": "Страница не найдена",
+    "pageNotFoundMessage": "Страница, которую вы ищете, не существует или была перемещена.",
+    "shareUnavailable": "Ссылка недоступна",
+    "shareErrorMessage": "Произошла ошибка при загрузке этой ссылки.",
+    "uploadUnavailable": "Загрузка недоступна",
+    "uploadErrorMessage": "Произошла ошибка при загрузке этой страницы.",
+    "accessDenied": "Доступ запрещён",
+    "accessDeniedMessage": "У вас нет прав администратора для доступа к этой странице.",
+    "errorLoadingSettings": "Ошибка загрузки настроек",
+    "refreshPage": "Обновить страницу"
+  },
+  "fileActions": {
+    "editFile": "Редактировать файл",
+    "nameLabel": "Имя",
+    "namePlaceholder": "Введите новое имя",
+    "extension": "Расширение",
+    "descriptionLabel": "Описание",
+    "descriptionPlaceholder": "Введите описание файла",
+    "deleteFile": "Удалить файл",
+    "deleteConfirmation": "Вы уверены, что хотите удалить ?",
+    "deleteWarning": "Это действие необратимо.",
+    "addDescriptionPlaceholder": "Добавить описание...",
+    "inSharesWarningTitle": "Этот файл включен в общие доступы",
+    "inSharesWarningBody": "Этот файл включен в {count, plural, one {# общий доступ} other {# общих доступов}}. Его удаление удалит его из всех общих доступов.",
+    "deleteAnyway": "Удалить в любом случае",
+    "bulkInSharesWarningTitle": "Некоторые файлы включены в общие доступы",
+    "bulkInSharesWarningBody": "{count, plural, one {# файл включен} other {# файлов включены}} в общие доступы. Их удаление удалит {count, plural, one {его} other {их}} из всех общих доступов."
+  },
+  "fileManager": {
+    "downloadError": "Ошибка скачивания файла",
+    "updateSuccess": "Файл успешно обновлен",
+    "updateError": "Ошибка при обновлении файла",
+    "deleteSuccess": "Файл успешно удален",
+    "deleteError": "Ошибка при удалении файла"
+  },
+  "filePreview": {
+    "title": "Предварительный просмотр файла",
+    "description": "Просмотр и загрузка файла",
+    "loading": "Загрузка...",
+    "notAvailable": "Предварительный просмотр недоступен для этого типа файла.",
+    "downloadToView": "Используйте кнопку загрузки для скачивания файла.",
+    "loadError": "Ошибка загрузки предварительного просмотра файла.",
+    "downloadSuccess": "Download started",
+    "downloadError": "Ошибка скачивания файла.",
+    "audioNotSupported": "Ваш браузер не поддерживает аудио элемент.",
+    "videoNotSupported": "Ваш браузер не поддерживает видео элемент.",
+    "pdfPreviewNotAvailable": "Предварительный просмотр PDF недоступен. Попробуйте альтернативный вид или скачайте.",
+    "tryAlternativeView": "Попробовать альтернативный вид",
+    "loadingAlternative": "Загрузка альтернативного вида...",
+    "loadingAudio": "Загрузка аудио...",
+    "downloading": "Загрузка..."
+  },
+  "fileSelector": {
+    "availableFiles": "Доступные Файлы ({count})",
+    "shareFiles": "Общие Файлы ({count})",
+    "shareFilesDescription": "Файлы в текущем общем доступе",
+    "availableFilesDescription": "Выберите файлы для добавления в общий доступ",
+    "searchPlaceholder": "Поиск файлов...",
+    "searchSelectedFiles": "Поиск в выбранных файлах...",
+    "noMatchingFiles": "Нет подходящих файлов",
+    "noAvailableFiles": "Нет доступных файлов",
+    "noFilesInShare": "Нет файлов в общем доступе",
+    "noFilesFound": "Файлы не найдены",
+    "noFilesFoundWith": "Файлы не найдены по запросу \"{query}\"",
+    "addFilesFromList": "Добавьте файлы из списка ниже",
+    "tryDifferentSearch": "Попробуйте другие поисковые термины",
+    "allFilesInShare": "Все файлы уже в общем доступе",
+    "uploadNewFiles": "Загрузите новые файлы для добавления",
+    "fileCount": "{count, plural, =1 {файл} =2 {файла} =3 {файла} =4 {файла} other {файлов}}",
+    "filesSelected": "{count, plural, =0 {Файлы не выбраны} =1 {Выбран 1 файл} other {Выбрано # файлов}}",
+    "editFile": "Редактировать файл",
+    "previewFile": "Предпросмотр файла",
+    "addToShare": "Добавить в общий доступ",
+    "removeFromShare": "Удалить из общего доступа",
+    "saveChanges": "Сохранить Изменения",
+    "editFolder": "Редактировать папку",
+    "itemsSelected": "Выбрано элементов: {count}"
+  },
+  "files": {
+    "title": "Все файлы",
+    "uploadFile": "Загрузить файл",
+    "loadError": "Ошибка загрузки файлов",
+    "pageTitle": "Мои файлы",
+    "breadcrumb": "Мои файлы",
+    "downloadStart": "Скачивание начато",
+    "downloadError": "Ошибка при скачивании файла",
+    "updateSuccess": "Файл успешно обновлен",
+    "updateError": "Ошибка при обновлении файла",
+    "deleteSuccess": "Файл успешно удален",
+    "deleteError": "Ошибка при удалении файла",
+    "bulkDownloadSuccess": "Скачивание файлов успешно начато",
+    "bulkDownloadError": "Ошибка при создании ZIP файла",
+    "bulkDownloadFileError": "Ошибка при скачивании файла {fileName}",
+    "bulkDeleteSuccess": "{count, plural, =1 {1 файл успешно удален} other {# файлов успешно удалено}}",
+    "bulkDeleteError": "Ошибка при удалении выбранных файлов",
+    "totalFiles": "{count, plural, =0 {Нет файлов} =1 {1 файл} other {# файлов}}",
+    "viewMode": {
+      "table": "Таблица",
+      "grid": "Сетка"
+    },
+    "bulkDeleteConfirmation": "Вы уверены, что хотите удалить {count, plural, =1 {1 файл} other {# файлов}}? Это действие нельзя отменить.",
+    "bulkDeleteTitle": "Удалить Выбранные Файлы",
+    "actions": {
+      "open": "Открыть",
+      "rename": "Переименовать",
+      "delete": "Удалить"
+    },
+    "empty": {
+      "title": "Пока нет файлов или папок",
+      "description": "Загрузите свой первый файл или создайте папку для начала работы"
+    },
+    "files": "файлы",
+    "folders": "папки",
+    "errors": {
+      "moveItemsFailed": "Не удалось переместить элементы. Попробуйте еще раз.",
+      "cannotMoveHere": "Невозможно переместить элементы в это место"
+    },
+    "openFolder": "Открыть папку",
+    "drag": {
+      "folderMoved": "Папка «{name}» перемещена в «{target}»",
+      "fileMoved": "Файл «{name}» перемещён в «{target}»",
+      "itemsMoved": "{count} элементов перемещено в «{target}»",
+      "folderMovedToRoot": "Папка «{name}» перемещена в корневую папку",
+      "fileMovedToRoot": "Файл «{name}» перемещён в корневую папку",
+      "itemsMovedToRoot": "{count} элементов перемещено в корневую папку"
+    }
+  },
+  "filesTable": {
+    "ariaLabel": "Таблица файлов",
+    "selectAll": "Выбрать все",
+    "selectFile": "Выбрать файл {fileName}",
+    "columns": {
+      "name": "ИМЯ",
+      "description": "ОПИСАНИЕ",
+      "size": "РАЗМЕР",
+      "createdAt": "СОЗДАНО",
+      "updatedAt": "ОБНОВЛЕНО",
+      "actions": "ДЕЙСТВИЯ"
+    },
+    "actions": {
+      "menu": "Меню действий с файлом",
+      "preview": "Предпросмотр",
+      "edit": "Редактировать",
+      "share": "Поделиться",
+      "download": "Скачать",
+      "delete": "Удалить"
+    },
+    "bulkActions": {
+      "selected": "{count, plural, =1 {1 файл выбран} other {# файлов выбрано}}",
+      "actions": "Действия",
+      "download": "Скачать Выбранные",
+      "share": "Поделиться Выбранными",
+      "delete": "Удалить Выбранные"
+    }
+  },
+  "folderActions": {
+    "editFolder": "Редактировать папку",
+    "folderName": "Имя папки",
+    "folderNamePlaceholder": "Введите имя папки",
+    "folderDescription": "Описание",
+    "folderDescriptionPlaceholder": "Введите описание папки (необязательно)",
+    "createFolder": "Создать новую папку",
+    "renameFolder": "Переименовать папку",
+    "moveFolder": "Переместить папку",
+    "shareFolder": "Поделиться папкой",
+    "deleteFolder": "Удалить папку",
+    "moveTo": "Переместить в",
+    "selectDestination": "Выберите папку назначения",
+    "rootFolder": "Корень",
+    "folderCreated": "Папка успешно создана",
+    "folderRenamed": "Папка успешно переименована",
+    "folderMoved": "Папка успешно перемещена",
+    "folderDeleted": "Папка успешно удалена",
+    "folderShared": "Папка успешно отправлена",
+    "createFolderError": "Ошибка создания папки",
+    "renameFolderError": "Ошибка переименования папки",
+    "moveFolderError": "Ошибка перемещения папки",
+    "deleteFolderError": "Ошибка удаления папки",
+    "shareFolderError": "Ошибка обмена папкой",
+    "deleteConfirmation": "Вы уверены, что хотите удалить эту папку?",
+    "deleteWarning": "Это действие нельзя отменить.",
+    "inSharesWarningTitle": "Эта папка включена в общие доступы",
+    "inSharesWarningBody": "Эта папка (и её содержимое) включена в {count, plural, one {# общий доступ} other {# общих доступов}}. Её удаление удалит её из всех общих доступов.",
+    "bulkInSharesWarningTitle": "Некоторые папки включены в общие доступы",
+    "bulkInSharesWarningBody": "{count, plural, one {# папка включена} other {# папок включены}} в общие доступы. Их удаление удалит {count, plural, one {её} other {их}} из всех общих доступов.",
+    "deleteAnyway": "Удалить в любом случае"
+  },
+  "footer": {
+    "projectHomepage": "Домашняя страница OUITRANSFER"
+  },
+  "forgotPassword": {
+    "emailLabel": "Адрес электронной почты",
+    "emailPlaceholder": "Введите ваш адрес электронной почты",
+    "sending": "Отправка...",
+    "submit": "Отправить инструкции по сбросу",
+    "backToLogin": "Вернуться ко входу",
+    "title": "Забыли пароль",
+    "description": "Введите адрес электронной почты, и мы отправим вам инструкции по сбросу пароля.",
+    "resetInstructions": "Инструкции по сбросу отправлены на вашу электронную почту",
+    "pageTitle": "Забыли пароль",
+    "passwordAuthDisabled": "Парольная аутентификация отключена. Пожалуйста, свяжитесь с администратором или используйте внешний провайдер аутентификации."
+  },
+  "generateShareLink": {
+    "generateTitle": "Создать ссылку для обмена",
+    "updateTitle": "Обновить ссылку для обмена",
+    "generateDescription": "Создайте ссылку для обмена файлами",
+    "updateDescription": "Обновите псевдоним для этой ссылки обмена",
+    "aliasPlaceholder": "Введите псевдоним",
+    "linkReady": "Ваша ссылка для обмена готова:",
+    "generateButton": "Создать ссылку",
+    "updateButton": "Обновить ссылку",
+    "copyButton": "Копировать ссылку",
+    "success": "Ссылка успешно создана",
+    "error": "Ошибка при создании ссылки",
+    "copied": "Ссылка скопирована в буфер обмена",
+    "readyDescription": "Ваша ссылка для обмена готова. Вы можете сканировать QR-код напрямую, скачать его для последующего использования или скопировать ссылку ниже.",
+    "tabs": {
+      "link": "Ссылка",
+      "qrcode": "QR-код"
+    },
+    "later": "Позже"
+  },
+  "home": {
+    "pageTitle": "Главная",
+    "tagline": "Безопасная передача файлов",
+    "subtitle": "Отправляйте и делитесь файлами безопасно.",
+    "login": "Войти",
+    "partners": {
+      "title": "Получили ссылку?",
+      "description": "Используйте полученную ссылку для доступа к файлам. Если вы не можете её найти, свяжитесь с отправителем."
+    }
+  },
+  "iconPicker": {
+    "title": "Выбрать иконку",
+    "placeholder": "Выберите иконку",
+    "searchPlaceholder": "Поиск иконок...",
+    "loadingMore": "Загрузка дополнительных иконок...",
+    "allIconsLoaded": "Загружено все {count} иконок",
+    "noIconsFound": "Не найдено иконок для \"{search}\"",
+    "tabs": {
+      "all": "Все иконки",
+      "popular": "Популярные",
+      "auth": "Провайдеры аутентификации"
+    },
+    "stats": "{iconCount} иконок из {libraryCount} библиотек",
+    "categoryBadge": "{category} ({count} иконок)"
+  },
+  "imageEdit": {
+    "title": "Редактировать изображение",
+    "rotate": "Повернуть",
+    "zoom": "Увеличить",
+    "cropInstructions": "Перетащите, чтобы переместить, измените размер углов, чтобы отрегулировать область обрезки",
+    "cropAlt": "Изображение для обрезки"
+  },
+  "login": {
+    "welcome": "Добро пожаловать в",
+    "signInToContinue": "Войдите, чтобы продолжить",
+    "emailOrUsernameLabel": "Электронная почта или имя пользователя",
+    "emailOrUsernamePlaceholder": "Введите электронную почту или имя пользователя",
+    "emailLabel": "Адрес электронной почты",
+    "emailPlaceholder": "Введите вашу электронную почту",
+    "passwordLabel": "Пароль",
+    "passwordPlaceholder": "Введите ваш пароль",
+    "signIn": "Войти",
+    "signingIn": "Вход...",
+    "forgotPassword": "Забыли пароль?",
+    "pageTitle": "Вход",
+    "or": "или",
+    "continueWithSSO": "Продолжить с SSO",
+    "processing": "Обработка аутентификации...",
+    "orContinueWith": "Или продолжить через",
+    "continueWith": "Продолжить через {name}",
+    "providerNotConfigured": "{name} не настроен должным образом"
+  },
+  "logo": {
+    "labels": {
+      "appLogo": "Логотип приложения"
+    },
+    "buttons": {
+      "upload": "Загрузить логотип",
+      "remove": "Удалить логотип"
+    },
+    "messages": {
+      "uploadSuccess": "Логотип успешно загружен",
+      "removeSuccess": "Логотип успешно удален"
+    },
+    "errors": {
+      "uploadFailed": "Ошибка загрузки логотипа",
+      "removeFailed": "Ошибка удаления логотипа"
+    }
+  },
+  "moveItems": {
+    "itemsToMove": "Элементы для перемещения:",
+    "movingToFolder": "Перемещение в: {folder}",
+    "title": "Переместить {count, plural, =1 {элемент} other {элементы}}",
+    "description": "Переместить {count, plural, =1 {элемент} other {элементы}} в новое место",
+    "success": "Успешно перемещено {count} {count, plural, =1 {элемент} other {элементов}}",
+    "errors": {
+      "moveFailed": "Не удалось переместить элементы"
+    }
+  },
+  "audit": {
+    "pageTitle": "Журнал активности",
+    "pageDescription": "Просмотр и поиск всей активности системы",
+    "table": {
+      "date": "Дата",
+      "user": "Пользователь",
+      "action": "Действие",
+      "target": "Цель",
+      "ipAddress": "IP-адрес",
+      "details": "Детали",
+      "noResults": "Записи журнала аудита не найдены",
+      "anonymous": "Аноним",
+      "system": "Система",
+      "resultCount": "{count, plural, one {# результат} other {# результатов}}"
+    },
+    "filters": {
+      "action": "Действие",
+      "user": "Пользователь",
+      "targetType": "Тип цели",
+      "dateFrom": "С",
+      "dateTo": "По",
+      "search": "Поиск",
+      "searchPlaceholder": "Поиск по IP или действию...",
+      "clearAll": "Очистить фильтры"
+    },
+    "export": {
+      "button": "Экспорт",
+      "csv": "CSV",
+      "json": "JSON",
+      "dateRangeRequired": "Выберите диапазон дат для экспорта"
+    },
+    "actions": {
+      "LOGIN_SUCCESS": "Вход выполнен успешно",
+      "LOGIN_FAILURE": "Ошибка входа",
+      "LOGOUT": "Выход",
+      "PASSWORD_CHANGE": "Пароль изменен",
+      "PASSWORD_RESET": "Пароль сброшен",
+      "PASSWORD_RESET_REQUEST": "Запрос на сброс пароля",
+      "ACCOUNT_LOCKED": "Учетная запись заблокирована",
+      "LOGIN_LOCKED": "Вход заблокирован",
+      "TRUSTED_DEVICE_REMOVE": "Доверенное устройство удалено",
+      "TRUSTED_DEVICE_REMOVE_ALL": "Все доверенные устройства удалены",
+      "AUTH_PROVIDER_LOGIN": "Вход через SSO",
+      "TWO_FACTOR_ENABLE": "2FA включена",
+      "TWO_FACTOR_DISABLE": "2FA отключена",
+      "TWO_FACTOR_BACKUP_REGENERATED": "Резервные коды 2FA переформированы",
+      "USER_CREATE": "Пользователь создан",
+      "USER_UPDATE": "Пользователь обновлен",
+      "USER_DELETE": "Пользователь удален",
+      "USER_ROLE_CHANGE": "Роль пользователя изменена",
+      "USER_QUOTA_CHANGE": "Квота пользователя изменена",
+      "USER_ACTIVATE": "Пользователь активирован",
+      "USER_DEACTIVATE": "Пользователь деактивирован",
+      "SHARE_CREATE": "Общий доступ создан",
+      "SHARE_UPDATE": "Общий доступ обновлен",
+      "SHARE_DELETE": "Общий доступ удален",
+      "SHARE_ACCESS": "Общий доступ получен",
+      "SHARE_PASSWORD_VERIFIED": "Пароль общего доступа проверен",
+      "SHARE_PASSWORD_FAILED": "Ошибка пароля общего доступа",
+      "SHARE_PASSWORD_UPDATE": "Пароль общего доступа обновлен",
+      "SHARE_RECIPIENT_ADD": "Получатели общего доступа добавлены",
+      "SHARE_RECIPIENT_REMOVE": "Получатели общего доступа удалены",
+      "SHARE_RECIPIENT_NOTIFY": "Получатели общего доступа уведомлены",
+      "SHARE_RECIPIENT_REMIND": "Получатели, не загрузившие файлы, напомнены",
+      "SHARE_ITEMS_ADD": "Элементы общего доступа добавлены",
+      "SHARE_ITEMS_REMOVE": "Элементы общего доступа удалены",
+      "FILE_UPLOAD": "Файл загружен",
+      "FILE_DOWNLOAD": "Файл скачан",
+      "FILE_DELETE": "Файл удален",
+      "FILE_MOVE": "Файл перемещен",
+      "FILE_UPDATE": "Файл обновлен",
+      "FOLDER_CREATE": "Папка создана",
+      "FOLDER_UPDATE": "Папка обновлена",
+      "FOLDER_MOVE": "Папка перемещена",
+      "FOLDER_DELETE": "Папка удалена",
+      "REVERSE_SHARE_CREATE": "Обратный общий доступ создан",
+      "REVERSE_SHARE_UPDATE": "Обратный общий доступ обновлен",
+      "REVERSE_SHARE_DELETE": "Обратный общий доступ удален",
+      "REVERSE_SHARE_ACCESS": "Обратный общий доступ получен",
+      "REVERSE_SHARE_PASSWORD_VERIFIED": "Пароль обратного общего доступа проверен",
+      "REVERSE_SHARE_PASSWORD_FAILED": "Ошибка пароля обратного общего доступа",
+      "REVERSE_SHARE_PASSWORD_UPDATE": "Пароль обратного общего доступа обновлен",
+      "REVERSE_SHARE_UPLOAD": "Файл загружен в обратный общий доступ",
+      "REVERSE_SHARE_FILE_DELETE": "Файл обратного общего доступа удален",
+      "REVERSE_SHARE_FILE_COPY": "Файл обратного общего доступа скопирован",
+      "REVERSE_SHARE_FILE_DOWNLOAD": "Файл обратного общего доступа скачан",
+      "GROUP_CREATE": "Группа создана",
+      "GROUP_UPDATE": "Группа обновлена",
+      "GROUP_DELETE": "Группа удалена",
+      "GROUP_MEMBER_ADD": "Участник группы добавлен",
+      "GROUP_MEMBER_REMOVE": "Участник группы удален",
+      "LDAP_CONFIG_UPDATE": "Конфигурация LDAP обновлена",
+      "LDAP_SYNC_TRIGGERED": "Синхронизация LDAP инициирована",
+      "LDAP_SYNC_COMPLETED": "Синхронизация LDAP завершена",
+      "LDAP_SYNC_ERROR": "Ошибка синхронизации LDAP",
+      "AUTH_PROVIDER_CREATE": "Провайдер аутентификации создан",
+      "AUTH_PROVIDER_UPDATE": "Провайдер аутентификации обновлен",
+      "AUTH_PROVIDER_DELETE": "Провайдер аутентификации удален",
+      "INVITE_TOKEN_CREATE": "Токен приглашения создан",
+      "INVITE_TOKEN_USED": "Токен приглашения использован",
+      "ADMIN_CONFIG_CHANGE": "Конфигурация изменена",
+      "LOGO_UPLOAD": "Логотип загружен",
+      "LOGO_REMOVE": "Логотип удален",
+      "SMTP_TEST": "SMTP тест выполнен",
+      "BACKGROUND_IMAGE_UPLOAD": "Фоновое изображение загружено",
+      "BACKGROUND_IMAGE_DELETE": "Фоновое изображение удалено",
+      "AUDIT_RETENTION_CLEANUP": "Очистка журнала аудита",
+      "SHARE_DEACTIVATED": "Общий доступ отключен",
+      "SHARE_REACTIVATED": "Общий доступ включен повторно",
+      "REVERSE_SHARE_DEACTIVATED": "Ссылка для получения отключена",
+      "REVERSE_SHARE_REACTIVATED": "Ссылка для получения включена повторно",
+      "SHARE_AUTO_DELETED": "Общий доступ удален автоматически",
+      "REVERSE_SHARE_AUTO_DELETED": "Ссылка для получения удалена автоматически",
+      "ACCOUNT_FILES_CLEANED": "Файлы учетной записи очищены",
+      "ORPHAN_S3_DELETED": "Сиротский объект хранилища удален",
+      "ORPHAN_DB_DELETED": "Сиротская запись базы данных удалена",
+      "ORPHAN_MULTIPART_ABORTED": "Незавершенная многочастная загрузка прервана",
+      "QUOTA_FILES_DELETED": "Файлы, превышающие квоту, удалены"
+    },
+    "targetTypes": {
+      "user": "Пользователь",
+      "share": "Общий доступ",
+      "reverse_share": "Обратный общий доступ",
+      "file": "Файл",
+      "folder": "Папка",
+      "group": "Группа",
+      "ldap_config": "Конфигурация LDAP",
+      "ldap_sync_log": "Синхронизация LDAP",
+      "setting": "Параметр",
+      "auth_provider": "Провайдер аутентификации",
+      "background_image": "Фоновое изображение",
+      "invite_token": "Токен приглашения",
+      "trusted_device": "Доверенное устройство",
+      "logo": "Логотип"
+    },
+    "actionCategories": {
+      "auth": "Аутентификация",
+      "share": "Общие доступы",
+      "file": "Файлы",
+      "folder": "Папки",
+      "reverseShare": "Обратные общие доступы",
+      "user": "Пользователь",
+      "group": "Группы",
+      "ldap": "LDAP",
+      "admin": "Администрирование",
+      "system": "Система"
+    },
+    "metadata": {
+      "method": "Метод",
+      "reason": "Причина",
+      "email": "Email",
+      "count": "Количество",
+      "via": "Создано через",
+      "fields": "Измененные поля",
+      "oldRole": "Старая роль",
+      "newRole": "Новая роль",
+      "oldQuota": "Старая квота",
+      "newQuota": "Новая квота",
+      "name": "Имя",
+      "fileName": "Имя файла",
+      "fileSize": "Размер файла",
+      "fileCount": "Количество файлов",
+      "folderCount": "Количество папок",
+      "hasPassword": "Защищено паролем",
+      "expiration": "Истечение",
+      "shareId": "Общий доступ",
+      "emails": "Emails",
+      "recipientCount": "Количество получателей",
+      "fromFolderId": "Из папки",
+      "toFolderId": "В папку",
+      "maxFiles": "Макс. файлы",
+      "maxFileSize": "Макс. размер файла",
+      "uploaderEmail": "Email загрузчика",
+      "uploaderName": "Имя загрузчика",
+      "targetFileId": "Целевой файл",
+      "providerType": "Тип провайдера",
+      "providerName": "Имя провайдера",
+      "deletedCount": "Удалено записей",
+      "olderThan": "Старше чем",
+      "syncLogId": "Журнал синхронизации",
+      "error": "Ошибка",
+      "manual": "Ручной запуск",
+      "recipientEmail": "Email получателя",
+      "fromParentId": "От родителя",
+      "toParentId": "К родителю",
+      "oldMaxFileSize": "Старый макс. размер файла",
+      "newMaxFileSize": "Новый макс. размер файла",
+      "oldMaxTotalStorage": "Старое макс. общее хранилище",
+      "newMaxTotalStorage": "Новое макс. общее хранилище",
+      "changedFields": "Измененные поля",
+      "unassignedCount": "Неназначенные участники",
+      "previousGroupId": "Предыдущая группа",
+      "memberId": "Участник",
+      "parentId": "Родительская папка",
+      "targetFolderId": "Целевая папка",
+      "extension": "Расширение",
+      "size": "Размер",
+      "enabled": "Включено",
+      "passwordCleared": "Пароль очищен",
+      "trigger": "Триггер",
+      "status": "Статус",
+      "usersCreated": "Пользователи созданы",
+      "usersUpdated": "Пользователи обновлены",
+      "usersDeactivated": "Пользователи деактивированы",
+      "usersReactivated": "Пользователи реактивированы",
+      "usersSkipped": "Пользователи пропущены",
+      "createdUserId": "Созданный пользователь",
+      "deletedUserId": "Удаленный пользователь",
+      "emailOrUsername": "Email/имя пользователя",
+      "remainingMinutes": "Оставшиеся минуты",
+      "keys": "Ключи конфигурации",
+      "type": "Тип",
+      "yes": "Да",
+      "no": "Нет",
+      "key": "[TO_TRANSLATE] Setting",
+      "usingCustomConfig": "[TO_TRANSLATE] Custom config",
+      "smtpHost": "[TO_TRANSLATE] SMTP host",
+      "files": "[TO_TRANSLATE] Files",
+      "shares": "[TO_TRANSLATE] Shares",
+      "reverseShares": "[TO_TRANSLATE] Reverse shares",
+      "folders": "[TO_TRANSLATE] Folders",
+      "s3Errors": "[TO_TRANSLATE] Storage errors",
+      "recipientId": "[TO_TRANSLATE] Recipient",
+      "identificationSource": "[TO_TRANSLATE] Identification",
+      "expiresAt": "[TO_TRANSLATE] Expires at",
+      "userId": "[TO_TRANSLATE] User",
+      "shareName": "[TO_TRANSLATE] Share",
+      "reverseShareName": "[TO_TRANSLATE] Reverse share",
+      "filesDeleted": "[TO_TRANSLATE] Files deleted",
+      "bytesFreed": "[TO_TRANSLATE] Storage freed",
+      "objectName": "[TO_TRANSLATE] Object",
+      "fileId": "[TO_TRANSLATE] File"
+    }
+  },
+  "navbar": {
+    "logoAlt": "Логотип приложения",
+    "profileMenu": "Меню профиля",
+    "profile": "Профиль",
+    "settings": "Настройки",
+    "usersManagement": "Управление пользователями",
+    "groupsManagement": "Группы",
+    "ldap": "LDAP",
+    "activityLog": "Журнал активности",
+    "logout": "Выйти",
+    "customization": "Настройки",
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
+  },
+  "navigation": {
+    "dashboard": "Панель управления"
+  },
+  "notifications": {
+    "permissionGranted": "Уведомления о загрузках включены",
+    "permissionDenied": "Уведомления о загрузках отключены",
+    "downloadComplete": {
+      "title": "Загрузка завершена",
+      "body": "Файл {fileName} успешно загружен"
+    },
+    "downloadFailed": {
+      "title": "Ошибка загрузки",
+      "body": "Не удалось загрузить {fileName}: {error}",
+      "unknownError": "Неизвестная ошибка"
+    },
+    "queueProcessing": {
+      "title": "Начало загрузки",
+      "body": "Файл {fileName} загружается{position}",
+      "position": " (был №{position} в очереди)"
+    }
+  },
+  "profile": {
+    "password": {
+      "title": "Изменить пароль",
+      "newPassword": "Новый пароль",
+      "confirmPassword": "Подтвердите новый пароль",
+      "updateButton": "Обновить пароль"
+    },
+    "form": {
+      "title": "Информация профиля",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "username": "Имя пользователя",
+      "email": "Электронная почта",
+      "updateButton": "Обновить профиль"
+    },
+    "header": {
+      "title": "Профиль",
+      "subtitle": "Управляйте вашей личной информацией и паролем"
+    },
+    "picture": {
+      "title": "Изображение профиля",
+      "description": "Нажмите на значок камеры, чтобы изменить изображение профиля",
+      "uploadPhoto": "Загрузить фото",
+      "removePhoto": "Удалить фото"
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить данные пользователя",
+      "updateFailed": "Ошибка при обновлении профиля",
+      "passwordFailed": "Ошибка при обновлении пароля",
+      "imageFailed": "Ошибка при обновлении изображения профиля",
+      "imageRemoveFailed": "Ошибка при удалении изображения профиля"
+    },
+    "messages": {
+      "noChanges": "Изменений для сохранения нет",
+      "updateSuccess": "Профиль успешно обновлен",
+      "fillPasswords": "Пожалуйста, заполните оба поля пароля",
+      "passwordSuccess": "Пароль успешно обновлен",
+      "imageSuccess": "Изображение профиля успешно обновлено",
+      "imageRemoved": "Изображение профиля успешно удалено"
+    },
+    "pageTitle": "Профиль"
+  },
+  "qrCodeModal": {
+    "title": "Поделиться QR-кодом",
+    "description": "Отсканируйте этот QR-код, чтобы получить доступ к ссылке.",
+    "download": "Скачать QR-код"
+  },
+  "quickAccess": {
+    "files": {
+      "title": "Мои файлы",
+      "description": "Доступ и управление загруженными файлами"
+    },
+    "shares": {
+      "title": "Мои общие доступы",
+      "description": "Просмотр и управление файлами для совместного использования"
+    },
+    "reverseShares": {
+      "title": "Получить файлы",
+      "description": "Создавайте ссылки для получения файлов от других"
+    }
+  },
+  "recentFiles": {
+    "title": "Последние загрузки",
+    "viewAll": "Показать все",
+    "uploadFile": "Загрузить файл",
+    "noFiles": "Файлы еще не загружены",
+    "upload": "Загрузить"
+  },
+  "recentShares": {
+    "title": "Последние общие доступы",
+    "viewAll": "Показать все",
+    "createShare": "Создать общий доступ",
+    "noShares": "Общие доступы еще не созданы",
+    "createFirst": "Создайте ваш первый общий доступ"
+  },
+  "recipientSelector": {
+    "emailPlaceholder": "Введите электронную почту получателя",
+    "add": "Добавить",
+    "recipients": "Получатели ({count})",
+    "notifyAll": "Уведомить всех",
+    "noRecipients": "Пока нет добавленных получателей",
+    "addSuccess": "Получатель успешно добавлен",
+    "addError": "Не удалось добавить получателя",
+    "removeSuccess": "Получатель успешно удалён",
+    "removeError": "Не удалось удалить получателя",
+    "sendingNotifications": "Отправка уведомлений...",
+    "notifySuccess": "Получатели успешно уведомлены",
+    "notifyError": "Не удалось уведомить получателей",
+    "bulkNotifySuccess": "Уведомления отправлены {count} получателям",
+    "selectAll": "Выбрать все",
+    "singleNotifySuccess": "Уведомление отправлено {email}",
+    "removeSingle": "Удалить этого получателя",
+    "selectRecipient": "Выбрать {email}",
+    "bulkRemoveSuccess": "{count} получателей успешно удалены",
+    "notifySingle": "Уведомить этого получателя",
+    "notifySelected": "Уведомить выбранных",
+    "invalidEmail": "Пожалуйста, введите действительный адрес электронной почты",
+    "noRecipientsDescription": "Добавьте получателей для обмена этим контентом по электронной почте",
+    "singleNotifyError": "Не удалось уведомить получателя",
+    "bulkRemoveError": "Не удалось удалить выбранных получателей",
+    "modalDescription": "Добавляйте и управляйте получателями для этого общего доступа. Вы можете уведомлять всех или конкретных получателей при настроенном SMTP.",
+    "duplicateEmail": "Этот получатель уже добавлен",
+    "removeSelected": "Удалить выбранных",
+    "selectedCount": "{count} выбрано",
+    "addRecipient": "Добавить получателя",
+    "bulkNotifyError": "Не удалось уведомить выбранных получателей",
+    "notified": "Уведомлено",
+    "views": "{count, plural, one {# просмотр} few {# просмотра} many {# просмотров} other {# просмотров}}",
+    "notifyPartial": "Уведомлены только {sent} из {total} получателей",
+    "neverAccessed": "Никогда не открывалось",
+    "namePlaceholder": "Имя (необязательно)",
+    "downloaded": "Загружено",
+    "pending": "Ожидание",
+    "downloadedAt": "Загружено {date}",
+    "uploaded": "Загружено",
+    "uploadedAt": "Загружено {date}",
+    "uploadApproximateHint": "Приблизительно: загружающие могут отправлять файлы без адреса электронной почты, когда он не требуется",
+    "remindNonDownloaders": "Напомнить ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Нет ожидающих получателей, все загрузили} one {Напомнить # получателю, который еще не загрузил} few {Напомнить # получателям, которые еще не загрузили} many {Напомнить # получателям, которые еще не загрузили} other {Напомнить # получателям, которые еще не загрузили}}",
+    "sendingReminders": "Отправка напоминаний...",
+    "remindSuccess": "{count, plural, one {Напоминание отправлено # получателю} few {Напоминания отправлены # получателям} many {Напоминания отправлены # получателям} other {Напоминания отправлены # получателям}}",
+    "remindNoneSent": "Напоминания не отправлены",
+    "remindError": "Ошибка отправки напоминаний"
+  },
+  "register": {
+    "validation": {
+      "firstNameRequired": "Имя обязательно",
+      "lastNameRequired": "Фамилия обязательна",
+      "usernameMinLength": "Имя пользователя должно содержать минимум 3 символа",
+      "invalidEmail": "Неверный email",
+      "passwordMinLength": "Пароль должен содержать минимум 12 символов",
+      "success": "Пользователь администратора создал успешно!",
+      "error": "Ошибка создания пользователя администратора",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "labels": {
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "username": "Имя пользователя",
+      "email": "Эл. почта",
+      "password": "Пароль"
+    },
+    "buttons": {
+      "creating": "Создание...",
+      "createAdmin": "Создать учетную запись администратора"
+    }
+  },
+  "resetPassword": {
+    "pageTitle": "Сбросить пароль",
+    "header": {
+      "title": "Сбросить пароль",
+      "description": "Введите ваш новый пароль ниже"
+    },
+    "form": {
+      "newPassword": "Новый пароль",
+      "newPasswordPlaceholder": "Введите новый пароль",
+      "confirmPassword": "Подтвердите новый пароль",
+      "confirmPasswordPlaceholder": "Подтвердите новый пароль",
+      "resetting": "Сброс пароля...",
+      "submit": "Сбросить пароль",
+      "backToLogin": "Вернуться ко входу"
+    },
+    "messages": {
+      "success": "Пароль успешно сброшен"
+    },
+    "errors": {
+      "serverError": "Не удалось сбросить пароль. Пожалуйста, попробуйте еще раз.",
+      "invalidToken": "Неверный или отсутствующий токен сброса"
+    }
+  },
+  "reverseShares": {
+    "pageTitle": "Получение файлов",
+    "search": {
+      "title": "Управление ссылками для получения",
+      "createButton": "Создать ссылку",
+      "placeholder": "Поиск ссылок для получения...",
+      "results": "Найдено {filtered} из {total} ссылок для получения"
+    },
+    "labels": {
+      "files": "файлы",
+      "size": "размер",
+      "status": "статус",
+      "access": "доступ",
+      "description": "Описание",
+      "pageLayout": "Макет страницы",
+      "security": "Безопасность и статус",
+      "limits": "Ограничения",
+      "maxFiles": "Максимум файлов",
+      "maxFileSize": "Максимальный размер",
+      "allowedTypes": "Разрешенные типы",
+      "filesReceived": "Полученные файлы",
+      "fileLimit": "Лимит файлов",
+      "noLimit": "Без ограничений",
+      "noLinkCreated": "Ссылки не созданы",
+      "publicAccess": "Публичный доступ",
+      "protectedByPassword": "Защищено паролем",
+      "configureProtection": "Нажмите для настройки защиты",
+      "enterPassword": "Введите пароль",
+      "thisLinkProtected": "Эта ссылка будет защищена паролем",
+      "thisLinkPublic": "Эта ссылка будет доступна публично",
+      "configureExpiration": "Настроить срок действия",
+      "configureLimits": "Настроить ограничения файлов",
+      "protectWithPassword": "Защитить паролем",
+      "layoutOptions": {
+        "default": "По умолчанию",
+        "wetransfer": "WeTransfer"
+      },
+      "noFilesLimit": "Без ограничения файлов",
+      "noSizeLimit": "Без ограничения размера",
+      "allFileTypes": "Все типы файлов",
+      "fileTypesHelp": "Введите расширения без точки, разделенные пробелом, запятой, дефисом или вертикальной чертой",
+      "emailFieldRequired": "Поле электронной почты",
+      "fieldOptions": {
+        "hidden": "Скрытый",
+        "optional": "Необязательный",
+        "required": "Необходимый"
+      },
+      "fieldRequirements": "Полевые требования",
+      "nameFieldRequired": "Имя Поле"
+    },
+    "card": {
+      "untitled": "Ссылка без названия",
+      "noDescription": "Без описания",
+      "addDescriptionPlaceholder": "Добавить описание...",
+      "files": "файлы",
+      "progress": "Прогресс",
+      "created": "Создано",
+      "expired": "Истекло",
+      "expires": "Истекает",
+      "viewDetails": "Просмотр деталей",
+      "copyLink": "Копировать ссылку",
+      "openInNewTab": "Открыть в новой вкладке",
+      "editLink": "Редактировать ссылку",
+      "createLink": "Создать ссылку",
+      "delete": "Удалить",
+      "copyLinkTitle": "Копировать ссылку",
+      "createLinkCTA": "Создать ссылку для получения",
+      "viewQrCode": "Просмотр QR-кода"
+    },
+    "status": {
+      "active": "Активно",
+      "inactive": "Неактивно",
+      "expired": "Истекло",
+      "protected": "Защищено",
+      "public": "Публично"
+    },
+    "actions": {
+      "copyLink": "Копировать ссылку",
+      "editAlias": "Редактировать псевдоним",
+      "createAlias": "Создать псевдоним",
+      "viewDetails": "Просмотр деталей",
+      "edit": "Редактировать",
+      "delete": "Удалить",
+      "viewFiles": "Полученные файлы",
+      "viewQrCode": "Просмотр QR-кода"
+    },
+    "empty": {
+      "title": "Нет созданных ссылок для получения",
+      "description": "Создавайте персонализированные ссылки, чтобы другие могли безопасно и организованно отправлять вам файлы.",
+      "createButton": "Создать первую ссылку"
+    },
+    "modals": {
+      "create": {
+        "title": "Создать ссылку для получения",
+        "description": "Настройте персонализированную ссылку для получения файлов от других"
+      },
+      "edit": {
+        "title": "Редактировать ссылку для получения",
+        "description": "Обновите настройки этой ссылки для получения",
+        "updating": "Обновление...",
+        "saveChanges": "Сохранить изменения"
+      },
+      "details": {
+        "title": "Детали ссылки",
+        "description": "Просмотр и редактирование информации о вашей ссылке для получения",
+        "pageLayout": "Макет страницы",
+        "linkSection": "Ссылка для получения",
+        "noLinkCreated": "Ссылка не создана",
+        "limits": "Ограничения",
+        "maxFiles": "Максимум файлов",
+        "maxFileSize": "Максимальный размер",
+        "allowedTypes": "Разрешенные типы",
+        "noLimit": "Без ограничений",
+        "security": "Безопасность",
+        "status": "Статус",
+        "password": "Пароль",
+        "files": "Полученные файлы",
+        "noFiles": "Файлы еще не получены",
+        "copyLink": "Копировать ссылку",
+        "openLink": "Открыть ссылку",
+        "editAlias": "Редактировать псевдоним",
+        "createAlias": "Создать псевдоним",
+        "editPassword": "Редактировать защиту паролем",
+        "basicInfo": "Основная информация",
+        "securityAndStatus": "Безопасность и статус",
+        "protection": "Защита",
+        "protectedByPassword": "Защищено паролем",
+        "publicAccess": "Публичный доступ",
+        "active": "Активно",
+        "inactive": "Неактивно",
+        "deactivate": "Деактивировать",
+        "activate": "Активировать",
+        "expiration": "Срок действия",
+        "dates": "Даты",
+        "createdAt": "Создано",
+        "updatedAt": "Обновлено",
+        "allTypes": "Все типы",
+        "placeholderTypes": ".pdf,.jpg,.png (разделенные запятой)",
+        "downloadSuccess": "Загрузка начата",
+        "downloadError": "Ошибка при загрузке файла",
+        "editSuccess": "Файл успешно обновлен",
+        "editError": "Ошибка при обновлении файла",
+        "previewNotAvailable": "Предпросмотр недоступен",
+        "notAvailable": "Недоступно",
+        "invalidDate": "Неверная дата",
+        "downloading": "Загрузка..."
+      },
+      "alias": {
+        "editTitle": "Редактировать псевдоним",
+        "createTitle": "Создать псевдоним",
+        "editDescription": "Обновите псевдоним для этой ссылки получения",
+        "createDescription": "Создайте персонализированный псевдоним для этой ссылки получения",
+        "aliasLabel": "Псевдоним ссылки",
+        "aliasPlaceholder": "моя-ссылка",
+        "preview": "Предпросмотр:",
+        "currentLink": "Текущая ссылка:",
+        "copyCurrentLink": "Копировать текущую ссылку",
+        "randomTooltip": "Сгенерировать случайный псевдоним",
+        "cancel": "Отмена",
+        "creating": "Создание...",
+        "updating": "Обновление...",
+        "create": "Создать псевдоним",
+        "update": "Обновить псевдоним",
+        "help": "8-30 символов. Пробелы будут автоматически заменены на дефисы."
+      },
+      "password": {
+        "title": "Редактировать защиту паролем",
+        "description": "Настройте защиту паролем для этой ссылки",
+        "hasPassword": "Защищено паролем",
+        "password": "Пароль",
+        "cancel": "Отмена",
+        "save": "Сохранить",
+        "saving": "Сохранение..."
+      },
+      "receivedFiles": {
+        "title": "Полученные файлы",
+        "description": "Просмотр и управление файлами, отправленными по этой ссылке",
+        "noFiles": "Файлы еще не получены",
+        "noFilesDescription": "Файлы, отправленные по этой ссылке, появятся здесь",
+        "fileCount": "{count, plural, =0 {Нет файлов} =1 {1 файл} other {# файлов}}",
+        "totalSize": "Общий размер: {size}",
+        "columns": {
+          "file": "Файл",
+          "size": "Размер",
+          "sender": "Отправитель",
+          "date": "Дата",
+          "actions": "Действия"
+        },
+        "actions": {
+          "preview": "Предпросмотр",
+          "download": "Скачать",
+          "copyToMyFiles": "Скопируйте в мои файлы",
+          "copying": "Копирование ..."
+        },
+        "uploadedBy": "Загружено {name}",
+        "anonymous": "Аноним",
+        "downloadSuccess": "Загрузка начата",
+        "downloadError": "Ошибка при загрузке файла",
+        "editSuccess": "Файл успешно обновлен",
+        "editError": "Ошибка при обновлении файла",
+        "previewNotAvailable": "Предпросмотр недоступен",
+        "copyError": "Ошибка копирования файла в ваши файлы",
+        "copySuccess": "Файл успешно скопирован в ваши файлы",
+        "bulkActions": {
+          "selected": "{count, plural, =1 {1 файл выбран} other {# файлов выбрано}}",
+          "actions": "Действия",
+          "download": "Скачать выбранные",
+          "copyToMyFiles": "Копировать выбранные в мои файлы",
+          "delete": "Удалить выбранные"
+        },
+        "bulkCopyProgress": "Копирование {count, plural, =1 {1 файла} other {# файлов}} в ваши файлы...",
+        "bulkCopySuccess": "{count, plural, =1 {1 файл успешно скопирован в ваши файлы} other {# файлов успешно скопировано в ваши файлы}}",
+        "bulkDeleteConfirmButton": "Удалить {count, plural, =1 {файл} other {файлы}}",
+        "bulkDeleteConfirmMessage": "Вы уверены, что хотите удалить {count, plural, =1 {этот файл} other {эти # файлов}}? Это действие нельзя отменить.",
+        "bulkDeleteConfirmTitle": "Удалить выбранные файлы",
+        "bulkDeleteProgress": "Удаление {count, plural, =1 {1 файла} other {# файлов}}...",
+        "bulkDeleteSuccess": "{count, plural, =1 {1 файл успешно удален} other {# файлов успешно удалено}}",
+        "selectAll": "Выбрать все",
+        "selectFile": "Выбрать файл {fileName}",
+        "deleteError": "Ошибка при удалении файла",
+        "deleteSuccess": "Файл успешно удален",
+        "bulkDeleteError": "Ошибка при удалении выбранных файлов",
+        "copyErrors": {
+          "timeout": "Время операции копирования истекло. Пожалуйста, попробуйте еще раз с файлом меньшего размера или проверьте подключение.",
+          "failed": "Ошибка операции копирования. Пожалуйста, попробуйте еще раз.",
+          "aborted": "Операция копирования была отменена из-за истечения времени ожидания."
+        },
+        "invalidDate": "Неверная дата",
+        "downloading": "Загрузка..."
+      },
+      "delete": {
+        "linkLabel": "Ссылка: /r/{alias}"
+      }
+    },
+    "form": {
+      "name": {
+        "label": "Название ссылки",
+        "placeholder": "Например: Документы проекта, Семейные фото..."
+      },
+      "description": {
+        "label": "Описание",
+        "placeholder": "Опишите, какие файлы вы ожидаете получить...",
+        "description": "Необязательно. Помогает людям понять, что отправлять."
+      },
+      "status": {
+        "label": "Статус ссылки",
+        "description": "Активируйте или деактивируйте эту ссылку для получения"
+      },
+      "expiration": {
+        "label": "Дата истечения",
+        "description": "Необязательно. Ссылка будет деактивирована после этой даты.",
+        "configure": "Настроить срок действия"
+      },
+      "fileLimits": {
+        "configure": "Настроить ограничения файлов"
+      },
+      "maxFiles": {
+        "label": "Максимум файлов",
+        "placeholder": "Например: 10",
+        "description": "Необязательно. Ограничьте общее количество файлов, которые можно отправить.",
+        "noLimit": "Без ограничения файлов"
+      },
+      "maxFileSize": {
+        "label": "Максимальный размер файла",
+        "placeholder": "Например: 100",
+        "description": "Необязательно. Ограничьте размер каждого файла.",
+        "noLimit": "Без ограничения размера"
+      },
+      "allowedFileTypes": {
+        "label": "Разрешенные типы файлов",
+        "placeholder": "Например: pdf, jpg, png, docx",
+        "description": "Введите расширения без точки, разделенные пробелом, запятой, дефисом или вертикальной чертой",
+        "allTypes": "Все типы файлов"
+      },
+      "pageLayout": {
+        "label": "Макет страницы",
+        "placeholder": "Выберите макет",
+        "description": "Как будет выглядеть страница загрузки для пользователей.",
+        "options": {
+          "default": "Стандартный макет",
+          "wetransfer": "Стиль WeTransfer"
+        }
+      },
+      "backgroundImage": {
+        "title": "Фоновое изображение",
+        "description": "Выберите фоновое изображение для страницы загрузки",
+        "random": "Случайное",
+        "none": "Фоновые изображения недоступны. Администратор может загрузить изображения в параметрах."
+      },
+      "password": {
+        "label": "Пароль защиты",
+        "placeholder": "Необязательно. Добавьте пароль для защиты ссылки",
+        "description": "Необязательно. Пользователям потребуется этот пароль для доступа к ссылке.",
+        "configurePassword": "Настроить пароль",
+        "protectWithPassword": "Защитить паролем",
+        "passwordHelp": "Пароль должен содержать минимум 4 символа",
+        "passwordPlaceholder": "Введите пароль для защиты ссылки"
+      },
+      "submit": "Создать ссылку для получения",
+      "emailFieldRequired": {
+        "label": "Требование поля электронной почты",
+        "description": "Настройка, если следует отобразить поле электронной почты загрузчика и если это требуется"
+      },
+      "fieldRequirements": {
+        "title": "Полевые требования",
+        "description": "Настройте, какие поля показаны в форме загрузки",
+        "configurationTitle": "Конфигурация полей:",
+        "hiddenDescription": "Скрытое: Поле не будет отображаться в форме загрузки",
+        "optionalDescription": "Необязательное: Поле будет отображаться, но не обязательно к заполнению",
+        "requiredDescription": "Обязательное: Поле должно быть заполнено перед загрузкой"
+      },
+      "nameFieldRequired": {
+        "label": "Требование поля имени",
+        "description": "Настройка, если должно быть показано поле имени загрузчика и если оно требуется"
+      },
+      "notifyOnUpload": "Уведомлять при каждой загрузке",
+      "notifyOnUploadHelp": "При включении вы будете получать уведомления по электронной почте при загрузке файлов на эту ссылку получения, независимо от ваших глобальных предпочтений уведомлений.",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
+    },
+    "messages": {
+      "created": "Ссылка для получения успешно создана!",
+      "createSuccess": "Ссылка для получения успешно создана!",
+      "updateSuccess": "Ссылка для получения успешно обновлена!",
+      "linkCopied": "Ссылка скопирована в буфер обмена!",
+      "deleteSuccess": "Ссылка для получения успешно удалена!",
+      "aliasCreated": "Псевдоним успешно создан!",
+      "activateSuccess": "Ссылка для получения успешно активирована!",
+      "deactivateSuccess": "Ссылка для получения успешно деактивирована!",
+      "passwordProtectionDisabled": "Защита паролем успешно отключена!",
+      "passwordProtectionEnabled": "Защита паролем успешно включена!"
+    },
+    "errors": {
+      "loadFailed": "Не удалось загрузить ссылки для получения",
+      "createFailed": "Не удалось создать ссылку для получения. Попробуйте снова.",
+      "updateFailed": "Не удалось обновить ссылку для получения. Попробуйте снова.",
+      "deleteFailed": "Не удалось удалить ссылку для получения. Попробуйте снова.",
+      "aliasCreateFailed": "Не удалось создать псевдоним. Попробуйте снова.",
+      "passwordUpdateFailed": "Не удалось обновить защиту паролем"
+    },
+    "delete": {
+      "title": "Удалить ссылку для получения",
+      "description": "Это действие нельзя отменить. Ссылка будет навсегда удалена и больше не сможет получать файлы.",
+      "confirmButton": "Удалить ссылку",
+      "cancelButton": "Отмена",
+      "deleting": "Удаление..."
+    },
+    "upload": {
+      "metadata": {
+        "title": "Отправка файлов - OUITRANSFER",
+        "description": "Отправка файлов через общую ссылку",
+        "descriptionWithLimit": "Загрузить файлы (макс. {limit} файлов)"
+      },
+      "layout": {
+        "defaultTitle": "Отправка файлов",
+        "importantInfo": "Важная информация:",
+        "maxFiles": "Максимум {count} файл(ов)",
+        "maxFileSize": "Максимальный размер файла: {size}МБ",
+        "allowedTypes": "Разрешенные типы: {types}",
+        "loading": "Загрузка..."
+      },
+      "password": {
+        "title": "Защищенная ссылка",
+        "description": "Эта ссылка защищена паролем. Введите пароль для продолжения.",
+        "label": "Пароль",
+        "placeholder": "Введите пароль",
+        "cancel": "Отмена",
+        "submit": "Продолжить",
+        "verifying": "Проверка..."
+      },
+      "errors": {
+        "loadFailed": "Не удалось загрузить информацию. Попробуйте снова.",
+        "passwordIncorrect": "Неверный пароль. Попробуйте снова.",
+        "linkNotFound": "Ссылка не найдена или истекла.",
+        "linkInactive": "Эта ссылка неактивна.",
+        "linkExpired": "Срок действия этой ссылки истек.",
+        "uploadFailed": "Ошибка при загрузке файла",
+        "retry": "Повторить",
+        "fileTooLarge": "Файл слишком большой. Максимальный размер: {maxSize}",
+        "fileTypeNotAllowed": "Тип файла не разрешен. Разрешенные типы: {allowedTypes}",
+        "maxFilesExceeded": "Максимально разрешено {maxFiles} файлов",
+        "selectAtLeastOneFile": "Выберите хотя бы один файл",
+        "provideNameOrEmail": "Укажите ваше имя или email",
+        "provideEmailRequired": "Электронная почта требуется",
+        "provideNameRequired": "Имя требуется"
+      },
+      "fileDropzone": {
+        "dragActive": "Отпустите файлы здесь",
+        "dragInactive": "Перетащите файлы сюда или нажмите для выбора",
+        "acceptedTypes": "Разрешенные типы: {types}",
+        "maxFileSize": "Максимальный размер: {size}",
+        "maxFiles": "Максимум {count} файлов",
+        "remainingFiles": "Осталось {remaining} из {max} файлов"
+      },
+      "fileList": {
+        "title": "Выбранные файлы:",
+        "statusUploaded": "Загружено",
+        "statusError": "Ошибка",
+        "retry": "Повторить"
+      },
+      "form": {
+        "nameLabel": "Имя",
+        "namePlaceholder": "Ваше имя",
+        "emailLabel": "Email",
+        "emailPlaceholder": "вы@email.ru",
+        "descriptionLabel": "Описание (необязательно)",
+        "descriptionPlaceholder": "Добавьте описание к файлам...",
+        "uploadButton": "Отправить {count} файл(ов)",
+        "uploading": "Отправка...",
+        "emailLabelOptional": "Электронная почта (необязательно)",
+        "nameLabelOptional": "Имя (необязательно)",
+        "privacyNotice": "Ваше имя, адрес электронной почты и загрузки могут быть видны владельцу этой ссылки получения."
+      },
+      "success": {
+        "title": "Файлы успешно отправлены! 🎉",
+        "description": "Вы можете закрыть эту страницу.",
+        "countMessage": "{count} файл(ов) успешно отправлено!"
+      },
+      "maxFilesReached": {
+        "title": "Достигнут лимит файлов",
+        "description": "Эта ссылка уже получила максимальное количество разрешенных файлов ({maxFiles}).",
+        "contactOwner": "Если произошла ошибка или вам нужно отправить больше файлов, свяжитесь с владельцем ссылки."
+      },
+      "linkInactive": {
+        "title": "Ссылка неактивна",
+        "description": "Эта ссылка для получения временно неактивна.",
+        "contactOwner": "Свяжитесь с владельцем ссылки для получения дополнительной информации."
+      },
+      "linkNotFound": {
+        "title": "Ссылка не найдена",
+        "description": "Эта ссылка могла быть удалена или никогда не существовала."
+      },
+      "linkExpired": {
+        "title": "Срок действия ссылки истек",
+        "description": "Срок действия этой ссылки для получения истек, и она больше не принимает файлы.",
+        "contactOwner": "Свяжитесь с владельцем ссылки, если вам нужно отправить файлы."
+      }
+    },
+    "components": {
+      "fileRow": {
+        "addDescription": "Добавить описание...",
+        "anonymous": "Аноним"
+      },
+      "fileActions": {
+        "edit": "Редактировать",
+        "preview": "Предпросмотр",
+        "download": "Скачать",
+        "delete": "Удалить",
+        "copyToMyFiles": "Скопируйте в мои файлы",
+        "copying": "Копирование ..."
+      },
+      "editField": {
+        "saveChanges": "Сохранить изменения",
+        "cancelEdit": "Отменить редактирование"
+      }
+    },
+    "defaultLinkName": "Полученные файлы"
+  },
+  "searchBar": {
+    "placeholder": "Поиск файлов...",
+    "results": "Найдено {filtered} из {total} файлов",
+    "placeholderFolders": "Поиск папок...",
+    "noResults": "Не найдено результатов для \"{query}\"",
+    "placeholderFiles": "Поиск файлов..."
+  },
+  "settings": {
+    "groups": {
+      "defaultDescription": "Настройки конфигурации",
+      "general": {
+        "title": "Общие",
+        "description": "Основные настройки приложения"
+      },
+      "email": {
+        "title": "Электронная почта",
+        "description": "Настройки почтового сервера"
+      },
+      "security": {
+        "title": "Безопасность",
+        "description": "Настройки безопасности и аутентификации"
+      },
+      "storage": {
+        "title": "Хранилище",
+        "description": "Настройки хранения файлов"
+      },
+      "oidc": {
+        "title": "OpenID Connect (SSO)",
+        "description": "Настройка аутентификации SSO через OpenID Connect"
+      },
+      "backgrounds": {
+        "title": "Фоновые изображения",
+        "description": "Управление фоновыми изображениями для страниц загрузки в стиле WeTransfer"
+      },
+      "cleanup": {
+        "title": "Автоматическая очистка",
+        "description": "Управление жизненным циклом истекшего контента, деактивированных учётных записей и потерянных файлов. По умолчанию автоматическое удаление отключено."
+      }
+    },
+    "fields": {
+      "noDescription": "Описание отсутствует",
+      "appLogo": {
+        "title": "Логотип приложения",
+        "description": "Изображение логотипа приложения"
+      },
+      "appName": {
+        "title": "Название приложения",
+        "description": "Название приложения, отображаемое пользователям"
+      },
+      "appUrl": {
+        "title": "URL приложения",
+        "description": "Общедоступный URL приложения, используемый в ссылках электронной почты"
+      },
+      "appDescription": {
+        "title": "Описание приложения",
+        "description": "Краткое описание приложения"
+      },
+      "showHomePage": {
+        "title": "Публичная главная страница",
+        "description": "Отображать публичную главную страницу для посетителей. При отключении посетители перенаправляются на страницу входа."
+      },
+      "smtpEnabled": {
+        "title": "Включить SMTP",
+        "description": "Включить или отключить функцию SMTP для отправки электронной почты"
+      },
+      "smtpHost": {
+        "title": "SMTP-сервер",
+        "description": "Адрес SMTP-сервера"
+      },
+      "smtpPort": {
+        "title": "SMTP-порт",
+        "description": "Порт SMTP-сервера"
+      },
+      "smtpUser": {
+        "title": "SMTP-пользователь",
+        "description": "Имя пользователя для SMTP-аутентификации"
+      },
+      "smtpPass": {
+        "title": "SMTP-пароль",
+        "description": "Пароль для SMTP-аутентификации"
+      },
+      "smtpFromName": {
+        "title": "Имя отправителя",
+        "description": "Имя, отображаемое в отправляемых письмах"
+      },
+      "smtpFromEmail": {
+        "title": "Электронная почта отправителя",
+        "description": "Адрес электронной почты отправителя"
+      },
+      "maxLoginAttempts": {
+        "title": "Максимальное количество попыток входа",
+        "description": "Максимальное количество попыток входа до блокировки"
+      },
+      "loginBlockDuration": {
+        "title": "Время блокировки",
+        "description": "Продолжительность блокировки (в секундах) после превышения лимита попыток"
+      },
+      "passwordMinLength": {
+        "title": "Минимальная длина пароля",
+        "description": "Минимальное количество символов в пароле"
+      },
+      "passwordResetTokenExpiration": {
+        "title": "Время истечения токена сброса пароля",
+        "description": "Время действия токена сброса пароля (в секундах)"
+      },
+      "maxFileSize": {
+        "title": "Максимальный размер файла",
+        "description": "Максимальный разрешенный размер файла для загрузки. Может быть переопределен для каждого пользователя или группы."
+      },
+      "maxTotalStoragePerUser": {
+        "title": "Максимальное хранилище для пользователя",
+        "description": "Общий лимит хранилища на пользователя. Может быть переопределен для каждого пользователя или группы."
+      },
+      "quotaWarningThresholds": {
+        "title": "Пороги предупреждений квоты (%)",
+        "description": "Процентные значения, разделённые запятыми, например «80,90», при достижении которых пользователю отправляется предупреждение о квоте. Каждое значение должно быть целым числом от 1 до 99. Отдельное оповещение отправляется при достижении хранилищем 100%."
+      },
+      "quotaGracePeriodDays": {
+        "title": "Период льготы квоты (дни)",
+        "description": "Количество дней, в течение которых пользователь может превысить свою квоту до вступления в силу умного удаления (только если умное удаление включено ниже). Минимум 0."
+      },
+      "quotaSmartDeletionEnabled": {
+        "title": "Умное удаление файлов сверх квоты",
+        "description": "По умолчанию отключено. При включении после периода льготы самые старые небезопасные файлы пользователя, превысившего квоту, удаляются в безопасном порядке: сначала неопубликованные загрузки, затем файлы в общих ресурсах, неактивных в течение периода ниже. Файлы в активных общих ресурсах никогда не удаляются. Если нечего удалять безопасно, новые загрузки просто блокируются."
+      },
+      "quotaInactiveShareDays": {
+        "title": "Порог неактивной общей папки (дни)",
+        "description": "Файлы общей папки становятся кандидатами на умное удаление после отсутствия активности в течение этого количества дней. Минимум 1."
+      },
+      "reverseShareQuotaSoftEnforcement": {
+        "title": "Гибкое применение ссылки для получения",
+        "description": "По умолчанию включено. Позволяет внешним гостям продолжать загружать на ссылку для получения, даже если владелец немного превысил квоту, чтобы сбор не был прерван. Загрузки всё ещё блокируются, когда владелец превышает допуск, установленный ниже, и владельцу предлагается освободить место."
+      },
+      "reverseShareMaxOverageFactor": {
+        "title": "Множитель превышения ссылки для получения",
+        "description": "Гибкое применение допускает загрузку на ссылку для получения до тех пор, пока использование не достигнет этого кратного значения квоты владельца (например, 3 = до трёх раз превышение лимита). Минимум 1."
+      },
+      "reverseShareAbsoluteMaxBytes": {
+        "title": "Абсолютный предел ссылки для получения",
+        "description": "Жёсткий предел для гибкого применения ссылки для получения независимо от указанного выше множителя. Установите 0 для отсутствия абсолютного предела."
+      },
+      "firstUserAccess": {
+        "title": "Первый доступ пользователя",
+        "description": "Время первого доступа пользователя"
+      },
+      "serverUrl": {
+        "title": "URL сервера",
+        "description": "Базовый URL сервера OUITRANSFER (например: https://OUITRANSFER.example.com)"
+      },
+      "testSmtp": {
+        "title": "Проверить SMTP-соединение",
+        "description": "Проверить правильность настройки SMTP"
+      },
+      "smtpNoAuth": {
+        "title": "Без аутентификации",
+        "description": "Включите для внутренних серверов, не требующих имя пользователя/пароль (скрывает поля аутентификации)"
+      },
+      "smtpSecure": {
+        "title": "Безопасность соединения",
+        "description": "Метод безопасности SMTP-соединения - Авто (рекомендуется), SSL, STARTTLS или Нет (небезопасно)",
+        "options": {
+          "auto": "Авто (Рекомендуется)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
+          "none": "Нет (Небезопасно)"
+        }
+      },
+      "smtpTrustSelfSigned": {
+        "title": "Доверять самоподписанным сертификатам",
+        "description": "Включите это для доверия самоподписанным SSL/TLS сертификатам (полезно для сред разработки)"
+      },
+      "passwordAuthEnabled": {
+        "title": "Парольная аутентификация",
+        "description": "Включить или отключить парольную аутентификацию"
+      },
+      "hideVersion": {
+        "title": "Скрыть Версию",
+        "description": "Скрыть версию OUITRANSFER в нижнем колонтитуле всех страниц"
+      },
+      "footerEnabled": {
+        "title": "Показать подвал",
+        "description": "Отображать панель подвала внизу всех страниц"
+      },
+      "footerText": {
+        "title": "Текст подвала",
+        "description": "Имя компании или организации, отображаемое в подвале"
+      },
+      "footerUrl": {
+        "title": "URL подвала",
+        "description": "URL ссылки для текста подвала"
+      },
+      "emailDigestHour": {
+        "title": "Час дайджеста электронной почты",
+        "description": "Час дня (0-23), в который отправляются дайджесты электронной почты"
+      },
+      "emailJobRetentionDays": {
+        "title": "Срок хранения задач электронной почты",
+        "description": "Количество дней для сохранения завершённых задач электронной почты перед очисткой"
+      },
+      "emailQueueIntervalSeconds": {
+        "title": "Интервал обработки очереди",
+        "description": "Секунды между циклами обработки очереди электронной почты"
+      },
+      "emailQueueMaxRetries": {
+        "title": "Максимум повторных попыток электронной почты",
+        "description": "Максимальное количество попыток повторной отправки для неудачных писем"
+      },
+      "auditRetentionDays": {
+        "title": "Сохранение аудита",
+        "description": "Количество дней для сохранения журналов аудита (0 = бесконечно, минимум 7)"
+      },
+      "autoCleanupEnabled": {
+        "title": "Включить автоматическую очистку",
+        "description": "Главный переключатель для запланированной очистки истекших ссылок для общего доступа, истекших файлов ссылок для получения и потерянных файлов. По умолчанию отключено. Ничто не удаляется автоматически, пока вы это не включите."
+      },
+      "autoCleanupIntervalHours": {
+        "title": "Интервал очистки (часы)",
+        "description": "Как часто запускается задача очистки. Минимум 1 час."
+      },
+      "autoCleanupGracePeriodDays": {
+        "title": "Период льготы (дни)",
+        "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
+      },
+      "autoCleanupNotifyDaysBefore": {
+        "title": "Предупреждение перед удалением (дни)",
+        "description": "Отправить владельцу предупреждение об ожидающемся постоянном удалении за несколько дней до удаления контента. 0 отключает предупреждение. Должно быть не более периода льготы."
+      },
+      "accountDeactivationCleanupEnabled": {
+        "title": "Удалить файлы деактивированных учётных записей",
+        "description": "Если включено, файлы, принадлежащие деактивированной учётной записи, окончательно удаляются после задержки ниже. По умолчанию отключено. Деактивирование само по себе никогда не удаляет файлы."
+      },
+      "accountDeactivationCleanupDays": {
+        "title": "Задержка очистки при деактивировании (дни)",
+        "description": "Количество дней после деактивирования учётной записи, прежде чем её файлы будут удалены (только если параметр выше включен). Минимум 1."
+      },
+      "autoCleanupOrphansEnabled": {
+        "title": "Очистить потерянные файлы",
+        "description": "Если включено, выполняет двустороннюю очистку, которая удаляет записи базы данных, указывающие на отсутствующие объекты хранилища, и объекты хранилища без записей базы данных. По умолчанию отключено."
+      },
+      "autoCleanupOrphanMinAgeHours": {
+        "title": "Минимальный возраст потерянного файла (часы)",
+        "description": "При очистке потерянных файлов учитываются только файлы и объекты, более старые, чем это значение, что защищает загрузки, всё ещё находящиеся в процессе. Минимум 1."
+      }
+    },
+    "buttons": {
+      "save": "Сохранить {group}",
+      "testSmtp": "Проверить соединение",
+      "testing": "Проверка..."
+    },
+    "errors": {
+      "loadFailed": "Ошибка загрузки настроек",
+      "updateFailed": "Ошибка обновления настроек",
+      "passwordAuthRequiresProvider": "Парольную аутентификацию нельзя отключить, если нет хотя бы одного активного поставщика аутентификации",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
+      "cleanupValueInvalid": "Значение должно быть целым числом не менее {min}",
+      "notifyDaysExceedsGrace": "Время предупреждения не должно превышать период льготы, иначе предупреждение не будет отправлено",
+      "quotaThresholdsInvalid": "Введите процентные значения, разделённые запятыми, от 1 до 99, например «80,90»"
+    },
+    "messages": {
+      "noChanges": "Изменений для сохранения нет",
+      "updateSuccess": "Настройки {group} успешно обновлены",
+      "smtpTestFailed": "Ошибка SMTP-соединения: {error}",
+      "smtpTestGenericError": "Не удалось проверить SMTP-соединение. Пожалуйста, проверьте настройки и попробуйте снова.",
+      "smtpTestSuccess": "SMTP-соединение успешно установлено! Ваша конфигурация электронной почты работает корректно.",
+      "smtpMissingAuth": "Пожалуйста, заполните имя пользователя и пароль SMTP или включите опцию 'Без аутентификации'.",
+      "smtpMissingHostPort": "Пожалуйста, заполните хост и порт SMTP перед тестированием.",
+      "smtpNotEnabled": "SMTP не включен. Пожалуйста, сначала включите SMTP."
+    },
+    "title": "Настройки",
+    "breadcrumb": "Настройки",
+    "pageTitle": "Настройки",
+    "tooltips": {
+      "testSmtp": "Проверяет SMTP-соединение с текущими значениями в форме. Чтобы сохранить изменения, не забудьте сохранить настройки после тестирования.",
+      "defaultPlaceholder": "Введите и нажмите Enter"
+    },
+    "redirectUri": {
+      "placeholder": "https://mysite.ru",
+      "previewLabel": "URL completa que será salva:"
+    },
+    "emailAdmin": {
+      "queueStatus": "Статус очереди электронной почты",
+      "pending": "В ожидании",
+      "sentLast24h": "Отправлено (24ч)",
+      "failed": "Ошибка",
+      "digestQueue": "Очередь дайджестов",
+      "sendTest": "Отправить тестовое письмо",
+      "testPlaceholder": "ваш@email.ru",
+      "testSending": "Отправка...",
+      "testSuccess": "Тестовое письмо успешно добавлено в очередь",
+      "testError": "Ошибка отправки тестового письма"
+    }
+  },
+  "share": {
+    "errors": {
+      "invalidPassword": "Неверный пароль. Пожалуйста, попробуйте еще раз.",
+      "loadFailed": "Ошибка загрузки общего доступа",
+      "downloadFailed": "Ошибка скачивания файла"
+    },
+    "messages": {
+      "downloadStarted": "Скачивание начато"
+    },
+    "password": {
+      "title": "Общий доступ, защищенный паролем",
+      "protected": "Введите пароль для доступа к общим файлам.",
+      "incorrect": "Неверный пароль. Пожалуйста, попробуйте снова.",
+      "label": "Пароль",
+      "placeholder": "Введите пароль для общего доступа",
+      "submit": "Отправить"
+    },
+    "details": {
+      "untitled": "Без названия",
+      "created": "Создано: {date}",
+      "expires": "Истекает: {date}"
+    },
+    "notFound": {
+      "title": "Общий доступ не найден",
+      "description": "Этот общий доступ может быть удален или истек."
+    },
+    "pageTitle": "Общий доступ",
+    "downloadAll": "Скачать все",
+    "metadata": {
+      "defaultDescription": "Безопасный обмен файлами",
+      "filesShared": "{count, plural, =1 {1 файл отправлен} other {# файлов отправлено}}"
+    },
+    "identification": {
+      "title": "Идентификация посетителя",
+      "subtitle": "Пожалуйста, предоставьте вашу информацию для доступа к этому совместному доступу",
+      "nameLabel": "Имя",
+      "emailLabel": "Электронная почта",
+      "submit": "Продолжить",
+      "error": "Ошибка отправки идентификации. Пожалуйста, попробуйте еще раз.",
+      "optional": "Необязательно",
+      "nameRequired": "Имя требуется",
+      "emailRequired": "Электронная почта требуется",
+      "emailInvalid": "Пожалуйста, введите действительный адрес электронной почты",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "Ваш доступ и загрузки могут быть видны отправителю этого совместного доступа."
+    }
+  },
+  "shareActions": {
+    "deleteTitle": "Удалить Общий Доступ",
+    "deleteConfirmation": "Вы уверены, что хотите удалить этот общий доступ? Это действие нельзя отменить.",
+    "editTitle": "Редактировать Общий Доступ",
+    "newPasswordLabel": "Новый Пароль (оставьте пустым, чтобы сохранить текущий)",
+    "newPasswordPlaceholder": "Введите новый пароль",
+    "manageFilesTitle": "Управление Файлами",
+    "manageRecipientsTitle": "Управление Получателями",
+    "editSuccess": "Общий доступ успешно обновлен",
+    "editError": "Ошибка обновления общего доступа",
+    "editErrorMetadata": "Не удалось обновить данные общего доступа",
+    "editErrorPassword": "Не удалось обновить пароль общего доступа",
+    "bulkDeleteConfirmation": "Вы уверены, что хотите удалить {count, plural, =1 {1 общую папку} other {# общих папок}}? Это действие нельзя отменить.",
+    "bulkDeleteTitle": "Удалить Выбранные Общие Папки",
+    "addDescriptionPlaceholder": "Добавить описание...",
+    "aliasLabel": "Псевдоним ссылки",
+    "aliasPlaceholder": "Введите пользовательский псевдоним",
+    "copyLink": "Копировать ссылку",
+    "fileTitle": "Поделиться файлом",
+    "folderTitle": "Поделиться папкой",
+    "generateLink": "Создать ссылку",
+    "linkDescriptionFile": "Создайте пользовательскую ссылку для обмена файлом",
+    "linkDescriptionFolder": "Создайте пользовательскую ссылку для обмена папкой",
+    "linkReady": "Ваша ссылка для обмена готова:",
+    "linkTitle": "Создать ссылку",
+    "itemsSelected": "Выбрано элементов: {count}",
+    "manageFilesDescription": "Выберите файлы и папки для включения в этот общий доступ",
+    "keepCurrentPasswordHint": "Оставьте пустым, чтобы сохранить текущий пароль",
+    "passwordRequired": "Пароль требуется для нового пароля защиты"
+  },
+  "shareDetails": {
+    "title": "Детали Общего Доступа",
+    "subtitle": "Подробная информация об этом общем доступе",
+    "basicInfo": "Основная Информация",
+    "name": "Название",
+    "description": "Описание",
+    "noDescription": "Описание не предоставлено",
+    "untitled": "Без названия",
+    "shareLink": "Ссылка Общего Доступа",
+    "editLink": "Редактировать Ссылку",
+    "generateLink": "Сгенерировать Ссылку",
+    "noLink": "Ссылка еще не сгенерирована",
+    "copyLink": "Скопировать ссылку",
+    "openLink": "Открыть в новой вкладке",
+    "views": "Просмотры",
+    "dates": "Даты",
+    "created": "Создано",
+    "expires": "Истекает",
+    "never": "Никогда",
+    "security": "Безопасность",
+    "passwordProtected": "Защищено Паролем",
+    "publicAccess": "Публичный Доступ",
+    "maxViews": "Макс. Просмотры:",
+    "files": "Файлы",
+    "recipients": "Получатели",
+    "notAvailable": "Н/Д",
+    "invalidDate": "Неверная дата",
+    "loadError": "Ошибка загрузки деталей общего доступа",
+    "editSecurity": "Изменить безопасность",
+    "editExpiration": "Изменить срок действия",
+    "clickToEnlargeQrCode": "Нажмите, чтобы увеличить QR-код",
+    "downloadQrCode": "Скачать QR-код",
+    "qrCode": "QR-код",
+    "activity": {
+      "title": "Активность",
+      "noActivity": "Активность еще не записана.",
+      "access": "Просмотрено",
+      "download": "Загружено",
+      "anonymous": "Анонимно",
+      "loadMore": "Загрузить еще",
+      "showingCount": "Показано {shown} из {total}",
+      "loadError": "Ошибка загрузки данных активности.",
+      "filterAll": "Все действия",
+      "filterAccess": "Только просмотры",
+      "filterDownload": "Только загрузки",
+      "filterAllVisitors": "Все посетители",
+      "filterIdentified": "Идентифицировано",
+      "filterAnonymous": "Анонимно",
+      "you": "Вы",
+      "source": {
+        "tracking_token": "Через ссылку получения",
+        "cookie": "Самоопределяемый",
+        "selfDeclaredHint": "Самозаявленная идентичность, не проверена",
+        "authenticated_user": "Зарегистрированный пользователь"
+      }
+    },
+    "lastDownloaded": "Последняя загрузка",
+    "privacySummary": "Конфиденциальность",
+    "privacyNameField": "Имя посетителя:",
+    "privacyEmailField": "Email посетителя:",
+    "privacyNotifyOnDownload": "Уведомления о загрузках включены",
+    "privacyInactivityAlert": "Оповещение о неактивности через {days} дней",
+    "fieldValue": {
+      "OPTIONAL": "Необязательно",
+      "REQUIRED": "Обязательно"
+    },
+    "recipientNotified": "Уведомлено",
+    "recipientAccess": "{count, plural, one {# доступ} few {# доступа} many {# доступов} other {# доступов}}",
+    "recipientAccessWithLast": "{count, plural, one {# доступ} few {# доступа} many {# доступов} other {# доступов}} · последний {lastAccess}"
+  },
+  "shareExpiration": {
+    "neverExpires": "Никогда не истекает",
+    "success": {
+      "expirationUpdated": "Дата истечения успешно обновлена",
+      "expirationRemoved": "Истечение успешно удалено - общий доступ теперь постоянный",
+      "expirationSet": "Дата истечения успешно установлена"
+    },
+    "info": {
+      "canBeChanged": "Вы можете изменить или удалить дату истечения в любое время",
+      "willBeInaccessible": "Общий доступ станет недоступным после этой даты",
+      "noExpiration": "Этот общий доступ никогда не истечет и останется доступным бессрочно.",
+      "title": "Об истечении:"
+    },
+    "enableExpiration": "Включить срок действия",
+    "title": "Настройки истечения общего доступа",
+    "subtitle": "Настройте, когда истечет этот общий доступ",
+    "validation": {
+      "dateMustBeFuture": "Дата истечения должна быть в будущем",
+      "dateRequired": "Пожалуйста, выберите дату истечения"
+    },
+    "currentStatus": "Текущий статус",
+    "error": {
+      "updateFailed": "Не удалось обновить настройки истечения"
+    },
+    "expires": "Истекает:",
+    "expirationDate": "Дата истечения"
+  },
+  "shareManager": {
+    "deleteSuccess": "Общий доступ успешно удален",
+    "deleteError": "Ошибка при удалении общего доступа",
+    "updateSuccess": "Общий доступ успешно обновлен",
+    "updateError": "Ошибка при обновлении общего доступа",
+    "filesUpdateSuccess": "Файлы успешно обновлены",
+    "filesUpdateError": "Ошибка при обновлении файлов",
+    "recipientsUpdateSuccess": "Получатели успешно обновлены",
+    "recipientsUpdateError": "Ошибка при обновлении получателей",
+    "linkGenerateSuccess": "Ссылка для общего доступа успешно создана",
+    "linkGenerateError": "Ошибка при создании ссылки для общего доступа",
+    "notifyLoading": "Отправка уведомлений...",
+    "notifySuccess": "Получатели успешно уведомлены",
+    "notifyError": "Ошибка при уведомлении получателей",
+    "bulkDeleteError": "Не удалось удалить общие папки",
+    "bulkDeleteLoading": "Удаление {count, plural, =1 {1 общей папки} other {# общих папок}}...",
+    "bulkDeleteSuccess": "{count, plural, =1 {1 общая папка успешно удалена} other {# общих папок успешно удалены}}",
+    "securityUpdateError": "Не удалось обновить настройки безопасности",
+    "expirationUpdateError": "Не удалось обновить настройки истечения",
+    "securityUpdateSuccess": "Настройки безопасности успешно обновлены",
+    "expirationUpdateSuccess": "Настройки истечения успешно обновлены",
+    "creatingZip": "Создание файла Zip ...",
+    "defaultShareName": "Делиться",
+    "downloadError": "Не удалось скачать общие файлы",
+    "downloadSuccess": "Скачать началась успешно",
+    "multipleSharesZipName": "{count} _shares_files.zip",
+    "noFilesToDownload": "Нет файлов для скачивания",
+    "singleShareZipName": "{shareme} _files.zip",
+    "zipDownloadError": "Не удалось создать zip -файл",
+    "zipDownloadSuccess": "Zip -файл успешно загружен",
+    "errors": {
+      "multipleDownloadNotSupported": "Множественная загрузка общих ресурсов пока не поддерживается - загружайте общие ресурсы по отдельности"
+    },
+    "pauseSuccess": "Совместный доступ приостановлен",
+    "pauseError": "Ошибка приостановки совместного доступа",
+    "resumeSuccess": "Совместный доступ возобновлен",
+    "resumeError": "Ошибка возобновления совместного доступа. Если он истек или достигнут предел просмотров, продлите его."
+  },
+  "shareMultipleFiles": {
+    "title": "Поделиться Несколькими Файлами",
+    "shareNameLabel": "Название Общего Доступа",
+    "shareNamePlaceholder": "Введите название общего доступа",
+    "descriptionLabel": "Описание",
+    "descriptionPlaceholder": "Введите описание (опционально)",
+    "filesToShare": "Файлы для отправки",
+    "files": "файлов",
+    "totalSize": "Общий размер: {size}",
+    "creating": "Создание...",
+    "create": "Создать Общий Доступ",
+    "itemsToShare": "Элементы для обмена ({count} {count, plural, =1 {элемент} other {элементов}})",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
+  },
+  "shareSecurity": {
+    "subtitle": "Настройте защиту паролем и параметры безопасности для этого общего доступа",
+    "info": {
+      "title": "Как это работает:",
+      "withoutPassword": "Любой, у кого есть ссылка, может получить доступ к этому общему доступу без пароля.",
+      "withPassword": "Пользователям нужно будет ввести пароль для доступа к этому общему доступу."
+    },
+    "existingPasswordMessage": "У этого общего доступа уже есть пароль. Если вы хотите его обновить, введите новый пароль в поле ниже и сохраните.",
+    "passwordProtection": "Защита паролем",
+    "error": {
+      "updateFailed": "Не удалось обновить настройки безопасности"
+    },
+    "passwordRequirements": {
+      "title": "Требования к паролю:",
+      "minLength": "Минимум 2 символа"
+    },
+    "newPassword": "Новый пароль",
+    "success": {
+      "passwordUpdated": "Пароль успешно обновлен",
+      "passwordRemoved": "Защита паролем успешно удалена",
+      "passwordSet": "Защита паролем успешно включена"
+    },
+    "password": "Пароль",
+    "validation": {
+      "passwordRequired": "Требуется пароль",
+      "passwordTooShort": "Пароль должен содержать не менее 2 символов"
+    },
+    "currentStatus": "Текущий статус",
+    "passwordPlaceholder": "Введите надежный пароль",
+    "title": "Настройки безопасности общего доступа"
+  },
+  "shares": {
+    "errors": {
+      "loadFailed": "Ошибка загрузки общих доступов",
+      "notifyFailed": "Ошибка уведомления получателей",
+      "smtpConfigFailed": "Ошибка загрузки SMTP-настроек"
+    },
+    "messages": {
+      "linkCopied": "Ссылка скопирована в буфер обмена",
+      "recipientsNotified": "Получатели успешно уведомлены"
+    },
+    "empty": {
+      "message": "Общие доступы еще не созданы",
+      "createButton": "Создать общий доступ"
+    },
+    "header": {
+      "title": "Мои общие доступы",
+      "myShares": "Мои общие доступы"
+    },
+    "search": {
+      "title": "Все общие доступы",
+      "createButton": "Создать общий доступ",
+      "placeholder": "Поиск общих доступов...",
+      "results": "Найдено {filtered} из {total} общих доступов"
+    },
+    "pageTitle": "Общие доступы"
+  },
+  "sharesTable": {
+    "ariaLabel": "Таблица общих доступов",
+    "never": "Никогда",
+    "columns": {
+      "name": "НАЗВАНИЕ",
+      "description": "ОПИСАНИЕ",
+      "createdAt": "СОЗДАНО",
+      "expiresAt": "ИСТЕКАЕТ",
+      "status": "СТАТУС",
+      "security": "БЕЗОПАСНОСТЬ",
+      "files": "ФАЙЛЫ",
+      "recipients": "ПОЛУЧАТЕЛИ",
+      "actions": "ДЕЙСТВИЯ"
+    },
+    "status": {
+      "neverExpires": "Никогда Не Истекает",
+      "active": "Активный",
+      "expired": "Истекший",
+      "paused": "Приостановлено",
+      "maxViewsReached": "Достигнут предел просмотров",
+      "noLink": "Без ссылки",
+      "noLinkTooltip": "У этого общего доступа пока нет ссылки: он недоступен. Создайте ссылку, чтобы поделиться."
+    },
+    "security": {
+      "protected": "Защищен",
+      "public": "Публичный"
+    },
+    "filesCount": "файлов",
+    "recipientsCount": "получателей",
+    "actions": {
+      "menu": "Меню действий общего доступа",
+      "edit": "Редактировать",
+      "manageFiles": "Управление Файлами",
+      "manageRecipients": "Управление Получателями",
+      "viewDetails": "Просмотр Деталей",
+      "generateLink": "Сгенерировать Ссылку",
+      "editLink": "Редактировать Ссылку",
+      "copyLink": "Скопировать Ссылку",
+      "notifyRecipients": "Уведомить Получателей",
+      "delete": "Удалить",
+      "downloadShareFiles": "Загрузите все файлы",
+      "viewQrCode": "Просмотр QR-кода",
+      "pause": "Приостановить",
+      "resume": "Возобновить",
+      "renew": "Обновить"
+    },
+    "bulkActions": {
+      "delete": "Удалить",
+      "selected": "{count, plural, =1 {1 общая папка выбрана} other {# общих папок выбрано}}",
+      "actions": "Действия",
+      "download": "Скачать выбранный"
+    },
+    "selectAll": "Выбрать все",
+    "selectShare": "Выбрать общую папку {shareName}",
+    "folderCount": "папки"
+  },
+  "theme": {
+    "toggle": "Переключить тему",
+    "light": "Светлая",
+    "dark": "Тёмная",
+    "system": "Системная"
+  },
+  "twoFactor": {
+    "title": "Двухфакторная аутентификация",
+    "description": "Добавьте дополнительный уровень безопасности для вашей учетной записи",
+    "enabled": "Ваша учетная запись защищена двухфакторной аутентификацией",
+    "disabled": "Двухфакторная аутентификация не включена",
+    "setup": {
+      "title": "Включить двухфакторную аутентификацию",
+      "description": "Отсканируйте QR-код с помощью приложения-аутентификатора, затем введите код подтверждения.",
+      "qrCode": "QR-код",
+      "manualEntryKey": "Ключ для ручного ввода",
+      "verificationCode": "Код подтверждения",
+      "verificationCodePlaceholder": "Введите 6-значный код",
+      "verificationCodeDescription": "Введите 6-значный код из вашего приложения-аутентификатора",
+      "verifyAndEnable": "Проверить и включить",
+      "cancel": "Отмена",
+      "qrCodeAlt": "QR-код двухфакторной аутентификации"
+    },
+    "disable": {
+      "title": "Отключить двухфакторную аутентификацию",
+      "description": "Введите ваш пароль для подтверждения отключения двухфакторной аутентификации.",
+      "password": "Пароль",
+      "passwordPlaceholder": "Введите ваш пароль",
+      "totpLabel": "Код подтверждения",
+      "totpHint": "Введите 6-значный код аутентификатора или резервный код",
+      "confirm": "Подтвердить отключение",
+      "cancel": "Отмена",
+      "totpPlaceholder": "000 000"
+    },
+    "backupCodes": {
+      "title": "Резервные коды",
+      "description": "Сохраните эти резервные коды в безопасном месте. Вы можете использовать их для доступа к своей учетной записи, если потеряете устройство аутентификации.",
+      "warning": "Важно:",
+      "warningText": "Каждый резервный код можно использовать только один раз. Храните их в безопасности и не делитесь ими ни с кем.",
+      "generateNew": "Сгенерировать новые резервные коды",
+      "download": "Скачать резервные коды",
+      "copyToClipboard": "Копировать в буфер обмена",
+      "savedMessage": "Я сохранил мои резервные коды",
+      "available": "{count} резервных кодов доступно",
+      "instructions": [
+        "• Сохраните эти коды в безопасном месте",
+        "• Каждый резервный код можно использовать только один раз",
+        "• Вы можете сгенерировать новые коды в любое время"
+      ]
+    },
+    "verification": {
+      "title": "Двухфакторная аутентификация",
+      "description": "Введите 6-значный код из вашего приложения-аутентификатора",
+      "backupDescription": "Введите один из ваших резервных кодов для продолжения",
+      "verificationCode": "Код подтверждения",
+      "backupCode": "Резервный код",
+      "verificationCodePlaceholder": "000000",
+      "backupCodePlaceholder": "XXXX-XXXX",
+      "verify": "Проверить",
+      "verifying": "Проверка...",
+      "useBackupCode": "Использовать резервный код",
+      "useAuthenticatorCode": "Использовать код аутентификатора",
+      "rememberDevice": "Запомнить это устройство на 30 дней",
+      "rememberDeviceDescription": "Вам не нужно будет вводить коды 2FA на этом устройстве в течение 30 дней"
+    },
+    "messages": {
+      "enabledSuccess": "Двухфакторная аутентификация успешно включена!",
+      "disabledSuccess": "Двухфакторная аутентификация успешно отключена",
+      "backupCodesGenerated": "Новые резервные коды успешно сгенерированы",
+      "backupCodesCopied": "Резервные коды скопированы в буфер обмена",
+      "setupFailed": "Не удалось сгенерировать настройку 2FA",
+      "verificationFailed": "Неверный код подтверждения",
+      "disableFailed": "Не удалось отключить 2FA. Пожалуйста, проверьте ваш пароль.",
+      "backupCodesFailed": "Не удалось сгенерировать резервные коды",
+      "backupCodesCopyFailed": "Не удалось скопировать резервные коды",
+      "statusLoadFailed": "Не удалось загрузить статус 2FA",
+      "enterVerificationCode": "Пожалуйста, введите код подтверждения",
+      "enterPassword": "Пожалуйста, введите ваш пароль",
+      "deviceTrusted": "Это устройство отмечено как доверенное на 30 дней"
+    },
+    "errors": {
+      "invalidVerificationCode": "Неверный код подтверждения",
+      "invalidTwoFactorCode": "Неверный код двухфакторной аутентификации",
+      "twoFactorRequired": "Требуется двухфакторная аутентификация",
+      "twoFactorAlreadyEnabled": "Двухфакторная аутентификация уже включена",
+      "twoFactorNotEnabled": "Двухфакторная аутентификация не включена",
+      "passwordVerificationRequired": "Требуется подтверждение пароля",
+      "invalidPassword": "Неверный пароль",
+      "userNotFound": "Пользователь не найден"
+    },
+    "buttons": {
+      "enable2FA": "Включить 2FA",
+      "disable2FA": "Отключить 2FA"
+    },
+    "deviceNames": {
+      "unknownDevice": "Неизвестное устройство",
+      "browsers": {
+        "chrome": "Chrome",
+        "firefox": "Firefox",
+        "safari": "Safari",
+        "edge": "Edge"
+      },
+      "platforms": {
+        "windows": " на Windows",
+        "macos": " на macOS",
+        "linux": " на Linux",
+        "iphone": " на iPhone",
+        "android": " на Android"
+      }
+    },
+    "status": {
+      "label": "Статус:",
+      "enabled": "Включено",
+      "disabled": "Отключено"
+    },
+    "trustedDevices": {
+      "title": "Доверенные устройства - 2FA",
+      "description": "Устройства, не требующие проверки 2FA",
+      "noDevices": "Нет доверенных устройств",
+      "deviceName": "Устройство",
+      "addedOn": "Добавлено",
+      "expiresOn": "Истекает",
+      "remove": "Удалить",
+      "removeAll": "Удалить все",
+      "confirmRemove": "Вы уверены, что хотите удалить это доверенное устройство?",
+      "confirmRemoveAll": "Вы уверены, что хотите удалить все доверенные устройства?",
+      "deviceRemoved": "Доверенное устройство успешно удалено",
+      "allDevicesRemoved": "Все доверенные устройства успешно удалены",
+      "loadFailed": "Не удалось загрузить доверенные устройства",
+      "removeFailed": "Не удалось удалить доверенное устройство",
+      "removeAllFailed": "Не удалось удалить все доверенные устройства",
+      "loading": "Загрузка доверенных устройств...",
+      "noDevicesDescription": "Устройства появятся здесь, когда вы решите доверять им во время проверки 2FA",
+      "tableHeaders": {
+        "device": "Устройство",
+        "added": "Добавлено",
+        "expires": "Истекает",
+        "lastUsed": "Последнее использование",
+        "ipAddress": "IP-адрес",
+        "actions": "Действия"
+      },
+      "status": {
+        "never": "Никогда",
+        "expired": "Истекло"
+      },
+      "modals": {
+        "removeDevice": {
+          "title": "Удалить доверенное устройство",
+          "added": "Добавлено:",
+          "ip": "IP:"
+        },
+        "removeAllDevices": {
+          "title": "Удалить все доверенные устройства",
+          "description": "Это удалит {count} доверенное устройство{count, plural, =1 {} other {s}}. Вам потребуется повторно проверять 2FA на всех устройствах."
+        },
+        "buttons": {
+          "cancel": "Отмена",
+          "removing": "Удаление...",
+          "removeDevice": "Удалить устройство",
+          "removeAllDevices": "Удалить все устройства"
+        }
+      }
+    }
+  },
+  "uploadFile": {
+    "title": "Загрузить файл",
+    "multipleTitle": "Загрузить Несколько Файлов",
+    "selectFile": "Нажмите, чтобы выбрать файл",
+    "selectMultipleFiles": "Нажмите, чтобы выбрать один или несколько файлов",
+    "dragAndDrop": "или перетащите файлы сюда",
+    "preview": "Предпросмотр",
+    "uploadProgress": "Прогресс загрузки",
+    "upload": "Загрузить",
+    "startUploads": "Начать Загрузку",
+    "retry": "Повторить",
+    "finish": "Завершить",
+    "success": "Файл успешно загружен",
+    "allSuccess": "{count, plural, =1 {Файл успешно загружен} other {# файлов успешно загружено}}",
+    "partialSuccess": "{success} файлов успешно загружено, {error} неудачно",
+    "error": "Не удалось загрузить файл",
+    "fileSizeExceeded": "Размер файла превышает лимит в {maxsizemb}МБ.",
+    "insufficientStorage": "Недостаточно места для хранения. У вас доступно {availablespace}МБ.",
+    "storageFull": "Недостаточно места для хранения. Доступно: {available} ГБ, требуется: {required} ГБ.",
+    "unauthorized": "Не авторизовано: для доступа к этому ресурсу требуется действительный токен.",
+    "confirmCancel": {
+      "title": "Отменить Загрузку",
+      "messageSingle": "В процессе одна загрузка.",
+      "messageMultiple": "В процессе {count} загрузок.",
+      "warning": "Если вы закроете сейчас, загрузки будут отменены и весь прогресс будет потерян.",
+      "continue": "Продолжить Загрузку",
+      "cancel": "Отменить Загрузку"
+    },
+    "globalDrop": {
+      "title": "Перетащите файлы для загрузки",
+      "description": "Отпустите, чтобы загрузить файлы"
+    },
+    "pasteSuccess": "{count, plural, =1 {Изображение вставлено и успешно загружено} other {# изображений вставлено и успешно загружено}}",
+    "filesQueued": "{count, plural, one {# файл в очереди для загрузки} other {# файлов в очереди для загрузки}}",
+    "errors": {
+      "addFileFailed": "Не удалось добавить {name}: {error}",
+      "uploadFailed": "Ошибка загрузки",
+      "networkError": "Не удаётся подключиться к серверу. Проверьте подключение.",
+      "storageUnavailable": "Служба хранения недоступна. Повторите попытку позже."
+    }
+  },
+  "groups": {
+    "header": {
+      "title": "Группы",
+      "management": "Управление Группами",
+      "addGroup": "Создать Группу"
+    },
+    "table": {
+      "name": "Название",
+      "description": "Описание",
+      "members": "Участники",
+      "maxFileSize": "Макс. размер файла",
+      "maxStorage": "Макс. хранилище",
+      "storageUsed": "Использовано хранилища",
+      "actions": "Действия",
+      "inherited": "Унаследовано",
+      "unlimited": "Без ограничений",
+      "empty": "Групп пока нет. Создайте одну для начала."
+    },
+    "form": {
+      "titleCreate": "Создать Группу",
+      "titleEdit": "Редактировать Группу",
+      "name": "Название",
+      "namePlaceholder": "Введите название группы",
+      "description": "Описание",
+      "descriptionPlaceholder": "Необязательное описание",
+      "ldapDn": {
+        "label": "DN группы LDAP",
+        "placeholder": "например CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name группы Active Directory для сопоставления. Оставьте пусто, если не используется LDAP."
+      },
+      "quota": {
+        "title": "Квоты хранилища",
+        "maxFileSize": "Макс. размер файла",
+        "maxTotalStorage": "Макс. общее хранилище",
+        "inherit": "Наследовать (глобальное значение по умолчанию)",
+        "unlimited": "Без ограничений",
+        "custom": "Пользовательский"
+      },
+      "create": "Создать Группу",
+      "save": "Сохранить Изменения"
+    },
+    "delete": {
+      "title": "Удалить Группу",
+      "confirmationWithMembers": "В этой группе {count} участник(ов). Они будут откреплены, а их квоты вернутся к глобальным значениям по умолчанию.",
+      "confirmation": "Вы уверены, что хотите удалить эту группу?",
+      "confirm": "Удалить Группу"
+    },
+    "detail": {
+      "title": "Детали Группы",
+      "members": "Участники",
+      "addMember": "Добавить Участника",
+      "searchUsers": "Поиск пользователей...",
+      "noMembers": "В этой группе нет участников.",
+      "remove": "Удалить",
+      "moveWarning": "Этот пользователь сейчас находится в группе \"{groupName}\". Он будет перемещён в эту группу.",
+      "storageUsed": "Использовано хранилища",
+      "memberUser": "Пользователь",
+      "memberEmail": "Email",
+      "memberStorage": "Хранилище",
+      "selectUser": "Выберите пользователя...",
+      "add": "Добавить",
+      "userInOtherGroup": "Этот пользователь уже состоит в группе \"{groupName}\". Он будет перемещён."
+    },
+    "validation": {
+      "nameRequired": "Название группы обязательно"
+    },
+    "messages": {
+      "createSuccess": "Группа успешно создана",
+      "updateSuccess": "Группа успешно обновлена",
+      "deleteSuccess": "Группа успешно удалена",
+      "memberAdded": "Участник добавлен в группу",
+      "memberRemoved": "Участник удалён из группы"
+    },
+    "errors": {
+      "submitFailed": "Не удалось {mode} группу",
+      "deleteFailed": "Не удалось удалить группу",
+      "memberAddFailed": "Не удалось добавить участника",
+      "memberRemoveFailed": "Не удалось удалить участника"
+    },
+    "actions": {
+      "viewDetails": "Просмотр Деталей",
+      "edit": "Редактировать",
+      "delete": "Удалить"
+    }
+  },
+  "users": {
+    "modes": {
+      "create": "создать",
+      "edit": "редактировать"
+    },
+    "errors": {
+      "loadFailed": "Ошибка загрузки пользователей",
+      "submitFailed": "Ошибка при {mode} пользователя",
+      "deleteFailed": "Ошибка при удалении пользователя",
+      "statusUpdateFailed": "Ошибка обновления статуса пользователя"
+    },
+    "messages": {
+      "createSuccess": "Пользователь успешно создан",
+      "updateSuccess": "Пользователь успешно обновлен",
+      "deleteSuccess": "Пользователь успешно удален",
+      "activateSuccess": "Пользователь успешно активирован",
+      "deactivateSuccess": "Пользователь успешно деактивирован"
+    },
+    "actions": {
+      "edit": "Редактировать",
+      "activate": "Активировать",
+      "deactivate": "Деактивировать",
+      "delete": "Удалить"
+    },
+    "delete": {
+      "title": "Подтверждение удаления пользователя",
+      "confirmation": "Вы уверены, что хотите удалить пользователя {firstName} {lastName}? Это действие нельзя отменить.",
+      "confirm": "Удалить пользователя"
+    },
+    "form": {
+      "titleCreate": "Добавить нового пользователя",
+      "titleEdit": "Редактировать пользователя",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "username": "Имя пользователя",
+      "email": "Электронная почта",
+      "password": "Пароль",
+      "newPassword": "Новый пароль (необязательно)",
+      "passwordPlaceholder": "Оставьте пустым, чтобы сохранить текущий пароль",
+      "role": "Роль",
+      "roleUser": "Пользователь",
+      "roleAdmin": "Администратор",
+      "group": "Группа",
+      "noGroup": "Без группы",
+      "groupSaveError": "Не удалось обновить назначение группы",
+      "create": "Создать",
+      "save": "Сохранить",
+      "quota": {
+        "title": "Квоты хранилища",
+        "maxFileSize": "Максимальный размер файла",
+        "maxTotalStorage": "Максимальный общий объём хранилища",
+        "inherit": "Использовать по умолчанию",
+        "unlimited": "Без ограничений",
+        "custom": "Настраиваемый",
+        "saveSuccess": "Квота успешно обновлена",
+        "saveError": "Не удалось обновить квоту",
+        "currentUsage": "Текущее использование",
+        "effectiveMaxFileSize": "Эффективный максимальный размер файла",
+        "effectiveMaxStorage": "Эффективный максимальный общий объём",
+        "usagePercent": "Использование",
+        "sourceUser": "Переопределение пользователя",
+        "sourceGroup": "Группа",
+        "sourceGlobal": "Глобальное значение по умолчанию",
+        "sourceAdminDefault": "Значение по умолчанию администратора"
+      }
+    },
+    "status": {
+      "title": "Подтверждение изменения статуса",
+      "confirmation": "Вы уверены, что хотите {action} пользователя {firstName} {lastName}?",
+      "activate": "активировать",
+      "deactivate": "деактивировать",
+      "user": "Пользователь"
+    },
+    "header": {
+      "title": "Управление пользователями",
+      "addUser": "Добавить пользователя",
+      "management": "Управление пользователями"
+    },
+    "table": {
+      "user": "USER",
+      "userRole": "Пользователь",
+      "email": "ЭЛЕКТРОННАЯ ПОЧТА",
+      "status": "СТАТУС",
+      "role": "РОЛЬ",
+      "actions": "ДЕЙСТВИЯ",
+      "active": "Активен",
+      "inactive": "Неактивен",
+      "admin": "Администратор",
+      "source": "Источник",
+      "ldap": "LDAP",
+      "local": "Local"
+    },
+    "invite": {
+      "button": "Создать ссылку приглашения",
+      "title": "Создать ссылку приглашения пользователя",
+      "description": "Создайте одноразовую ссылку, которая позволит кому-то создать свою учетную запись. Ссылка истекает через 15 минут.",
+      "generating": "Генерация...",
+      "generate": "Создать ссылку",
+      "generated": "Ссылка приглашения успешно создана!",
+      "linkReady": "Ссылка приглашения готова",
+      "linkReadyDescription": "Поделитесь этой ссылкой с человеком, которого хотите пригласить. Они смогут создать свою учетную запись как обычный пользователь.",
+      "copyLink": "Копировать ссылку",
+      "linkCopied": "Ссылка приглашения скопирована в буфер обмена!",
+      "expiresIn": "Истекает через 15 минут",
+      "close": "Закрыть",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
+      "errors": {
+        "generateFailed": "Не удалось создать ссылку приглашения",
+        "copyFailed": "Не удалось скопировать ссылку",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
+      }
+    }
+  },
+  "validation": {
+    "invalidEmail": "Неверный адрес электронной почты",
+    "passwordMinLength": "Пароль должен содержать не менее 6 символов",
+    "firstNameRequired": "Имя обязательно",
+    "lastNameRequired": "Фамилия обязательна",
+    "usernameLength": "Имя пользователя должно содержать не менее 3 символов",
+    "usernameSpaces": "Имя пользователя не может содержать пробелов",
+    "passwordLength": "Пароль должен содержать не менее 12 символов",
+    "passwordsMatch": "Пароли не совпадают",
+    "emailRequired": "Требуется электронная почта",
+    "emailOrUsernameRequired": "Электронная почта или имя пользователя обязательно",
+    "passwordRequired": "Требуется пароль",
+    "nameRequired": "Требуется имя",
+    "required": "Это поле обязательно",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+  },
+  "contextMenu": {
+    "newFolder": "Новая папка",
+    "uploadFile": "Загрузить файл"
+  },
+  "registerWithInvite": {
+    "title": "Создайте свою учетную запись",
+    "description": "Заполните информацию ниже, чтобы создать свою учетную запись",
+    "labels": {
+      "firstName": "Имя",
+      "firstNamePlaceholder": "Введите ваше имя",
+      "lastName": "Фамилия",
+      "lastNamePlaceholder": "Введите вашу фамилию",
+      "username": "Имя пользователя",
+      "usernamePlaceholder": "Выберите имя пользователя",
+      "email": "Электронная почта",
+      "emailPlaceholder": "Введите вашу электронную почту",
+      "password": "Пароль",
+      "passwordPlaceholder": "Выберите пароль",
+      "confirmPassword": "Подтвердите пароль",
+      "confirmPasswordPlaceholder": "Подтвердите ваш пароль"
+    },
+    "buttons": {
+      "creating": "Создание учетной записи...",
+      "createAccount": "Создать учетную запись"
+    },
+    "validation": {
+      "firstNameRequired": "Имя обязательно",
+      "lastNameRequired": "Фамилия обязательна",
+      "usernameMinLength": "Имя пользователя должно содержать не менее 3 символов",
+      "invalidEmail": "Неверный адрес электронной почты",
+      "passwordMinLength": "Пароль должен содержать не менее 12 символов",
+      "passwordsMatch": "Пароли должны совпадать",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "messages": {
+      "success": "Учетная запись успешно создана! Перенаправление на вход...",
+      "redirecting": "Перенаправление на вход..."
+    },
+    "errors": {
+      "invalidToken": "Ошибка с ссылкой приглашения",
+      "tokenUsed": "Эта ссылка приглашения уже была использована",
+      "tokenExpired": "Срок действия этой ссылки приглашения истек",
+      "usernameExists": "Имя пользователя уже существует",
+      "emailExists": "Электронная почта уже существует",
+      "createFailed": "Не удалось создать учетную запись. Пожалуйста, попробуйте еще раз."
+    },
+    "pageTitle": "Создать учетную запись"
+  },
+  "filesTree": {
+    "noItems": "Нет элементов для отображения"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Изменить язык"
+  },
+  "ldap": {
+    "pageTitle": "LDAP / Active Directory",
+    "pageDescription": "Настройте синхронизацию LDAP для импорта пользователей из Active Directory",
+    "config": {
+      "title": "Конфигурация",
+      "description": "Параметры подключения LDAP-сервера и сопоставления атрибутов",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
+      "connection": "Подключение",
+      "serverUrl": "URL сервера",
+      "useTls": "Использовать TLS (LDAPS)",
+      "tlsSkipVerify": "Пропустить проверку TLS",
+      "tlsSkipVerifyWarning": "Предупреждение: отключение проверки сертификата допускает атаки перехвата",
+      "bindDn": "Bind DN",
+      "bindPassword": "Пароль Bind",
+      "bindPasswordPlaceholder": "Введите пароль для тестирования или сохранения нового пароля",
+      "search": "Параметры поиска",
+      "searchBase": "База поиска",
+      "syncGroupDn": "DN группы синхронизации",
+      "attributes": "Сопоставление атрибутов",
+      "usernameAttr": "Атрибут имени пользователя",
+      "emailAttr": "Атрибут Email",
+      "displayNameAttr": "Атрибут отображаемого имени",
+      "syncSettings": "Параметры синхронизации",
+      "syncInterval": "Интервал синхронизации (минуты)",
+      "syncIntervalHelp": "От 15 минут до 7 дней (10080 минут)",
+      "appUrl": "URL приложения",
+      "appUrlHelp": "Используется в приветственных письмах, отправляемых новым пользователям LDAP",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
+      "appUrlRequired": "URL приложения требуется при включении LDAP",
+      "bindPasswordRequired": "Пароль Bind требуется для новой конфигурации",
+      "members": "участники",
+      "save": "Сохранить конфигурацию",
+      "testConnection": "Проверить подключение",
+      "saveSuccess": "Конфигурация LDAP сохранена",
+      "saveError": "Не удалось сохранить конфигурацию LDAP",
+      "testSuccess": "Проверка подключения успешна",
+      "testError": "Ошибка при проверке подключения"
+    },
+    "groupMapping": {
+      "title": "Сопоставление групп",
+      "description": "Локальные группы, сопоставленные с группами Active Directory для назначения квот",
+      "manageGroups": "Управлять группами",
+      "groupName": "Имя группы",
+      "adGroupDn": "DN группы AD",
+      "noMapping": "Сопоставление групп не настроено. Установите DN LDAP в управлении группами для сопоставления групп AD с локальными квотными группами."
+    },
+    "sync": {
+      "title": "Операции синхронизации",
+      "description": "История ручной синхронизации и синхронизации",
+      "syncNow": "Синхронизировать сейчас",
+      "triggered": "Синхронизация LDAP началась",
+      "error": "Не удалось начать синхронизацию LDAP",
+      "lastSync": "Последняя синхронизация",
+      "nextSync": "Следующая синхронизация",
+      "noHistory": "История синхронизации отсутствует",
+      "date": "Дата",
+      "trigger": "Триггер",
+      "duration": "Продолжительность",
+      "created": "Создано",
+      "updated": "Обновлено",
+      "deactivated": "Деактивировано",
+      "reactivated": "Реактивировано",
+      "skipped": "Пропущено",
+      "status": "Статус",
+      "statusLabel": {
+        "success": "Успешно",
+        "error": "Ошибка",
+        "partial": "Частичный",
+        "running": "Выполняется"
+      }
+    },
+    "syncDetail": {
+      "title": "Детали синхронизации",
+      "details": "Детали пропусков и ошибок",
+      "type": "Тип",
+      "username": "Имя пользователя",
+      "email": "Email",
+      "message": "Сообщение",
+      "detailType": {
+        "skip": "Пропущено",
+        "error": "Ошибка"
+      }
+    },
+    "banner": {
+      "active": "Синхронизация LDAP/AD активна",
+      "disabled": "Синхронизация LDAP/AD отключена",
+      "configure": "Настроить"
+    },
+    "warnings": {
+      "title": "Предупреждения конфигурации"
+    },
+    "time": {
+      "justNow": "только что",
+      "minutesAgo": "{minutes}м назад",
+      "hoursAgo": "{hours}ч назад",
+      "daysAgo": "{days}д назад"
+    },
+    "browse": {
+      "retry": "Retry",
+      "error": "Something went wrong. Please try again.",
+      "directory": {
+        "title": "Browse Directory",
+        "description": "Pick a base DN from the live directory tree.",
+        "buttonLabel": "Browse directory",
+        "useDetectedBase": "Use detected base",
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "loading": "Loading directory…",
+        "noRoots": "No naming contexts found.",
+        "noSubContainers": "No sub-containers"
+      },
+      "groups": {
+        "title": "Find Group",
+        "description": "Search the directory for a group to sync.",
+        "buttonLabel": "Search groups",
+        "placeholder": "Type to search groups…",
+        "prompt": "Start typing to search for a group.",
+        "searching": "Searching…",
+        "empty": "No groups match your search.",
+        "truncated": "Too many results — refine your search.",
+        "resultCount": "{count, plural, =0 {No groups found} one {# group found} other {# groups found}}"
+      }
+    }
+  },
+  "backgroundImages": {
+    "empty": "Фоновые изображения не загружены. Загрузите изображения, чтобы включить пользовательские фоны для общих доступов в стиле WeTransfer.",
+    "add": "Добавить изображение",
+    "uploading": "Загрузка...",
+    "uploadSuccess": "Изображение успешно загружено",
+    "uploadError": "Ошибка загрузки изображения",
+    "deleteConfirm": "Вы уверены, что хотите удалить это фоновое изображение?",
+    "deleteSuccess": "Изображение успешно удалено",
+    "deleteError": "Ошибка при удалении изображения",
+    "untitled": "Без названия",
+    "rename": "Нажмите для переименования",
+    "renameSuccess": "Изображение успешно переименовано",
+    "renameError": "Ошибка при переименовании изображения",
+    "moveUp": "Переместить вверх",
+    "moveDown": "Переместить вниз",
+    "reorderError": "Ошибка при переупорядочении изображений"
+  },
+  "quickShare": {
+    "dropzone": {
+      "title": "Быстрая публикация",
+      "description": "Перетащите файлы сюда для быстрого обмена",
+      "browse": "или нажмите для обзора",
+      "dragActive": "Перетащите файлы сюда"
+    },
+    "upload": {
+      "title": "Быстрая публикация",
+      "addMore": "Добавить еще файлы",
+      "dropToAdd": "Перетащите файлы для добавления",
+      "namePlaceholder": "Название публикации",
+      "expiration": {
+        "label": "Истекает через",
+        "1day": "1 день",
+        "7days": "7 дней",
+        "30days": "30 дней",
+        "never": "Никогда"
+      },
+      "password": {
+        "label": "Защита паролем",
+        "placeholder": "Введите пароль"
+      },
+      "recipients": {
+        "label": "Получатели",
+        "placeholder": "Добавьте адреса электронной почты",
+        "hint": "Нажмите Enter, чтобы добавить"
+      },
+      "share": "Поделиться",
+      "sharing": "Идет создание публикации...",
+      "waitingUpload": "Загрузка... публикация будет создана автоматически",
+      "defaultName": "{count, plural, one {# файл} other {# файлов}}",
+      "error": "Не удалось создать публикацию",
+      "uploadError": "Некоторые файлы не загрузились",
+      "notifyError": "Публикация создана, но не удалось уведомить получателей",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
+      "invalidEmail": "Пожалуйста, введите действительный адрес электронной почты"
+    },
+    "confirmation": {
+      "title": "Поделились!",
+      "copyLink": "Копировать ссылку",
+      "copied": "Ссылка скопирована!",
+      "summary": {
+        "files": "{count, plural, one {# файл} other {# файлов}}",
+        "expires": "истекает через {duration}",
+        "noExpiry": "без истечения",
+        "password": "защищено паролем",
+        "noPassword": "без пароля"
+      },
+      "newShare": "Новая публикация",
+      "downloadQr": "Скачать QR-код"
+    }
+  },
+  "notificationPreferences": {
+    "pageTitle": "Параметры уведомлений",
+    "description": "Выберите уведомления по электронной почте, которые вы хотите получать",
+    "type": "Тип уведомления",
+    "category": "Категория",
+    "frequency": "Частота",
+    "immediate": "Немедленно",
+    "disabled": "Отключено",
+    "alwaysEnabled": "Всегда включено",
+    "save": "Сохранить параметры",
+    "saveSuccess": "Параметры уведомлений сохранены",
+    "saveError": "Ошибка сохранения параметров",
+    "noChanges": "Нет изменений для сохранения",
+    "types": {
+      "password_reset": "Сброс пароля",
+      "welcome": "Приветственное письмо",
+      "account_deactivated": "Учетная запись отключена",
+      "account_reactivated": "Учетная запись включена повторно",
+      "share_invitation": "Приглашение в общий доступ",
+      "share_accessed": "Общий доступ использован",
+      "share_downloaded": "Файл загружен из общего доступа",
+      "share_expiring": "Общий доступ скоро истечет",
+      "share_expired": "Общий доступ истек",
+      "share_max_views_reached": "Достигнут максимум просмотров общего доступа",
+      "share_no_activity": "Нет активности в общем доступе",
+      "reverse_share_invitation": "Приглашение на ссылку для получения",
+      "reverse_share_uploaded": "Файлы загружены на ссылку для получения",
+      "reverse_share_expiring": "Ссылка для получения скоро истечет",
+      "reverse_share_expired": "Ссылка для получения истекла",
+      "quota_warning": "Предупреждение о квоте",
+      "quota_exceeded": "Квота превышена",
+      "files_auto_deleted": "Файлы удалены автоматически",
+      "share_auto_deleted": "Общий доступ удален автоматически",
+      "admin_user_registered": "Новый пользователь зарегистрирован (только для администраторов)",
+      "admin_quota_alert": "Предупреждение квоты пользователя (только для администраторов)",
+      "test_email": "Тестовое письмо",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
+    },
+    "descriptions": {
+      "share_accessed": "Когда кто-то открывает ссылку на ваши общие файлы",
+      "share_downloaded": "Когда кто-то скачивает файлы из вашей общей папки",
+      "share_expiring": "Напоминание перед истечением срока действия ссылки",
+      "share_expired": "Когда срок действия ссылки истёк и она больше недоступна",
+      "share_pending_deletion": "Когда истёкший общий доступ запланирован для окончательного удаления",
+      "share_max_views_reached": "Когда общий доступ достиг максимально допустимого числа просмотров",
+      "share_no_activity": "Когда файлы из общего доступа не скачивались долгое время",
+      "reverse_share_uploaded": "Когда кто-то загружает файлы по вашей ссылке обратного доступа",
+      "reverse_share_expiring": "Напоминание перед истечением срока действия ссылки обратного доступа",
+      "reverse_share_expired": "Когда срок действия ссылки обратного доступа истёк",
+      "reverse_share_pending_deletion": "Когда истёкший обратный доступ запланирован для удаления",
+      "reverse_share_auto_deleted": "Когда ссылка обратного доступа была автоматически удалена после истечения срока",
+      "quota_warning": "Когда использование хранилища приближается к лимиту квоты",
+      "quota_exceeded": "Когда использование хранилища превысило лимит квоты",
+      "files_auto_deleted": "Когда файлы были автоматически удалены для освобождения места в квоте",
+      "share_auto_deleted": "Когда общий доступ был автоматически удалён системой очистки",
+      "admin_user_registered": "Когда новый пользователь регистрируется на платформе (только для администраторов)",
+      "admin_quota_alert": "Когда использование хранилища пользователя превышает его квоту (только для администраторов)"
+    },
+    "categories": {
+      "account": "Учетная запись",
+      "shares": "Общий доступ",
+      "reverseShares": "Ссылки для получения",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
+    },
+    "saving": "Сохранение...",
+    "loadError": "Ошибка загрузки параметров уведомлений",
+    "retry": "Повторить",
+    "unsavedChanges": "{count, plural, one {# несохраненное изменение} few {# несохраненных изменения} many {# несохраненных изменений} other {# несохраненных изменений}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP",
+      "label": "[TO_TRANSLATE] User management"
+    }
+  }
+}

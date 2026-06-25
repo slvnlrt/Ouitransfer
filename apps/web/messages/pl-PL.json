@@ -1,0 +1,3004 @@
+{
+  "a11y": {
+    "skipToContent": "Przejdź do treści"
+  },
+  "auth": {
+    "errors": {
+      "account_inactive": "Konto nieaktywne. Skontaktuj się z administratorem.",
+      "registration_disabled": "Rejestracja SSO jest wyłączona.",
+      "token_expired": "Token wygasł. Spróbuj ponownie.",
+      "config_error": "Błąd konfiguracji. Skontaktuj się z pomocą techniczną.",
+      "auth_failed": "Uwierzytelnienie nie powiodło się. Spróbuj ponownie."
+    },
+    "authenticationFailed": "Uwierzytelnienie nie powiodło się",
+    "successfullyAuthenticated": "Pomyślnie uwierzytelniono!",
+    "sessionExpired": "Twoja sesja wygasła. Zaloguj się ponownie.",
+    "callback": {
+      "errors": {
+        "oauth_error": "Uwierzytelnianie OAuth nie powiodło się",
+        "missing_parameters": "Brakujące parametry uwierzytelniania",
+        "missing_code": "Brakujący kod autoryzacji",
+        "registration_disabled": "Rejestracja jest wyłączona dla tego dostawcy",
+        "provider_disabled": "Ten dostawca uwierzytelniania jest wyłączony",
+        "state_expired": "Sesja uwierzytelniania wygasła",
+        "account_inactive": "Twoje konto jest nieaktywne",
+        "no_email": "Nie znaleziono adresu e-mail na Twoim koncie",
+        "token_exchange_failed": "Uwierzytelnianie u dostawcy nie powiodło się",
+        "missing_user_info": "Niekompletne informacje o użytkowniku od dostawcy"
+      }
+    }
+  },
+  "authProviders": {
+    "title": "Dostawcy uwierzytelniania",
+    "description": "Skonfiguruj zewnętrznych dostawców uwierzytelniania dla SSO",
+    "enabledCount": "{count} włączonych",
+    "loadingProviders": "Ładowanie dostawców...",
+    "providersConfigured": "Skonfigurowano {count} dostawców",
+    "enabledOfTotal": "{enabled} włączonych z {total} dostawców",
+    "hideDisabledProviders": "Ukryj wyłączonych dostawców",
+    "addProvider": "Dodaj dostawcę",
+    "addProviderTitle": "Dodaj dostawcę",
+    "editProvider": "Edytuj dostawcę",
+    "deleteProvider": "Usuń dostawcę",
+    "enabled": "Włączony",
+    "disabled": "Wyłączony",
+    "officialProvider": "Oficjalny dostawca",
+    "dragToReorder": "Przeciągnij, aby zmienić kolejność",
+    "dragDisabledMessage": "Przeciąganie jest wyłączone podczas filtrowania dostawców. Pokaż wszystkich dostawców, aby zmienić ich kolejność.",
+    "dragEnabledMessage": "Przeciągnij dostawców, aby zmienić ich kolejność. Ta kolejność będzie widoczna na stronie logowania.",
+    "noProvidersEnabled": "Brak włączonych dostawców uwierzytelniania",
+    "noProvidersConfigured": "Nie skonfigurowano żadnych dostawców uwierzytelniania",
+    "form": {
+      "providerName": "Nazwa dostawcy",
+      "providerNamePlaceholder": "np. mojafirma",
+      "displayName": "Nazwa wyświetlana",
+      "displayNamePlaceholder": "np. SSO Mojej Firmy",
+      "type": "Typ",
+      "typeOidc": "OIDC (OpenID Connect)",
+      "typeOauth2": "OAuth 2.0",
+      "icon": "Ikona",
+      "iconPlaceholder": "Wybierz ikonę",
+      "clientId": "ID klienta",
+      "clientIdPlaceholder": "Twój ID klienta OAuth",
+      "clientSecret": "Sekret klienta",
+      "clientSecretPlaceholder": "Twój sekret klienta OAuth",
+      "oauthScopes": "Zakresy OAuth",
+      "scopesPlaceholder": "Wprowadź zakresy (np. openid, profile, email)",
+      "scopesHelpOidc": "Zakresy sugerowane automatycznie na podstawie URL dostawcy. Typowe zakresy OIDC: openid, profile, email, groups",
+      "scopesHelpOauth2": "Zakresy sugerowane automatycznie na podstawie URL dostawcy. Typowe zakresy OAuth2 zależą od dostawcy",
+      "providerUrl": "URL dostawcy",
+      "providerUrlPlaceholder": "https://auth.przyklad.com",
+      "providerUrlAutoPlaceholder": "https://twoj-dostawca.com (punkty końcowe zostaną wykryte automatycznie)",
+      "providerUrlManualPlaceholder": "https://twoj-dostawca.com",
+      "autoDiscoveryHelp": "System automatycznie wykryje punkty końcowe autoryzacji, tokena i informacji o użytkowniku",
+      "manualConfigurationHelp": "Podstawowy URL twojego dostawcy (punkty końcowe będą względne do tego URL)",
+      "authorizationEndpoint": "Punkt końcowy autoryzacji",
+      "authorizationEndpointPlaceholder": "https://auth.przyklad.com/auth",
+      "tokenEndpoint": "Punkt końcowy tokena",
+      "tokenEndpointPlaceholder": "https://auth.przyklad.com/token",
+      "userInfoEndpoint": "Punkt końcowy informacji o użytkowniku",
+      "userInfoEndpointPlaceholder": "https://auth.przyklad.com/userinfo",
+      "configurationMethod": "Metoda konfiguracji",
+      "autoDiscovery": "Automatyczne wykrywanie",
+      "autoDiscoveryDescription": "Automatycznie wykryj punkty końcowe z URL dostawcy",
+      "manualEndpoints": "Ręczne punkty końcowe (Zalecane)",
+      "manualEndpointsDescription": "Ręcznie skonfiguruj punkty końcowe autoryzacji, tokena i informacji o użytkowniku",
+      "callbackUrl": "URL wywołania zwrotnego",
+      "callbackUrlDescription": "Użyj tego URL w konfiguracji twojego dostawcy OAuth",
+      "copyCallbackUrl": "Kopiuj URL wywołania zwrotnego",
+      "callbackUrlCopied": "URL wywołania zwrotnego skopiowany do schowka!",
+      "adminEmailDomains": "Domeny email administratorów",
+      "adminEmailDomainsPlaceholder": "Wprowadź domeny (np. admin.firma.com)",
+      "adminEmailDomainsHelp": "Użytkownicy z adresami email z tych domen otrzymają uprawnienia administratora",
+      "autoRegister": "Automatycznie rejestruj nowych użytkowników",
+      "officialProviderUrlPlaceholder": "Zastąp placeholder swoim URL {displayName}",
+      "officialProviderHelp": "To jest oficjalny dostawca. Punkty końcowe są wstępnie skonfigurowane. Możesz edytować tylko ten URL.",
+      "officialProviderIconHelp": "Możesz dostosować ikonę dla tego oficjalnego dostawcy."
+    },
+    "buttons": {
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "saving": "Zapisywanie...",
+      "adding": "Dodawanie...",
+      "updating": "Aktualizowanie...",
+      "saveProvider": "Zapisz dostawcę",
+      "delete": "Usuń",
+      "deleting": "Usuwanie...",
+      "edit": "Edytuj",
+      "enable": "Włącz",
+      "disable": "Wyłącz"
+    },
+    "messages": {
+      "providerAdded": "Dostawca został pomyślnie dodany",
+      "providerUpdated": "Dostawca został pomyślnie zaktualizowany",
+      "providerDeleted": "Dostawca został pomyślnie usunięty",
+      "providerOrderUpdated": "Kolejność dostawców została pomyślnie zaktualizowana",
+      "fillRequiredFields": "Proszę wypełnić wszystkie wymagane pola (nazwa, nazwa wyświetlana, ID klienta, sekret klienta)",
+      "provideUrlOrEndpoints": "Podaj albo URL dostawcy do automatycznego wykrywania ALBO wszystkie trzy niestandardowe punkty końcowe",
+      "chooseDiscoveryOrManual": "Wybierz albo automatyczne wykrywanie (URL dostawcy) ALBO ręczne punkty końcowe, nie oba",
+      "loadFailed": "Nie udało się załadować dostawców",
+      "addFailed": "Nie udało się dodać dostawcy",
+      "updateFailed": "Nie udało się zaktualizować dostawcy",
+      "deleteFailed": "Nie udało się usunąć dostawcy",
+      "orderUpdateFailed": "Nie udało się zaktualizować kolejności dostawców"
+    },
+    "info": {
+      "title": "Informacja",
+      "officialProvidersRecommended": "Dla lepszej funkcjonalności rozważ użycie oficjalnych dostawców. Jeśli masz problemy z niestandardowym dostawcą, rozważ zgłoszenie problemu na",
+      "github": "GitHub",
+      "officialProvider": "Oficjalny dostawca",
+      "officialProviderDescription": "Ten dostawca jest zoptymalizowany przez OUITRANSFER. Można modyfikować tylko poświadczenia i konfigurację.",
+      "manualConfigTitle": "Konfiguracja ręczna",
+      "manualConfigDescription": "Podajesz wszystkie punkty końcowe ręcznie. Upewnij się, że są poprawne dla twojego dostawcy."
+    },
+    "deleteModal": {
+      "title": "Usuń dostawcę uwierzytelniania",
+      "confirmMessage": "Czy na pewno chcesz usunąć dostawcę \"{displayName}\"? Tej akcji nie można cofnąć.",
+      "providerId": "ID dostawcy: {name}",
+      "cancel": "Anuluj",
+      "delete": "Usuń dostawcę",
+      "deleting": "Usuwanie..."
+    }
+  },
+  "bulkDownload": {
+    "title": "Pobieranie zbiorcze",
+    "zipNameLabel": "Nazwa pliku ZIP",
+    "zipNamePlaceholder": "Wprowadź nazwę pliku",
+    "description": "{count, plural, =1 {1 plik zostanie skompresowany} other {# plików zostanie skompresowanych}}",
+    "download": "Pobierz ZIP"
+  },
+  "common": {
+    "loading": "Ładowanie, proszę czekać...",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "saving": "Zapisywanie...",
+    "update": "Aktualizuj",
+    "updating": "Aktualizowanie...",
+    "delete": "Usuń",
+    "close": "Zamknij",
+    "download": "Pobierz",
+    "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
+    "yes": "Tak",
+    "no": "Nie",
+    "dashboard": "Panel główny",
+    "back": "Wróć",
+    "clickToActivate": "Kliknij, aby aktywować",
+    "clickToDeactivate": "Kliknij, aby dezaktywować",
+    "creating": "Tworzenie...",
+    "loadingSimple": "Ładowanie...",
+    "create": "Utwórz",
+    "deleting": "Usuwanie...",
+    "move": "Przenieś",
+    "rename": "Zmień nazwę",
+    "search": "Szukaj",
+    "share": "Udostępnij",
+    "copied": "Skopiowano",
+    "copy": "Kopiuj",
+    "retry": "Retry",
+    "unavailable": "niedostępne",
+    "days": "dni",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    },
+    "moving": "Przenoszenie…"
+  },
+  "createShare": {
+    "title": "Utwórz Udostępnienie",
+    "nameLabel": "Nazwa Udostępnienia",
+    "descriptionLabel": "Opis",
+    "descriptionPlaceholder": "Wpisz opis (opcjonalnie)",
+    "expirationLabel": "Data wygaśnięcia",
+    "expirationPlaceholder": "DD.MM.RRRR GG:MM",
+    "maxViewsLabel": "Maksymalna liczba wyświetleń",
+    "maxViewsPlaceholder": "Pozostaw puste dla nieograniczonej liczby",
+    "passwordProtection": "Chronione hasłem",
+    "passwordLabel": "Hasło",
+    "create": "Utwórz Udostępnienie",
+    "success": "Udostępnienie utworzone pomyślnie",
+    "error": "Nie udało się utworzyć udostępnienia",
+    "namePlaceholder": "Wprowadź nazwę dla swojego udostępnienia",
+    "nextSelectFiles": "Dalej: Wybierz pliki",
+    "searchLabel": "Szukaj",
+    "tabs": {
+      "shareDetails": "Szczegóły udostępniania",
+      "selectFiles": "Wybierz pliki",
+      "shareLink": "Link do udostępniania"
+    },
+    "errors": {
+      "nameRequired": "Nazwa udostępnienia jest wymagana"
+    },
+    "itemsSelected": "Wybrano {count} elementów",
+    "passwordPlaceholder": "Wprowadź hasło",
+    "privacySection": "Prywatność i powiadomienia",
+    "nameFieldRequired": "Wymagaj imienia odwiedzającego",
+    "emailFieldRequired": "Wymagaj adresu e-mail odwiedzającego",
+    "notifyOnDownload": "Powiadamiaj mnie przy każdym pobraniu",
+    "notifyOnDownloadHelp": "Po włączeniu będziesz otrzymywać powiadomienia e-mail, gdy pliki będą pobierane z tego udostępnienia, niezależnie od globalnych ustawień powiadomień.",
+    "inactivityAlertDays": "Alertuj, jeśli brak pobrań po",
+    "inactivityAlertPlaceholder": "Zostaw puste, aby wyłączyć",
+    "fieldHidden": "Ukryte",
+    "fieldOptional": "Opcjonalne",
+    "fieldRequired": "Wymagane",
+    "filesOptionalHint": "Dodawanie plików jest opcjonalne, możesz teraz utworzyć puste udostępnienie i dodać pliki później.",
+    "nextGenerateLink": "Dalej: link",
+    "linkStepDescription": "Wygeneruj niestandardowy link, aby inni mogli uzyskać dostęp do tego udostępnienia, albo pomiń ten krok i dodaj go później.",
+    "nameFieldRequiredHelp": "Określa, czy odwiedzający są proszeni o imię przy otwieraniu udostępnienia.",
+    "emailFieldRequiredHelp": "Określa, czy odwiedzający są proszeni o adres e-mail przy otwieraniu udostępnienia."
+  },
+  "customization": {
+    "breadcrumb": "Personalizacja",
+    "colors": {
+      "title": "Kolory motywu",
+      "description": "Wybierz preferowany kolor podstawowy motywu",
+      "presets": "Dostępne kolory",
+      "presetsDescription": "Wybierz spośród dostępnych motywów kolorystycznych",
+      "reset": "Przywróć domyślne"
+    },
+    "fonts": {
+      "title": "Typografia",
+      "description": "Wybierz preferowaną rodzinę czcionek",
+      "available": "Dostępne czcionki",
+      "availableDescription": "Wybierz spośród dostępnych rodzin czcionek",
+      "reset": "Przywróć domyślne"
+    },
+    "radius": {
+      "title": "Zaokrąglenie krawędzi",
+      "description": "Dostosuj zaokrąglenie elementów interfejsu",
+      "available": "Opcje zaokrąglenia",
+      "availableDescription": "Wybierz stopień zaokrąglenia narożników",
+      "reset": "Przywróć domyślne"
+    },
+    "background": {
+      "title": "Kolory tła",
+      "description": "Dostosuj kolory tła dla trybów jasnego i ciemnego",
+      "lightMode": "Tryb jasny",
+      "darkMode": "Tryb ciemny",
+      "availableDescription": "Wybierz kolory tła dla motywów jasnego i ciemnego",
+      "reset": "Przywróć domyślne"
+    },
+    "theme": {
+      "title": "Tryb motywu",
+      "description": "Wybierz między trybem jasnym, ciemnym lub systemowym",
+      "selectTheme": "Preferencje motywu",
+      "availableDescription": "Wybierz preferowany tryb motywu",
+      "reset": "Przywróć ustawienia systemowe"
+    },
+    "pageTitle": "Personalizacja"
+  },
+  "dashboard": {
+    "loadError": "Nie udało się załadować danych panelu głównego",
+    "linkCopied": "Link skopiowany do schowka",
+    "pageTitle": "Panel główny",
+    "breadcrumb": "Panel główny",
+    "recentFiles": {
+      "title": "Ostatnie pliki",
+      "description": "Twoje ostatnio przesłane pliki"
+    },
+    "systemStatus": {
+      "title": "Stan systemu",
+      "refresh": "Odśwież",
+      "status": {
+        "healthy": "Sprawny",
+        "degraded": "Ograniczony",
+        "unhealthy": "Niedostępny"
+      },
+      "checks": {
+        "database": "Baza danych",
+        "storage": "Magazyn",
+        "ok": "OK",
+        "error": "Błąd",
+        "notConfigured": "Nie skonfigurowano"
+      },
+      "uptime": "Czas pracy",
+      "diskSpace": {
+        "label": "Przestrzeń dyskowa",
+        "ariaLabel": "Pasek postępu wykorzystania przestrzeni dyskowej"
+      },
+      "quota": {
+        "label": "Limit pamięci",
+        "ariaLabel": "Pasek postępu limitu pamięci",
+        "notConfigured": "Limity nie są skonfigurowane",
+        "unlimited": "Bez limitu",
+        "used": "{used} z {total} wykorzystano",
+        "usedOnly": "{used} wykorzystano",
+        "exceeded": {
+          "banner": "Twój limit pamięci został przekroczony. Nie możesz przesyłać nowych plików, dopóki nie zwolnisz miejsca, usuwając istniejące pliki lub udostępnienia."
+        },
+        "warning": {
+          "banner": "Używasz {percentage}% swojego limitu pamięci."
+        }
+      },
+      "metrics": {
+        "users": "Użytkownicy",
+        "files": "Pliki",
+        "shares": "Udostępnienia",
+        "reverseShares": "Odwrócone udostępnienia",
+        "myFiles": "Moje pliki",
+        "activeShares": "Aktywne udostępnienia"
+      },
+      "email": {
+        "label": "E-mail / Powiadomienia",
+        "status": {
+          "ok": "Działa",
+          "disabled": "Nieskonfigurowane",
+          "degraded": "Pogorszone",
+          "down": "Offline"
+        },
+        "queue": {
+          "pending": "Oczekujące",
+          "failed": "Nieudane",
+          "sent24h": "Wysłane 24h"
+        },
+        "lastError": "Ostatni błąd",
+        "userDisrupted": "Powiadomienia zakłócone",
+        "userOffline": "Powiadomienia offline"
+      },
+      "errors": {
+        "title": "Status niedostępny",
+        "fetchFailed": "Nie udało się pobrać stanu systemu. Spróbuj ponownie później.",
+        "diskSpaceError": "Nie udało się pobrać informacji o przestrzeni dyskowej.",
+        "statsError": "Nie udało się załadować statystyk platformy.",
+        "emailStatsError": "Nie udało się załadować statystyk powiadomień e-mail."
+      },
+      "collapse": "Zwiń status systemu",
+      "expand": "Rozwiń status systemu"
+    }
+  },
+  "deleteConfirmation": {
+    "filesToDelete": "Pliki do usunięcia",
+    "sharesToDelete": "Udostępnienia do usunięcia",
+    "foldersToDelete": "Foldery do usunięcia",
+    "itemsToDelete": "Elementy do usunięcia"
+  },
+  "downloadQueue": {
+    "downloadQueued": "Pobieranie w kolejce: {fileName}",
+    "queuedDescription": "Pobieranie rozpocznie się automatycznie, gdy zwolni się miejsce",
+    "queuePosition": "Pobieranie w kolejce na pozycji {position}: {fileName}",
+    "estimatedWait": "Szacowany czas oczekiwania: {time}",
+    "queueFull": "Kolejka pobierania jest pełna",
+    "queueFullDescription": "Spróbuj ponownie za kilka minut, gdy w kolejce będzie miejsce",
+    "cancelSuccess": "Pobieranie anulowane pomyślnie",
+    "cancelError": "Nie udało się anulować pobierania: {error}",
+    "status": {
+      "pending": "Przygotowywanie...",
+      "queued": "W kolejce",
+      "downloading": "Pobieranie",
+      "completed": "Zakończone",
+      "failed": "Nie powiodło się"
+    },
+    "waitTime": {
+      "seconds": "{seconds}s",
+      "minutes": "{minutes}m",
+      "hoursMinutes": "{hours}g {minutes}m"
+    },
+    "indicator": {
+      "title": "Pobierania",
+      "downloads": "Kolejka pobierania",
+      "active": "Aktywne",
+      "queued": "W kolejce",
+      "position": "Pozycja {position}",
+      "estimatedWait": "Oczekiwanie: {time}",
+      "unknownFile": "Nieznany plik",
+      "noDownloads": "Brak aktywnych pobierań",
+      "refresh": "Odśwież kolejkę"
+    }
+  },
+  "emptyState": {
+    "noFiles": "Brak przesłanych plików",
+    "uploadFile": "Prześlij plik"
+  },
+  "errors": {
+    "invalidCredentials": "Nieprawidłowy adres e-mail lub hasło",
+    "networkError": "Nie można połączyć się z serwerem. Sprawdź połączenie.",
+    "userNotFound": "Użytkownik nie znaleziony",
+    "accountLocked": "Twoje konto zostało tymczasowo zablokowane z powodu zbyt wielu nieudanych prób logowania. Spróbuj ponownie za {minutes} minut.",
+    "unexpectedError": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
+    "Invalid password": "Nieprawidłowe hasło",
+    "Invalid two-factor authentication code": "Nieprawidłowy kod uwierzytelniania dwuskładnikowego",
+    "Invalid verification code": "Nieprawidłowy kod weryfikacyjny",
+    "Password verification required": "Wymagana weryfikacja hasła",
+    "Two-factor authentication is already enabled": "Uwierzytelnianie dwuskładnikowe jest już włączone",
+    "Two-factor authentication is not enabled": "Uwierzytelnianie dwuskładnikowe nie jest włączone",
+    "Two-factor authentication required": "Wymagane uwierzytelnianie dwuskładnikowe",
+    "noUserData": "Brak danych użytkownika",
+    "somethingWentWrong": "Coś poszło nie tak",
+    "tryAgain": "Spróbuj ponownie",
+    "goHome": "Strona główna",
+    "pageNotFound": "Nie znaleziono strony",
+    "pageNotFoundMessage": "Strona, której szukasz, nie istnieje lub została przeniesiona.",
+    "shareUnavailable": "Udostępnienie niedostępne",
+    "shareErrorMessage": "Wystąpił błąd podczas ładowania tego udostępnienia.",
+    "uploadUnavailable": "Przesyłanie niedostępne",
+    "uploadErrorMessage": "Wystąpił błąd podczas ładowania tej strony przesyłania.",
+    "accessDenied": "Odmowa dostępu",
+    "accessDeniedMessage": "Nie masz uprawnień administratora, aby uzyskać dostęp do tej strony.",
+    "errorLoadingSettings": "Błąd ładowania ustawień",
+    "refreshPage": "Odśwież stronę"
+  },
+  "fileActions": {
+    "editFile": "Edytuj plik",
+    "nameLabel": "Nazwa",
+    "namePlaceholder": "Wprowadź nową nazwę",
+    "extension": "Rozszerzenie",
+    "descriptionLabel": "Opis",
+    "descriptionPlaceholder": "Wprowadź opis pliku",
+    "deleteFile": "Usuń plik",
+    "deleteConfirmation": "Czy na pewno chcesz usunąć ten plik?",
+    "deleteWarning": "Tej operacji nie można cofnąć.",
+    "addDescriptionPlaceholder": "Dodaj opis...",
+    "inSharesWarningTitle": "Ten plik jest zawarty w udostępnieniach",
+    "inSharesWarningBody": "Ten plik jest zawarty w {count, plural, one {# udostępnieniu} other {# udostępnieniach}}. Usunięcie go spowoduje jego usunięcie ze wszystkich udostępnień.",
+    "deleteAnyway": "Usuń mimo to",
+    "bulkInSharesWarningTitle": "Niektóre pliki są zawarte w udostępnieniach",
+    "bulkInSharesWarningBody": "{count, plural, one {# plik jest} other {# pliki są}} zawarte w udostępnieniach. Usunięcie spowoduje usunięcie {count, plural, one {go} other {ich}} ze wszystkich udostępnień."
+  },
+  "fileManager": {
+    "downloadError": "Nie udało się pobrać pliku",
+    "updateSuccess": "Plik zaktualizowany pomyślnie",
+    "updateError": "Nie udało się zaktualizować pliku",
+    "deleteSuccess": "Plik usunięty pomyślnie",
+    "deleteError": "Nie udało się usunąć pliku"
+  },
+  "filePreview": {
+    "title": "Podgląd pliku",
+    "description": "Podgląd i pobieranie pliku",
+    "loading": "Ładowanie...",
+    "notAvailable": "Podgląd niedostępny dla tego typu pliku",
+    "downloadToView": "Użyj przycisku pobierania, aby wyświetlić ten plik",
+    "loadError": "Błąd ładowania podglądu pliku",
+    "downloadSuccess": "Download started",
+    "downloadError": "Błąd pobierania pliku",
+    "audioNotSupported": "Twoja przeglądarka nie obsługuje odtwarzania audio",
+    "videoNotSupported": "Twoja przeglądarka nie obsługuje odtwarzania wideo",
+    "pdfPreviewNotAvailable": "Podgląd PDF niedostępny. Spróbuj alternatywnego widoku lub pobierz",
+    "tryAlternativeView": "Spróbuj alternatywnego widoku",
+    "loadingAlternative": "Ładowanie alternatywnego widoku...",
+    "loadingAudio": "Ładowanie audio...",
+    "downloading": "Pobieranie..."
+  },
+  "fileSelector": {
+    "availableFiles": "Dostępne pliki ({count})",
+    "shareFiles": "Udostępnione pliki ({count})",
+    "shareFilesDescription": "Pliki aktualnie w tym udostępnieniu",
+    "availableFilesDescription": "Wybierz pliki do dodania do tego udostępnienia",
+    "searchPlaceholder": "Szukaj plików...",
+    "searchSelectedFiles": "Szukaj wybranych plików...",
+    "noMatchingFiles": "Nie znaleziono pasujących plików",
+    "noAvailableFiles": "Brak dostępnych plików",
+    "noFilesInShare": "Brak plików w tym udostępnieniu",
+    "noFilesFound": "Nie znaleziono plików",
+    "noFilesFoundWith": "Nie znaleziono plików pasujących do „{query}”",
+    "addFilesFromList": "Dodaj pliki z poniższej listy",
+    "tryDifferentSearch": "Spróbuj innych terminów wyszukiwania",
+    "allFilesInShare": "Wszystkie pliki są już w tym udostępnieniu",
+    "uploadNewFiles": "Prześlij nowe pliki, aby je dodać",
+    "fileCount": "{count, plural, =1 {plik} other {pliki}}",
+    "filesSelected": "{count, plural, =0 {Nie wybrano plików} =1 {Wybrano 1 plik} other {# wybranych plików}}",
+    "editFile": "Edytuj plik",
+    "previewFile": "Podgląd pliku",
+    "addToShare": "Dodaj do udostępnienia",
+    "removeFromShare": "Usuń z udostępnienia",
+    "saveChanges": "Zapisz zmiany",
+    "editFolder": "Edytuj folder",
+    "itemsSelected": "Wybrano {count} elementów"
+  },
+  "files": {
+    "title": "Wszystkie pliki",
+    "uploadFile": "Prześlij plik",
+    "loadError": "Nie udało się załadować plików",
+    "pageTitle": "Moje pliki",
+    "breadcrumb": "Moje pliki",
+    "downloadStart": "Rozpoczęto pobieranie",
+    "downloadError": "Nie udało się pobrać pliku",
+    "updateSuccess": "Plik zaktualizowany pomyślnie",
+    "updateError": "Nie udało się zaktualizować pliku",
+    "deleteSuccess": "Plik usunięty pomyślnie",
+    "deleteError": "Nie udało się usunąć pliku",
+    "bulkDownloadSuccess": "Pobieranie plików rozpoczęte pomyślnie",
+    "bulkDownloadError": "Błąd tworzenia pliku ZIP",
+    "bulkDownloadFileError": "Błąd pobierania pliku {fileName}",
+    "bulkDeleteSuccess": "{count, plural, =1 {1 plik usunięty pomyślnie} other {# plików usuniętych pomyślnie}}",
+    "bulkDeleteError": "Błąd usuwania wybranych plików",
+    "totalFiles": "{count, plural, =0 {Brak plików} =1 {1 plik} other {# plików}}",
+    "viewMode": {
+      "table": "Tabela",
+      "grid": "Siatka"
+    },
+    "bulkDeleteConfirmation": "Czy na pewno chcesz usunąć {count, plural, =1 {1 plik} other {# plików}}? Ta akcja nie może zostać cofnięta.",
+    "bulkDeleteTitle": "Usuń Wybrane Pliki",
+    "actions": {
+      "open": "Otwórz",
+      "rename": "Zmień nazwę",
+      "delete": "Usuń"
+    },
+    "empty": {
+      "title": "Brak plików lub folderów",
+      "description": "Prześlij swój pierwszy plik lub utwórz folder, aby rozpocząć"
+    },
+    "files": "pliki",
+    "folders": "foldery",
+    "errors": {
+      "moveItemsFailed": "Nie udało się przenieść elementów. Spróbuj ponownie.",
+      "cannotMoveHere": "Nie można przenieść elementów do tej lokalizacji"
+    },
+    "openFolder": "Otwórz folder",
+    "drag": {
+      "folderMoved": "Folder „{name}” przeniesiony do „{target}”",
+      "fileMoved": "Plik „{name}” przeniesiony do „{target}”",
+      "itemsMoved": "{count} elementów przeniesiono do „{target}”",
+      "folderMovedToRoot": "Folder „{name}” przeniesiony do folderu głównego",
+      "fileMovedToRoot": "Plik „{name}” przeniesiony do folderu głównego",
+      "itemsMovedToRoot": "{count} elementów przeniesiono do folderu głównego"
+    }
+  },
+  "filesTable": {
+    "ariaLabel": "Tabela plików",
+    "selectAll": "Zaznacz wszystko",
+    "selectFile": "Wybierz plik {fileName}",
+    "columns": {
+      "name": "NAZWA",
+      "description": "OPIS",
+      "size": "ROZMIAR",
+      "createdAt": "UTWORZONO",
+      "updatedAt": "ZAKTUALIZOWANO",
+      "actions": "AKCJE"
+    },
+    "actions": {
+      "menu": "Menu akcji plików",
+      "preview": "Podgląd",
+      "edit": "Edytuj",
+      "share": "Udostępnij",
+      "download": "Pobierz",
+      "delete": "Usuń"
+    },
+    "bulkActions": {
+      "selected": "{count, plural, =1 {Wybrano 1 plik} other {# wybranych plików}}",
+      "actions": "Akcje",
+      "download": "Pobierz wybrane",
+      "share": "Udostępnij wybrane",
+      "delete": "Usuń wybrane"
+    }
+  },
+  "folderActions": {
+    "editFolder": "Edytuj folder",
+    "folderName": "Nazwa folderu",
+    "folderNamePlaceholder": "Wprowadź nazwę folderu",
+    "folderDescription": "Opis",
+    "folderDescriptionPlaceholder": "Wprowadź opis folderu (opcjonalnie)",
+    "createFolder": "Utwórz nowy folder",
+    "renameFolder": "Zmień nazwę folderu",
+    "moveFolder": "Przenieś folder",
+    "shareFolder": "Udostępnij folder",
+    "deleteFolder": "Usuń folder",
+    "moveTo": "Przenieś do",
+    "selectDestination": "Wybierz folder docelowy",
+    "rootFolder": "Katalog główny",
+    "folderCreated": "Folder utworzony pomyślnie",
+    "folderRenamed": "Nazwa folderu zmieniona pomyślnie",
+    "folderMoved": "Folder przeniesiony pomyślnie",
+    "folderDeleted": "Folder usunięty pomyślnie",
+    "folderShared": "Folder udostępniony pomyślnie",
+    "createFolderError": "Błąd podczas tworzenia folderu",
+    "renameFolderError": "Błąd podczas zmiany nazwy folderu",
+    "moveFolderError": "Błąd podczas przenoszenia folderu",
+    "deleteFolderError": "Błąd podczas usuwania folderu",
+    "shareFolderError": "Błąd podczas udostępniania folderu",
+    "deleteConfirmation": "Czy na pewno chcesz usunąć ten folder?",
+    "deleteWarning": "Ta operacja nie może zostać cofnięta.",
+    "inSharesWarningTitle": "Ten folder jest zawarty w udostępnieniach",
+    "inSharesWarningBody": "Ten folder (i jego zawartość) jest zawarty w {count, plural, one {# udostępnieniu} other {# udostępnieniach}}. Usunięcie go spowoduje jego usunięcie ze wszystkich udostępnień.",
+    "bulkInSharesWarningTitle": "Niektóre foldery są zawarte w udostępnieniach",
+    "bulkInSharesWarningBody": "{count, plural, one {# folder jest} other {# foldery są}} zawarte w udostępnieniach. Usunięcie spowoduje usunięcie {count, plural, one {go} other {ich}} ze wszystkich udostępnień.",
+    "deleteAnyway": "Usuń mimo to"
+  },
+  "footer": {
+    "projectHomepage": "Strona główna OUITRANSFER"
+  },
+  "forgotPassword": {
+    "emailLabel": "Adres e-mail",
+    "emailPlaceholder": "Wprowadź swój adres e-mail",
+    "sending": "Wysyłanie...",
+    "submit": "Wyślij instrukcje resetowania",
+    "backToLogin": "Wróć do logowania",
+    "title": "Zapomniałeś hasła?",
+    "description": "Wprowadź swój adres e-mail, a wyślemy Ci instrukcje resetowania hasła",
+    "resetInstructions": "Instrukcje resetowania wysłane na Twój adres e-mail",
+    "pageTitle": "Zapomniałeś hasła?",
+    "passwordAuthDisabled": "Uwierzytelnianie hasłem jest wyłączone. Skontaktuj się z administratorem lub użyj zewnętrznego dostawcy uwierzytelniania."
+  },
+  "generateShareLink": {
+    "generateTitle": "Generuj link do udostępniania",
+    "updateTitle": "Aktualizuj link do udostępniania",
+    "generateDescription": "Wygeneruj link do udostępniania plików",
+    "updateDescription": "Zaktualizuj alias dla tego linku do udostępniania",
+    "aliasPlaceholder": "Wprowadź alias",
+    "linkReady": "Twój link do udostępniania jest gotowy:",
+    "generateButton": "Generuj link",
+    "updateButton": "Aktualizuj link",
+    "copyButton": "Skopiuj link",
+    "success": "Link wygenerowany pomyślnie",
+    "error": "Nie udało się wygenerować linku",
+    "copied": "Link skopiowany do schowka",
+    "readyDescription": "Twój link do udostępniania jest gotowy. Możesz skanować kod QR bezpośrednio, pobrać go do późniejszego użycia lub skopiować link poniżej.",
+    "tabs": {
+      "link": "Link",
+      "qrcode": "QR Code"
+    },
+    "later": "Później"
+  },
+  "home": {
+    "pageTitle": "Strona główna",
+    "tagline": "Bezpieczny transfer plików",
+    "subtitle": "Wysyłaj i udostępniaj swoje pliki bezpiecznie.",
+    "login": "Zaloguj się",
+    "partners": {
+      "title": "Otrzymałeś link?",
+      "description": "Użyj otrzymanego linku, aby uzyskać dostęp do swoich plików. Jeśli go nie potrafisz znaleźć, skontaktuj się z osobą, która go Ci wysłała."
+    }
+  },
+  "iconPicker": {
+    "title": "Wybierz ikonę",
+    "placeholder": "Wybierz ikonę",
+    "searchPlaceholder": "Szukaj ikon...",
+    "loadingMore": "Ładowanie kolejnych ikon...",
+    "allIconsLoaded": "Załadowano wszystkie {count} ikon",
+    "noIconsFound": "Nie znaleziono ikon dla \"{search}\"",
+    "tabs": {
+      "all": "Wszystkie ikony",
+      "popular": "Popularne",
+      "auth": "Dostawcy uwierzytelniania"
+    },
+    "stats": "{iconCount} ikon z {libraryCount} bibliotek",
+    "categoryBadge": "{category} ({count} ikon)"
+  },
+  "imageEdit": {
+    "title": "Edytuj obraz",
+    "rotate": "Obróć",
+    "zoom": "Powiększ",
+    "cropInstructions": "Przeciągnij, aby przesunąć, zmień rozmiar rogów, aby dostosować obszar przycięcia",
+    "cropAlt": "Obraz do przycięcia"
+  },
+  "login": {
+    "welcome": "Witaj w",
+    "signInToContinue": "Zaloguj się, aby kontynuować",
+    "emailOrUsernameLabel": "E-mail lub nazwa użytkownika",
+    "emailOrUsernamePlaceholder": "Wprowadź swój e-mail lub nazwę użytkownika",
+    "emailLabel": "Adres e-mail",
+    "emailPlaceholder": "Wprowadź swój adres e-mail",
+    "passwordLabel": "Hasło",
+    "passwordPlaceholder": "Wprowadź swoje hasło",
+    "signIn": "Zaloguj się",
+    "signingIn": "Logowanie...",
+    "forgotPassword": "Zapomniałeś hasła?",
+    "pageTitle": "Logowanie",
+    "or": "lub",
+    "continueWithSSO": "Kontynuuj z SSO",
+    "processing": "Przetwarzanie uwierzytelnienia...",
+    "orContinueWith": "Lub kontynuuj za pomocą",
+    "continueWith": "Kontynuuj za pomocą {name}",
+    "providerNotConfigured": "{name} nie jest poprawnie skonfigurowany"
+  },
+  "logo": {
+    "labels": {
+      "appLogo": "Logo aplikacji"
+    },
+    "buttons": {
+      "upload": "Prześlij logo",
+      "remove": "Usuń logo"
+    },
+    "messages": {
+      "uploadSuccess": "Logo przesłano pomyślnie",
+      "removeSuccess": "Logo usunięto pomyślnie"
+    },
+    "errors": {
+      "uploadFailed": "Nie udało się przesłać logo",
+      "removeFailed": "Nie udało się usunąć logo"
+    }
+  },
+  "moveItems": {
+    "itemsToMove": "Elementy do przeniesienia:",
+    "movingToFolder": "Przenoszenie do: {folder}",
+    "title": "Przenieś {count, plural, =1 {element} other {elementy}}",
+    "description": "Przenieś {count, plural, =1 {element} other {elementy}} do nowej lokalizacji",
+    "success": "Pomyślnie przeniesiono {count} {count, plural, =1 {element} other {elementów}}",
+    "errors": {
+      "moveFailed": "Nie udało się przenieść elementów"
+    }
+  },
+  "audit": {
+    "pageTitle": "Dziennik aktywności",
+    "pageDescription": "Wyświetl i przeszukaj całą aktywność systemową",
+    "table": {
+      "date": "Data",
+      "user": "Użytkownik",
+      "action": "Akcja",
+      "target": "Cel",
+      "ipAddress": "Adres IP",
+      "details": "Szczegóły",
+      "noResults": "Nie znaleziono dzienników audytu",
+      "anonymous": "Anonimowy",
+      "system": "System",
+      "resultCount": "{count, plural, one {# wynik} other {# wyników}}"
+    },
+    "filters": {
+      "action": "Akcja",
+      "user": "Użytkownik",
+      "targetType": "Typ celu",
+      "dateFrom": "Od",
+      "dateTo": "Do",
+      "search": "Szukaj",
+      "searchPlaceholder": "Szukaj po IP lub akcji...",
+      "clearAll": "Wyczyść filtry"
+    },
+    "export": {
+      "button": "Eksportuj",
+      "csv": "CSV",
+      "json": "JSON",
+      "dateRangeRequired": "Wybierz zakres dat do eksportowania"
+    },
+    "actions": {
+      "LOGIN_SUCCESS": "Pomyślne logowanie",
+      "LOGIN_FAILURE": "Logowanie nie powiodło się",
+      "LOGOUT": "Wylogowanie",
+      "PASSWORD_CHANGE": "Hasło zmienione",
+      "PASSWORD_RESET": "Hasło zresetowane",
+      "PASSWORD_RESET_REQUEST": "Żądanie resetowania hasła",
+      "ACCOUNT_LOCKED": "Konto zablokowane",
+      "LOGIN_LOCKED": "Logowanie zablokowane",
+      "TRUSTED_DEVICE_REMOVE": "Zaufane urządzenie usunięte",
+      "TRUSTED_DEVICE_REMOVE_ALL": "Wszystkie zaufane urządzenia usunięte",
+      "AUTH_PROVIDER_LOGIN": "Logowanie SSO",
+      "TWO_FACTOR_ENABLE": "Uwierzytelnianie dwuskładnikowe włączone",
+      "TWO_FACTOR_DISABLE": "Uwierzytelnianie dwuskładnikowe wyłączone",
+      "TWO_FACTOR_BACKUP_REGENERATED": "Kody zapasowe uwierzytelniania dwuskładnikowego wygenerowane ponownie",
+      "USER_CREATE": "Użytkownik utworzony",
+      "USER_UPDATE": "Użytkownik zaktualizowany",
+      "USER_DELETE": "Użytkownik usunięty",
+      "USER_ROLE_CHANGE": "Rola użytkownika zmieniona",
+      "USER_QUOTA_CHANGE": "Limit użytkownika zmieniony",
+      "USER_ACTIVATE": "Użytkownik aktywowany",
+      "USER_DEACTIVATE": "Użytkownik dezaktywowany",
+      "SHARE_CREATE": "Udostępnienie utworzone",
+      "SHARE_UPDATE": "Udostępnienie zaktualizowane",
+      "SHARE_DELETE": "Udostępnienie usunięte",
+      "SHARE_ACCESS": "Udostępnienie otwarte",
+      "SHARE_PASSWORD_VERIFIED": "Hasło do udostępnienia zweryfikowane",
+      "SHARE_PASSWORD_FAILED": "Weryfikacja hasła do udostępnienia nie powiodła się",
+      "SHARE_PASSWORD_UPDATE": "Hasło do udostępnienia zaktualizowane",
+      "SHARE_RECIPIENT_ADD": "Odbiorcy udostępnienia dodani",
+      "SHARE_RECIPIENT_REMOVE": "Odbiorcy udostępnienia usunięci",
+      "SHARE_RECIPIENT_NOTIFY": "Odbiorcy udostępnienia powiadomieni",
+      "SHARE_RECIPIENT_REMIND": "Odbiorcy bez pobrań przypomniani",
+      "SHARE_ITEMS_ADD": "Elementy udostępnienia dodane",
+      "SHARE_ITEMS_REMOVE": "Elementy udostępnienia usunięte",
+      "FILE_UPLOAD": "Plik przesłany",
+      "FILE_DOWNLOAD": "Plik pobrany",
+      "FILE_DELETE": "Plik usunięty",
+      "FILE_MOVE": "Plik przeniesiony",
+      "FILE_UPDATE": "Plik zaktualizowany",
+      "FOLDER_CREATE": "Folder utworzony",
+      "FOLDER_UPDATE": "Folder zaktualizowany",
+      "FOLDER_MOVE": "Folder przeniesiony",
+      "FOLDER_DELETE": "Folder usunięty",
+      "REVERSE_SHARE_CREATE": "Odwrócone udostępnienie utworzone",
+      "REVERSE_SHARE_UPDATE": "Odwrócone udostępnienie zaktualizowane",
+      "REVERSE_SHARE_DELETE": "Odwrócone udostępnienie usunięte",
+      "REVERSE_SHARE_ACCESS": "Odwrócone udostępnienie otwarte",
+      "REVERSE_SHARE_PASSWORD_VERIFIED": "Hasło do odwróconego udostępnienia zweryfikowane",
+      "REVERSE_SHARE_PASSWORD_FAILED": "Weryfikacja hasła do odwróconego udostępnienia nie powiodła się",
+      "REVERSE_SHARE_PASSWORD_UPDATE": "Hasło do odwróconego udostępnienia zaktualizowane",
+      "REVERSE_SHARE_UPLOAD": "Plik przesłany do odwróconego udostępnienia",
+      "REVERSE_SHARE_FILE_DELETE": "Plik w odwróconym udostępnieniu usunięty",
+      "REVERSE_SHARE_FILE_COPY": "Plik w odwróconym udostępnieniu skopiowany",
+      "REVERSE_SHARE_FILE_DOWNLOAD": "Plik w odwróconym udostępnieniu pobrany",
+      "GROUP_CREATE": "Grupa utworzona",
+      "GROUP_UPDATE": "Grupa zaktualizowana",
+      "GROUP_DELETE": "Grupa usunięta",
+      "GROUP_MEMBER_ADD": "Członek grupy dodany",
+      "GROUP_MEMBER_REMOVE": "Członek grupy usunięty",
+      "LDAP_CONFIG_UPDATE": "Konfiguracja LDAP zaktualizowana",
+      "LDAP_SYNC_TRIGGERED": "Synchronizacja LDAP uruchomiona",
+      "LDAP_SYNC_COMPLETED": "Synchronizacja LDAP zakończona",
+      "LDAP_SYNC_ERROR": "Błąd synchronizacji LDAP",
+      "AUTH_PROVIDER_CREATE": "Dostawca uwierzytelniania utworzony",
+      "AUTH_PROVIDER_UPDATE": "Dostawca uwierzytelniania zaktualizowany",
+      "AUTH_PROVIDER_DELETE": "Dostawca uwierzytelniania usunięty",
+      "INVITE_TOKEN_CREATE": "Token zaproszenia utworzony",
+      "INVITE_TOKEN_USED": "Token zaproszenia użyty",
+      "ADMIN_CONFIG_CHANGE": "Konfiguracja zmieniona",
+      "LOGO_UPLOAD": "Logo przesłane",
+      "LOGO_REMOVE": "Logo usunięte",
+      "SMTP_TEST": "Test SMTP wykonany",
+      "BACKGROUND_IMAGE_UPLOAD": "Obraz tła przesłany",
+      "BACKGROUND_IMAGE_DELETE": "Obraz tła usunięty",
+      "AUDIT_RETENTION_CLEANUP": "Czyszczenie dziennika audytu",
+      "SHARE_DEACTIVATED": "Udostępnienie dezaktywowane",
+      "SHARE_REACTIVATED": "Udostępnienie reaktywowane",
+      "REVERSE_SHARE_DEACTIVATED": "Link do odbioru dezaktywowany",
+      "REVERSE_SHARE_REACTIVATED": "Link do odbioru reaktywowany",
+      "SHARE_AUTO_DELETED": "Udostępnienie automatycznie usunięte",
+      "REVERSE_SHARE_AUTO_DELETED": "Link do odbioru automatycznie usunięty",
+      "ACCOUNT_FILES_CLEANED": "Pliki konta wyczyszczone",
+      "ORPHAN_S3_DELETED": "Osierocony obiekt magazynu usunięty",
+      "ORPHAN_DB_DELETED": "Osierocony rekord bazy danych usunięty",
+      "ORPHAN_MULTIPART_ABORTED": "Niekompletne przesyłanie wieloczęściowe przerwane",
+      "QUOTA_FILES_DELETED": "Pliki przekraczające limit usunięte"
+    },
+    "targetTypes": {
+      "user": "Użytkownik",
+      "share": "Udostępnienie",
+      "reverse_share": "Odwrócone udostępnienie",
+      "file": "Plik",
+      "folder": "Folder",
+      "group": "Grupa",
+      "ldap_config": "Konfiguracja LDAP",
+      "ldap_sync_log": "Synchronizacja LDAP",
+      "setting": "Ustawienie",
+      "auth_provider": "Dostawca uwierzytelniania",
+      "background_image": "Obraz tła",
+      "invite_token": "Token zaproszenia",
+      "trusted_device": "Zaufane urządzenie",
+      "logo": "Logo"
+    },
+    "actionCategories": {
+      "auth": "Uwierzytelnianie",
+      "share": "Udostępnienia",
+      "file": "Pliki",
+      "folder": "Foldery",
+      "reverseShare": "Odwrócone udostępnienia",
+      "user": "Użytkownik",
+      "group": "Grupy",
+      "ldap": "LDAP",
+      "admin": "Administracja",
+      "system": "System"
+    },
+    "metadata": {
+      "method": "Metoda",
+      "reason": "Powód",
+      "email": "Email",
+      "count": "Liczba",
+      "via": "Utworzone za pośrednictwem",
+      "fields": "Zmienione pola",
+      "oldRole": "Stara rola",
+      "newRole": "Nowa rola",
+      "oldQuota": "Stary limit",
+      "newQuota": "Nowy limit",
+      "name": "Nazwa",
+      "fileName": "Nazwa pliku",
+      "fileSize": "Rozmiar pliku",
+      "fileCount": "Liczba plików",
+      "folderCount": "Liczba folderów",
+      "hasPassword": "Chronione hasłem",
+      "expiration": "Wygaśnięcie",
+      "shareId": "Udostępnienie",
+      "emails": "Emaile",
+      "recipientCount": "Liczba odbiorców",
+      "fromFolderId": "Z folderu",
+      "toFolderId": "Do folderu",
+      "maxFiles": "Maks. plików",
+      "maxFileSize": "Maks. rozmiar pliku",
+      "uploaderEmail": "Email wysyłającego",
+      "uploaderName": "Imię wysyłającego",
+      "targetFileId": "Plik docelowy",
+      "providerType": "Typ dostawcy",
+      "providerName": "Nazwa dostawcy",
+      "deletedCount": "Usunięte wpisy",
+      "olderThan": "Starsze niż",
+      "syncLogId": "Dziennik synchronizacji",
+      "error": "Błąd",
+      "manual": "Uruchomienie ręczne",
+      "recipientEmail": "Email odbiorcy",
+      "fromParentId": "Z rodzica",
+      "toParentId": "Do rodzica",
+      "oldMaxFileSize": "Stary maks. rozmiar pliku",
+      "newMaxFileSize": "Nowy maks. rozmiar pliku",
+      "oldMaxTotalStorage": "Stary maks. całkowity magazyn",
+      "newMaxTotalStorage": "Nowy maks. całkowity magazyn",
+      "changedFields": "Zmienione pola",
+      "unassignedCount": "Nieprzypisani członkowie",
+      "previousGroupId": "Poprzednia grupa",
+      "memberId": "Członek",
+      "parentId": "Folder rodzica",
+      "targetFolderId": "Folder docelowy",
+      "extension": "Rozszerzenie",
+      "size": "Rozmiar",
+      "enabled": "Włączone",
+      "passwordCleared": "Hasło wyczyszczone",
+      "trigger": "Wyzwalacz",
+      "status": "Status",
+      "usersCreated": "Użytkownicy utworzeni",
+      "usersUpdated": "Użytkownicy zaktualizowani",
+      "usersDeactivated": "Użytkownicy dezaktywowani",
+      "usersReactivated": "Użytkownicy reaktywowani",
+      "usersSkipped": "Użytkownicy pominięci",
+      "createdUserId": "Utworzony użytkownik",
+      "deletedUserId": "Usunięty użytkownik",
+      "emailOrUsername": "Email/nazwa użytkownika",
+      "remainingMinutes": "Pozostałe minuty",
+      "keys": "Klucze konfiguracji",
+      "type": "Typ",
+      "yes": "Tak",
+      "no": "Nie",
+      "key": "[TO_TRANSLATE] Setting",
+      "usingCustomConfig": "[TO_TRANSLATE] Custom config",
+      "smtpHost": "[TO_TRANSLATE] SMTP host",
+      "files": "[TO_TRANSLATE] Files",
+      "shares": "[TO_TRANSLATE] Shares",
+      "reverseShares": "[TO_TRANSLATE] Reverse shares",
+      "folders": "[TO_TRANSLATE] Folders",
+      "s3Errors": "[TO_TRANSLATE] Storage errors",
+      "recipientId": "[TO_TRANSLATE] Recipient",
+      "identificationSource": "[TO_TRANSLATE] Identification",
+      "expiresAt": "[TO_TRANSLATE] Expires at",
+      "userId": "[TO_TRANSLATE] User",
+      "shareName": "[TO_TRANSLATE] Share",
+      "reverseShareName": "[TO_TRANSLATE] Reverse share",
+      "filesDeleted": "[TO_TRANSLATE] Files deleted",
+      "bytesFreed": "[TO_TRANSLATE] Storage freed",
+      "objectName": "[TO_TRANSLATE] Object",
+      "fileId": "[TO_TRANSLATE] File"
+    }
+  },
+  "navbar": {
+    "logoAlt": "Logo aplikacji",
+    "profileMenu": "Menu profilu",
+    "profile": "Profil",
+    "settings": "Ustawienia",
+    "usersManagement": "Zarządzanie użytkownikami",
+    "groupsManagement": "Grupy",
+    "ldap": "LDAP",
+    "activityLog": "Dziennik aktywności",
+    "logout": "Wyloguj się",
+    "customization": "Dostosowanie",
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
+  },
+  "navigation": {
+    "dashboard": "Panel główny"
+  },
+  "notifications": {
+    "permissionGranted": "Powiadomienia o pobieraniu włączone",
+    "permissionDenied": "Powiadomienia o pobieraniu wyłączone",
+    "downloadComplete": {
+      "title": "Pobieranie zakończone",
+      "body": "Plik {fileName} został pobrany"
+    },
+    "downloadFailed": {
+      "title": "Błąd pobierania",
+      "body": "Nie udało się pobrać pliku {fileName}: {error}",
+      "unknownError": "Nieznany błąd"
+    },
+    "queueProcessing": {
+      "title": "Rozpoczęcie pobierania",
+      "body": "Trwa pobieranie pliku {fileName}{position}",
+      "position": " (był #{position} w kolejce)"
+    }
+  },
+  "profile": {
+    "password": {
+      "title": "Zmień hasło",
+      "newPassword": "Nowe hasło",
+      "confirmPassword": "Potwierdź nowe hasło",
+      "updateButton": "Zaktualizuj hasło"
+    },
+    "form": {
+      "title": "Informacje profilowe",
+      "firstName": "Imię",
+      "lastName": "Nazwisko",
+      "username": "Nazwa użytkownika",
+      "email": "E-mail",
+      "updateButton": "Zaktualizuj profil"
+    },
+    "header": {
+      "title": "Profil",
+      "subtitle": "Zarządzaj swoimi danymi osobowymi i hasłem"
+    },
+    "picture": {
+      "title": "Zdjęcie profilowe",
+      "description": "Kliknij ikonę aparatu, aby zmienić zdjęcie profilowe",
+      "uploadPhoto": "Prześlij zdjęcie",
+      "removePhoto": "Usuń zdjęcie"
+    },
+    "errors": {
+      "loadFailed": "Nie udało się załadować danych użytkownika",
+      "updateFailed": "Nie udało się zaktualizować profilu",
+      "passwordFailed": "Nie udało się zaktualizować hasła",
+      "imageFailed": "Nie udało się zaktualizować obrazu profilowego",
+      "imageRemoveFailed": "Nie udało się usunąć obrazu profilowego"
+    },
+    "messages": {
+      "noChanges": "Brak zmian do zapisania",
+      "updateSuccess": "Profil zaktualizowany pomyślnie",
+      "fillPasswords": "Proszę wypełnić oba pola hasła",
+      "passwordSuccess": "Hasło zaktualizowane pomyślnie",
+      "imageSuccess": "Obraz profilowy zaktualizowany pomyślnie",
+      "imageRemoved": "Obraz profilowy usunięty pomyślnie"
+    },
+    "pageTitle": "Profil"
+  },
+  "qrCodeModal": {
+    "title": "Udostępnij kod QR",
+    "description": "Skanuj ten kod QR, aby uzyskać dostęp do linku.",
+    "download": "Pobierz kod QR"
+  },
+  "quickAccess": {
+    "files": {
+      "title": "Moje pliki",
+      "description": "Dostęp i zarządzanie przesłanymi plikami"
+    },
+    "shares": {
+      "title": "Moje udostępnienia",
+      "description": "Wyświetlaj i zarządzaj udostępnionymi plikami"
+    },
+    "reverseShares": {
+      "title": "Odbieraj pliki",
+      "description": "Twórz linki, aby inni mogli wysyłać Ci pliki"
+    }
+  },
+  "recentFiles": {
+    "title": "Ostatnie przesłane pliki",
+    "viewAll": "Wyświetl wszystkie",
+    "upload": "Prześlij",
+    "uploadFile": "Prześlij plik",
+    "noFiles": "Brak przesłanych plików"
+  },
+  "recentShares": {
+    "title": "Ostatnie udostępnienia",
+    "viewAll": "Wyświetl wszystkie",
+    "createShare": "Utwórz udostępnienie",
+    "noShares": "Brak utworzonych udostępnień",
+    "createFirst": "Utwórz swoje pierwsze udostępnienie"
+  },
+  "recipientSelector": {
+    "emailPlaceholder": "Wprowadź adres e-mail odbiorcy",
+    "add": "Dodaj",
+    "recipients": "Odbiorcy ({count})",
+    "notifyAll": "Powiadom wszystkich",
+    "noRecipients": "Brak dodanych odbiorców",
+    "addSuccess": "Odbiorca dodany pomyślnie",
+    "addError": "Nie udało się dodać odbiorcy",
+    "removeSuccess": "Odbiorca usunięty pomyślnie",
+    "removeError": "Nie udało się usunąć odbiorcy",
+    "sendingNotifications": "Wysyłanie powiadomień...",
+    "notifySuccess": "Odbiorcy powiadomieni pomyślnie",
+    "notifyError": "Nie udało się powiadomić odbiorców",
+    "selectAll": "Zaznacz wszystko",
+    "selectedCount": "{count} wybranych",
+    "selectRecipient": "Wybierz {email}",
+    "notifySelected": "Powiadom wybranych",
+    "removeSelected": "Usuń wybranych",
+    "notifySingle": "Powiadom tego odbiorcę",
+    "removeSingle": "Usuń tego odbiorcę",
+    "bulkRemoveSuccess": "{count} odbiorców usuniętych pomyślnie",
+    "bulkRemoveError": "Nie udało się usunąć wybranych odbiorców",
+    "bulkNotifySuccess": "Powiadomienia wysłane do {count} odbiorców",
+    "bulkNotifyError": "Nie udało się powiadomić wybranych odbiorców",
+    "singleNotifySuccess": "Powiadomienie wysłane do {email}",
+    "singleNotifyError": "Nie udało się powiadomić odbiorcy",
+    "modalDescription": "Dodaj i zarządzaj odbiorcami dla tego udostępnienia. Możesz powiadomić wszystkich lub konkretnych odbiorców, gdy skonfigurowano SMTP.",
+    "addRecipient": "Dodaj odbiorcę",
+    "invalidEmail": "Proszę wprowadzić prawidłowy adres e-mail",
+    "duplicateEmail": "Ten odbiorca został już dodany",
+    "noRecipientsDescription": "Dodaj odbiorców, aby udostępnić tę zawartość pocztą e-mail",
+    "notified": "Powiadomiono",
+    "views": "{count, plural, one {# wyświetlenie} few {# wyświetlenia} many {# wyświetleń} other {# wyświetlenia}}",
+    "notifyPartial": "Powiadomiono tylko {sent} z {total} odbiorców",
+    "neverAccessed": "Nigdy nie otwarto",
+    "namePlaceholder": "Imię (opcjonalne)",
+    "downloaded": "Pobrano",
+    "pending": "Oczekuje",
+    "downloadedAt": "Pobrano dnia {date}",
+    "uploaded": "Przesłano",
+    "uploadedAt": "Przesłano dnia {date}",
+    "uploadApproximateHint": "Przybliżone: nadawcy mogą przesyłać pliki bez podawania adresu e-mail, gdy nie jest on wymagany",
+    "remindNonDownloaders": "Przypomnij ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Brak oczekujących odbiorców, wszyscy pobrali pliki} one {Przypomnij # odbiorcy, który jeszcze nie pobrał} few {Przypomnij # odbiorcom, którzy jeszcze nie pobrali} many {Przypomnij # odbiorcom, którzy jeszcze nie pobrali} other {Przypomnij # odbiorcom, którzy jeszcze nie pobrali}}",
+    "sendingReminders": "Wysyłanie przypomnień...",
+    "remindSuccess": "{count, plural, one {Przypomnienie wysłane do # odbiorcy} few {Przypomnienia wysłane do # odbiorców} many {Przypomnień wysłano do # odbiorców} other {Przypomnienia wysłane do # odbiorców}}",
+    "remindNoneSent": "Nie wysłano żadnych przypomnień",
+    "remindError": "Wysyłanie przypomnień nie powiodło się"
+  },
+  "register": {
+    "validation": {
+      "firstNameRequired": "Imię jest wymagane",
+      "lastNameRequired": "Nazwisko jest wymagane",
+      "usernameMinLength": "Nazwa użytkownika musi mieć co najmniej 3 znaki",
+      "invalidEmail": "Nieprawidłowy adres e-mail",
+      "passwordMinLength": "Hasło musi mieć co najmniej 12 znaków",
+      "success": "Użytkownik administratora utworzony pomyślnie!",
+      "error": "Błąd podczas tworzenia użytkownika administratora",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "labels": {
+      "firstName": "Imię",
+      "lastName": "Nazwisko",
+      "username": "Nazwa użytkownika",
+      "email": "E-mail",
+      "password": "Hasło"
+    },
+    "buttons": {
+      "creating": "Tworzenie...",
+      "createAdmin": "Utwórz konto administratora"
+    }
+  },
+  "resetPassword": {
+    "pageTitle": "Resetuj hasło",
+    "header": {
+      "title": "Resetuj hasło",
+      "description": "Wprowadź swoje nowe hasło poniżej"
+    },
+    "form": {
+      "newPassword": "Nowe hasło",
+      "newPasswordPlaceholder": "Wprowadź nowe hasło",
+      "confirmPassword": "Potwierdź nowe hasło",
+      "confirmPasswordPlaceholder": "Potwierdź nowe hasło",
+      "resetting": "Resetowanie hasła...",
+      "submit": "Resetuj hasło",
+      "backToLogin": "Wróć do logowania"
+    },
+    "messages": {
+      "success": "Hasło zresetowane pomyślnie"
+    },
+    "errors": {
+      "serverError": "Nie udało się zresetować hasła. Spróbuj ponownie.",
+      "invalidToken": "Nieprawidłowy lub brakujący token resetowania"
+    }
+  },
+  "reverseShares": {
+    "pageTitle": "Odbieraj pliki",
+    "search": {
+      "title": "Zarządzaj linkami do odbierania",
+      "createButton": "Utwórz link",
+      "placeholder": "Szukaj linków do odbierania...",
+      "results": "Znaleziono {filtered} z {total} linków do odbierania"
+    },
+    "labels": {
+      "files": "plików",
+      "size": "rozmiar",
+      "status": "status",
+      "access": "dostęp",
+      "description": "Opis",
+      "pageLayout": "Układ strony",
+      "security": "Bezpieczeństwo i status",
+      "limits": "Limity",
+      "maxFiles": "Maksymalna liczba plików",
+      "maxFileSize": "Maksymalny rozmiar pliku",
+      "allowedTypes": "Dozwolone typy",
+      "filesReceived": "Odebrane pliki",
+      "fileLimit": "Limit plików",
+      "noLimit": "Bez limitu",
+      "noLinkCreated": "Brak utworzonego linku",
+      "publicAccess": "Dostęp publiczny",
+      "protectedByPassword": "Chronione hasłem",
+      "configureProtection": "Kliknij, aby skonfigurować ochronę",
+      "enterPassword": "Wprowadź hasło",
+      "thisLinkProtected": "Ten link będzie chroniony hasłem",
+      "thisLinkPublic": "Ten link będzie publicznie dostępny",
+      "configureExpiration": "Skonfiguruj wygaśnięcie",
+      "configureLimits": "Skonfiguruj limity plików",
+      "protectWithPassword": "Chroń hasłem",
+      "layoutOptions": {
+        "default": "Domyślny",
+        "wetransfer": "WeTransfer"
+      },
+      "noFilesLimit": "Bez limitu plików",
+      "noSizeLimit": "Bez limitu rozmiaru",
+      "allFileTypes": "Wszystkie typy plików",
+      "fileTypesHelp": "Wprowadź rozszerzenia bez kropek, oddzielone spacją, przecinkiem, myślnikiem lub kreską pionową",
+      "emailFieldRequired": "Pole e -mail",
+      "fieldOptions": {
+        "hidden": "Ukryty",
+        "optional": "Fakultatywny",
+        "required": "Wymagany"
+      },
+      "fieldRequirements": "Wymagania terenowe",
+      "nameFieldRequired": "Pole Nazwa"
+    },
+    "card": {
+      "untitled": "Link bez tytułu",
+      "noDescription": "Brak opisu",
+      "addDescriptionPlaceholder": "Dodaj opis...",
+      "files": "plików",
+      "progress": "Postęp",
+      "created": "Utworzono",
+      "expired": "Wygasłe",
+      "expires": "Wygasa",
+      "viewDetails": "Wyświetl szczegóły",
+      "copyLink": "Skopiuj link",
+      "openInNewTab": "Otwórz w nowej karcie",
+      "editLink": "Edytuj link",
+      "createLink": "Utwórz link",
+      "delete": "Usuń",
+      "copyLinkTitle": "Skopiuj link",
+      "createLinkCTA": "Utwórz link do odbierania",
+      "viewQrCode": "Wyświetl kod QR"
+    },
+    "status": {
+      "active": "Aktywny",
+      "inactive": "Nieaktywny",
+      "expired": "Wygasłe",
+      "protected": "Chroniony",
+      "public": "Publiczny"
+    },
+    "actions": {
+      "copyLink": "Skopiuj link",
+      "editAlias": "Edytuj alias",
+      "createAlias": "Utwórz alias",
+      "viewDetails": "Wyświetl szczegóły",
+      "edit": "Edytuj",
+      "delete": "Usuń",
+      "viewFiles": "Odebrane pliki",
+      "viewQrCode": "Wyświetl kod QR"
+    },
+    "empty": {
+      "title": "Brak utworzonych linków do odbierania",
+      "description": "Twórz niestandardowe linki, aby inni mogli bezpiecznie i zorganizowanie wysyłać Ci pliki bezpośrednio.",
+      "createButton": "Utwórz pierwszy link"
+    },
+    "modals": {
+      "create": {
+        "title": "Utwórz link do odbierania",
+        "description": "Skonfiguruj niestandardowy link do odbierania plików od innych"
+      },
+      "edit": {
+        "title": "Edytuj link do odbierania",
+        "description": "Zaktualizuj ustawienia dla tego linku do odbierania",
+        "updating": "Aktualizowanie...",
+        "saveChanges": "Zapisz zmiany"
+      },
+      "details": {
+        "title": "Szczegóły linku",
+        "description": "Wyświetl i edytuj informacje o linku do odbierania",
+        "pageLayout": "Układ strony",
+        "linkSection": "Link do odbierania",
+        "noLinkCreated": "Brak utworzonego linku",
+        "limits": "Limity",
+        "maxFiles": "Maksymalna liczba plików",
+        "maxFileSize": "Maksymalny rozmiar pliku",
+        "allowedTypes": "Dozwolone typy",
+        "noLimit": "Bez limitu",
+        "security": "Bezpieczeństwo",
+        "status": "Status",
+        "password": "Hasło",
+        "files": "Odebrane pliki",
+        "noFiles": "Brak odebranych plików",
+        "copyLink": "Skopiuj link",
+        "openLink": "Otwórz link",
+        "editAlias": "Edytuj alias",
+        "createAlias": "Utwórz alias",
+        "editPassword": "Edytuj ochronę hasłem",
+        "basicInfo": "Podstawowe informacje",
+        "securityAndStatus": "Bezpieczeństwo i status",
+        "protection": "Ochrona",
+        "protectedByPassword": "Chronione hasłem",
+        "publicAccess": "Dostęp publiczny",
+        "active": "Aktywny",
+        "inactive": "Nieaktywny",
+        "deactivate": "Dezaktywuj",
+        "activate": "Aktywuj",
+        "expiration": "Wygaśnięcie",
+        "dates": "Daty",
+        "createdAt": "Utworzono",
+        "updatedAt": "Zaktualizowano",
+        "allTypes": "Wszystkie typy",
+        "placeholderTypes": ".pdf,.jpg,.png (oddzielone przecinkami)",
+        "downloadSuccess": "Pobieranie rozpoczęte",
+        "downloadError": "Błąd pobierania pliku",
+        "editSuccess": "Plik zaktualizowany pomyślnie",
+        "editError": "Błąd aktualizacji pliku",
+        "previewNotAvailable": "Podgląd niedostępny",
+        "notAvailable": "Niedostępne",
+        "invalidDate": "Nieprawidłowa data",
+        "downloading": "Pobieranie..."
+      },
+      "alias": {
+        "editTitle": "Edytuj alias",
+        "createTitle": "Utwórz alias",
+        "editDescription": "Zaktualizuj alias dla tego linku do odbierania",
+        "createDescription": "Utwórz niestandardowy alias dla tego linku do odbierania",
+        "aliasLabel": "Alias linku",
+        "aliasPlaceholder": "moj-wlasny-link",
+        "preview": "Podgląd:",
+        "currentLink": "Bieżący link:",
+        "copyCurrentLink": "Skopiuj bieżący link",
+        "randomTooltip": "Generuj losowy alias",
+        "cancel": "Anuluj",
+        "creating": "Tworzenie...",
+        "updating": "Aktualizowanie...",
+        "create": "Utwórz alias",
+        "update": "Zaktualizuj alias",
+        "help": "8-30 znaków. Spacje zostaną automatycznie zamienione na myślniki."
+      },
+      "password": {
+        "title": "Edytuj ochronę hasłem",
+        "description": "Skonfiguruj ochronę hasłem dla tego linku",
+        "hasPassword": "Chronione hasłem",
+        "password": "Hasło",
+        "cancel": "Anuluj",
+        "save": "Zapisz",
+        "saving": "Zapisywanie..."
+      },
+      "receivedFiles": {
+        "title": "Odebrane pliki",
+        "description": "Wyświetlaj i zarządzaj plikami wysłanymi na ten link",
+        "noFiles": "Brak odebranych plików",
+        "noFilesDescription": "Pliki wysłane za pośrednictwem tego linku pojawią się tutaj",
+        "fileCount": "{count, plural, =0 {Brak plików} =1 {1 plik} other {# plików}}",
+        "totalSize": "Całkowity rozmiar: {size}",
+        "columns": {
+          "file": "Plik",
+          "size": "Rozmiar",
+          "sender": "Wysłane przez",
+          "date": "Data",
+          "actions": "Akcje"
+        },
+        "actions": {
+          "preview": "Podgląd",
+          "download": "Pobierz",
+          "copyToMyFiles": "Skopiuj do moich plików",
+          "copying": "Kopiowanie..."
+        },
+        "uploadedBy": "Przesłane przez {name}",
+        "anonymous": "Anonimowy",
+        "downloadSuccess": "Pobieranie rozpoczęte",
+        "downloadError": "Błąd pobierania pliku",
+        "editSuccess": "Plik zaktualizowany pomyślnie",
+        "editError": "Błąd aktualizacji pliku",
+        "previewNotAvailable": "Podgląd niedostępny",
+        "copyError": "Plik kopiowania błędów do plików",
+        "copySuccess": "Plik skopiowany do plików pomyślnie",
+        "bulkActions": {
+          "selected": "{count, plural, =1 {1 plik wybrany} other {# plików wybranych}}",
+          "actions": "Akcje",
+          "download": "Pobierz wybrane",
+          "copyToMyFiles": "Skopiuj wybrane do Moich plików",
+          "delete": "Usuń wybrane"
+        },
+        "bulkCopyProgress": "Kopiowanie {count, plural, =1 {1 pliku} other {# plików}} do twoich plików...",
+        "bulkCopySuccess": "{count, plural, =1 {1 plik skopiowany pomyślnie do twoich plików} other {# plików skopiowanych pomyślnie do twoich plików}}",
+        "bulkDeleteConfirmButton": "Usuń {count, plural, =1 {plik} other {pliki}}",
+        "bulkDeleteConfirmMessage": "Czy na pewno chcesz usunąć {count, plural, =1 {ten plik} other {te # pliki}}? Tej akcji nie można cofnąć.",
+        "bulkDeleteConfirmTitle": "Usuń wybrane pliki",
+        "bulkDeleteProgress": "Usuwanie {count, plural, =1 {1 pliku} other {# plików}}...",
+        "bulkDeleteSuccess": "{count, plural, =1 {1 plik usunięty pomyślnie} other {# plików usuniętych pomyślnie}}",
+        "selectAll": "Zaznacz wszystko",
+        "selectFile": "Wybierz plik {fileName}",
+        "deleteError": "Błąd usuwania pliku",
+        "deleteSuccess": "Plik usunięty pomyślnie",
+        "bulkDeleteError": "Błąd usuwania wybranych plików",
+        "copyErrors": {
+          "timeout": "Operacja kopiowania przekroczyła limit czasu. Spróbuj ponownie z mniejszym plikiem lub sprawdź swoje połączenie.",
+          "failed": "Operacja kopiowania nie powiodła się. Spróbuj ponownie.",
+          "aborted": "Operacja kopiowania została anulowana z powodu przekroczenia limitu czasu."
+        },
+        "invalidDate": "Nieprawidłowa data",
+        "downloading": "Pobieranie..."
+      },
+      "delete": {
+        "linkLabel": "Link: /r/{alias}"
+      }
+    },
+    "form": {
+      "name": {
+        "label": "Nazwa linku",
+        "placeholder": "np.: Dokumenty projektu, Zdjęcia rodzinne..."
+      },
+      "description": {
+        "label": "Opis",
+        "placeholder": "Opisz, jakiego rodzaju pliki oczekujesz otrzymać...",
+        "description": "Opcjonalne. Pomaga ludziom zrozumieć, co wysłać."
+      },
+      "status": {
+        "label": "Status linku",
+        "description": "Aktywuj lub dezaktywuj ten link do odbierania"
+      },
+      "expiration": {
+        "label": "Data wygaśnięcia",
+        "description": "Opcjonalne. Link zostanie dezaktywowany po tej dacie.",
+        "configure": "Skonfiguruj wygaśnięcie"
+      },
+      "fileLimits": {
+        "configure": "Skonfiguruj limity plików"
+      },
+      "maxFiles": {
+        "label": "Maksymalna liczba plików",
+        "placeholder": "np.: 10",
+        "description": "Opcjonalne. Ogranicz całkowitą liczbę plików, które można wysłać.",
+        "noLimit": "Bez limitu plików"
+      },
+      "maxFileSize": {
+        "label": "Maksymalny rozmiar pliku",
+        "placeholder": "np.: 100",
+        "description": "Opcjonalne. Ogranicz indywidualny rozmiar każdego pliku.",
+        "noLimit": "Bez limitu rozmiaru"
+      },
+      "allowedFileTypes": {
+        "label": "Dozwolone typy plików",
+        "placeholder": "np.: pdf, jpg, png, docx",
+        "description": "Wprowadź rozszerzenia bez kropek, oddzielone spacją, przecinkiem, myślnikiem lub kreską pionową",
+        "allTypes": "Wszystkie typy plików"
+      },
+      "pageLayout": {
+        "label": "Układ strony",
+        "placeholder": "Wybierz układ",
+        "description": "Jak strona przesyłania będzie wyglądać dla użytkowników.",
+        "options": {
+          "default": "Układ domyślny",
+          "wetransfer": "Styl WeTransfer"
+        }
+      },
+      "backgroundImage": {
+        "title": "Obraz tła",
+        "description": "Wybierz obraz tła dla strony przesyłania",
+        "random": "Losowy",
+        "none": "Brak dostępnych obrazów tła. Administrator może przesłać obrazy w Ustawieniach."
+      },
+      "password": {
+        "label": "Hasło ochronne",
+        "placeholder": "Opcjonalne. Dodaj hasło, aby chronić link",
+        "description": "Opcjonalne. Użytkownicy będą potrzebować tego hasła, aby uzyskać dostęp do linku.",
+        "configurePassword": "Skonfiguruj hasło",
+        "protectWithPassword": "Chroń hasłem",
+        "passwordHelp": "Hasło musi mieć co najmniej 4 znaki",
+        "passwordPlaceholder": "Wprowadź hasło, aby chronić link"
+      },
+      "submit": "Utwórz link do odbierania",
+      "emailFieldRequired": {
+        "label": "Wymagania pola e -mail",
+        "description": "Skonfiguruj, czy należy wyświetlić pole e -mail przesyłania, a jeśli jest to wymagane"
+      },
+      "fieldRequirements": {
+        "title": "Wymagania terenowe",
+        "description": "Skonfiguruj, które pola są pokazane w formularzu przesyłania",
+        "configurationTitle": "Konfiguracja pól:",
+        "hiddenDescription": "Ukryte: Pole nie pojawi się w formularzu przesyłania",
+        "optionalDescription": "Opcjonalne: Pole pojawi się, ale nie jest wymagane",
+        "requiredDescription": "Wymagane: Pole musi zostać wypełnione przed przesłaniem"
+      },
+      "nameFieldRequired": {
+        "label": "Nazwa Wymagania pola",
+        "description": "Skonfiguruj, czy należy wyświetlić pole nazwy przesyłania, a jeśli jest to wymagane"
+      },
+      "notifyOnUpload": "Powiadamiaj mnie przy każdym przesłaniu",
+      "notifyOnUploadHelp": "Po włączeniu będziesz otrzymywać powiadomienia e-mail, gdy pliki zostaną przesłane do tego linku do odbioru, niezależnie od globalnych preferencji powiadomień.",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
+    },
+    "messages": {
+      "created": "Link do odbierania utworzony pomyślnie!",
+      "createSuccess": "Link do odbierania utworzony pomyślnie!",
+      "updateSuccess": "Link do odbierania zaktualizowany pomyślnie!",
+      "linkCopied": "Link skopiowany do schowka!",
+      "deleteSuccess": "Link do odbierania usunięty pomyślnie!",
+      "aliasCreated": "Alias utworzony pomyślnie!",
+      "activateSuccess": "Link do odbierania aktywowany pomyślnie!",
+      "deactivateSuccess": "Link do odbierania dezaktywowany pomyślnie!",
+      "passwordProtectionDisabled": "Ochrona hasłem została pomyślnie usunięta!",
+      "passwordProtectionEnabled": "Ochrona hasłem została pomyślnie włączona!"
+    },
+    "errors": {
+      "loadFailed": "Nie udało się załadować linków do odbierania",
+      "createFailed": "Nie udało się utworzyć linku do odbierania. Spróbuj ponownie.",
+      "updateFailed": "Nie udało się zaktualizować linku do odbierania. Spróbuj ponownie.",
+      "deleteFailed": "Nie udało się usunąć linku do odbierania. Spróbuj ponownie.",
+      "aliasCreateFailed": "Nie udało się utworzyć aliasu. Spróbuj ponownie.",
+      "passwordUpdateFailed": "Nie udało się zaktualizować ochrony hasłem"
+    },
+    "delete": {
+      "title": "Usuń link do odbierania",
+      "description": "Tej operacji nie można cofnąć. Link zostanie trwale usunięty i nie będzie już mógł odbierać plików.",
+      "confirmButton": "Usuń link",
+      "cancelButton": "Anuluj",
+      "deleting": "Usuwanie..."
+    },
+    "upload": {
+      "metadata": {
+        "title": "Wyślij pliki - OUITRANSFER",
+        "description": "Wysyłaj pliki za pośrednictwem udostępnionego linku",
+        "descriptionWithLimit": "Prześlij pliki (maks. {limit} plików)"
+      },
+      "layout": {
+        "defaultTitle": "Wyślij pliki",
+        "importantInfo": "Ważne informacje:",
+        "maxFiles": "Maksymalnie {count} plik(ów)",
+        "maxFileSize": "Maksymalny rozmiar pliku: {size}MB",
+        "allowedTypes": "Dozwolone typy: {types}",
+        "loading": "Ładowanie..."
+      },
+      "password": {
+        "title": "Chroniony link",
+        "description": "Ten link jest chroniony hasłem. Wprowadź hasło, aby kontynuować.",
+        "label": "Hasło",
+        "placeholder": "Wprowadź hasło",
+        "cancel": "Anuluj",
+        "submit": "Kontynuuj",
+        "verifying": "Weryfikowanie..."
+      },
+      "errors": {
+        "loadFailed": "Nie udało się załadować informacji. Spróbuj ponownie.",
+        "passwordIncorrect": "Nieprawidłowe hasło. Spróbuj ponownie.",
+        "linkNotFound": "Link nie znaleziono lub wygasł.",
+        "linkInactive": "Ten link jest nieaktywny.",
+        "linkExpired": "Ten link wygasł.",
+        "uploadFailed": "Błąd przesyłania pliku",
+        "retry": "Spróbuj Ponownie",
+        "fileTooLarge": "Plik za duży. Maksymalny rozmiar: {maxSize}",
+        "fileTypeNotAllowed": "Typ pliku niedozwolony. Akceptowane typy: {allowedTypes}",
+        "maxFilesExceeded": "Dozwolono maksymalnie {maxFiles} plików",
+        "selectAtLeastOneFile": "Wybierz co najmniej jeden plik",
+        "provideNameOrEmail": "Proszę podać swoje imię lub adres e-mail",
+        "provideEmailRequired": "Wymagany jest e -mail",
+        "provideNameRequired": "Nazwa jest wymagana"
+      },
+      "fileDropzone": {
+        "dragActive": "Upuść pliki tutaj",
+        "dragInactive": "Przeciągnij pliki tutaj lub kliknij, aby wybrać",
+        "acceptedTypes": "Akceptowane typy: {types}",
+        "maxFileSize": "Maksymalny rozmiar: {size}",
+        "maxFiles": "Maksymalnie {count} plików",
+        "remainingFiles": "{remaining} z {max} pozostałych plików"
+      },
+      "fileList": {
+        "title": "Wybrane pliki:",
+        "statusUploaded": "Przesłano",
+        "statusError": "Błąd",
+        "retry": "Spróbuj Ponownie"
+      },
+      "form": {
+        "nameLabel": "Imię",
+        "namePlaceholder": "Twoje imię",
+        "emailLabel": "E-mail",
+        "emailPlaceholder": "twoj@email.pl",
+        "descriptionLabel": "Opis (opcjonalnie)",
+        "descriptionPlaceholder": "Dodaj opis do plików...",
+        "uploadButton": "Wyślij {count} plik(ów)",
+        "uploading": "Wysyłanie...",
+        "emailLabelOptional": "E -mail (opcjonalnie)",
+        "nameLabelOptional": "Nazwa (opcjonalnie)",
+        "privacyNotice": "Twoje imię, adres e-mail i przesłane pliki mogą być widoczne dla właściciela tego linku do odbioru."
+      },
+      "success": {
+        "title": "Pliki wysłane pomyślnie! 🎉",
+        "description": "Możesz zamknąć tę stronę.",
+        "countMessage": "{count} plik(ów) wysłanych pomyślnie!"
+      },
+      "maxFilesReached": {
+        "title": "Osiągnięto limit plików",
+        "description": "Ten link otrzymał już maksymalną liczbę {maxFiles} plik(ów).",
+        "contactOwner": "Jeśli wystąpił błąd lub potrzebujesz wysłać więcej plików, skontaktuj się z właścicielem linku."
+      },
+      "linkInactive": {
+        "title": "Link nieaktywny",
+        "description": "Ten link do odbierania jest tymczasowo nieaktywny.",
+        "contactOwner": "Skontaktuj się z właścicielem linku, aby uzyskać więcej informacji."
+      },
+      "linkNotFound": {
+        "title": "Link nie znaleziono",
+        "description": "Ten link mógł zostać usunięty lub nigdy nie istniał."
+      },
+      "linkExpired": {
+        "title": "Link wygasł",
+        "description": "Ten link do odbierania wygasł i nie przyjmuje już plików.",
+        "contactOwner": "Skontaktuj się z właścicielem linku, jeśli potrzebujesz wysłać pliki."
+      }
+    },
+    "components": {
+      "fileRow": {
+        "addDescription": "Dodaj opis...",
+        "anonymous": "Anonimowy"
+      },
+      "fileActions": {
+        "edit": "Edytuj",
+        "preview": "Podgląd",
+        "download": "Pobierz",
+        "delete": "Usuń",
+        "copyToMyFiles": "Skopiuj do moich plików",
+        "copying": "Kopiowanie..."
+      },
+      "editField": {
+        "saveChanges": "Zapisz zmiany",
+        "cancelEdit": "Anuluj edycję"
+      }
+    },
+    "defaultLinkName": "Otrzymane pliki"
+  },
+  "searchBar": {
+    "placeholder": "Szukaj plików...",
+    "results": "Znaleziono {filtered} z {total} plików",
+    "placeholderFolders": "Szukaj folderów...",
+    "noResults": "Nie znaleziono wyników dla \"{query}\"",
+    "placeholderFiles": "Szukaj plików..."
+  },
+  "settings": {
+    "groups": {
+      "defaultDescription": "Opcje konfiguracji",
+      "general": {
+        "title": "Ogólne",
+        "description": "Podstawowe ustawienia aplikacji"
+      },
+      "email": {
+        "title": "E-mail",
+        "description": "Konfiguracja serwera poczty e-mail"
+      },
+      "security": {
+        "title": "Bezpieczeństwo",
+        "description": "Ustawienia bezpieczeństwa i uwierzytelniania"
+      },
+      "storage": {
+        "title": "Przechowywanie",
+        "description": "Konfiguracja przechowywania plików"
+      },
+      "oidc": {
+        "title": "OpenID Connect (SSO)",
+        "description": "Skonfiguruj uwierzytelnianie SSO poprzez OpenID Connect"
+      },
+      "backgrounds": {
+        "title": "Obrazy tła",
+        "description": "Zarządzaj obrazami tła dla stron przesyłania w stylu WeTransfer"
+      },
+      "cleanup": {
+        "title": "Automatyczne czyszczenie",
+        "description": "Zarządzanie cyklem życia wygasłych treści, dezaktywowanych kont i osieroconych plików. Automatyczne usuwanie jest domyślnie wyłączone."
+      }
+    },
+    "fields": {
+      "noDescription": "Brak dostępnego opisu",
+      "appLogo": {
+        "title": "Logo aplikacji",
+        "description": "Obraz logo aplikacji"
+      },
+      "appName": {
+        "title": "Nazwa aplikacji",
+        "description": "Nazwa aplikacji wyświetlana użytkownikom"
+      },
+      "appUrl": {
+        "title": "Adres URL aplikacji",
+        "description": "Publiczny adres URL aplikacji, używany w linkach e-mail"
+      },
+      "appDescription": {
+        "title": "Opis aplikacji",
+        "description": "Krótki opis aplikacji"
+      },
+      "showHomePage": {
+        "title": "Publiczna strona lądowania",
+        "description": "Wyświetl publiczną stronę lądowania dla odwiedzających. Jeśli ta opcja jest wyłączona, odwiedzający są przekierowywani na stronę logowania."
+      },
+      "smtpEnabled": {
+        "title": "SMTP włączone",
+        "description": "Włącz lub wyłącz funkcję poczty e-mail SMTP"
+      },
+      "smtpHost": {
+        "title": "Serwer SMTP",
+        "description": "Adres serwera SMTP"
+      },
+      "smtpPort": {
+        "title": "Port SMTP",
+        "description": "Port serwera SMTP"
+      },
+      "smtpUser": {
+        "title": "Nazwa użytkownika SMTP",
+        "description": "Nazwa użytkownika do uwierzytelniania SMTP"
+      },
+      "smtpPass": {
+        "title": "Hasło SMTP",
+        "description": "Hasło do uwierzytelniania SMTP"
+      },
+      "smtpFromName": {
+        "title": "Nazwa nadawcy",
+        "description": "Nazwa wyświetlana dla wysłanych e-maili"
+      },
+      "smtpFromEmail": {
+        "title": "E-mail nadawcy",
+        "description": "Adres e-mail nadawcy"
+      },
+      "maxLoginAttempts": {
+        "title": "Maksymalna liczba prób logowania",
+        "description": "Maksymalna liczba prób logowania przed zablokowaniem"
+      },
+      "loginBlockDuration": {
+        "title": "Czas blokady",
+        "description": "Czas trwania (w sekundach) blokady po przekroczeniu prób"
+      },
+      "passwordMinLength": {
+        "title": "Minimalna długość hasła",
+        "description": "Minimalna liczba znaków dla haseł"
+      },
+      "passwordResetTokenExpiration": {
+        "title": "Wygaśnięcie tokena resetowania",
+        "description": "Czas ważności (w sekundach) tokena resetowania hasła"
+      },
+      "maxFileSize": {
+        "title": "Maksymalny rozmiar pliku",
+        "description": "Maksymalny dozwolony rozmiar pliku do przesłania. Można zastąpić dla poszczególnych użytkowników lub grup."
+      },
+      "maxTotalStoragePerUser": {
+        "title": "Maksymalna pojemność na użytkownika",
+        "description": "Całkowity limit przechowywania na użytkownika. Można zastąpić dla poszczególnych użytkowników lub grup."
+      },
+      "quotaWarningThresholds": {
+        "title": "Progi ostrzeżeń o limicie (%)",
+        "description": "Wartości procentowe oddzielone przecinkami, np. \"80,90\", przy których użytkownik otrzymuje e-mail z ostrzeżeniem o limicie. Każda wartość musi być liczbą całkowitą między 1 a 99. Osobny alert jest wysyłany, gdy magazyn osiągnie 100%."
+      },
+      "quotaGracePeriodDays": {
+        "title": "Okres karencji limitu (dni)",
+        "description": "Ile dni użytkownik może przekraczać swój limit, zanim inteligentne usuwanie zacznie działać (tylko gdy inteligentne usuwanie jest włączone poniżej). Minimum 0."
+      },
+      "quotaSmartDeletionEnabled": {
+        "title": "Inteligentne usuwanie plików po przekroczeniu limitu",
+        "description": "Domyślnie wyłączone. Po włączeniu, po upływie okresu karencji, najstarsze niebezpieczne pliki użytkownika przekraczającego limit są usuwane w bezpiecznej kolejności: najpierw nieudostępnione przesyłki, następnie pliki w udostępnieniach nieaktywnych przez poniższy okres. Pliki w aktywnych udostępnieniach nigdy nie są usuwane, jeśli nic nie jest bezpieczne do usunięcia, nowe przesyłki są po prostu blokowane."
+      },
+      "quotaInactiveShareDays": {
+        "title": "Próg nieaktywnego udostępnienia (dni)",
+        "description": "Pliki udostępnienia kwalifikują się do inteligentnego usunięcia, gdy udostępnienie nie wykazywało aktywności przez tę liczbę dni. Minimum 1."
+      },
+      "reverseShareQuotaSoftEnforcement": {
+        "title": "Miękkie egzekwowanie limitu do odbioru",
+        "description": "Domyślnie włączone. Pozwala zewnętrznym gościom kontynuować przesyłanie do linku do odbioru nawet jeśli właściciel nieznacznie przekroczy limit, aby kolekcje nie były przerywane. Przesyłki są jednak blokowane, gdy właściciel przekroczy tolerancję ustawioną poniżej, a właściciel jest informowany o konieczności zwolnienia miejsca."
+      },
+      "reverseShareMaxOverageFactor": {
+        "title": "Współczynnik przekroczenia dla linku do odbioru",
+        "description": "Miękkie egzekwowanie zezwala na przesyłanie do linku do odbioru, dopóki użycie nie osiągnie tej wielokrotności limitu właściciela (np. 3 = do trzech razy limitu). Minimum 1."
+      },
+      "reverseShareAbsoluteMaxBytes": {
+        "title": "Absolutny limit dla linku do odbioru",
+        "description": "Bezwzględna górna granica dla miękkiego egzekwowania linku do odbioru, niezależnie od powyższego współczynnika. Ustaw 0, aby nie stosować absolutnego limitu."
+      },
+      "firstUserAccess": {
+        "title": "Pierwszy dostęp użytkownika",
+        "description": "Ustawienia pierwszego dostępu nowych użytkowników"
+      },
+      "serverUrl": {
+        "title": "Adres URL serwera",
+        "description": "Podstawowy adres URL serwera OUITRANSFER (np. https://OUITRANSFER.example.com)"
+      },
+      "testSmtp": {
+        "title": "Test połączenia SMTP",
+        "description": "Sprawdź, czy konfiguracja SMTP jest prawidłowa"
+      },
+      "smtpNoAuth": {
+        "title": "Bez uwierzytelniania",
+        "description": "Włącz tę opcję dla serwerów wewnętrznych, które nie wymagają nazwy użytkownika/hasła (ukrywa pola uwierzytelniania)"
+      },
+      "smtpSecure": {
+        "title": "Bezpieczeństwo połączenia",
+        "description": "Metoda zabezpieczenia połączenia SMTP - Auto (zalecane), SSL, STARTTLS lub Brak (niezabezpieczone)",
+        "options": {
+          "auto": "Auto (Zalecane)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
+          "none": "Brak (Niezabezpieczone)"
+        }
+      },
+      "smtpTrustSelfSigned": {
+        "title": "Zaufaj certyfikatom samopodpisanym",
+        "description": "Włącz tę opcję, aby zaufać samopodpisanym certyfikatom SSL/TLS (przydatne w środowiskach deweloperskich)"
+      },
+      "passwordAuthEnabled": {
+        "title": "Uwierzytelnianie hasłem",
+        "description": "Włącz lub wyłącz uwierzytelnianie oparte na haśle"
+      },
+      "hideVersion": {
+        "title": "Ukryj Wersję",
+        "description": "Ukryj wersję OUITRANSFER w stopce wszystkich stron"
+      },
+      "footerEnabled": {
+        "title": "Pokaż stopkę",
+        "description": "Wyświetl pasek stopki u dołu wszystkich stron"
+      },
+      "footerText": {
+        "title": "Tekst stopki",
+        "description": "Nazwa firmy lub organizacji wyświetlana w stopce"
+      },
+      "footerUrl": {
+        "title": "Adres URL stopki",
+        "description": "Adres URL linku dla tekstu stopki"
+      },
+      "emailDigestHour": {
+        "title": "Godzina wysyłki skrótu",
+        "description": "Godzina dnia (0-23), o której wysyłane są e-maile ze skrótem"
+      },
+      "emailJobRetentionDays": {
+        "title": "Przechowywanie zadań e-mail",
+        "description": "Liczba dni przechowywania ukończonych zadań e-mail przed czyszczeniem"
+      },
+      "emailQueueIntervalSeconds": {
+        "title": "Interwał przetwarzania kolejki",
+        "description": "Sekundy między cyklami przetwarzania kolejki e-mail"
+      },
+      "emailQueueMaxRetries": {
+        "title": "Maksymalna liczba ponownych prób e-mail",
+        "description": "Maksymalna liczba prób ponownego wysłania dla nieudanych e-maili"
+      },
+      "auditRetentionDays": {
+        "title": "Przechowywanie audytu",
+        "description": "Liczba dni przechowywania dzienników audytu (0 = zawsze, minimum 7)"
+      },
+      "autoCleanupEnabled": {
+        "title": "Włącz automatyczne czyszczenie",
+        "description": "Główny przełącznik zaplanowanego czyszczenia wygasłych linków udostępnień, wygasłych plików linku do odbioru i osieroconych plików. Domyślnie wyłączone, nic nie jest usuwane automatycznie, dopóki tego nie włączysz."
+      },
+      "autoCleanupIntervalHours": {
+        "title": "Interwał czyszczenia (godziny)",
+        "description": "Jak często uruchamiane jest zadanie czyszczenia. Minimum 1 godzina."
+      },
+      "autoCleanupGracePeriodDays": {
+        "title": "Okres karencji (dni)",
+        "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
+      },
+      "autoCleanupNotifyDaysBefore": {
+        "title": "Ostrzeż przed usunięciem (dni)",
+        "description": "Wysyła do właściciela e-mail ostrzegawczy o \"oczekującym trwałym usunięciu\" na tę liczbę dni przed usunięciem treści. 0 wyłącza ostrzeżenie. Powinno być co najwyżej równe okresowi karencji."
+      },
+      "accountDeactivationCleanupEnabled": {
+        "title": "Usuń pliki dezaktywowanych kont",
+        "description": "Po włączeniu, pliki należące do dezaktywowanego konta są trwale usuwane po poniższym opóźnieniu. Domyślnie wyłączone, sama dezaktywacja nigdy nie usuwa plików."
+      },
+      "accountDeactivationCleanupDays": {
+        "title": "Opóźnienie czyszczenia po dezaktywacji (dni)",
+        "description": "Dni po dezaktywacji konta, zanim jego pliki zostaną usunięte (tylko gdy powyższa opcja jest włączona). Minimum 1."
+      },
+      "autoCleanupOrphansEnabled": {
+        "title": "Usuń osierocone pliki",
+        "description": "Po włączeniu, przeprowadza dwukierunkowe skanowanie usuwające rekordy bazy danych wskazujące na brakujące obiekty magazynu i obiekty magazynu bez rekordu w bazie danych. Domyślnie wyłączone."
+      },
+      "autoCleanupOrphanMinAgeHours": {
+        "title": "Minimalny wiek osieroconych plików (godziny)",
+        "description": "Tylko pliki i obiekty starsze od tego czasu są brane pod uwagę podczas skanowania osieroconych plików, chroniąc przesyłania wciąż w toku. Minimum 1."
+      }
+    },
+    "buttons": {
+      "save": "Zapisz {group}",
+      "testSmtp": "Testuj połączenie",
+      "testing": "Testowanie..."
+    },
+    "errors": {
+      "loadFailed": "Nie udało się załadować ustawień",
+      "updateFailed": "Nie udało się zaktualizować ustawień",
+      "passwordAuthRequiresProvider": "Uwierzytelnianie oparte na haśle nie może być wyłączone, jeśli nie ma co najmniej jednego aktywnego dostawcy uwierzytelniania",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
+      "cleanupValueInvalid": "Wartość musi być liczbą całkowitą wynoszącą co najmniej {min}",
+      "notifyDaysExceedsGrace": "Czas wyprzedzenia ostrzeżenia nie powinien przekraczać okresu karencji, w przeciwnym razie żadne ostrzeżenie nie zostanie wysłane",
+      "quotaThresholdsInvalid": "Wprowadź wartości procentowe oddzielone przecinkami z zakresu 1-99, na przykład \"80,90\""
+    },
+    "messages": {
+      "noChanges": "Brak zmian do zapisania",
+      "updateSuccess": "Ustawienia {group} zaktualizowane pomyślnie",
+      "smtpTestFailed": "Połączenie SMTP nie powiodło się: {error}",
+      "smtpTestGenericError": "Nie udało się przetestować połączenia SMTP. Sprawdź ustawienia i spróbuj ponownie.",
+      "smtpTestSuccess": "Połączenie SMTP udane! Twoja konfiguracja poczty e-mail działa poprawnie.",
+      "smtpMissingAuth": "Proszę wypełnić nazwę użytkownika i hasło SMTP lub włączyć opcję 'Bez uwierzytelniania'.",
+      "smtpMissingHostPort": "Proszę wypełnić host i port SMTP przed testowaniem.",
+      "smtpNotEnabled": "SMTP nie jest włączone. Proszę najpierw włączyć SMTP."
+    },
+    "title": "Ustawienia",
+    "breadcrumb": "Ustawienia",
+    "pageTitle": "Ustawienia",
+    "tooltips": {
+      "testSmtp": "Testuje połączenie SMTP z obecnie wprowadzonymi wartościami w formularzu. Aby wprowadzić trwałe zmiany, pamiętaj o zapisaniu ustawień po testowaniu.",
+      "defaultPlaceholder": "Wprowadź i naciśnij Enter"
+    },
+    "redirectUri": {
+      "placeholder": "https://mojstrona.com",
+      "previewLabel": "Kompletny adres URL, który zostanie zapisany:"
+    },
+    "emailAdmin": {
+      "queueStatus": "Status kolejki e-mail",
+      "pending": "Oczekujące",
+      "sentLast24h": "Wysłane (24h)",
+      "failed": "Nieudane",
+      "digestQueue": "Kolejka podsumowań",
+      "sendTest": "Wyślij testowy e-mail",
+      "testPlaceholder": "odbiorca@przyklad.pl",
+      "testSending": "Wysyłanie...",
+      "testSuccess": "Testowy e-mail dodany do kolejki",
+      "testError": "Nie udało się wysłać testowego e-maila"
+    }
+  },
+  "share": {
+    "errors": {
+      "invalidPassword": "Nieprawidłowe hasło. Spróbuj ponownie.",
+      "loadFailed": "Nie udało się załadować udostępnienia",
+      "downloadFailed": "Nie udało się pobrać pliku"
+    },
+    "messages": {
+      "downloadStarted": "Pobieranie rozpoczęte"
+    },
+    "password": {
+      "title": "Udostępnienie chronione hasłem",
+      "protected": "Wprowadź hasło, aby uzyskać dostęp do udostępnionych plików.",
+      "incorrect": "Nieprawidłowe hasło. Spróbuj ponownie.",
+      "label": "Hasło",
+      "placeholder": "Wprowadź hasło do udostępnienia",
+      "submit": "Prześlij"
+    },
+    "details": {
+      "untitled": "Udostępnienie bez tytułu",
+      "created": "Utworzono: {date}",
+      "expires": "Wygasa: {date}"
+    },
+    "notFound": {
+      "title": "Udostępnienie nie znaleziono",
+      "description": "To udostępnienie mogło zostać usunięte lub wygasło."
+    },
+    "pageTitle": "Udostępnij",
+    "downloadAll": "Pobierz wszystkie",
+    "metadata": {
+      "defaultDescription": "Bezpiecznie udostępniaj pliki",
+      "filesShared": "{count, plural, =1 {1 plik udostępniony} other {# plików udostępnionych}}"
+    },
+    "identification": {
+      "title": "Identyfikacja odwiedzającego",
+      "subtitle": "Podaj swoje dane, aby uzyskać dostęp do tego udostępnienia",
+      "nameLabel": "Imię",
+      "emailLabel": "E-mail",
+      "submit": "Kontynuuj",
+      "error": "Wysyłanie identyfikacji nie powiodło się. Spróbuj ponownie.",
+      "optional": "Opcjonalne",
+      "nameRequired": "Imię jest wymagane",
+      "emailRequired": "E-mail jest wymagany",
+      "emailInvalid": "Wprowadź prawidłowy adres e-mail",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "Twoje dostępy i pobrania mogą być widoczne dla nadawcy tego udostępnienia."
+    }
+  },
+  "shareActions": {
+    "deleteTitle": "Usuń udostępnienie",
+    "deleteConfirmation": "Czy na pewno chcesz usunąć to udostępnienie? Tej operacji nie można cofnąć.",
+    "editTitle": "Edytuj udostępnienie",
+    "newPasswordLabel": "Nowe hasło (pozostaw puste, aby zachować bieżące)",
+    "newPasswordPlaceholder": "Wprowadź nowe hasło",
+    "manageFilesTitle": "Zarządzaj plikami",
+    "manageRecipientsTitle": "Zarządzaj odbiorcami",
+    "editSuccess": "Udostępnienie zaktualizowane pomyślnie",
+    "editError": "Nie udało się zaktualizować udostępnienia",
+    "editErrorMetadata": "Nie udało się zaktualizować szczegółów udostępnienia",
+    "editErrorPassword": "Nie udało się zaktualizować hasła udostępnienia",
+    "bulkDeleteConfirmation": "Czy na pewno chcesz usunąć {count, plural, =1 {1 udostępnienie} other {# udostępnień}}? Tej operacji nie można cofnąć.",
+    "bulkDeleteTitle": "Usuń wybrane udostępnienia",
+    "addDescriptionPlaceholder": "Dodaj opis...",
+    "aliasLabel": "Alias linku",
+    "aliasPlaceholder": "Wprowadź niestandardowy alias",
+    "copyLink": "Kopiuj link",
+    "fileTitle": "Udostępnij plik",
+    "folderTitle": "Udostępnij folder",
+    "generateLink": "Generuj link",
+    "linkDescriptionFile": "Wygeneruj niestandardowy link do udostępnienia pliku",
+    "linkDescriptionFolder": "Wygeneruj niestandardowy link do udostępnienia folderu",
+    "linkReady": "Twój link udostępniania jest gotowy:",
+    "linkTitle": "Generuj link",
+    "itemsSelected": "Wybrano {count} elementów",
+    "manageFilesDescription": "Wybierz pliki i foldery do uwzględnienia w tym udostępnieniu",
+    "keepCurrentPasswordHint": "Pozostaw puste, aby zachować aktualne hasło",
+    "passwordRequired": "Hasło jest wymagane dla nowej ochrony hasłem"
+  },
+  "shareDetails": {
+    "title": "Szczegóły udostępnienia",
+    "subtitle": "Szczegółowe informacje o tym udostępnieniu",
+    "basicInfo": "Podstawowe informacje",
+    "name": "Nazwa",
+    "description": "Opis",
+    "noDescription": "Brak opisu",
+    "untitled": "Bez tytułu",
+    "shareLink": "Link do udostępniania",
+    "editLink": "Edytuj link",
+    "generateLink": "Generuj link",
+    "noLink": "Brak wygenerowanego linku",
+    "copyLink": "Skopiuj link",
+    "openLink": "Otwórz w nowej karcie",
+    "views": "Wyświetlenia",
+    "dates": "Daty",
+    "created": "Utworzono",
+    "expires": "Wygasa",
+    "never": "Nigdy",
+    "security": "Bezpieczeństwo",
+    "editSecurity": "Edytuj bezpieczeństwo",
+    "editExpiration": "Edytuj wygaśnięcie",
+    "passwordProtected": "Chronione hasłem",
+    "publicAccess": "Dostęp publiczny",
+    "maxViews": "Maksymalna liczba wyświetleń:",
+    "files": "Pliki",
+    "recipients": "Odbiorcy",
+    "notAvailable": "N/A",
+    "invalidDate": "Nieprawidłowa data",
+    "loadError": "Nie udało się załadować szczegółów udostępnienia",
+    "clickToEnlargeQrCode": "Kliknij, aby powiększyć kod QR",
+    "downloadQrCode": "Pobierz kod QR",
+    "qrCode": "Kod QR",
+    "activity": {
+      "title": "Aktywność",
+      "noActivity": "Brak zarejestrowanej aktywności.",
+      "access": "Wyświetlono",
+      "download": "Pobrano",
+      "anonymous": "Anonimowy",
+      "loadMore": "Załaduj więcej",
+      "showingCount": "Wyświetlanie {shown} z {total}",
+      "loadError": "Nie udało się załadować danych aktywności.",
+      "filterAll": "Wszystkie akcje",
+      "filterAccess": "Tylko wyświetlenia",
+      "filterDownload": "Tylko pobrania",
+      "filterAllVisitors": "Wszyscy odwiedzający",
+      "filterIdentified": "Zidentyfikowani",
+      "filterAnonymous": "Anonimowi",
+      "you": "Ty",
+      "source": {
+        "tracking_token": "Przez link odbiorcy",
+        "cookie": "Samo-zidentyfikowany",
+        "selfDeclaredHint": "Tożsamość samodzielnie podana, niezweryfikowana",
+        "authenticated_user": "Zarejestrowany użytkownik"
+      }
+    },
+    "lastDownloaded": "Ostatnie pobranie",
+    "privacySummary": "Prywatność",
+    "privacyNameField": "Nazwa odwiedzającego:",
+    "privacyEmailField": "Email odwiedzającego:",
+    "privacyNotifyOnDownload": "Powiadomienia o pobieraniu włączone",
+    "privacyInactivityAlert": "Alert braku aktywności po {days} dniach",
+    "fieldValue": {
+      "OPTIONAL": "Opcjonalne",
+      "REQUIRED": "Wymagane"
+    },
+    "recipientNotified": "Powiadomiono",
+    "recipientAccess": "{count, plural, one {# dostęp} few {# dostępy} many {# dostępów} other {# dostępy}}",
+    "recipientAccessWithLast": "{count, plural, one {# dostęp} few {# dostępy} many {# dostępów} other {# dostępy}} · ostatni {lastAccess}"
+  },
+  "shareExpiration": {
+    "title": "Ustawienia wygaśnięcia udostępnienia",
+    "subtitle": "Skonfiguruj, kiedy to udostępnienie wygaśnie",
+    "currentStatus": "Bieżący status",
+    "expires": "Wygasa:",
+    "neverExpires": "Nigdy nie wygasa",
+    "enableExpiration": "Włącz wygaśnięcie",
+    "expirationDate": "Data wygaśnięcia",
+    "validation": {
+      "dateRequired": "Proszę wybrać datę wygaśnięcia",
+      "dateMustBeFuture": "Data wygaśnięcia musi być w przyszłości"
+    },
+    "success": {
+      "expirationSet": "Data wygaśnięcia ustawiona pomyślnie",
+      "expirationUpdated": "Data wygaśnięcia zaktualizowana pomyślnie",
+      "expirationRemoved": "Wygaśnięcie usunięte pomyślnie - udostępnienie jest teraz stałe"
+    },
+    "error": {
+      "updateFailed": "Nie udało się zaktualizować ustawień wygaśnięcia"
+    },
+    "info": {
+      "title": "O wygaśnięciu:",
+      "willBeInaccessible": "Udostępnienie stanie się niedostępne po tej dacie",
+      "canBeChanged": "Możesz zmienić lub usunąć datę wygaśnięcia w dowolnym momencie",
+      "noExpiration": "To udostępnienie nigdy nie wygaśnie i pozostanie dostępne bezterminowo."
+    }
+  },
+  "shareManager": {
+    "deleteSuccess": "Udostępnienie usunięte pomyślnie",
+    "deleteError": "Nie udało się usunąć udostępnienia",
+    "updateSuccess": "Udostępnienie zaktualizowane pomyślnie",
+    "updateError": "Nie udało się zaktualizować udostępnienia",
+    "securityUpdateSuccess": "Ustawienia bezpieczeństwa zaktualizowane pomyślnie",
+    "securityUpdateError": "Nie udało się zaktualizować ustawień bezpieczeństwa",
+    "expirationUpdateSuccess": "Ustawienia wygaśnięcia zaktualizowane pomyślnie",
+    "expirationUpdateError": "Nie udało się zaktualizować ustawień wygaśnięcia",
+    "filesUpdateSuccess": "Pliki zaktualizowane pomyślnie",
+    "filesUpdateError": "Nie udało się zaktualizować plików",
+    "recipientsUpdateSuccess": "Odbiorcy zaktualizowani pomyślnie",
+    "recipientsUpdateError": "Nie udało się zaktualizować odbiorców",
+    "linkGenerateSuccess": "Link do udostępniania wygenerowany pomyślnie",
+    "linkGenerateError": "Nie udało się wygenerować linku do udostępniania",
+    "notifyLoading": "Wysyłanie powiadomień...",
+    "notifySuccess": "Odbiorcy powiadomieni pomyślnie",
+    "notifyError": "Nie udało się powiadomić odbiorców",
+    "bulkDeleteError": "Nie udało się usunąć udostępnień",
+    "bulkDeleteLoading": "Usuwanie {count, plural, =1 {1 udostępnienia} other {# udostępnień}}...",
+    "bulkDeleteSuccess": "{count, plural, =1 {1 udostępnienie usunięte pomyślnie} other {# udostępnień usuniętych pomyślnie}}",
+    "creatingZip": "Tworzenie pliku zip ...",
+    "defaultShareName": "Udział",
+    "downloadError": "Nie udało się pobrać plików udostępniania",
+    "downloadSuccess": "Pobierz zaczęło się pomyślnie",
+    "multipleSharesZipName": "{Count} _Shares_files.zip",
+    "noFilesToDownload": "Brak plików do pobrania",
+    "singleShareZipName": "{ShaRename} _files.zip",
+    "zipDownloadError": "Nie udało się utworzyć pliku zip",
+    "zipDownloadSuccess": "Plik zip pobrany pomyślnie",
+    "errors": {
+      "multipleDownloadNotSupported": "Pobieranie wielu udostępnień nie jest jeszcze obsługiwane - pobierz udostępnienia pojedynczo"
+    },
+    "pauseSuccess": "Udostępnienie wstrzymane",
+    "pauseError": "Wstrzymanie udostępnienia nie powiodło się",
+    "resumeSuccess": "Udostępnienie wznowione",
+    "resumeError": "Wznowienie udostępnienia nie powiodło się. Jeśli wygasło lub osiągnęło limit wyświetleń, przedłuż je."
+  },
+  "shareMultipleFiles": {
+    "title": "Udostępnij wiele plików",
+    "shareNameLabel": "Nazwa udostępnienia",
+    "shareNamePlaceholder": "Wprowadź nazwę udostępnienia",
+    "descriptionLabel": "Opis",
+    "descriptionPlaceholder": "Wprowadź opis (opcjonalnie)",
+    "filesToShare": "Pliki do udostępnienia",
+    "files": "plików",
+    "totalSize": "Całkowity rozmiar: {size}",
+    "creating": "Tworzenie...",
+    "create": "Utwórz udostępnienie",
+    "itemsToShare": "Elementy do udostępnienia ({count} {count, plural, =1 {element} other {elementów}})",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
+  },
+  "shareSecurity": {
+    "title": "Ustawienia bezpieczeństwa udostępniania",
+    "subtitle": "Skonfiguruj ochronę hasłem i opcje bezpieczeństwa dla tego udostępnienia",
+    "currentStatus": "Bieżący status",
+    "passwordProtection": "Ochrona hasłem",
+    "password": "Hasło",
+    "newPassword": "Nowe hasło",
+    "passwordPlaceholder": "Wprowadź bezpieczne hasło",
+    "existingPasswordMessage": "To udostępnienie ma już hasło. Jeśli chcesz je zaktualizować, wprowadź nowe hasło w polu poniżej i zapisz.",
+    "passwordRequirements": {
+      "title": "Wymagania dotyczące hasła:",
+      "minLength": "Co najmniej 2 znaki"
+    },
+    "info": {
+      "title": "Jak to działa:",
+      "withPassword": "Użytkownicy będą musieli wprowadzić hasło, aby uzyskać dostęp do tego udostępnienia.",
+      "withoutPassword": "Każdy, kto ma link, może uzyskać dostęp do tego udostępnienia bez hasła."
+    },
+    "validation": {
+      "passwordRequired": "Hasło jest wymagane",
+      "passwordTooShort": "Hasło musi mieć co najmniej 2 znaki"
+    },
+    "success": {
+      "passwordSet": "Ochrona hasłem włączona pomyślnie",
+      "passwordUpdated": "Hasło zaktualizowane pomyślnie",
+      "passwordRemoved": "Ochrona hasłem usunięta pomyślnie"
+    },
+    "error": {
+      "updateFailed": "Nie udało się zaktualizować ustawień bezpieczeństwa"
+    }
+  },
+  "shares": {
+    "errors": {
+      "loadFailed": "Nie udało się załadować udostępnień",
+      "notifyFailed": "Nie udało się powiadomić odbiorców",
+      "smtpConfigFailed": "Nie udało się załadować konfiguracji SMTP"
+    },
+    "messages": {
+      "linkCopied": "Link skopiowany do schowka",
+      "recipientsNotified": "Odbiorcy powiadomieni pomyślnie"
+    },
+    "empty": {
+      "message": "Brak utworzonych udostępnień",
+      "createButton": "Utwórz udostępnienie"
+    },
+    "header": {
+      "title": "Moje udostępnienia",
+      "myShares": "Moje udostępnienia"
+    },
+    "search": {
+      "title": "Wszystkie udostępnienia",
+      "createButton": "Utwórz udostępnienie",
+      "placeholder": "Szukaj udostępnień...",
+      "results": "Znaleziono {filtered} z {total} udostępnień"
+    },
+    "pageTitle": "Udostępnienia"
+  },
+  "sharesTable": {
+    "ariaLabel": "Tabela udostępnień",
+    "never": "Nigdy",
+    "columns": {
+      "name": "NAZWA",
+      "description": "OPIS",
+      "createdAt": "UTWORZONO",
+      "expiresAt": "WYGASA",
+      "status": "STATUS",
+      "security": "BEZPIECZEŃSTWO",
+      "files": "PLIKI",
+      "recipients": "ODBIORCY",
+      "actions": "AKCJE"
+    },
+    "status": {
+      "neverExpires": "Nigdy nie wygasa",
+      "active": "Aktywne",
+      "expired": "Wygasłe",
+      "paused": "Wstrzymane",
+      "maxViewsReached": "Osiągnięto limit wyświetleń",
+      "noLink": "Brak linku",
+      "noLinkTooltip": "To udostępnienie nie ma jeszcze linku i jest niedostępne. Wygeneruj link, aby je udostępnić."
+    },
+    "security": {
+      "protected": "Chronione",
+      "public": "Publiczne"
+    },
+    "filesCount": "plików",
+    "recipientsCount": "odbiorców",
+    "actions": {
+      "menu": "Menu akcji udostępniania",
+      "edit": "Edytuj",
+      "manageFiles": "Zarządzaj plikami",
+      "manageRecipients": "Zarządzaj odbiorcami",
+      "viewDetails": "Wyświetl szczegóły",
+      "generateLink": "Generuj link",
+      "editLink": "Edytuj link",
+      "copyLink": "Skopiuj link",
+      "notifyRecipients": "Powiadom odbiorców",
+      "delete": "Usuń",
+      "downloadShareFiles": "Pobierz wszystkie pliki",
+      "viewQrCode": "Wyświetl kod QR",
+      "pause": "Wstrzymaj",
+      "resume": "Wznów",
+      "renew": "Odnów"
+    },
+    "bulkActions": {
+      "delete": "Usuń",
+      "selected": "{count, plural, =1 {Wybrano 1 udostępnienie} other {# wybranych udostępnień}}",
+      "actions": "Działania",
+      "download": "Pobierz wybrany"
+    },
+    "selectAll": "Zaznacz wszystko",
+    "selectShare": "Wybierz udostępnienie {shareName}",
+    "folderCount": "foldery"
+  },
+  "theme": {
+    "toggle": "Przełącz motyw",
+    "light": "Jasny",
+    "dark": "Ciemny",
+    "system": "Systemowy"
+  },
+  "twoFactor": {
+    "title": "Uwierzytelnianie dwuskładnikowe",
+    "description": "Dodaj dodatkową warstwę zabezpieczeń do swojego konta",
+    "enabled": "Twoje konto jest chronione uwierzytelnianiem dwuskładnikowym",
+    "disabled": "Uwierzytelnianie dwuskładnikowe nie jest włączone",
+    "setup": {
+      "title": "Włącz uwierzytelnianie dwuskładnikowe",
+      "description": "Zeskanuj kod QR za pomocą aplikacji uwierzytelniającej, a następnie wprowadź kod weryfikacyjny.",
+      "qrCode": "Kod QR",
+      "manualEntryKey": "Klucz do ręcznego wprowadzenia",
+      "verificationCode": "Kod weryfikacyjny",
+      "verificationCodePlaceholder": "Wprowadź 6-cyfrowy kod",
+      "verificationCodeDescription": "Wprowadź 6-cyfrowy kod z aplikacji uwierzytelniającej",
+      "verifyAndEnable": "Zweryfikuj i włącz",
+      "cancel": "Anuluj",
+      "qrCodeAlt": "Kod QR 2FA"
+    },
+    "disable": {
+      "title": "Wyłącz uwierzytelnianie dwuskładnikowe",
+      "description": "Wprowadź hasło, aby potwierdzić wyłączenie uwierzytelniania dwuskładnikowego.",
+      "password": "Hasło",
+      "passwordPlaceholder": "Wprowadź swoje hasło",
+      "totpLabel": "Kod weryfikacyjny",
+      "totpHint": "Wprowadź 6-cyfrowy kod uwierzytelniającego lub kod zapasowy",
+      "confirm": "Potwierdź wyłączenie",
+      "cancel": "Anuluj",
+      "totpPlaceholder": "000 000"
+    },
+    "backupCodes": {
+      "title": "Kody zapasowe",
+      "description": "Zapisz te kody zapasowe w bezpiecznym miejscu. Możesz ich użyć, aby uzyskać dostęp do swojego konta w przypadku utraty urządzenia uwierzytelniającego.",
+      "warning": "Ważne:",
+      "warningText": "Każdy kod zapasowy może być użyty tylko raz. Przechowuj je bezpiecznie i nie udostępniaj nikomu.",
+      "generateNew": "Wygeneruj nowe kody zapasowe",
+      "download": "Pobierz kody zapasowe",
+      "copyToClipboard": "Kopiuj do schowka",
+      "savedMessage": "Zapisałem moje kody zapasowe",
+      "available": "{count} dostępnych kodów zapasowych",
+      "instructions": [
+        "• Zapisz te kody w bezpiecznym miejscu",
+        "• Każdy kod zapasowy może być użyty tylko raz",
+        "• Możesz wygenerować nowe kody w dowolnym momencie"
+      ]
+    },
+    "verification": {
+      "title": "Uwierzytelnianie dwuskładnikowe",
+      "description": "Wprowadź 6-cyfrowy kod z aplikacji uwierzytelniającej",
+      "backupDescription": "Wprowadź jeden z kodów zapasowych, aby kontynuować",
+      "verificationCode": "Kod weryfikacyjny",
+      "backupCode": "Kod zapasowy",
+      "verificationCodePlaceholder": "000000",
+      "backupCodePlaceholder": "XXXX-XXXX",
+      "verify": "Zweryfikuj",
+      "verifying": "Weryfikacja...",
+      "useBackupCode": "Użyj kodu zapasowego",
+      "useAuthenticatorCode": "Użyj kodu z aplikacji uwierzytelniającej",
+      "rememberDevice": "Zapamiętaj to urządzenie na 30 dni",
+      "rememberDeviceDescription": "Nie będziesz musiał wprowadzać kodów 2FA na tym urządzeniu przez 30 dni"
+    },
+    "messages": {
+      "enabledSuccess": "Uwierzytelnianie dwuskładnikowe zostało pomyślnie włączone!",
+      "disabledSuccess": "Uwierzytelnianie dwuskładnikowe zostało pomyślnie wyłączone",
+      "backupCodesGenerated": "Nowe kody zapasowe zostały pomyślnie wygenerowane",
+      "backupCodesCopied": "Kody zapasowe skopiowane do schowka",
+      "setupFailed": "Nie udało się wygenerować konfiguracji 2FA",
+      "verificationFailed": "Nieprawidłowy kod weryfikacyjny",
+      "disableFailed": "Nie udało się wyłączyć 2FA. Sprawdź swoje hasło.",
+      "backupCodesFailed": "Nie udało się wygenerować kodów zapasowych",
+      "backupCodesCopyFailed": "Nie udało się skopiować kodów zapasowych",
+      "statusLoadFailed": "Nie udało się załadować statusu 2FA",
+      "enterVerificationCode": "Wprowadź kod weryfikacyjny",
+      "enterPassword": "Wprowadź swoje hasło",
+      "deviceTrusted": "To urządzenie zostało oznaczone jako zaufane na 30 dni"
+    },
+    "errors": {
+      "invalidVerificationCode": "Nieprawidłowy kod weryfikacyjny",
+      "invalidTwoFactorCode": "Nieprawidłowy kod uwierzytelniania dwuskładnikowego",
+      "twoFactorRequired": "Wymagane uwierzytelnianie dwuskładnikowe",
+      "twoFactorAlreadyEnabled": "Uwierzytelnianie dwuskładnikowe jest już włączone",
+      "twoFactorNotEnabled": "Uwierzytelnianie dwuskładnikowe nie jest włączone",
+      "passwordVerificationRequired": "Wymagana weryfikacja hasła",
+      "invalidPassword": "Nieprawidłowe hasło",
+      "userNotFound": "Nie znaleziono użytkownika"
+    },
+    "buttons": {
+      "enable2FA": "Włącz 2FA",
+      "disable2FA": "Wyłącz 2FA"
+    },
+    "deviceNames": {
+      "unknownDevice": "Nieznane urządzenie",
+      "browsers": {
+        "chrome": "Chrome",
+        "firefox": "Firefox",
+        "safari": "Safari",
+        "edge": "Edge"
+      },
+      "platforms": {
+        "windows": " na Windows",
+        "macos": " na macOS",
+        "linux": " na Linux",
+        "iphone": " na iPhone",
+        "android": " na Android"
+      }
+    },
+    "status": {
+      "label": "Status:",
+      "enabled": "Włączone",
+      "disabled": "Wyłączone"
+    },
+    "trustedDevices": {
+      "title": "Zaufane urządzenia - 2FA",
+      "description": "Urządzenia, które nie wymagają weryfikacji 2FA",
+      "noDevices": "Brak zaufanych urządzeń",
+      "deviceName": "Urządzenie",
+      "addedOn": "Dodano",
+      "expiresOn": "Wygasa",
+      "remove": "Usuń",
+      "removeAll": "Usuń wszystkie",
+      "confirmRemove": "Czy na pewno chcesz usunąć to zaufane urządzenie?",
+      "confirmRemoveAll": "Czy na pewno chcesz usunąć wszystkie zaufane urządzenia?",
+      "deviceRemoved": "Zaufane urządzenie zostało pomyślnie usunięte",
+      "allDevicesRemoved": "Wszystkie zaufane urządzenia zostały pomyślnie usunięte",
+      "loadFailed": "Nie udało się załadować zaufanych urządzeń",
+      "removeFailed": "Nie udało się usunąć zaufanego urządzenia",
+      "removeAllFailed": "Nie udało się usunąć wszystkich zaufanych urządzeń",
+      "loading": "Ładowanie zaufanych urządzeń...",
+      "noDevicesDescription": "Urządzenia pojawią się tutaj, gdy zdecydujesz się im zaufać podczas weryfikacji 2FA",
+      "tableHeaders": {
+        "device": "Urządzenie",
+        "added": "Dodano",
+        "expires": "Wygasa",
+        "lastUsed": "Ostatnio użyte",
+        "ipAddress": "Adres IP",
+        "actions": "Akcje"
+      },
+      "status": {
+        "never": "Nigdy",
+        "expired": "Wygasło"
+      },
+      "modals": {
+        "removeDevice": {
+          "title": "Usuń zaufane urządzenie",
+          "added": "Dodano:",
+          "ip": "IP:"
+        },
+        "removeAllDevices": {
+          "title": "Usuń wszystkie zaufane urządzenia",
+          "description": "Spowoduje to usunięcie {count} zaufanych urządzeń. Będziesz musiał zweryfikować 2FA na wszystkich urządzeniach ponownie."
+        },
+        "buttons": {
+          "cancel": "Anuluj",
+          "removing": "Usuwanie...",
+          "removeDevice": "Usuń urządzenie",
+          "removeAllDevices": "Usuń wszystkie urządzenia"
+        }
+      }
+    }
+  },
+  "uploadFile": {
+    "title": "Prześlij plik",
+    "multipleTitle": "Prześlij pliki",
+    "selectFile": "Kliknij, aby wybrać plik",
+    "selectMultipleFiles": "Kliknij, aby wybrać jeden lub wiele plików",
+    "dragAndDrop": "lub przeciągnij i upuść pliki tutaj",
+    "preview": "Podgląd",
+    "uploadProgress": "Postęp przesyłania",
+    "upload": "Prześlij",
+    "startUploads": "Rozpocznij przesyłanie",
+    "retry": "Spróbuj Ponownie",
+    "finish": "Zakończ",
+    "success": "Plik przesłany pomyślnie",
+    "allSuccess": "{count, plural, =1 {Plik przesłany pomyślnie} other {# plików przesłanych pomyślnie}}",
+    "partialSuccess": "{success} plików przesłanych pomyślnie, {error} nie powiodło się",
+    "error": "Nie udało się przesłać pliku",
+    "fileSizeExceeded": "Rozmiar pliku przekracza limit {maxsizemb}MB.",
+    "insufficientStorage": "Niewystarczająca ilość miejsca na dysku. Masz {availablespace}MB dostępnych.",
+    "storageFull": "Za mało miejsca na dysku. Dostępne: {available} GB, wymagane: {required} GB.",
+    "unauthorized": "Nieautoryzowany: wymagany jest ważny token do dostępu do tego zasobu.",
+    "confirmCancel": {
+      "title": "Anuluj przesyłanie",
+      "messageSingle": "Trwa przesyłanie jednego pliku.",
+      "messageMultiple": "Trwa przesyłanie {count} plików.",
+      "warning": "Jeśli teraz zamkniesz, przesyłanie zostanie anulowane, a wszelki postęp zostanie utracony.",
+      "continue": "Kontynuuj przesyłanie",
+      "cancel": "Anuluj przesyłanie"
+    },
+    "globalDrop": {
+      "title": "Upuść pliki, aby przesłać",
+      "description": "Zwolnij, aby przesłać pliki"
+    },
+    "pasteSuccess": "{count, plural, =1 {Obraz wklejony i przesłany pomyślnie} other {# obrazy wklejone i przesłane pomyślnie}}",
+    "filesQueued": "{count, plural, one {# plik w kolejce do przesyłania} other {# pliki w kolejce do przesyłania}}",
+    "errors": {
+      "addFileFailed": "Nie udało się dodać {name}: {error}",
+      "uploadFailed": "Przesyłanie nie powiodło się",
+      "networkError": "Nie można połączyć się z serwerem. Sprawdź połączenie.",
+      "storageUnavailable": "Usługa przechowywania jest niedostępna. Spróbuj ponownie później."
+    }
+  },
+  "groups": {
+    "header": {
+      "title": "Grupy",
+      "management": "Zarządzanie Grupami",
+      "addGroup": "Utwórz Grupę"
+    },
+    "table": {
+      "name": "Nazwa",
+      "description": "Opis",
+      "members": "Członkowie",
+      "maxFileSize": "Maks. Rozmiar Pliku",
+      "maxStorage": "Maks. Przestrzeń",
+      "storageUsed": "Użyta Przestrzeń",
+      "actions": "Akcje",
+      "inherited": "Dziedziczone",
+      "unlimited": "Nieograniczone",
+      "empty": "Brak grup. Utwórz jedną, aby zacząć."
+    },
+    "form": {
+      "titleCreate": "Utwórz Grupę",
+      "titleEdit": "Edytuj Grupę",
+      "name": "Nazwa",
+      "namePlaceholder": "Wprowadź nazwę grupy",
+      "description": "Opis",
+      "descriptionPlaceholder": "Opcjonalny opis",
+      "ldapDn": {
+        "label": "DN grupy LDAP",
+        "placeholder": "np. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name grupy Active Directory do zmapowania. Pozostaw puste, jeśli nie używasz LDAP."
+      },
+      "quota": {
+        "title": "Limity przestrzeni",
+        "maxFileSize": "Maks. Rozmiar Pliku",
+        "maxTotalStorage": "Maks. Całkowita Przestrzeń",
+        "inherit": "Dziedzicz (domyślne globalne)",
+        "unlimited": "Nieograniczone",
+        "custom": "Niestandardowe"
+      },
+      "create": "Utwórz Grupę",
+      "save": "Zapisz Zmiany"
+    },
+    "delete": {
+      "title": "Usuń Grupę",
+      "confirmationWithMembers": "Ta grupa ma {count} członka/członków. Zostaną odpisani, a ich limity wrócą do globalnych domyślnych.",
+      "confirmation": "Czy na pewno chcesz usunąć tę grupę?",
+      "confirm": "Usuń Grupę"
+    },
+    "detail": {
+      "title": "Szczegóły Grupy",
+      "members": "Członkowie",
+      "addMember": "Dodaj Członka",
+      "searchUsers": "Szukaj użytkowników...",
+      "noMembers": "Brak członków w tej grupie.",
+      "remove": "Usuń",
+      "moveWarning": "Ten użytkownik jest obecnie w grupie \"{groupName}\". Zostanie przeniesiony do tej grupy.",
+      "storageUsed": "Użyta Przestrzeń",
+      "memberUser": "Użytkownik",
+      "memberEmail": "Email",
+      "memberStorage": "Przestrzeń",
+      "selectUser": "Wybierz użytkownika...",
+      "add": "Dodaj",
+      "userInOtherGroup": "Ten użytkownik jest obecnie w grupie \"{groupName}\". Zostanie przeniesiony."
+    },
+    "validation": {
+      "nameRequired": "Nazwa grupy jest wymagana"
+    },
+    "messages": {
+      "createSuccess": "Grupa utworzona pomyślnie",
+      "updateSuccess": "Grupa zaktualizowana pomyślnie",
+      "deleteSuccess": "Grupa usunięta pomyślnie",
+      "memberAdded": "Członek dodany do grupy",
+      "memberRemoved": "Członek usunięty z grupy"
+    },
+    "errors": {
+      "submitFailed": "Nie udało się {mode} grupy",
+      "deleteFailed": "Nie udało się usunąć grupy",
+      "memberAddFailed": "Nie udało się dodać członka",
+      "memberRemoveFailed": "Nie udało się usunąć członka"
+    },
+    "actions": {
+      "viewDetails": "Zobacz Szczegóły",
+      "edit": "Edytuj",
+      "delete": "Usuń"
+    }
+  },
+  "users": {
+    "modes": {
+      "create": "utwórz",
+      "edit": "edytuj"
+    },
+    "errors": {
+      "loadFailed": "Nie udało się załadować użytkowników",
+      "submitFailed": "Nie udało się {mode} użytkownika",
+      "deleteFailed": "Nie udało się usunąć użytkownika",
+      "statusUpdateFailed": "Nie udało się zaktualizować statusu użytkownika"
+    },
+    "messages": {
+      "createSuccess": "Użytkownik utworzony pomyślnie",
+      "updateSuccess": "Użytkownik zaktualizowany pomyślnie",
+      "deleteSuccess": "Użytkownik usunięty pomyślnie",
+      "activateSuccess": "Użytkownik aktywowany pomyślnie",
+      "deactivateSuccess": "Użytkownik dezaktywowany pomyślnie"
+    },
+    "actions": {
+      "edit": "Edytuj",
+      "activate": "Aktywuj",
+      "deactivate": "Dezaktywuj",
+      "delete": "Usuń"
+    },
+    "delete": {
+      "title": "Potwierdź usunięcie użytkownika",
+      "confirmation": "Czy na pewno chcesz usunąć użytkownika {firstName} {lastName}? Tej operacji nie można cofnąć.",
+      "confirm": "Usuń użytkownika"
+    },
+    "form": {
+      "titleCreate": "Dodaj nowego użytkownika",
+      "titleEdit": "Edytuj użytkownika",
+      "firstName": "Imię",
+      "lastName": "Nazwisko",
+      "username": "Nazwa użytkownika",
+      "email": "E-mail",
+      "password": "Hasło",
+      "newPassword": "Nowe hasło (opcjonalnie)",
+      "passwordPlaceholder": "Pozostaw puste, aby zachować bieżące hasło",
+      "role": "Rola",
+      "roleUser": "Użytkownik",
+      "roleAdmin": "Administrator",
+      "group": "Grupa",
+      "noGroup": "Bez Grupy",
+      "groupSaveError": "Nie udało się zaktualizować przypisania grupy",
+      "create": "Utwórz",
+      "save": "Zapisz",
+      "quota": {
+        "title": "Limity pamięci",
+        "maxFileSize": "Maksymalny rozmiar pliku",
+        "maxTotalStorage": "Maksymalna łączna pamięć",
+        "inherit": "Użyj domyślnej",
+        "unlimited": "Bez limitu",
+        "custom": "Niestandardowy",
+        "saveSuccess": "Limit zaktualizowany pomyślnie",
+        "saveError": "Nie udało się zaktualizować limitu",
+        "currentUsage": "Bieżące użycie",
+        "effectiveMaxFileSize": "Efektywny maksymalny rozmiar pliku",
+        "effectiveMaxStorage": "Efektywna maksymalna łączna pamięć",
+        "usagePercent": "Użycie",
+        "sourceUser": "Nadpisanie użytkownika",
+        "sourceGroup": "Grupa",
+        "sourceGlobal": "Globalny domyślny",
+        "sourceAdminDefault": "Domyślny administratora"
+      }
+    },
+    "status": {
+      "title": "Potwierdź zmianę statusu",
+      "confirmation": "Czy na pewno chcesz {action} użytkownika {firstName} {lastName}?",
+      "activate": "aktywować",
+      "deactivate": "dezaktywować",
+      "user": "Użytkownik"
+    },
+    "header": {
+      "title": "Zarządzanie użytkownikami",
+      "addUser": "Dodaj użytkownika",
+      "management": "Zarządzanie użytkownikami"
+    },
+    "table": {
+      "user": "USER",
+      "userRole": "Użytkownik",
+      "email": "E-MAIL",
+      "status": "STATUS",
+      "role": "ROLA",
+      "actions": "AKCJE",
+      "active": "Aktywny",
+      "inactive": "Nieaktywny",
+      "admin": "Administrator",
+      "source": "Source",
+      "ldap": "LDAP",
+      "local": "Local"
+    },
+    "invite": {
+      "button": "Wygeneruj link zaproszenia",
+      "title": "Wygeneruj link zaproszenia użytkownika",
+      "description": "Wygeneruj link jednorazowego użytku, który pozwala komuś utworzyć własne konto. Link wygasa za 15 minut.",
+      "generating": "Generowanie...",
+      "generate": "Wygeneruj link",
+      "generated": "Link zaproszenia wygenerowany pomyślnie!",
+      "linkReady": "Link zaproszenia gotowy",
+      "linkReadyDescription": "Udostępnij ten link osobie, którą chcesz zaprosić. Będzie mogła utworzyć własne konto jako zwykły użytkownik.",
+      "copyLink": "Kopiuj link",
+      "linkCopied": "Link zaproszenia skopiowany do schowka!",
+      "expiresIn": "Wygasa za 15 minut",
+      "close": "Zamknij",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
+      "errors": {
+        "generateFailed": "Nie udało się wygenerować linku zaproszenia",
+        "copyFailed": "Nie udało się skopiować linku",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
+      }
+    }
+  },
+  "validation": {
+    "firstNameRequired": "Imię jest wymagane",
+    "lastNameRequired": "Nazwisko jest wymagane",
+    "usernameLength": "Nazwa użytkownika musi mieć co najmniej 3 znaki",
+    "usernameSpaces": "Nazwa użytkownika nie może zawierać spacji",
+    "invalidEmail": "Proszę wprowadzić prawidłowy adres e-mail",
+    "passwordLength": "Hasło musi mieć co najmniej 12 znaków",
+    "passwordsMatch": "Hasła muszą być zgodne",
+    "emailRequired": "E-mail jest wymagany",
+    "emailOrUsernameRequired": "E-mail lub nazwa użytkownika jest wymagana",
+    "passwordRequired": "Hasło jest wymagane",
+    "passwordMinLength": "Hasło musi mieć co najmniej 6 znaków",
+    "nameRequired": "Nazwa jest wymagana",
+    "required": "To pole jest wymagane",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+  },
+  "contextMenu": {
+    "newFolder": "Nowy folder",
+    "uploadFile": "Prześlij plik"
+  },
+  "registerWithInvite": {
+    "title": "Utwórz swoje konto",
+    "description": "Wypełnij poniższe informacje, aby utworzyć swoje konto",
+    "labels": {
+      "firstName": "Imię",
+      "firstNamePlaceholder": "Wprowadź swoje imię",
+      "lastName": "Nazwisko",
+      "lastNamePlaceholder": "Wprowadź swoje nazwisko",
+      "username": "Nazwa użytkownika",
+      "usernamePlaceholder": "Wybierz nazwę użytkownika",
+      "email": "E-mail",
+      "emailPlaceholder": "Wprowadź swój adres e-mail",
+      "password": "Hasło",
+      "passwordPlaceholder": "Wybierz hasło",
+      "confirmPassword": "Potwierdź hasło",
+      "confirmPasswordPlaceholder": "Potwierdź swoje hasło"
+    },
+    "buttons": {
+      "creating": "Tworzenie konta...",
+      "createAccount": "Utwórz konto"
+    },
+    "validation": {
+      "firstNameRequired": "Imię jest wymagane",
+      "lastNameRequired": "Nazwisko jest wymagane",
+      "usernameMinLength": "Nazwa użytkownika musi mieć co najmniej 3 znaki",
+      "invalidEmail": "Nieprawidłowy adres e-mail",
+      "passwordMinLength": "Hasło musi mieć co najmniej 12 znaków",
+      "passwordsMatch": "Hasła muszą być zgodne",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "messages": {
+      "success": "Konto utworzone pomyślnie! Przekierowywanie do logowania...",
+      "redirecting": "Przekierowywanie do logowania..."
+    },
+    "errors": {
+      "invalidToken": "Błąd z linkiem zaproszenia",
+      "tokenUsed": "Ten link zaproszenia został już użyty",
+      "tokenExpired": "Ten link zaproszenia wygasł",
+      "usernameExists": "Nazwa użytkownika już istnieje",
+      "emailExists": "Adres e-mail już istnieje",
+      "createFailed": "Nie udało się utworzyć konta. Spróbuj ponownie."
+    },
+    "pageTitle": "Utwórz konto"
+  },
+  "filesTree": {
+    "noItems": "Brak elementów do wyświetlenia"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Zmień język"
+  },
+  "ldap": {
+    "pageTitle": "LDAP / Active Directory",
+    "pageDescription": "Skonfiguruj synchronizację LDAP, aby importować użytkowników z Active Directory",
+    "config": {
+      "title": "Konfiguracja",
+      "description": "Ustawienia połączenia serwera LDAP i mapowania atrybutów",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
+      "connection": "Połączenie",
+      "serverUrl": "Adres URL serwera",
+      "useTls": "Użyj TLS (LDAPS)",
+      "tlsSkipVerify": "Pomiń weryfikację TLS",
+      "tlsSkipVerifyWarning": "Ostrzeżenie: Wyłączenie weryfikacji certyfikatu pozwala na ataki man-in-the-middle",
+      "bindDn": "Bind DN",
+      "bindPassword": "Hasło Bind",
+      "bindPasswordPlaceholder": "Wprowadź hasło w celu testowania lub zapisania nowego hasła",
+      "search": "Ustawienia wyszukiwania",
+      "searchBase": "Baza wyszukiwania",
+      "syncGroupDn": "Sync Group DN",
+      "attributes": "Mapowanie atrybutów",
+      "usernameAttr": "Atrybut nazwy użytkownika",
+      "emailAttr": "Atrybut e-maila",
+      "displayNameAttr": "Atrybut nazwy wyświetlanej",
+      "syncSettings": "Ustawienia synchronizacji",
+      "syncInterval": "Interwał synchronizacji (minuty)",
+      "syncIntervalHelp": "Od 15 minut do 7 dni (10080 minut)",
+      "appUrl": "Adres URL aplikacji",
+      "appUrlHelp": "Używany w e-mailach powitalnych wysyłanych do nowych użytkowników LDAP",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
+      "appUrlRequired": "Adres URL aplikacji jest wymagany, gdy LDAP jest włączone",
+      "bindPasswordRequired": "Hasło Bind jest wymagane dla nowej konfiguracji",
+      "members": "członków",
+      "save": "Zapisz konfigurację",
+      "testConnection": "Testuj połączenie",
+      "saveSuccess": "Konfiguracja LDAP zapisana",
+      "saveError": "Nie udało się zapisać konfiguracji LDAP",
+      "testSuccess": "Test połączenia zakończony pomyślnie",
+      "testError": "Test połączenia nie powiódł się"
+    },
+    "groupMapping": {
+      "title": "Mapowanie grup",
+      "description": "Grupy lokalne mapowane na grupy Active Directory dla przydzielania limitów",
+      "manageGroups": "Zarządzaj grupami",
+      "groupName": "Nazwa grupy",
+      "adGroupDn": "AD Group DN",
+      "noMapping": "Nie skonfigurowano mapowania grup. Ustaw LDAP DN w zarządzaniu grupami, aby zmapować grupy AD na grupy limitów lokalnych."
+    },
+    "sync": {
+      "title": "Operacje synchronizacji",
+      "description": "Historia synchronizacji ręcznej i synchronizacji",
+      "syncNow": "Synchronizuj teraz",
+      "triggered": "Synchronizacja LDAP rozpoczęta",
+      "error": "Nie udało się rozpocząć synchronizacji LDAP",
+      "lastSync": "Ostatnia synchronizacja",
+      "nextSync": "Następna synchronizacja",
+      "noHistory": "Brak historii synchronizacji",
+      "date": "Data",
+      "trigger": "Wyzwalacz",
+      "duration": "Czas trwania",
+      "created": "Utworzono",
+      "updated": "Zaktualizowano",
+      "deactivated": "Zdezaktywowano",
+      "reactivated": "Ponownie aktywowano",
+      "skipped": "Pominięto",
+      "status": "Status",
+      "statusLabel": {
+        "success": "Sukces",
+        "error": "Błąd",
+        "partial": "Częściowy",
+        "running": "W toku"
+      }
+    },
+    "syncDetail": {
+      "title": "Szczegóły synchronizacji",
+      "details": "Szczegóły pominięcia i błędu",
+      "type": "Typ",
+      "username": "Nazwa użytkownika",
+      "email": "E-mail",
+      "message": "Wiadomość",
+      "detailType": {
+        "skip": "Pominięto",
+        "error": "Błąd"
+      }
+    },
+    "banner": {
+      "active": "Synchronizacja LDAP/AD aktywna",
+      "disabled": "Synchronizacja LDAP/AD wyłączona",
+      "configure": "Konfiguruj"
+    },
+    "warnings": {
+      "title": "Ostrzeżenia dotyczące konfiguracji"
+    },
+    "time": {
+      "justNow": "właśnie teraz",
+      "minutesAgo": "{minutes}m temu",
+      "hoursAgo": "{hours}g temu",
+      "daysAgo": "{days}d temu"
+    },
+    "browse": {
+      "retry": "Retry",
+      "error": "Something went wrong. Please try again.",
+      "directory": {
+        "title": "Browse Directory",
+        "description": "Pick a base DN from the live directory tree.",
+        "buttonLabel": "Browse directory",
+        "useDetectedBase": "Use detected base",
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "loading": "Loading directory…",
+        "noRoots": "No naming contexts found.",
+        "noSubContainers": "No sub-containers"
+      },
+      "groups": {
+        "title": "Find Group",
+        "description": "Search the directory for a group to sync.",
+        "buttonLabel": "Search groups",
+        "placeholder": "Type to search groups…",
+        "prompt": "Start typing to search for a group.",
+        "searching": "Searching…",
+        "empty": "No groups match your search.",
+        "truncated": "Too many results — refine your search.",
+        "resultCount": "{count, plural, =0 {No groups found} one {# group found} other {# groups found}}"
+      }
+    }
+  },
+  "backgroundImages": {
+    "empty": "Nie przesłano obrazów tła. Prześlij obrazy, aby włączyć niestandardowe tła dla udostępnień w stylu WeTransfer.",
+    "add": "Dodaj obraz",
+    "uploading": "Przesyłanie...",
+    "uploadSuccess": "Obraz przesłany pomyślnie",
+    "uploadError": "Nie udało się przesłać obrazu",
+    "deleteConfirm": "Czy na pewno chcesz usunąć ten obraz tła?",
+    "deleteSuccess": "Obraz usunięty pomyślnie",
+    "deleteError": "Nie udało się usunąć obrazu",
+    "untitled": "Bez tytułu",
+    "rename": "Kliknij, aby zmienić nazwę",
+    "renameSuccess": "Obraz przemianowany pomyślnie",
+    "renameError": "Nie udało się przemianować obrazu",
+    "moveUp": "Przenieś w górę",
+    "moveDown": "Przenieś w dół",
+    "reorderError": "Nie udało się zmienić kolejności obrazów"
+  },
+  "quickShare": {
+    "dropzone": {
+      "title": "Szybkie udostępnianie",
+      "description": "Upuść tutaj swoje pliki, aby szybko je udostępnić",
+      "browse": "lub kliknij, aby przeglądać",
+      "dragActive": "Upuść pliki tutaj"
+    },
+    "upload": {
+      "title": "Szybkie udostępnianie",
+      "addMore": "Dodaj więcej plików",
+      "dropToAdd": "Upuść pliki, aby dodać",
+      "namePlaceholder": "Nazwa udostępnienia",
+      "expiration": {
+        "label": "Wygasa za",
+        "1day": "1 dzień",
+        "7days": "7 dni",
+        "30days": "30 dni",
+        "never": "Nigdy"
+      },
+      "password": {
+        "label": "Ochrona hasłem",
+        "placeholder": "Wprowadź hasło"
+      },
+      "recipients": {
+        "label": "Odbiorcy",
+        "placeholder": "Dodaj adresy e-mail",
+        "hint": "Naciśnij Enter, aby dodać"
+      },
+      "share": "Udostępnij",
+      "sharing": "Udostępnianie...",
+      "waitingUpload": "Przesyłanie... udostępnienie zostanie utworzone automatycznie",
+      "defaultName": "{count, plural, one {# plik} other {# pliki}}",
+      "error": "Nie udało się utworzyć udostępnienia",
+      "uploadError": "Nie udało się przesłać niektórych plików",
+      "notifyError": "Udostępnienie zostało utworzone, ale nie udało się powiadomić odbiorców",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
+      "invalidEmail": "Proszę wprowadzić prawidłowy adres e-mail"
+    },
+    "confirmation": {
+      "title": "Udostępniono!",
+      "copyLink": "Skopiuj link",
+      "copied": "Link skopiowany!",
+      "summary": {
+        "files": "{count, plural, one {# plik} other {# pliki}}",
+        "expires": "wygasa za {duration}",
+        "noExpiry": "bez wygaśnięcia",
+        "password": "chronione hasłem",
+        "noPassword": "bez hasła"
+      },
+      "newShare": "Nowe udostępnienie",
+      "downloadQr": "Pobierz kod QR"
+    }
+  },
+  "notificationPreferences": {
+    "pageTitle": "Preferencje powiadomień",
+    "description": "Wybierz, które powiadomienia e-mail chcesz otrzymywać",
+    "type": "Typ powiadomienia",
+    "category": "Kategoria",
+    "frequency": "Częstotliwość",
+    "immediate": "Natychmiastowe",
+    "disabled": "Wyłączone",
+    "alwaysEnabled": "Zawsze włączone",
+    "save": "Zapisz preferencje",
+    "saveSuccess": "Preferencje powiadomień zapisane",
+    "saveError": "Nie udało się zapisać preferencji",
+    "noChanges": "Brak zmian do zapisania",
+    "types": {
+      "password_reset": "Resetowanie hasła",
+      "welcome": "E-mail powitalny",
+      "account_deactivated": "Konto dezaktywowane",
+      "account_reactivated": "Konto reaktywowane",
+      "share_invitation": "Zaproszenie do udostępnienia",
+      "share_accessed": "Udostępnienie otwarte",
+      "share_downloaded": "Plik pobrany z udostępnienia",
+      "share_expiring": "Udostępnienie wkrótce wygaśnie",
+      "share_expired": "Udostępnienie wygasło",
+      "share_max_views_reached": "Osiągnięto maksymalną liczbę wyświetleń",
+      "share_no_activity": "Brak aktywności w udostępnieniu",
+      "reverse_share_invitation": "Zaproszenie do linku do odbioru",
+      "reverse_share_uploaded": "Pliki przesłane do linku do odbioru",
+      "reverse_share_expiring": "Link do odbioru wkrótce wygaśnie",
+      "reverse_share_expired": "Link do odbioru wygasł",
+      "quota_warning": "Ostrzeżenie o przydziale",
+      "quota_exceeded": "Przydział przekroczony",
+      "files_auto_deleted": "Pliki automatycznie usunięte",
+      "share_auto_deleted": "Udostępnienie automatycznie usunięte",
+      "admin_user_registered": "Nowy użytkownik zarejestrowany (administrator)",
+      "admin_quota_alert": "Alert przydziału użytkownika (administrator)",
+      "test_email": "E-mail testowy",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
+    },
+    "descriptions": {
+      "share_accessed": "Gdy ktoś otwiera link do Twoich udostępnionych plików",
+      "share_downloaded": "Gdy ktoś pobiera pliki z Twojego udostępnienia",
+      "share_expiring": "Przypomnienie przed wygaśnięciem Twojego linku udostępniania",
+      "share_expired": "Gdy Twój link udostępniania wygasł i nie jest już dostępny",
+      "share_pending_deletion": "Gdy Twoje wygasłe udostępnienie jest zaplanowane do trwałego usunięcia",
+      "share_max_views_reached": "Gdy Twoje udostępnienie osiągnęło maksymalną liczbę dozwolonych wyświetleń",
+      "share_no_activity": "Gdy Twoje udostępnienie nie miało żadnych pobrań przez jakiś czas",
+      "reverse_share_uploaded": "Gdy ktoś przesyła pliki do Twojego linku udostępniania odwrotnego",
+      "reverse_share_expiring": "Przypomnienie przed wygaśnięciem Twojego linku udostępniania odwrotnego",
+      "reverse_share_expired": "Gdy Twój link udostępniania odwrotnego wygasł",
+      "reverse_share_pending_deletion": "Gdy Twoje wygasłe udostępnienie odwrotne jest zaplanowane do usunięcia",
+      "reverse_share_auto_deleted": "Gdy Twoje udostępnienie odwrotne zostało automatycznie usunięte po wygaśnięciu",
+      "quota_warning": "Gdy Twoje zużycie przestrzeni zbliża się do limitu przydziału",
+      "quota_exceeded": "Gdy Twoje zużycie przestrzeni przekroczyło limit przydziału",
+      "files_auto_deleted": "Gdy pliki zostały automatycznie usunięte w celu zwolnienia miejsca w przydziale",
+      "share_auto_deleted": "Gdy udostępnienie zostało automatycznie usunięte przez system czyszczenia",
+      "admin_user_registered": "Gdy nowy użytkownik rejestruje się na platformie (tylko administratorzy)",
+      "admin_quota_alert": "Gdy zużycie przestrzeni użytkownika przekracza jego przydział (tylko administratorzy)"
+    },
+    "categories": {
+      "account": "Konto",
+      "shares": "Udostępnienia",
+      "reverseShares": "Linki do odbioru",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
+    },
+    "saving": "Zapisywanie...",
+    "loadError": "Nie udało się załadować preferencji powiadomień",
+    "retry": "Spróbuj ponownie",
+    "unsavedChanges": "{count, plural, one {# niezapisana zmiana} few {# niezapisane zmiany} many {# niezapisanych zmian} other {# niezapisanych zmian}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP",
+      "label": "[TO_TRANSLATE] User management"
+    }
+  }
+}

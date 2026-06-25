@@ -1,0 +1,3004 @@
+{
+  "a11y": {
+    "skipToContent": "Перейти до вмісту"
+  },
+  "auth": {
+    "successfullyAuthenticated": "Успішно автентифіковано!",
+    "authenticationFailed": "Помилка автентифікації",
+    "errors": {
+      "account_inactive": "Акаунт неактивний. Будь ласка, зв'яжіться з адміністратором.",
+      "registration_disabled": "Реєстрація через SSO відключена.",
+      "token_expired": "Токен прострочений. Спробуйте ще раз.",
+      "config_error": "Помилка конфігурації. Будь ласка, зв'яжіться з підтримкою.",
+      "auth_failed": "Помилка автентифікації. Спробуйте ще раз."
+    },
+    "sessionExpired": "Ваша сесія закінчилася. Будь ласка, увійдіть знову.",
+    "callback": {
+      "errors": {
+        "oauth_error": "Помилка автентифікації OAuth",
+        "missing_parameters": "Відсутні параметри автентифікації",
+        "missing_code": "Відсутній код авторизації",
+        "registration_disabled": "Реєстрація вимкнена для цього провайдера",
+        "provider_disabled": "Цей провайдер автентифікації вимкнений",
+        "state_expired": "Сесія автентифікації закінчилася",
+        "account_inactive": "Ваш обліковий запис неактивний",
+        "no_email": "Електронну адресу не знайдено у вашому обліковому записі",
+        "token_exchange_failed": "Помилка автентифікації у провайдера",
+        "missing_user_info": "Неповна інформація про користувача від провайдера"
+      }
+    }
+  },
+  "contextMenu": {
+    "newFolder": "Нова папка",
+    "uploadFile": "Завантажити файл"
+  },
+  "authProviders": {
+    "title": "Постачальники автентифікації",
+    "description": "Налаштувати зовнішніх постачальників автентифікації для SSO",
+    "enabledCount": "{count} увімкнено",
+    "loadingProviders": "Завантаження постачальників...",
+    "providersConfigured": "{count} постачальників налаштовано",
+    "enabledOfTotal": "{enabled} увімкнено з {total} постачальників",
+    "hideDisabledProviders": "Приховати відключених постачальників",
+    "addProvider": "Додати постачальника",
+    "addProviderTitle": "Додати постачальника",
+    "editProvider": "Редагувати постачальника",
+    "deleteProvider": "Видалити постачальника",
+    "enabled": "Увімкнено",
+    "disabled": "Відключено",
+    "officialProvider": "Офіційний постачальник",
+    "dragToReorder": "Перетягніть для зміни порядку",
+    "dragDisabledMessage": "Перетягування відключено при фільтрації постачальників. Покажіть усіх постачальників для зміни порядку.",
+    "dragEnabledMessage": "Перетягніть постачальників для зміни порядку. Цей порядок буде відображено на сторінці входу.",
+    "noProvidersEnabled": "Немає увімкнених постачальників автентифікації",
+    "noProvidersConfigured": "Немає налаштованих постачальників автентифікації",
+    "form": {
+      "providerName": "Назва постачальника",
+      "providerNamePlaceholder": "наприклад, mycompany",
+      "displayName": "Відображувана назва",
+      "displayNamePlaceholder": "наприклад, My Company SSO",
+      "type": "Тип",
+      "typeOidc": "OIDC (OpenID Connect)",
+      "typeOauth2": "OAuth 2.0",
+      "icon": "Іконка",
+      "iconPlaceholder": "Виберіть іконку",
+      "clientId": "ID клієнта",
+      "clientIdPlaceholder": "Ваш OAuth ID клієнта",
+      "clientSecret": "Секрет клієнта",
+      "clientSecretPlaceholder": "Ваш OAuth секрет клієнта",
+      "oauthScopes": "OAuth області",
+      "scopesPlaceholder": "Введіть області (наприклад, openid, profile, email)",
+      "scopesHelpOidc": "Області автоматично пропонуються на основі URL постачальника. Загальні OIDC області: openid, profile, email, groups",
+      "scopesHelpOauth2": "Області автоматично пропонуються на основі URL постачальника. Загальні OAuth2 області залежать від постачальника",
+      "providerUrl": "URL постачальника",
+      "providerUrlPlaceholder": "https://auth.example.ua",
+      "providerUrlAutoPlaceholder": "https://your-provider.com (кінцеві точки будуть виявлені автоматично)",
+      "providerUrlManualPlaceholder": "https://your-provider.com",
+      "autoDiscoveryHelp": "Система автоматично виявить кінцеві точки авторизації, токена та інформації користувача",
+      "manualConfigurationHelp": "Базовий URL вашого постачальника (кінцеві точки будуть відносно цього)",
+      "authorizationEndpoint": "Кінцева точка авторизації",
+      "authorizationEndpointPlaceholder": "https://auth.example.ua/auth",
+      "tokenEndpoint": "Кінцева точка токена",
+      "tokenEndpointPlaceholder": "https://auth.example.ua/token",
+      "userInfoEndpoint": "Кінцева точка інформації користувача",
+      "userInfoEndpointPlaceholder": "https://auth.example.ua/userinfo",
+      "configurationMethod": "Метод конфігурації",
+      "autoDiscovery": "Автовиявлення",
+      "autoDiscoveryDescription": "Автоматично виявити кінцеві точки з URL постачальника",
+      "manualEndpoints": "Ручні кінцеві точки (Рекомендовано)",
+      "manualEndpointsDescription": "Ручно налаштувати авторизацію, токен та кінцеві точки інформації користувача",
+      "callbackUrl": "URL зворотного виклику",
+      "callbackUrlDescription": "Використовуйте цей URL у конфігурації вашого OAuth постачальника",
+      "copyCallbackUrl": "Копіювати URL зворотного виклику",
+      "callbackUrlCopied": "URL зворотного виклику скопійовано в буфер обміну!",
+      "adminEmailDomains": "Адміністративні домени електронної пошти",
+      "adminEmailDomainsPlaceholder": "Введіть домени (наприклад, admin.company.com)",
+      "adminEmailDomainsHelp": "Користувачі з електронною поштою з цих доменів отримають права адміністратора",
+      "autoRegister": "Автоматично реєструвати нових користувачів",
+      "officialProviderUrlPlaceholder": "Замініть заповнювач на ваш {displayName} URL",
+      "officialProviderHelp": "Це офіційний постачальник. Кінцеві точки попередньо налаштовані. Ви можете редагувати лише цей URL.",
+      "officialProviderIconHelp": "Ви можете налаштувати іконку для цього офіційного постачальника."
+    },
+    "buttons": {
+      "cancel": "Скасувати",
+      "save": "Зберегти",
+      "saving": "Збереження...",
+      "adding": "Додавання...",
+      "updating": "Оновлення...",
+      "saveProvider": "Зберегти постачальника",
+      "delete": "Видалити",
+      "deleting": "Видалення...",
+      "edit": "Редагувати",
+      "enable": "Увімкнути",
+      "disable": "Відключити"
+    },
+    "messages": {
+      "providerAdded": "Постачальника додано успішно",
+      "providerUpdated": "Постачальника оновлено успішно",
+      "providerDeleted": "Постачальника видалено успішно",
+      "providerOrderUpdated": "Порядок постачальників оновлено успішно",
+      "fillRequiredFields": "Будь ласка, заповніть усі обов'язкові поля (назва, відображувана назва, ID клієнта, секрет клієнта)",
+      "provideUrlOrEndpoints": "Надайте URL постачальника для автоматичного виявлення АБО всі три користувацькі кінцеві точки",
+      "chooseDiscoveryOrManual": "Виберіть або автоматичне виявлення (URL постачальника) АБО ручні кінцеві точки, не обидва",
+      "loadFailed": "Не вдалося завантажити постачальників",
+      "addFailed": "Не вдалося додати постачальника",
+      "updateFailed": "Не вдалося оновити постачальника",
+      "deleteFailed": "Не вдалося видалити постачальника",
+      "orderUpdateFailed": "Не вдалося оновити порядок постачальників"
+    },
+    "info": {
+      "title": "Інформація",
+      "officialProvidersRecommended": "Для кращої функціональності розгляньте використання офіційних постачальників. Якщо у вас є проблеми з користувацьким постачальником, розгляньте відкриття питання на",
+      "github": "GitHub",
+      "officialProvider": "Офіційний постачальник",
+      "officialProviderDescription": "Цей постачальник оптимізований OUITRANSFER. Можна змінювати лише облікові дані та конфігурацію.",
+      "manualConfigTitle": "Ручна конфігурація",
+      "manualConfigDescription": "Ви надаєте всі кінцеві точки вручну. Переконайтеся, що вони правильні для вашого постачальника."
+    },
+    "deleteModal": {
+      "title": "Видалити постачальника автентифікації",
+      "confirmMessage": "Ви впевнені, що хочете видалити постачальника \"{displayName}\"? Цю дію неможливо скасувати.",
+      "providerId": "ID постачальника: {name}",
+      "cancel": "Скасувати",
+      "delete": "Видалити постачальника",
+      "deleting": "Видалення..."
+    }
+  },
+  "bulkDownload": {
+    "title": "Масове завантаження",
+    "zipNameLabel": "Назва ZIP файлу",
+    "zipNamePlaceholder": "Введіть назву файлу",
+    "description": "{count, plural, =1 {1 файл буде стиснуто} other {# файлів буде стиснуто}}",
+    "download": "Завантажити ZIP"
+  },
+  "common": {
+    "loading": "Завантаження, будь ласка, зачекайте...",
+    "loadingSimple": "Завантаження...",
+    "cancel": "Скасувати",
+    "save": "Зберегти",
+    "saving": "Збереження...",
+    "update": "Оновити",
+    "updating": "Оновлення...",
+    "delete": "Видалити",
+    "deleting": "Видалення...",
+    "close": "Закрити",
+    "download": "Завантажити",
+    "unexpectedError": "Сталася неочікувана помилка. Спробуйте ще раз.",
+    "yes": "Так",
+    "no": "Ні",
+    "dashboard": "Панель управління",
+    "back": "Назад",
+    "clickToActivate": "Натисніть для активації",
+    "clickToDeactivate": "Натисніть для деактивації",
+    "creating": "Створення...",
+    "create": "Створити",
+    "rename": "Перейменувати",
+    "move": "Перемістити",
+    "share": "Поділитися",
+    "search": "Пошук",
+    "copy": "Копіювати",
+    "copied": "Скопійовано",
+    "retry": "Retry",
+    "unavailable": "недоступно",
+    "days": "днів",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    },
+    "moving": "Переміщення…"
+  },
+  "createShare": {
+    "title": "Створити спільний доступ",
+    "nameLabel": "Назва спільного доступу",
+    "namePlaceholder": "Введіть назву для вашого спільного доступу",
+    "descriptionLabel": "Опис",
+    "descriptionPlaceholder": "Введіть опис (необов'язково)",
+    "expirationLabel": "Дата закінчення терміну дії",
+    "expirationPlaceholder": "ДД.ММ.РРРР ГГ:ХХ",
+    "maxViewsLabel": "Максимальна кількість переглядів",
+    "maxViewsPlaceholder": "Залишіть порожнім для необмеженої кількості",
+    "passwordProtection": "Захищено паролем",
+    "passwordLabel": "Пароль",
+    "passwordPlaceholder": "Введіть пароль",
+    "create": "Створити спільний доступ",
+    "success": "Спільний доступ створено успішно",
+    "error": "Не вдалося створити спільний доступ",
+    "errors": {
+      "nameRequired": "Назва спільного доступу обов'язкова"
+    },
+    "itemsSelected": "{count} елементів вибрано",
+    "tabs": {
+      "shareDetails": "Деталі спільного доступу",
+      "selectFiles": "Вибрати файли",
+      "shareLink": "Посилання для доступу"
+    },
+    "nextSelectFiles": "Далі: Вибрати файли",
+    "searchLabel": "Пошук",
+    "privacySection": "Конфіденційність та сповіщення",
+    "nameFieldRequired": "Потрібне ім'я відвідувача",
+    "emailFieldRequired": "Потрібна електронна адреса відвідувача",
+    "notifyOnDownload": "Повідомте мене при кожному завантаженні",
+    "notifyOnDownloadHelp": "Якщо цей параметр увімкнено, ви отримуватимете сповіщення електронною поштою при завантаженні файлів із цього спільного доступу, незалежно від ваших глобальних параметрів сповіщення.",
+    "inactivityAlertDays": "Сповістити, якщо немає завантажень через",
+    "inactivityAlertPlaceholder": "Залиште порожнім, щоб вимкнути",
+    "fieldHidden": "Приховано",
+    "fieldOptional": "Опціонально",
+    "fieldRequired": "Обов'язково",
+    "filesOptionalHint": "Додавання файлів необов'язково, ви можете створити порожній спільний доступ зараз і додати файли пізніше.",
+    "nextGenerateLink": "Далі: посилання",
+    "linkStepDescription": "Створіть власне посилання, щоб інші могли отримати доступ до цього надання, або пропустіть цей крок і додайте його пізніше.",
+    "nameFieldRequiredHelp": "Визначає, чи запитується ім'я у відвідувачів під час відкриття надання.",
+    "emailFieldRequiredHelp": "Визначає, чи запитується електронна пошта у відвідувачів під час відкриття надання."
+  },
+  "customization": {
+    "breadcrumb": "Налаштування",
+    "colors": {
+      "title": "Кольори теми",
+      "description": "Виберіть бажану основну кольорову тему",
+      "presets": "Доступні кольори",
+      "presetsDescription": "Виберіть з доступних кольорових тем",
+      "reset": "Скинути до стандартного"
+    },
+    "fonts": {
+      "title": "Типографіка",
+      "description": "Виберіть бажане сімейство шрифтів",
+      "available": "Доступні шрифти",
+      "availableDescription": "Виберіть з доступних сімейств шрифтів",
+      "reset": "Скинути до стандартного"
+    },
+    "radius": {
+      "title": "Радіус межі",
+      "description": "Налаштуйте округлість елементів інтерфейсу",
+      "available": "Опції округлості",
+      "availableDescription": "Виберіть, як повинні виглядати округлі кути",
+      "reset": "Скинути до стандартного"
+    },
+    "background": {
+      "title": "Кольори фону",
+      "description": "Налаштуйте кольори фону для світлого та темного режимів",
+      "lightMode": "Світлий режим",
+      "darkMode": "Темний режим",
+      "availableDescription": "Виберіть кольори фону для світлої та темної тем",
+      "reset": "Скинути до стандартного"
+    },
+    "theme": {
+      "title": "Режим теми",
+      "description": "Виберіть між світлою, темною або системною темою",
+      "selectTheme": "Налаштування теми",
+      "availableDescription": "Виберіть бажаний режим теми",
+      "reset": "Скинути до системного"
+    },
+    "pageTitle": "Налаштування"
+  },
+  "dashboard": {
+    "loadError": "Не вдалося завантажити дані панелі управління",
+    "linkCopied": "Посилання скопійовано в буфер обміну",
+    "pageTitle": "Панель управління",
+    "breadcrumb": "Панель управління",
+    "recentFiles": {
+      "title": "Останні файли",
+      "description": "Ваші найнедавніше завантажені файли"
+    },
+    "systemStatus": {
+      "title": "Стан системи",
+      "refresh": "Оновити",
+      "status": {
+        "healthy": "Працює",
+        "degraded": "Обмежено",
+        "unhealthy": "Недоступно"
+      },
+      "checks": {
+        "database": "База даних",
+        "storage": "Сховище",
+        "ok": "OK",
+        "error": "Помилка",
+        "notConfigured": "Не налаштовано"
+      },
+      "uptime": "Час роботи",
+      "diskSpace": {
+        "label": "Дисковий простір",
+        "ariaLabel": "Індикатор використання дискового простору"
+      },
+      "quota": {
+        "label": "Квота сховища",
+        "ariaLabel": "Індикатор квоти сховища",
+        "notConfigured": "Квоти не налаштовані",
+        "unlimited": "Без обмежень",
+        "used": "Використано {used} з {total}",
+        "usedOnly": "Використано {used}",
+        "exceeded": {
+          "banner": "Квоту сховища перевищено. Ви не можете завантажувати нові файли, поки не звільните місце, видаливши наявні файли або спільні доступи."
+        },
+        "warning": {
+          "banner": "Ви використовуєте {percentage}% своєї квоти сховища."
+        }
+      },
+      "metrics": {
+        "users": "Користувачі",
+        "files": "Файли",
+        "shares": "Спільні використання",
+        "reverseShares": "Зворотні використання",
+        "myFiles": "Мої файли",
+        "activeShares": "Активні використання"
+      },
+      "email": {
+        "label": "Ел. пошта / Сповіщення",
+        "status": {
+          "ok": "Працює",
+          "disabled": "Не налаштовано",
+          "degraded": "Знижено",
+          "down": "Не в мережі"
+        },
+        "queue": {
+          "pending": "Очікують",
+          "failed": "Помилки",
+          "sent24h": "Надіслано за 24 год"
+        },
+        "lastError": "Остання помилка",
+        "userDisrupted": "Сповіщення порушені",
+        "userOffline": "Сповіщення не в мережі"
+      },
+      "errors": {
+        "title": "Статус недоступний",
+        "fetchFailed": "Не вдалося отримати стан системи. Спробуйте пізніше.",
+        "diskSpaceError": "Не вдалося отримати інформацію про дисковий простір.",
+        "statsError": "Не вдалося завантажити статистику платформи.",
+        "emailStatsError": "Не вдалося завантажити статистику сповіщень електронної пошти."
+      },
+      "collapse": "Згорнути стан системи",
+      "expand": "Розширити стан системи"
+    }
+  },
+  "deleteConfirmation": {
+    "filesToDelete": "Файли для видалення",
+    "foldersToDelete": "Папки для видалення",
+    "itemsToDelete": "Елементи для видалення",
+    "sharesToDelete": "Спільні доступи для видалення"
+  },
+  "downloadQueue": {
+    "downloadQueued": "Завантаження в черзі: {fileName}",
+    "queuedDescription": "Ваше завантаження почнеться автоматично, коли з'явиться вільне місце",
+    "queuePosition": "Завантаження в черзі на позиції {position}: {fileName}",
+    "estimatedWait": "Орієнтовний час очікування: {time}",
+    "queueFull": "Черга завантажень заповнена",
+    "queueFullDescription": "Будь ласка, спробуйте ще раз через кілька хвилин, коли в черзі з'явиться місце",
+    "cancelSuccess": "Завантаження скасовано успішно",
+    "cancelError": "Не вдалося скасувати завантаження: {error}",
+    "status": {
+      "pending": "Підготовка...",
+      "queued": "В черзі",
+      "downloading": "Завантажується",
+      "completed": "Завершено",
+      "failed": "Не вдалося"
+    },
+    "waitTime": {
+      "seconds": "{seconds}с",
+      "minutes": "{minutes}хв",
+      "hoursMinutes": "{hours}г {minutes}хв"
+    },
+    "indicator": {
+      "title": "Завантаження",
+      "downloads": "Черга завантажень",
+      "active": "Активні",
+      "queued": "В черзі",
+      "position": "Позиція {position}",
+      "estimatedWait": "Очікування: {time}",
+      "unknownFile": "Невідомий файл",
+      "noDownloads": "Немає завантажень у процесі",
+      "refresh": "Оновити чергу"
+    }
+  },
+  "emptyState": {
+    "noFiles": "Ще немає завантажених файлів",
+    "uploadFile": "Завантажити файл"
+  },
+  "errors": {
+    "invalidCredentials": "Неправильна електронна пошта або пароль",
+    "networkError": "Не вдається зʼєднатися з сервером. Перевірте підключення.",
+    "userNotFound": "Користувача не знайдено",
+    "accountLocked": "Ваш акаунт тимчасово заблоковано через занадто багато невдалих спроб входу. Будь ласка, спробуйте знову через {minutes} хвилин.",
+    "unexpectedError": "Сталася неочікувана помилка. Спробуйте ще раз",
+    "Invalid verification code": "Неправильний код підтвердження",
+    "Two-factor authentication is already enabled": "Двофакторна автентифікація вже увімкнена",
+    "Two-factor authentication is not enabled": "Двофакторна автентифікація не увімкнена",
+    "Invalid password": "Неправильний пароль",
+    "Password verification required": "Потрібна перевірка пароля",
+    "Invalid two-factor authentication code": "Неправильний код двофакторної автентифікації",
+    "Two-factor authentication required": "Потрібна двофакторна автентифікація",
+    "noUserData": "Немає даних користувача",
+    "somethingWentWrong": "Щось пішло не так",
+    "tryAgain": "Спробувати знову",
+    "goHome": "На головну",
+    "pageNotFound": "Сторінку не знайдено",
+    "pageNotFoundMessage": "Сторінка, яку ви шукаєте, не існує або була переміщена.",
+    "shareUnavailable": "Посилання недоступне",
+    "shareErrorMessage": "Виникла помилка під час завантаження цього посилання.",
+    "uploadUnavailable": "Завантаження недоступне",
+    "uploadErrorMessage": "Виникла помилка під час завантаження цієї сторінки.",
+    "accessDenied": "Доступ заборонено",
+    "accessDeniedMessage": "У вас немає прав адміністратора для доступу до цієї сторінки.",
+    "errorLoadingSettings": "Помилка завантаження налаштувань",
+    "refreshPage": "Оновити сторінку"
+  },
+  "fileActions": {
+    "editFile": "Редагувати файл",
+    "nameLabel": "Назва",
+    "namePlaceholder": "Введіть нову назву",
+    "extension": "Розширення",
+    "descriptionLabel": "Опис",
+    "descriptionPlaceholder": "Введіть опис файлу",
+    "addDescriptionPlaceholder": "Додати опис...",
+    "deleteFile": "Видалити файл",
+    "deleteConfirmation": "Ви впевнені, що хочете видалити цей файл?",
+    "deleteWarning": "Цю дію неможливо скасувати.",
+    "inSharesWarningTitle": "Цей файл включено у спільні доступи",
+    "inSharesWarningBody": "Цей файл включено в {count, plural, one {# спільний доступ} other {# спільних доступів}}. Видалення видалить його з усіх спільних доступів.",
+    "deleteAnyway": "Видалити у будь-якому разі",
+    "bulkInSharesWarningTitle": "Деякі файли включено у спільні доступи",
+    "bulkInSharesWarningBody": "{count, plural, one {# файл включено} other {# файлів включено}} у спільні доступи. Видалення видалить {count, plural, one {його} other {їх}} з усіх спільних доступів."
+  },
+  "fileManager": {
+    "downloadError": "Не вдалося завантажити файл",
+    "updateSuccess": "Файл оновлено успішно",
+    "updateError": "Не вдалося оновити файл",
+    "deleteSuccess": "Файл видалено успішно",
+    "deleteError": "Не вдалося видалити файл"
+  },
+  "filePreview": {
+    "title": "Попередній перегляд файлу",
+    "description": "Попередній перегляд та завантаження файлу",
+    "loading": "Завантаження...",
+    "notAvailable": "Попередній перегляд недоступний для цього типу файлу",
+    "downloadToView": "Використовуйте кнопку завантаження для перегляду цього файлу",
+    "loadError": "Помилка завантаження попереднього перегляду файлу",
+    "downloadSuccess": "Download started",
+    "downloadError": "Помилка завантаження файлу",
+    "audioNotSupported": "Ваш браузер не підтримує відтворення аудіо",
+    "videoNotSupported": "Ваш браузер не підтримує відтворення відео",
+    "pdfPreviewNotAvailable": "Попередній перегляд PDF недоступний. Спробуйте альтернативний перегляд або завантаження",
+    "tryAlternativeView": "Спробувати альтернативний перегляд",
+    "loadingAlternative": "Завантаження альтернативного перегляду...",
+    "loadingAudio": "Завантаження аудіо...",
+    "downloading": "Завантаження..."
+  },
+  "fileSelector": {
+    "availableFiles": "Доступні файли ({count})",
+    "shareFiles": "Спільні файли ({count})",
+    "shareFilesDescription": "Файли, які зараз в цьому спільному доступі",
+    "availableFilesDescription": "Виберіть файли для додавання до цього спільного доступу",
+    "searchPlaceholder": "Пошук файлів...",
+    "searchSelectedFiles": "Пошук вибраних файлів...",
+    "noMatchingFiles": "Не знайдено відповідних файлів",
+    "noAvailableFiles": "Немає доступних файлів",
+    "noFilesInShare": "Немає файлів у цьому спільному доступі",
+    "noFilesFound": "Файли не знайдено",
+    "noFilesFoundWith": "Не знайдено файлів, що відповідають \"{query}\"",
+    "addFilesFromList": "Додайте файли зі списку нижче",
+    "tryDifferentSearch": "Спробуйте інші пошукові терміни",
+    "allFilesInShare": "Усі файли вже в цьому спільному доступі",
+    "uploadNewFiles": "Завантажте нові файли, щоб додати їх",
+    "fileCount": "{count, plural, =1 {файл} other {файлів}}",
+    "filesSelected": "{count, plural, =0 {Файли не вибрано} =1 {1 файл вибрано} other {# файлів вибрано}}",
+    "itemsSelected": "{count} елементів вибрано",
+    "editFile": "Редагувати файл",
+    "editFolder": "Редагувати папку",
+    "previewFile": "Попередній перегляд файлу",
+    "addToShare": "Додати до спільного доступу",
+    "removeFromShare": "Видалити зі спільного доступу",
+    "saveChanges": "Зберегти зміни"
+  },
+  "files": {
+    "title": "Усі файли",
+    "uploadFile": "Завантажити файл",
+    "loadError": "Не вдалося завантажити файли",
+    "pageTitle": "Мої файли",
+    "breadcrumb": "Мої файли",
+    "downloadStart": "Завантаження розпочато",
+    "downloadError": "Не вдалося завантажити файл",
+    "updateSuccess": "Файл оновлено успішно",
+    "updateError": "Не вдалося оновити файл",
+    "deleteSuccess": "Файл видалено успішно",
+    "deleteError": "Не вдалося видалити файл",
+    "bulkDownloadSuccess": "Завантаження файлів розпочато успішно",
+    "bulkDownloadError": "Помилка створення ZIP файлу",
+    "bulkDownloadFileError": "Помилка завантаження файлу {fileName}",
+    "bulkDeleteSuccess": "{count, plural, =1 {1 елемент видалено успішно} other {# елементів видалено успішно}}",
+    "bulkDeleteError": "Помилка видалення вибраних елементів",
+    "bulkDeleteTitle": "Видалити вибрані елементи",
+    "bulkDeleteConfirmation": "Ви впевнені, що хочете видалити {count, plural, =1 {1 елемент} other {# елементів}}? Цю дію неможливо скасувати.",
+    "totalFiles": "{count, plural, =0 {Немає файлів} =1 {1 файл} other {# файлів}}",
+    "openFolder": "Відкрити папку",
+    "errors": {
+      "moveItemsFailed": "Не вдалося перемістити елементи. Спробуйте ще раз.",
+      "cannotMoveHere": "Неможливо перемістити елементи в це місце"
+    },
+    "empty": {
+      "title": "Ще немає файлів або папок",
+      "description": "Завантажте ваш перший файл або створіть папку, щоб почати"
+    },
+    "files": "файли",
+    "folders": "папки",
+    "actions": {
+      "open": "Відкрити",
+      "rename": "Перейменувати",
+      "delete": "Видалити"
+    },
+    "viewMode": {
+      "table": "Таблиця",
+      "grid": "Сітка"
+    },
+    "drag": {
+      "folderMoved": "Папку «{name}» переміщено до «{target}»",
+      "fileMoved": "Файл «{name}» переміщено до «{target}»",
+      "itemsMoved": "{count} елементів переміщено до «{target}»",
+      "folderMovedToRoot": "Папку «{name}» переміщено до кореневої папки",
+      "fileMovedToRoot": "Файл «{name}» переміщено до кореневої папки",
+      "itemsMovedToRoot": "{count} елементів переміщено до кореневої папки"
+    }
+  },
+  "filesTable": {
+    "ariaLabel": "Таблиця файлів",
+    "selectAll": "Вибрати все",
+    "selectFile": "Вибрати файл {fileName}",
+    "columns": {
+      "name": "НАЗВА",
+      "description": "ОПИС",
+      "size": "РОЗМІР",
+      "createdAt": "СТВОРЕНО",
+      "updatedAt": "ОНОВЛЕНО",
+      "actions": "ДІЇ"
+    },
+    "actions": {
+      "menu": "Меню дій з файлом",
+      "preview": "Попередній перегляд",
+      "edit": "Редагувати",
+      "share": "Поділитися",
+      "download": "Завантажити",
+      "delete": "Видалити"
+    },
+    "bulkActions": {
+      "selected": "{count, plural, =1 {1 файл вибрано} other {# файлів вибрано}}",
+      "actions": "Дії",
+      "download": "Завантажити вибрані",
+      "share": "Поділитися вибраними",
+      "delete": "Видалити вибрані"
+    }
+  },
+  "folderActions": {
+    "editFolder": "Редагувати папку",
+    "folderName": "Назва папки",
+    "folderNamePlaceholder": "Введіть назву папки",
+    "folderDescription": "Опис",
+    "folderDescriptionPlaceholder": "Введіть опис папки (необов'язково)",
+    "createFolder": "Створити папку",
+    "renameFolder": "Перейменувати папку",
+    "moveFolder": "Перемістити папку",
+    "shareFolder": "Поділитися папкою",
+    "deleteFolder": "Видалити папку",
+    "moveTo": "Перемістити до",
+    "selectDestination": "Виберіть папку призначення",
+    "rootFolder": "Корінь",
+    "folderCreated": "Папку створено успішно",
+    "folderRenamed": "Папку перейменовано успішно",
+    "folderMoved": "Папку переміщено успішно",
+    "folderDeleted": "Папку видалено успішно",
+    "folderShared": "Папкою поділилися успішно",
+    "createFolderError": "Помилка створення папки",
+    "renameFolderError": "Помилка перейменування папки",
+    "moveFolderError": "Помилка переміщення папки",
+    "deleteFolderError": "Помилка видалення папки",
+    "shareFolderError": "Помилка спільного доступу до папки",
+    "deleteConfirmation": "Ви впевнені, що хочете видалити цю папку?",
+    "deleteWarning": "Цю дію неможливо скасувати.",
+    "inSharesWarningTitle": "Ця папка включена у спільні доступи",
+    "inSharesWarningBody": "Ця папка (та її вміст) включена в {count, plural, one {# спільний доступ} other {# спільних доступів}}. Видалення видалить її з усіх спільних доступів.",
+    "bulkInSharesWarningTitle": "Деякі папки включено у спільні доступи",
+    "bulkInSharesWarningBody": "{count, plural, one {# папка включена} other {# папок включено}} у спільні доступи. Видалення видалить {count, plural, one {її} other {їх}} з усіх спільних доступів.",
+    "deleteAnyway": "Видалити у будь-якому разі"
+  },
+  "footer": {
+    "projectHomepage": "Домашня сторінка OUITRANSFER"
+  },
+  "forgotPassword": {
+    "emailLabel": "Адреса електронної пошти",
+    "emailPlaceholder": "Введіть вашу електронну пошту",
+    "sending": "Надсилання...",
+    "submit": "Надіслати інструкції для скидання",
+    "backToLogin": "Повернутися до входу",
+    "title": "Забули пароль",
+    "description": "Введіть вашу адресу електронної пошти, і ми надішлемо вам інструкції для скидання пароля",
+    "resetInstructions": "Інструкції для скидання надіслано на вашу електронну пошту",
+    "pageTitle": "Забули пароль",
+    "passwordAuthDisabled": "Автентифікація за паролем відключена. Будь ласка, зв'яжіться з адміністратором або використовуйте зовнішнього постачальника автентифікації."
+  },
+  "generateShareLink": {
+    "generateTitle": "Створити посилання для спільного доступу",
+    "updateTitle": "Оновити посилання для спільного доступу",
+    "generateDescription": "Створіть користувацьке посилання для цього спільного доступу. Ви можете налаштувати URL, щоб зробити його більш запам'ятовуваним.",
+    "updateDescription": "Оновіть користувацьке посилання для цього спільного доступу. Ви можете налаштувати URL, щоб зробити його більш запам'ятовуваним.",
+    "aliasPlaceholder": "Користувацький ID для посилання",
+    "linkReady": "Ваше посилання для спільного доступу готове. Ви можете скопіювати його зараз.",
+    "readyDescription": "Ваше посилання для спільного доступу готове. Ви можете сканувати QR-код безпосередньо, завантажити його для подальшого використання або скопіювати посилання нижче.",
+    "generateButton": "Створити посилання",
+    "updateButton": "Оновити посилання",
+    "copyButton": "Копіювати посилання",
+    "success": "Посилання створено успішно",
+    "error": "Не вдалося створити посилання",
+    "copied": "Посилання скопійовано в буфер обміну",
+    "tabs": {
+      "link": "Посилання",
+      "qrcode": "QR-код"
+    },
+    "later": "Пізніше"
+  },
+  "home": {
+    "pageTitle": "Головна",
+    "tagline": "Безпечне передання файлів",
+    "subtitle": "Надсилайте та ділітесь своїми файлами безпечно.",
+    "login": "Увійти",
+    "partners": {
+      "title": "Отримали посилання?",
+      "description": "Використовуйте посилання, щоб отримати доступ до своїх файлів. Якщо ви його не знайдете, зв'яжіться з тією особою, яка його надіслала."
+    }
+  },
+  "iconPicker": {
+    "title": "Вибрати іконку",
+    "placeholder": "Вибрати іконку",
+    "searchPlaceholder": "Пошук іконок...",
+    "loadingMore": "Завантаження більше іконок...",
+    "allIconsLoaded": "Усі {count} іконки завантажено",
+    "noIconsFound": "Не знайдено іконок для \"{search}\"",
+    "tabs": {
+      "all": "Усі іконки",
+      "popular": "Популярні",
+      "auth": "Постачальники автентифікації"
+    },
+    "stats": "{iconCount} іконок з {libraryCount} бібліотек",
+    "categoryBadge": "{category} ({count} іконок)"
+  },
+  "imageEdit": {
+    "title": "Редагувати зображення",
+    "rotate": "Повернути",
+    "zoom": "Масштабувати",
+    "cropInstructions": "Перетягніть для переміщення, змініть розмір кутів для регулювання області обрізання",
+    "cropAlt": "Зображення для обрізки"
+  },
+  "login": {
+    "welcome": "Ласкаво просимо до",
+    "signInToContinue": "Увійдіть, щоб продовжити",
+    "emailOrUsernameLabel": "Електронна пошта або ім'я користувача",
+    "emailOrUsernamePlaceholder": "Введіть вашу електронну пошту або ім'я користувача",
+    "emailLabel": "Адреса електронної пошти",
+    "emailPlaceholder": "Введіть вашу електронну пошту",
+    "passwordLabel": "Пароль",
+    "passwordPlaceholder": "Введіть ваш пароль",
+    "signIn": "Увійти",
+    "signingIn": "Вхід...",
+    "forgotPassword": "Забули пароль?",
+    "pageTitle": "Вхід",
+    "or": "або",
+    "continueWithSSO": "Продовжити з SSO",
+    "processing": "Обробка автентифікації...",
+    "orContinueWith": "Або продовжити через",
+    "continueWith": "Продовжити через {name}",
+    "providerNotConfigured": "{name} не налаштований належним чином"
+  },
+  "logo": {
+    "labels": {
+      "appLogo": "Логотип додатку"
+    },
+    "buttons": {
+      "upload": "Завантажити логотип",
+      "remove": "Видалити логотип"
+    },
+    "messages": {
+      "uploadSuccess": "Логотип завантажено успішно",
+      "removeSuccess": "Логотип видалено успішно"
+    },
+    "errors": {
+      "uploadFailed": "Не вдалося завантажити логотип",
+      "removeFailed": "Не вдалося видалити логотип"
+    }
+  },
+  "moveItems": {
+    "itemsToMove": "Елементи для переміщення:",
+    "movingToFolder": "Переміщення в: {folder}",
+    "title": "Перемістити {count, plural, =1 {елемент} other {елементи}}",
+    "description": "Перемістити {count, plural, =1 {елемент} other {елементи}} в нове місце",
+    "success": "Успішно переміщено {count} {count, plural, =1 {елемент} other {елементів}}",
+    "errors": {
+      "moveFailed": "Не вдалося перемістити елементи"
+    }
+  },
+  "audit": {
+    "pageTitle": "Журнал активності",
+    "pageDescription": "Переглядайте та шукайте всю активність системи",
+    "table": {
+      "date": "Дата",
+      "user": "Користувач",
+      "action": "Дія",
+      "target": "Мета",
+      "ipAddress": "IP адреса",
+      "details": "Деталі",
+      "noResults": "Журналів аудиту не знайдено",
+      "anonymous": "Анонімний",
+      "system": "Система",
+      "resultCount": "{count, plural, one {# результат} other {# результатів}}"
+    },
+    "filters": {
+      "action": "Дія",
+      "user": "Користувач",
+      "targetType": "Тип цілі",
+      "dateFrom": "З",
+      "dateTo": "По",
+      "search": "Пошук",
+      "searchPlaceholder": "Пошук за IP або дією...",
+      "clearAll": "Очистити фільтри"
+    },
+    "export": {
+      "button": "Експортувати",
+      "csv": "CSV",
+      "json": "JSON",
+      "dateRangeRequired": "Виберіть діапазон дат для експорту"
+    },
+    "actions": {
+      "LOGIN_SUCCESS": "Вхід успішний",
+      "LOGIN_FAILURE": "Помилка входу",
+      "LOGOUT": "Вихід",
+      "PASSWORD_CHANGE": "Пароль змінено",
+      "PASSWORD_RESET": "Пароль скинуто",
+      "PASSWORD_RESET_REQUEST": "Запит на скидання пароля",
+      "ACCOUNT_LOCKED": "Акаунт заблокований",
+      "LOGIN_LOCKED": "Вхід заблокований",
+      "TRUSTED_DEVICE_REMOVE": "Довірений пристрій видалено",
+      "TRUSTED_DEVICE_REMOVE_ALL": "Усі довірені пристрої видалено",
+      "AUTH_PROVIDER_LOGIN": "Вхід через SSO",
+      "TWO_FACTOR_ENABLE": "2FA увімкнено",
+      "TWO_FACTOR_DISABLE": "2FA вимкнено",
+      "TWO_FACTOR_BACKUP_REGENERATED": "Резервні коди 2FA регенеровано",
+      "USER_CREATE": "Користувача створено",
+      "USER_UPDATE": "Користувача оновлено",
+      "USER_DELETE": "Користувача видалено",
+      "USER_ROLE_CHANGE": "Роль користувача змінена",
+      "USER_QUOTA_CHANGE": "Квоту користувача змінено",
+      "USER_ACTIVATE": "Користувача активовано",
+      "USER_DEACTIVATE": "Користувача деактивовано",
+      "SHARE_CREATE": "Спільний доступ створено",
+      "SHARE_UPDATE": "Спільний доступ оновлено",
+      "SHARE_DELETE": "Спільний доступ видалено",
+      "SHARE_ACCESS": "Спільний доступ відкрито",
+      "SHARE_PASSWORD_VERIFIED": "Пароль спільного доступу підтверджено",
+      "SHARE_PASSWORD_FAILED": "Помилка пароля спільного доступу",
+      "SHARE_PASSWORD_UPDATE": "Пароль спільного доступу оновлено",
+      "SHARE_RECIPIENT_ADD": "Одержувачів спільного доступу додано",
+      "SHARE_RECIPIENT_REMOVE": "Одержувачів спільного доступу видалено",
+      "SHARE_RECIPIENT_NOTIFY": "Одержувачів спільного доступу сповіщено",
+      "SHARE_RECIPIENT_REMIND": "Одержувачів спільного доступу нагадано",
+      "SHARE_ITEMS_ADD": "Елементи спільного доступу додано",
+      "SHARE_ITEMS_REMOVE": "Елементи спільного доступу видалено",
+      "FILE_UPLOAD": "Файл завантажено",
+      "FILE_DOWNLOAD": "Файл завантажено",
+      "FILE_DELETE": "Файл видалено",
+      "FILE_MOVE": "Файл переміщено",
+      "FILE_UPDATE": "Файл оновлено",
+      "FOLDER_CREATE": "Папку створено",
+      "FOLDER_UPDATE": "Папку оновлено",
+      "FOLDER_MOVE": "Папку переміщено",
+      "FOLDER_DELETE": "Папку видалено",
+      "REVERSE_SHARE_CREATE": "Зворотний спільний доступ створено",
+      "REVERSE_SHARE_UPDATE": "Зворотний спільний доступ оновлено",
+      "REVERSE_SHARE_DELETE": "Зворотний спільний доступ видалено",
+      "REVERSE_SHARE_ACCESS": "Зворотний спільний доступ відкрито",
+      "REVERSE_SHARE_PASSWORD_VERIFIED": "Пароль зворотного спільного доступу підтверджено",
+      "REVERSE_SHARE_PASSWORD_FAILED": "Помилка пароля зворотного спільного доступу",
+      "REVERSE_SHARE_PASSWORD_UPDATE": "Пароль зворотного спільного доступу оновлено",
+      "REVERSE_SHARE_UPLOAD": "Файл завантажено на зворотний спільний доступ",
+      "REVERSE_SHARE_FILE_DELETE": "Файл зворотного спільного доступу видалено",
+      "REVERSE_SHARE_FILE_COPY": "Файл зворотного спільного доступу скопійовано",
+      "REVERSE_SHARE_FILE_DOWNLOAD": "Файл зворотного спільного доступу завантажено",
+      "GROUP_CREATE": "Групу створено",
+      "GROUP_UPDATE": "Групу оновлено",
+      "GROUP_DELETE": "Групу видалено",
+      "GROUP_MEMBER_ADD": "Учасника групи додано",
+      "GROUP_MEMBER_REMOVE": "Учасника групи видалено",
+      "LDAP_CONFIG_UPDATE": "Конфігурацію LDAP оновлено",
+      "LDAP_SYNC_TRIGGERED": "Синхронізацію LDAP запущено",
+      "LDAP_SYNC_COMPLETED": "Синхронізацію LDAP завершено",
+      "LDAP_SYNC_ERROR": "Помилка синхронізації LDAP",
+      "AUTH_PROVIDER_CREATE": "Постачальника автентифікації створено",
+      "AUTH_PROVIDER_UPDATE": "Постачальника автентифікації оновлено",
+      "AUTH_PROVIDER_DELETE": "Постачальника автентифікації видалено",
+      "INVITE_TOKEN_CREATE": "Токен запрошення створено",
+      "INVITE_TOKEN_USED": "Токен запрошення використано",
+      "ADMIN_CONFIG_CHANGE": "Конфігурацію змінено",
+      "LOGO_UPLOAD": "Логотип завантажено",
+      "LOGO_REMOVE": "Логотип видалено",
+      "SMTP_TEST": "SMTP тест виконано",
+      "BACKGROUND_IMAGE_UPLOAD": "Фонове зображення завантажено",
+      "BACKGROUND_IMAGE_DELETE": "Фонове зображення видалено",
+      "AUDIT_RETENTION_CLEANUP": "Очищення журналу аудиту",
+      "SHARE_DEACTIVATED": "Спільний доступ вимкнено",
+      "SHARE_REACTIVATED": "Спільний доступ повторно ввімкнено",
+      "REVERSE_SHARE_DEACTIVATED": "Посилання для отримання вимкнено",
+      "REVERSE_SHARE_REACTIVATED": "Посилання для отримання повторно ввімкнено",
+      "SHARE_AUTO_DELETED": "Спільний доступ автоматично видалено",
+      "REVERSE_SHARE_AUTO_DELETED": "Посилання для отримання автоматично видалено",
+      "ACCOUNT_FILES_CLEANED": "Файли облікового запису очищено",
+      "ORPHAN_S3_DELETED": "Сирітський об'єкт сховища видалено",
+      "ORPHAN_DB_DELETED": "Сирітський запис бази даних видалено",
+      "ORPHAN_MULTIPART_ABORTED": "Незавершене багатьохчастинне завантаження скасовано",
+      "QUOTA_FILES_DELETED": "Файли, що перевищують квоту, видалено"
+    },
+    "targetTypes": {
+      "user": "Користувач",
+      "share": "Спільний доступ",
+      "reverse_share": "Зворотний спільний доступ",
+      "file": "Файл",
+      "folder": "Папка",
+      "group": "Група",
+      "ldap_config": "Конфігурація LDAP",
+      "ldap_sync_log": "Синхронізація LDAP",
+      "setting": "Налаштування",
+      "auth_provider": "Постачальник автентифікації",
+      "background_image": "Фонове зображення",
+      "invite_token": "Токен запрошення",
+      "trusted_device": "Довірений пристрій",
+      "logo": "Логотип"
+    },
+    "actionCategories": {
+      "auth": "Автентифікація",
+      "share": "Спільні доступи",
+      "file": "Файли",
+      "folder": "Папки",
+      "reverseShare": "Зворотні спільні доступи",
+      "user": "Користувач",
+      "group": "Групи",
+      "ldap": "LDAP",
+      "admin": "Адміністрація",
+      "system": "Система"
+    },
+    "metadata": {
+      "method": "Метод",
+      "reason": "Причина",
+      "email": "Email",
+      "count": "Кількість",
+      "via": "Створено через",
+      "fields": "Змінені поля",
+      "oldRole": "Стара роль",
+      "newRole": "Нова роль",
+      "oldQuota": "Стара квота",
+      "newQuota": "Нова квота",
+      "name": "Назва",
+      "fileName": "Ім'я файлу",
+      "fileSize": "Розмір файлу",
+      "fileCount": "Кількість файлів",
+      "folderCount": "Кількість папок",
+      "hasPassword": "Захищено паролем",
+      "expiration": "Закінчення",
+      "shareId": "Спільний доступ",
+      "emails": "Email адреси",
+      "recipientCount": "Кількість одержувачів",
+      "fromFolderId": "З папки",
+      "toFolderId": "У папку",
+      "maxFiles": "Макс. файлів",
+      "maxFileSize": "Макс. розмір файлу",
+      "uploaderEmail": "Email завантажувача",
+      "uploaderName": "Ім'я завантажувача",
+      "targetFileId": "Цільовий файл",
+      "providerType": "Тип постачальника",
+      "providerName": "Ім'я постачальника",
+      "deletedCount": "Видалених записів",
+      "olderThan": "Давніше ніж",
+      "syncLogId": "Журнал синхронізації",
+      "error": "Помилка",
+      "manual": "Ручний запуск",
+      "recipientEmail": "Email одержувача",
+      "fromParentId": "З батьківської",
+      "toParentId": "У батьківську",
+      "oldMaxFileSize": "Стара макс. розмір файлу",
+      "newMaxFileSize": "Нова макс. розмір файлу",
+      "oldMaxTotalStorage": "Старе макс. сховище",
+      "newMaxTotalStorage": "Нове макс. сховище",
+      "changedFields": "Змінені поля",
+      "unassignedCount": "Невизначені учасники",
+      "previousGroupId": "Попередня група",
+      "memberId": "Учасник",
+      "parentId": "Батьківська папка",
+      "targetFolderId": "Цільова папка",
+      "extension": "Розширення",
+      "size": "Розмір",
+      "enabled": "Увімкнено",
+      "passwordCleared": "Пароль очищено",
+      "trigger": "Запуск",
+      "status": "Статус",
+      "usersCreated": "Користувачів створено",
+      "usersUpdated": "Користувачів оновлено",
+      "usersDeactivated": "Користувачів деактивовано",
+      "usersReactivated": "Користувачів реактивовано",
+      "usersSkipped": "Користувачів пропущено",
+      "createdUserId": "Створений користувач",
+      "deletedUserId": "Видалений користувач",
+      "emailOrUsername": "Email/ім'я користувача",
+      "remainingMinutes": "Залишилось хвилин",
+      "keys": "Ключі конфігурації",
+      "type": "Тип",
+      "yes": "Так",
+      "no": "Ні",
+      "key": "[TO_TRANSLATE] Setting",
+      "usingCustomConfig": "[TO_TRANSLATE] Custom config",
+      "smtpHost": "[TO_TRANSLATE] SMTP host",
+      "files": "[TO_TRANSLATE] Files",
+      "shares": "[TO_TRANSLATE] Shares",
+      "reverseShares": "[TO_TRANSLATE] Reverse shares",
+      "folders": "[TO_TRANSLATE] Folders",
+      "s3Errors": "[TO_TRANSLATE] Storage errors",
+      "recipientId": "[TO_TRANSLATE] Recipient",
+      "identificationSource": "[TO_TRANSLATE] Identification",
+      "expiresAt": "[TO_TRANSLATE] Expires at",
+      "userId": "[TO_TRANSLATE] User",
+      "shareName": "[TO_TRANSLATE] Share",
+      "reverseShareName": "[TO_TRANSLATE] Reverse share",
+      "filesDeleted": "[TO_TRANSLATE] Files deleted",
+      "bytesFreed": "[TO_TRANSLATE] Storage freed",
+      "objectName": "[TO_TRANSLATE] Object",
+      "fileId": "[TO_TRANSLATE] File"
+    }
+  },
+  "navbar": {
+    "logoAlt": "Логотип додатку",
+    "profileMenu": "Меню профілю",
+    "profile": "Профіль",
+    "customization": "Налаштування",
+    "settings": "Налаштування",
+    "usersManagement": "Управління користувачами",
+    "groupsManagement": "Групи",
+    "ldap": "LDAP",
+    "activityLog": "Журнал активності",
+    "logout": "Вийти",
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
+  },
+  "navigation": {
+    "dashboard": "Панель управління"
+  },
+  "notifications": {
+    "permissionGranted": "Сповіщення про завантаження увімкнено",
+    "permissionDenied": "Сповіщення про завантаження відключено",
+    "downloadComplete": {
+      "title": "Завантаження завершено",
+      "body": "{fileName} завершив завантаження"
+    },
+    "downloadFailed": {
+      "title": "Завантаження не вдалося",
+      "body": "Не вдалося завантажити {fileName}: {error}",
+      "unknownError": "Невідома помилка"
+    },
+    "queueProcessing": {
+      "title": "Завантаження розпочинається",
+      "body": "{fileName} зараз завантажується{position}",
+      "position": " (був #{position} в черзі)"
+    }
+  },
+  "profile": {
+    "password": {
+      "title": "Змінити пароль",
+      "newPassword": "Новий пароль",
+      "confirmPassword": "Підтвердити новий пароль",
+      "updateButton": "Оновити пароль"
+    },
+    "form": {
+      "title": "Інформація профілю",
+      "firstName": "Ім'я",
+      "lastName": "Прізвище",
+      "username": "Ім'я користувача",
+      "email": "Електронна пошта",
+      "updateButton": "Оновити профіль"
+    },
+    "header": {
+      "title": "Профіль",
+      "subtitle": "Керуйте вашою особистою інформацією та паролем"
+    },
+    "picture": {
+      "title": "Фото профілю",
+      "description": "Натисніть на іконку камери, щоб змінити ваше фото профілю",
+      "uploadPhoto": "Завантажити фото",
+      "removePhoto": "Видалити фото"
+    },
+    "errors": {
+      "loadFailed": "Не вдалося завантажити дані користувача",
+      "updateFailed": "Не вдалося оновити профіль",
+      "passwordFailed": "Не вдалося оновити пароль",
+      "imageFailed": "Не вдалося оновити зображення профілю",
+      "imageRemoveFailed": "Не вдалося видалити зображення профілю"
+    },
+    "messages": {
+      "noChanges": "Немає змін для збереження",
+      "updateSuccess": "Профіль оновлено успішно",
+      "fillPasswords": "Будь ласка, заповніть обидва поля паролю",
+      "passwordSuccess": "Пароль оновлено успішно",
+      "imageSuccess": "Зображення профілю оновлено успішно",
+      "imageRemoved": "Зображення профілю видалено успішно"
+    },
+    "pageTitle": "Профіль"
+  },
+  "qrCodeModal": {
+    "title": "QR-код спільного доступу",
+    "description": "Відскануйте цей QR-код для доступу до посилання.",
+    "download": "Завантажити QR-код"
+  },
+  "quickAccess": {
+    "files": {
+      "title": "Мої файли",
+      "description": "Доступ та управління вашими завантаженими файлами"
+    },
+    "shares": {
+      "title": "Мої спільні доступи",
+      "description": "Переглядайте та керуйте вашими спільними файлами"
+    },
+    "reverseShares": {
+      "title": "Отримувати файли",
+      "description": "Створюйте посилання для інших, щоб надсилати файли вам"
+    }
+  },
+  "recentFiles": {
+    "title": "Останні завантаження",
+    "viewAll": "Переглянути все",
+    "upload": "Завантажити",
+    "uploadFile": "Завантажити файл",
+    "noFiles": "Ще немає завантажених файлів"
+  },
+  "recentShares": {
+    "title": "Останні спільні доступи",
+    "viewAll": "Переглянути все",
+    "createShare": "Створити спільний доступ",
+    "noShares": "Ще немає створених спільних доступів",
+    "createFirst": "Створіть ваш перший спільний доступ"
+  },
+  "recipientSelector": {
+    "emailPlaceholder": "Введіть електронну пошту отримувача",
+    "add": "Додати",
+    "recipients": "Отримувачі ({count})",
+    "notifyAll": "Сповістити всіх",
+    "noRecipients": "Ще не додано отримувачів",
+    "addSuccess": "Отримувача додано успішно",
+    "addError": "Не вдалося додати отримувача",
+    "removeSuccess": "Отримувача видалено успішно",
+    "removeError": "Не вдалося видалити отримувача",
+    "sendingNotifications": "Надсилання сповіщень...",
+    "notifySuccess": "Отримувачів сповіщено успішно",
+    "notifyError": "Не вдалося сповістити отримувачів",
+    "selectAll": "Вибрати все",
+    "selectedCount": "{count} вибрано",
+    "selectRecipient": "Вибрати {email}",
+    "notifySelected": "Сповістити вибраних",
+    "removeSelected": "Видалити вибраних",
+    "notifySingle": "Сповістити цього отримувача",
+    "removeSingle": "Видалити цього отримувача",
+    "bulkRemoveSuccess": "{count} отримувачів видалено успішно",
+    "bulkRemoveError": "Не вдалося видалити вибраних отримувачів",
+    "bulkNotifySuccess": "Сповіщення надіслано {count} отримувачам",
+    "bulkNotifyError": "Не вдалося сповістити вибраних отримувачів",
+    "singleNotifySuccess": "Сповіщення надіслано {email}",
+    "singleNotifyError": "Не вдалося сповістити отримувача",
+    "modalDescription": "Додайте та керуйте отримувачами для цього спільного доступу. Ви можете сповістити всіх або конкретних отримувачів, коли SMTP налаштовано.",
+    "addRecipient": "Додати отримувача",
+    "invalidEmail": "Будь ласка, введіть дійсну адресу електронної пошти",
+    "duplicateEmail": "Цього отримувача вже додано",
+    "noRecipientsDescription": "Додайте отримувачів, щоб поділитися цим контентом через електронну пошту",
+    "notified": "Сповіщено",
+    "views": "{count, plural, one {# перегляд} other {# переглядів}}",
+    "notifyPartial": "Сповіщено лише {sent} з {total} одержувачів",
+    "neverAccessed": "Ніколи не було доступу",
+    "namePlaceholder": "Ім'я (необов'язково)",
+    "downloaded": "Завантажено",
+    "pending": "Очікується",
+    "downloadedAt": "Завантажено {date}",
+    "uploaded": "Завантажено на сервер",
+    "uploadedAt": "Завантажено на сервер {date}",
+    "uploadApproximateHint": "Приблизно: завантажувачі можуть надсилати файли без надання електронної пошти, коли вона не потрібна",
+    "remindNonDownloaders": "Нагадати ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Немає одержувачів, які чекають, всі завантажили} one {Нагадати # одержувачу, який ще не завантажив} other {Нагадати # одержувачам, які ще не завантажили}}",
+    "sendingReminders": "Надсилання нагадувань...",
+    "remindSuccess": "{count, plural, one {Нагадування надіслано # одержувачу} other {Нагадування надіслано # одержувачам}}",
+    "remindNoneSent": "Нагадування не надіслано",
+    "remindError": "Не вдалося надіслати нагадування"
+  },
+  "register": {
+    "validation": {
+      "firstNameRequired": "Ім'я обов'язкове",
+      "lastNameRequired": "Прізвище обов'язкове",
+      "usernameMinLength": "Ім'я користувача має бути щонайменше 3 символи",
+      "invalidEmail": "Неправильна електронна пошта",
+      "passwordMinLength": "Пароль має бути щонайменше 12 символів",
+      "success": "Користувача-адміністратора створено успішно!",
+      "error": "Помилка створення користувача-адміністратора",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "labels": {
+      "firstName": "Ім'я",
+      "lastName": "Прізвище",
+      "username": "Ім'я користувача",
+      "email": "Електронна пошта",
+      "password": "Пароль"
+    },
+    "buttons": {
+      "creating": "Створення...",
+      "createAdmin": "Створити акаунт адміністратора"
+    }
+  },
+  "resetPassword": {
+    "pageTitle": "Скинути пароль",
+    "header": {
+      "title": "Скинути пароль",
+      "description": "Введіть ваш новий пароль нижче"
+    },
+    "form": {
+      "newPassword": "Новий пароль",
+      "newPasswordPlaceholder": "Введіть ваш новий пароль",
+      "confirmPassword": "Підтвердити новий пароль",
+      "confirmPasswordPlaceholder": "Підтвердіть ваш новий пароль",
+      "resetting": "Скидання пароля...",
+      "submit": "Скинути пароль",
+      "backToLogin": "Повернутися до входу"
+    },
+    "messages": {
+      "success": "Пароль скинуто успішно"
+    },
+    "errors": {
+      "serverError": "Не вдалося скинути пароль. Спробуйте ще раз.",
+      "invalidToken": "Неправильний або відсутній токен скидання"
+    }
+  },
+  "reverseShares": {
+    "pageTitle": "Отримувати файли",
+    "search": {
+      "title": "Керувати посиланнями для отримання",
+      "createButton": "Створити посилання",
+      "placeholder": "Пошук посилань для отримання...",
+      "results": "Знайдено {filtered} з {total} посилань для отримання"
+    },
+    "labels": {
+      "files": "файли",
+      "size": "розмір",
+      "status": "статус",
+      "access": "доступ",
+      "description": "Опис",
+      "pageLayout": "Макет сторінки",
+      "security": "Безпека та статус",
+      "limits": "Обмеження",
+      "maxFiles": "Максимум файлів",
+      "maxFileSize": "Максимальний розмір",
+      "allowedTypes": "Дозволені типи",
+      "filesReceived": "Отримані файли",
+      "fileLimit": "Обмеження файлів",
+      "noLimit": "Без обмежень",
+      "noLinkCreated": "Посилання не створено",
+      "publicAccess": "Публічний доступ",
+      "protectedByPassword": "Захищено паролем",
+      "configureProtection": "Натисніть для налаштування захисту",
+      "enterPassword": "Введіть пароль",
+      "thisLinkProtected": "Це посилання буде захищено паролем",
+      "thisLinkPublic": "Це посилання буде публічно доступним",
+      "configureExpiration": "Налаштувати закінчення терміну дії",
+      "configureLimits": "Налаштувати обмеження файлів",
+      "protectWithPassword": "Захистити паролем",
+      "layoutOptions": {
+        "default": "Стандартний",
+        "wetransfer": "WeTransfer"
+      },
+      "noFilesLimit": "Без обмеження файлів",
+      "noSizeLimit": "Без обмеження розміру",
+      "allFileTypes": "Усі типи файлів",
+      "fileTypesHelp": "Введіть розширення без крапок, розділені пробілом, комою, тире або вертикальною рискою",
+      "fieldRequirements": "Вимоги до полів",
+      "nameFieldRequired": "Поле імені",
+      "emailFieldRequired": "Поле електронної пошти",
+      "fieldOptions": {
+        "hidden": "Приховано",
+        "optional": "Необов'язково",
+        "required": "Обов'язково"
+      }
+    },
+    "card": {
+      "untitled": "Посилання без назви",
+      "noDescription": "Без опису",
+      "addDescriptionPlaceholder": "Додати опис...",
+      "files": "файли",
+      "progress": "Прогрес",
+      "created": "Створено",
+      "expired": "Прострочено",
+      "expires": "Закінчується",
+      "viewDetails": "Переглянути деталі",
+      "viewQrCode": "Переглянути QR-код",
+      "copyLink": "Копіювати посилання",
+      "openInNewTab": "Відкрити в новій вкладці",
+      "editLink": "Редагувати посилання",
+      "createLink": "Створити посилання",
+      "delete": "Видалити",
+      "copyLinkTitle": "Копіювати посилання",
+      "createLinkCTA": "Створити посилання для отримання"
+    },
+    "status": {
+      "active": "Активний",
+      "inactive": "Неактивний",
+      "expired": "Прострочений",
+      "protected": "Захищений",
+      "public": "Публічний"
+    },
+    "actions": {
+      "copyLink": "Копіювати посилання",
+      "editAlias": "Редагувати псевдонім",
+      "createAlias": "Створити псевдонім",
+      "viewDetails": "Переглянути деталі",
+      "edit": "Редагувати",
+      "delete": "Видалити",
+      "viewFiles": "Отримані файли",
+      "viewQrCode": "Переглянути QR-код"
+    },
+    "empty": {
+      "title": "Не створено посилань для отримання",
+      "description": "Створюйте користувацькі посилання для інших, щоб надсилати файли безпосередньо вам безпечно та організовано.",
+      "createButton": "Створити перше посилання"
+    },
+    "modals": {
+      "create": {
+        "title": "Створити посилання для отримання",
+        "description": "Налаштуйте користувацьке посилання для отримання файлів від інших"
+      },
+      "edit": {
+        "title": "Редагувати посилання для отримання",
+        "description": "Оновіть налаштування для цього посилання отримання",
+        "updating": "Оновлення...",
+        "saveChanges": "Зберегти зміни"
+      },
+      "details": {
+        "title": "Деталі посилання",
+        "description": "Переглядайте та редагуйте інформацію вашого посилання для отримання",
+        "pageLayout": "Макет сторінки",
+        "linkSection": "Посилання для отримання",
+        "noLinkCreated": "Посилання не створено",
+        "limits": "Обмеження",
+        "maxFiles": "Максимум файлів",
+        "maxFileSize": "Максимальний розмір",
+        "allowedTypes": "Дозволені типи",
+        "noLimit": "Без обмежень",
+        "security": "Безпека",
+        "status": "Статус",
+        "password": "Пароль",
+        "files": "Отримані файли",
+        "noFiles": "Ще не отримано файлів",
+        "copyLink": "Копіювати посилання",
+        "openLink": "Відкрити посилання",
+        "editAlias": "Редагувати псевдонім",
+        "createAlias": "Створити псевдонім",
+        "editPassword": "Редагувати захист паролем",
+        "basicInfo": "Основна інформація",
+        "securityAndStatus": "Безпека та статус",
+        "protection": "Захист",
+        "protectedByPassword": "Захищено паролем",
+        "publicAccess": "Публічний доступ",
+        "active": "Активний",
+        "inactive": "Неактивний",
+        "deactivate": "Деактивувати",
+        "activate": "Активувати",
+        "expiration": "Закінчення терміну дії",
+        "dates": "Дати",
+        "createdAt": "Створено о",
+        "updatedAt": "Оновлено о",
+        "allTypes": "Усі типи",
+        "placeholderTypes": ".pdf,.jpg,.png (розділені комами)",
+        "downloadSuccess": "Завантаження розпочато",
+        "downloadError": "Помилка завантаження файлу",
+        "editSuccess": "Файл оновлено успішно",
+        "editError": "Помилка оновлення файлу",
+        "previewNotAvailable": "Попередній перегляд недоступний",
+        "notAvailable": "Недоступно",
+        "invalidDate": "Неправильна дата",
+        "downloading": "Завантаження..."
+      },
+      "alias": {
+        "editTitle": "Редагувати псевдонім",
+        "createTitle": "Створити псевдонім",
+        "editDescription": "Оновіть псевдонім для цього посилання отримання",
+        "createDescription": "Створіть користувацький псевдонім для цього посилання отримання",
+        "aliasLabel": "Псевдонім посилання",
+        "aliasPlaceholder": "моє-посилання",
+        "preview": "Попередній перегляд:",
+        "currentLink": "Поточне посилання:",
+        "copyCurrentLink": "Копіювати поточне посилання",
+        "randomTooltip": "Створити випадковий псевдонім",
+        "cancel": "Скасувати",
+        "creating": "Створення...",
+        "updating": "Оновлення...",
+        "create": "Створити псевдонім",
+        "update": "Оновити псевдонім",
+        "help": "8-30 символів. Пробіли будуть автоматично перетворені на дефіси."
+      },
+      "password": {
+        "title": "Редагувати захист паролем",
+        "description": "Налаштуйте захист паролем для цього посилання",
+        "hasPassword": "Захищено паролем",
+        "password": "Пароль",
+        "cancel": "Скасувати",
+        "save": "Зберегти",
+        "saving": "Збереження..."
+      },
+      "receivedFiles": {
+        "title": "Отримані файли",
+        "description": "Переглядайте та керуйте файлами, надісланими через це посилання",
+        "noFiles": "Ще не отримано файлів",
+        "noFilesDescription": "Файли, надіслані через це посилання, з'являться тут",
+        "fileCount": "{count, plural, =0 {Немає файлів} =1 {1 файл} other {# файлів}}",
+        "invalidDate": "Неправильна дата",
+        "totalSize": "Загальний розмір: {size}",
+        "columns": {
+          "file": "Файл",
+          "size": "Розмір",
+          "sender": "Надіслав",
+          "date": "Дата",
+          "actions": "Дії"
+        },
+        "actions": {
+          "preview": "Попередній перегляд",
+          "download": "Завантажити",
+          "copyToMyFiles": "Копіювати в мої файли",
+          "copying": "Копіювання..."
+        },
+        "uploadedBy": "Завантажено {name}",
+        "anonymous": "Анонімно",
+        "downloadSuccess": "Завантаження розпочато",
+        "downloadError": "Помилка завантаження файлу",
+        "editSuccess": "Файл оновлено успішно",
+        "editError": "Помилка оновлення файлу",
+        "previewNotAvailable": "Попередній перегляд недоступний",
+        "copySuccess": "Файл успішно скопійовано в ваші файли",
+        "copyError": "Помилка копіювання файлу в ваші файли",
+        "deleteSuccess": "Файл видалено успішно",
+        "deleteError": "Помилка видалення файлу",
+        "bulkCopySuccess": "{count, plural, =1 {1 файл успішно скопійовано в ваші файли} other {# файлів успішно скопійовано в ваші файли}}",
+        "bulkDeleteSuccess": "{count, plural, =1 {1 файл видалено успішно} other {# файлів видалено успішно}}",
+        "bulkCopyProgress": "Копіювання {count, plural, =1 {1 файлу} other {# файлів}} в ваші файли...",
+        "bulkDeleteProgress": "Видалення {count, plural, =1 {1 файлу} other {# файлів}}...",
+        "bulkDeleteConfirmTitle": "Видалити вибрані файли",
+        "bulkDeleteConfirmMessage": "Ви впевнені, що хочете видалити {count, plural, =1 {цей файл} other {ці # файлів}}? Цю дію неможливо скасувати.",
+        "bulkDeleteConfirmButton": "Видалити {count, plural, =1 {файл} other {файли}}",
+        "bulkActions": {
+          "selected": "{count, plural, =1 {1 файл вибрано} other {# файлів вибрано}}",
+          "actions": "Дії",
+          "download": "Завантажити вибрані",
+          "copyToMyFiles": "Копіювати вибрані в мої файли",
+          "delete": "Видалити вибрані"
+        },
+        "selectAll": "Вибрати все",
+        "selectFile": "Вибрати файл {fileName}",
+        "bulkDeleteError": "Помилка видалення вибраних елементів",
+        "copyErrors": {
+          "timeout": "Операція копіювання перевищила час очікування. Спробуйте ще раз з меншим файлом або перевірте з'єднання.",
+          "failed": "Операція копіювання не вдалася. Спробуйте ще раз.",
+          "aborted": "Операція копіювання була скасована через перевищення часу очікування."
+        },
+        "downloading": "Завантаження..."
+      },
+      "delete": {
+        "linkLabel": "Посилання: /r/{alias}"
+      }
+    },
+    "form": {
+      "name": {
+        "label": "Назва посилання",
+        "placeholder": "наприклад: Проектні документи, Сімейні фото..."
+      },
+      "description": {
+        "label": "Опис",
+        "placeholder": "Опишіть, які файли ви очікуєте отримати...",
+        "description": "Необов'язково. Допомагає людям зрозуміти, що надсилати."
+      },
+      "status": {
+        "label": "Статус посилання",
+        "description": "Активувати або деактивувати це посилання для отримання"
+      },
+      "expiration": {
+        "label": "Дата закінчення терміну дії",
+        "description": "Необов'язково. Посилання буде деактивовано після цієї дати.",
+        "configure": "Налаштувати закінчення терміну дії"
+      },
+      "fileLimits": {
+        "configure": "Налаштувати обмеження файлів"
+      },
+      "maxFiles": {
+        "label": "Максимум файлів",
+        "placeholder": "наприклад: 10",
+        "description": "Необов'язково. Обмежити загальну кількість файлів, які можна надіслати.",
+        "noLimit": "Без обмеження файлів"
+      },
+      "maxFileSize": {
+        "label": "Максимальний розмір файлу",
+        "placeholder": "наприклад: 100",
+        "description": "Необов'язково. Обмежити індивідуальний розмір кожного файлу.",
+        "noLimit": "Без обмеження розміру"
+      },
+      "allowedFileTypes": {
+        "label": "Дозволені типи файлів",
+        "placeholder": "наприклад: pdf, jpg, png, docx",
+        "description": "Введіть розширення без крапок, розділені пробілом, комою, тире або вертикальною рискою",
+        "allTypes": "Усі типи файлів"
+      },
+      "pageLayout": {
+        "label": "Макет сторінки",
+        "placeholder": "Виберіть макет",
+        "description": "Як сторінка завантаження буде виглядати для користувачів.",
+        "options": {
+          "default": "Стандартний макет",
+          "wetransfer": "Стиль WeTransfer"
+        }
+      },
+      "backgroundImage": {
+        "title": "Фонове зображення",
+        "description": "Виберіть фонове зображення для сторінки завантаження",
+        "random": "Випадкове",
+        "none": "Немає доступних фонових зображень. Адміністратор може завантажити зображення в Налаштуваннях."
+      },
+      "password": {
+        "label": "Пароль захисту",
+        "placeholder": "Необов'язково. Додайте пароль для захисту посилання",
+        "description": "Необов'язково. Користувачам буде потрібен цей пароль для доступу до посилання.",
+        "configurePassword": "Налаштувати пароль",
+        "protectWithPassword": "Захистити паролем",
+        "passwordHelp": "Пароль має бути щонайменше 4 символи",
+        "passwordPlaceholder": "Введіть пароль для захисту посилання"
+      },
+      "nameFieldRequired": {
+        "label": "Вимога до поля імені",
+        "description": "Налаштуйте, чи повинно показуватися поле імені завантажувача і чи є воно обов'язковим"
+      },
+      "emailFieldRequired": {
+        "label": "Вимога до поля електронної пошти",
+        "description": "Налаштуйте, чи повинно показуватися поле електронної пошти завантажувача і чи є воно обов'язковим"
+      },
+      "fieldRequirements": {
+        "title": "Вимоги до полів",
+        "description": "Налаштуйте, які поля показуються в формі завантаження",
+        "configurationTitle": "Конфігурація полів:",
+        "hiddenDescription": "Приховане: Поле не відображатиметься у формі завантаження",
+        "optionalDescription": "Необов'язкове: Поле відображатиметься, але не є обов'язковим",
+        "requiredDescription": "Обов'язкове: Поле потрібно заповнити перед завантаженням"
+      },
+      "notifyOnUpload": "Сповіщати мене про кожне завантаження",
+      "notifyOnUploadHelp": "Коли ввімкнено, ви будете отримувати сповіщення електронної пошти при завантаженні файлів на це посилання для отримання, незалежно від ваших глобальних налаштувань сповіщень.",
+      "submit": "Створити посилання для отримання",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
+    },
+    "messages": {
+      "created": "Посилання для отримання створено успішно!",
+      "createSuccess": "Посилання для отримання створено успішно!",
+      "updateSuccess": "Посилання для отримання оновлено успішно!",
+      "linkCopied": "Посилання скопійовано в буфер обміну!",
+      "deleteSuccess": "Посилання для отримання видалено успішно!",
+      "aliasCreated": "Псевдонім створено успішно!",
+      "activateSuccess": "Посилання для отримання активовано успішно!",
+      "deactivateSuccess": "Посилання для отримання деактивовано успішно!",
+      "passwordProtectionEnabled": "Захист паролем увімкнено успішно!",
+      "passwordProtectionDisabled": "Захист паролем видалено успішно!"
+    },
+    "defaultLinkName": "Отримані файли",
+    "errors": {
+      "loadFailed": "Не вдалося завантажити посилання для отримання",
+      "createFailed": "Не вдалося створити посилання для отримання. Спробуйте ще раз.",
+      "updateFailed": "Не вдалося оновити посилання для отримання. Спробуйте ще раз.",
+      "deleteFailed": "Не вдалося видалити посилання для отримання. Спробуйте ще раз.",
+      "aliasCreateFailed": "Не вдалося створити псевдонім. Спробуйте ще раз.",
+      "passwordUpdateFailed": "Не вдалося оновити захист паролем"
+    },
+    "delete": {
+      "title": "Видалити посилання для отримання",
+      "description": "Цю дію неможливо скасувати. Посилання буде повністю видалено і більше не зможе отримувати файли.",
+      "confirmButton": "Видалити посилання",
+      "cancelButton": "Скасувати",
+      "deleting": "Видалення..."
+    },
+    "upload": {
+      "metadata": {
+        "title": "Надіслати файли - OUITRANSFER",
+        "description": "Надішліть файли через спільне посилання",
+        "descriptionWithLimit": "Завантажити файли (макс {limit} файлів)"
+      },
+      "layout": {
+        "defaultTitle": "Надіслати файли",
+        "importantInfo": "Важлива інформація:",
+        "maxFiles": "Максимум {count} файл(ів)",
+        "maxFileSize": "Максимальний розмір файлу: {size}МБ",
+        "allowedTypes": "Дозволені типи: {types}",
+        "loading": "Завантаження..."
+      },
+      "password": {
+        "title": "Захищене посилання",
+        "description": "Це посилання захищено паролем. Введіть пароль для продовження.",
+        "label": "Пароль",
+        "placeholder": "Введіть пароль",
+        "cancel": "Скасувати",
+        "submit": "Продовжити",
+        "verifying": "Перевірка..."
+      },
+      "errors": {
+        "loadFailed": "Не вдалося завантажити інформацію. Спробуйте ще раз.",
+        "passwordIncorrect": "Неправильний пароль. Спробуйте ще раз.",
+        "linkNotFound": "Посилання не знайдено або прострочене.",
+        "linkInactive": "Це посилання неактивне.",
+        "linkExpired": "Термін дії цього посилання закінчився.",
+        "uploadFailed": "Помилка завантаження файлу",
+        "retry": "Повторити",
+        "fileTooLarge": "Файл занадто великий. Максимальний розмір: {maxSize}",
+        "fileTypeNotAllowed": "Тип файлу не дозволений. Прийняті типи: {allowedTypes}",
+        "maxFilesExceeded": "Дозволено максимум {maxFiles} файлів",
+        "selectAtLeastOneFile": "Виберіть принаймні один файл",
+        "provideNameOrEmail": "Будь ласка, вкажіть ваше ім'я або електронну пошту",
+        "provideNameRequired": "Ім'я обов'язкове",
+        "provideEmailRequired": "Електронна пошта обов'язкова"
+      },
+      "fileDropzone": {
+        "dragActive": "Перетягніть файли сюди",
+        "dragInactive": "Перетягніть файли сюди або натисніть для вибору",
+        "acceptedTypes": "Прийняті типи: {types}",
+        "maxFileSize": "Максимальний розмір: {size}",
+        "maxFiles": "Максимум {count} файлів",
+        "remainingFiles": "{remaining} з {max} файлів залишилось"
+      },
+      "fileList": {
+        "title": "Вибрані файли:",
+        "statusUploaded": "Завантажено",
+        "statusError": "Помилка",
+        "retry": "Повторити"
+      },
+      "form": {
+        "nameLabel": "Ім'я",
+        "nameLabelOptional": "Ім'я (необов'язково)",
+        "namePlaceholder": "Ваше ім'я",
+        "emailLabel": "Електронна пошта",
+        "emailLabelOptional": "Електронна пошта (необов'язково)",
+        "emailPlaceholder": "ваш@email.ua",
+        "descriptionLabel": "Опис (необов'язково)",
+        "descriptionPlaceholder": "Додайте опис до файлів...",
+        "uploadButton": "Надіслати {count} файл(ів)",
+        "uploading": "Надсилання...",
+        "privacyNotice": "Ваше ім'я, електронна пошта та завантаження можуть бути видимими власнику цього посилання для отримання."
+      },
+      "success": {
+        "title": "Файли надіслано успішно! 🎉",
+        "description": "Ви можете закрити цю сторінку.",
+        "countMessage": "{count} файл(ів) надіслано успішно!"
+      },
+      "maxFilesReached": {
+        "title": "Досягнуто ліміт файлів",
+        "description": "Це посилання вже отримало максимальну кількість {maxFiles} файл(ів), що дозволена.",
+        "contactOwner": "Якщо сталася помилка або вам потрібно надіслати більше файлів, зв'яжіться з власником посилання."
+      },
+      "linkInactive": {
+        "title": "Посилання неактивне",
+        "description": "Це посилання для отримання тимчасово неактивне.",
+        "contactOwner": "Зв'яжіться з власником посилання для отримання додаткової інформації."
+      },
+      "linkNotFound": {
+        "title": "Посилання не знайдено",
+        "description": "Це посилання могло бути видалено або ніколи не існувало."
+      },
+      "linkExpired": {
+        "title": "Термін дії посилання закінчився",
+        "description": "Термін дії цього посилання для отримання закінчився і воно більше не приймає файли.",
+        "contactOwner": "Зв'яжіться з власником посилання, якщо вам потрібно надіслати файли."
+      }
+    },
+    "components": {
+      "fileRow": {
+        "addDescription": "Додати опис...",
+        "anonymous": "Анонімно"
+      },
+      "fileActions": {
+        "edit": "Редагувати",
+        "preview": "Попередній перегляд",
+        "download": "Завантажити",
+        "delete": "Видалити",
+        "copyToMyFiles": "Копіювати в мої файли",
+        "copying": "Копіювання..."
+      },
+      "editField": {
+        "saveChanges": "Зберегти зміни",
+        "cancelEdit": "Скасувати редагування"
+      }
+    }
+  },
+  "searchBar": {
+    "placeholder": "Пошук файлів і папок...",
+    "placeholderFiles": "Пошук файлів...",
+    "placeholderFolders": "Пошук папок...",
+    "results": "Показано {filtered} з {total} елементів",
+    "noResults": "Не знайдено результатів для \"{query}\""
+  },
+  "settings": {
+    "groups": {
+      "defaultDescription": "Опції конфігурації",
+      "general": {
+        "title": "Загальні",
+        "description": "Основні налаштування програми"
+      },
+      "email": {
+        "title": "Електронна пошта",
+        "description": "Конфігурація поштового сервера"
+      },
+      "security": {
+        "title": "Безпека",
+        "description": "Налаштування безпеки та автентифікації"
+      },
+      "storage": {
+        "title": "Сховище",
+        "description": "Конфігурація сховища файлів"
+      },
+      "oidc": {
+        "title": "OpenID Connect (SSO)",
+        "description": "Налаштування автентифікації SSO через OpenID Connect"
+      },
+      "backgrounds": {
+        "title": "Фонові зображення",
+        "description": "Керуйте фоновими зображеннями для сторінок завантаження у стилі WeTransfer"
+      },
+      "cleanup": {
+        "title": "Автоматичне очищення",
+        "description": "Управління життєвим циклом для контенту, що закінчився, дезактивованих облікових записів та сирітських файлів. Автоматичне видалення за замовчуванням вимкнено."
+      }
+    },
+    "fields": {
+      "noDescription": "Опис недоступний",
+      "appLogo": {
+        "title": "Логотип програми",
+        "description": "Зображення логотипу програми"
+      },
+      "appName": {
+        "title": "Назва програми",
+        "description": "Назва програми, яка відображається користувачам"
+      },
+      "appUrl": {
+        "title": "URL додатку",
+        "description": "Публічна URL додатку, використовується в посиланнях електронної пошти"
+      },
+      "appDescription": {
+        "title": "Опис програми",
+        "description": "Короткий опис програми"
+      },
+      "showHomePage": {
+        "title": "Публічна лендінгова сторінка",
+        "description": "Відображати публічну лендінгову сторінку для відвідувачів. Якщо вимкнено, відвідувачів перенаправляють на сторінку входу."
+      },
+      "hideVersion": {
+        "title": "Сховати версію",
+        "description": "Сховати версію OUITRANSFER з підвалу на всіх сторінках"
+      },
+      "footerEnabled": {
+        "title": "Показувати підвал",
+        "description": "Відображати рядок підвалу в нижній частині всіх сторінок"
+      },
+      "footerText": {
+        "title": "Текст підвалу",
+        "description": "Назва компанії або організації, яка відображається в підвалі"
+      },
+      "footerUrl": {
+        "title": "URL підвалу",
+        "description": "URL посилання для тексту підвалу"
+      },
+      "smtpEnabled": {
+        "title": "SMTP увімкнено",
+        "description": "Увімкнути або вимкнути функціональність електронної пошти SMTP"
+      },
+      "smtpHost": {
+        "title": "SMTP сервер",
+        "description": "Адреса SMTP сервера"
+      },
+      "smtpPort": {
+        "title": "SMTP порт",
+        "description": "Порт SMTP сервера"
+      },
+      "smtpUser": {
+        "title": "SMTP користувач",
+        "description": "Ім'я користувача для автентифікації SMTP"
+      },
+      "smtpPass": {
+        "title": "SMTP пароль",
+        "description": "Пароль для автентифікації SMTP"
+      },
+      "smtpFromName": {
+        "title": "Ім'я відправника",
+        "description": "Відображуване ім'я для надісланих листів"
+      },
+      "smtpFromEmail": {
+        "title": "Email відправника",
+        "description": "Адреса електронної пошти відправника"
+      },
+      "smtpSecure": {
+        "title": "Безпека з'єднання",
+        "description": "Метод безпеки SMTP з'єднання - Авто (рекомендується), SSL, STARTTLS або Немає (небезпечно)",
+        "options": {
+          "auto": "Авто (рекомендується)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
+          "none": "Немає (небезпечно)"
+        }
+      },
+      "smtpNoAuth": {
+        "title": "Без автентифікації",
+        "description": "Увімкніть це для внутрішніх серверів, які не потребують користувача/пароля (ховає поля автентифікації)"
+      },
+      "smtpTrustSelfSigned": {
+        "title": "Довіряти самопідписаним сертифікатам",
+        "description": "Увімкніть це, щоб довіряти самопідписаним SSL/TLS сертифікатам (корисно для середовищ розробки)"
+      },
+      "testSmtp": {
+        "title": "Тестувати SMTP з'єднання",
+        "description": "Перевірити, чи дійсна конфігурація SMTP"
+      },
+      "maxLoginAttempts": {
+        "title": "Максимальна кількість спроб входу",
+        "description": "Максимальна кількість спроб входу перед блокуванням"
+      },
+      "loginBlockDuration": {
+        "title": "Тривалість блокування",
+        "description": "Тривалість (у секундах) блокування після перевищення спроб"
+      },
+      "passwordMinLength": {
+        "title": "Мінімальна довжина пароля",
+        "description": "Мінімальна кількість символів для паролів"
+      },
+      "passwordResetTokenExpiration": {
+        "title": "Закінчення токена скидання",
+        "description": "Час дії (у секундах) для токена скидання пароля"
+      },
+      "maxFileSize": {
+        "title": "Максимальний розмір файлу",
+        "description": "Максимально дозволений розмір файлу для завантаження. Можна перевизначити для кожного користувача або групи."
+      },
+      "maxTotalStoragePerUser": {
+        "title": "Максимальне сховище на користувача",
+        "description": "Загальне обмеження сховища на користувача. Можна перевизначити для кожного користувача або групи."
+      },
+      "quotaWarningThresholds": {
+        "title": "Пороги попередження квоти (%)",
+        "description": "Розділені комами відсотки, наприклад \"80,90\", при яких користувачу надсилається попередження квоти. Кожне значення повинно бути цілим числом від 1 до 99. Окреме сповіщення надсилається, коли сховище досягає 100%."
+      },
+      "quotaGracePeriodDays": {
+        "title": "Період льготи квоти (дні)",
+        "description": "Скільки днів користувач може залишатися над своєю квотою, перш ніж запрацює розумне видалення (тільки якщо розумне видалення включено нижче). Мінімум 0."
+      },
+      "quotaSmartDeletionEnabled": {
+        "title": "Розумне видалення файлів, що перевищують квоту",
+        "description": "За замовчуванням вимкнено. Коли ввімкнено, після періоду льготи найстаріші небезпечні файли користувача, який перевищив квоту, видаляються в безпечному порядку: спочатку завантаження без поділу, потім файли у неактивних спільних доступах протягом указаного нижче періоду. Файли в активних спільних доступах ніколи не видаляються, якщо немає безпечних файлів для видалення, нові завантаження просто блокуються."
+      },
+      "quotaInactiveShareDays": {
+        "title": "Поріг неактивності спільного доступу (дні)",
+        "description": "Файли спільного доступу мають право на розумне видалення, коли спільний доступ не має активності протягом цієї кількості днів. Мінімум 1."
+      },
+      "reverseShareQuotaSoftEnforcement": {
+        "title": "М'яке впровадження квоти зворотного спільного доступу",
+        "description": "За замовчуванням ввімкнено. Дозволяє зовнішнім гостям продовжувати завантаження у зворотний спільний доступ навіть якщо власник трохи перевищить свою квоту, щоб колекції не були перервані. Завантаження все ще блокуються, коли власник перевищує допуск, встановлений нижче, і власник попереджається про звільнення місця."
+      },
+      "reverseShareMaxOverageFactor": {
+        "title": "Коефіцієнт перевищення зворотного спільного доступу",
+        "description": "М'яке впровадження дозволяє завантаження до зворотного спільного доступу, поки використання не досягне цього кратного від квоти власника (наприклад, 3 = до трьох разів ліміт). Мінімум 1."
+      },
+      "reverseShareAbsoluteMaxBytes": {
+        "title": "Абсолютний ліміт зворотного спільного доступу",
+        "description": "Жорсткий ліміт для м'якого впровадження зворотного спільного доступу незалежно від коефіцієнта вище. Встановіть 0 для відсутності абсолютного ліміту."
+      },
+      "firstUserAccess": {
+        "title": "Доступ першого користувача",
+        "description": "Налаштування для першого доступу нових користувачів"
+      },
+      "serverUrl": {
+        "title": "URL сервера",
+        "description": "Базовий URL сервера OUITRANSFER (наприклад: https://OUITRANSFER.example.com)"
+      },
+      "passwordAuthEnabled": {
+        "title": "Автентифікація за паролем",
+        "description": "Увімкнути або вимкнути автентифікацію на основі пароля"
+      },
+      "emailDigestHour": {
+        "title": "Година розсилки дайджесту",
+        "description": "Година дня (0-23), коли надсилаються листи дайджесту"
+      },
+      "emailJobRetentionDays": {
+        "title": "Утримання завдань електронної пошти",
+        "description": "Кількість днів утримання завершених завдань електронної пошти перед очищенням"
+      },
+      "emailQueueIntervalSeconds": {
+        "title": "Інтервал обробки черги",
+        "description": "Секунди між циклами обробки черги електронної пошти"
+      },
+      "emailQueueMaxRetries": {
+        "title": "Максимальна кількість повторних спроб електронної пошти",
+        "description": "Максимальна кількість спроб повторної відправки невдалих листів"
+      },
+      "auditRetentionDays": {
+        "title": "Зберігання аудиту",
+        "description": "Кількість днів для зберігання журналів аудиту (0 = назавжди, мінімум 7)"
+      },
+      "autoCleanupEnabled": {
+        "title": "Ввімкнути автоматичне очищення",
+        "description": "Головний вимикач для заплановано очищення посилань спільного доступу, що закінчилися, файлів зворотного спільного доступу, що закінчилися, та сирітських. За замовчуванням вимкнено, нічого не видаляється автоматично, поки ви це не ввімкнете."
+      },
+      "autoCleanupIntervalHours": {
+        "title": "Інтервал очищення (години)",
+        "description": "Як часто запускається завдання очищення. Мінімум 1 година."
+      },
+      "autoCleanupGracePeriodDays": {
+        "title": "Період льготи (дні)",
+        "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
+      },
+      "autoCleanupNotifyDaysBefore": {
+        "title": "Попередження перед видаленням (дні)",
+        "description": "Надішліть власнику електронний лист із попередженням про \"очікуване постійне видалення\" за цю кількість днів до видалення контенту. 0 вимикає попередження. Не повинна перевищувати період льготи."
+      },
+      "accountDeactivationCleanupEnabled": {
+        "title": "Видалити файли дезактивованих облікових записів",
+        "description": "Коли ввімкнено, файли дезактивованого облікового запису видаляються назавжди після встановленої нижче затримки. За замовчуванням вимкнено, дезактивація сама по собі ніколи не видаляє файли."
+      },
+      "accountDeactivationCleanupDays": {
+        "title": "Затримка очищення дезактивації (дні)",
+        "description": "Дні після дезактивації облікового запису до видалення його файлів (тільки якщо вище ввімкнена опція). Мінімум 1."
+      },
+      "autoCleanupOrphansEnabled": {
+        "title": "Очищення сирітських файлів",
+        "description": "Коли ввімкнено, виконує двостороннє очищення, яке видаляє записи бази даних, на які вказуються відсутні об'єкти сховища, та об'єкти сховища без запису. За замовчуванням вимкнено."
+      },
+      "autoCleanupOrphanMinAgeHours": {
+        "title": "Мінімальний вік сирітського файлу (години)",
+        "description": "Під час очищення сирітських файлів враховуються лише файли та об'єкти, старіші за цей період, захищаючи завантаження, що все ще виконуються. Мінімум 1."
+      }
+    },
+    "buttons": {
+      "save": "Зберегти {group}",
+      "testSmtp": "Тестувати з'єднання",
+      "testing": "Тестування..."
+    },
+    "errors": {
+      "loadFailed": "Не вдалося завантажити налаштування",
+      "updateFailed": "Не вдалося оновити налаштування",
+      "passwordAuthRequiresProvider": "Неможливо вимкнути автентифікацію паролем без принаймні одного активного постачальника автентифікації",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
+      "cleanupValueInvalid": "Значення повинно бути цілим числом щонайменше {min}",
+      "notifyDaysExceedsGrace": "Час попередження не повинен перевищувати період льготи, інакше попередження не буде надіслано",
+      "quotaThresholdsInvalid": "Введіть розділені комами відсотки від 1 до 99, наприклад \"80,90\""
+    },
+    "messages": {
+      "noChanges": "Немає змін для збереження",
+      "updateSuccess": "Налаштування {group} успішно оновлено",
+      "smtpTestSuccess": "SMTP з'єднання успішне! Ваша конфігурація електронної пошти працює правильно.",
+      "smtpTestFailed": "SMTP з'єднання не вдалося: {error}",
+      "smtpTestGenericError": "Не вдалося протестувати SMTP з'єднання. Будь ласка, перевірте ваші налаштування та спробуйте знову.",
+      "smtpNotEnabled": "SMTP не увімкнено. Будь ласка, спочатку увімкніть SMTP.",
+      "smtpMissingHostPort": "Будь ласка, заповніть SMTP хост і порт перед тестуванням.",
+      "smtpMissingAuth": "Будь ласка, заповніть SMTP користувача та пароль, або увімкніть опцію 'Без автентифікації'."
+    },
+    "title": "Налаштування",
+    "breadcrumb": "Налаштування",
+    "pageTitle": "Налаштування",
+    "tooltips": {
+      "testSmtp": "Тестує SMTP з'єднання з значеннями, які наразі введені у формі. Щоб зміни стали постійними, не забудьте зберегти налаштування після тестування.",
+      "defaultPlaceholder": "Введіть і натисніть Enter"
+    },
+    "redirectUri": {
+      "placeholder": "https://mysite.ua",
+      "previewLabel": "Повний URL, який буде збережено:"
+    },
+    "emailAdmin": {
+      "queueStatus": "Стан черги електронної пошти",
+      "pending": "Очікування",
+      "sentLast24h": "Надіслано (24г)",
+      "failed": "Помилка",
+      "digestQueue": "Черга дайджестів",
+      "sendTest": "Надіслати тестовий лист",
+      "testPlaceholder": "ваш@email.ua",
+      "testSending": "Відправка...",
+      "testSuccess": "Тестовий лист успішно додано до черги",
+      "testError": "Не вдалося надіслати тестовий лист"
+    }
+  },
+  "share": {
+    "errors": {
+      "invalidPassword": "Неправильний пароль. Будь ласка, спробуйте ще раз.",
+      "loadFailed": "Не вдалося завантажити спільне використання",
+      "downloadFailed": "Не вдалося завантажити файл"
+    },
+    "messages": {
+      "downloadStarted": "Завантаження розпочато"
+    },
+    "password": {
+      "title": "Захищене паролем спільне використання",
+      "protected": "Введіть пароль для доступу до спільних файлів.",
+      "incorrect": "Неправильний пароль. Будь ласка, спробуйте ще раз.",
+      "label": "Пароль",
+      "placeholder": "Введіть пароль спільного використання",
+      "submit": "Надіслати"
+    },
+    "details": {
+      "untitled": "Спільне використання без назви",
+      "created": "Створено: {date}",
+      "expires": "Закінчується: {date}"
+    },
+    "downloadAll": "Завантажити все",
+    "notFound": {
+      "title": "Спільне використання не знайдено",
+      "description": "Це спільне використання могло бути видалене або закінчилося."
+    },
+    "pageTitle": "Спільне використання",
+    "metadata": {
+      "defaultDescription": "Безпечно ділитися файлами",
+      "filesShared": "{count, plural, =1 {1 файл спільно використовується} few {# файли спільно використовуються} many {# файлів спільно використовується} other {# файлів спільно використовується}}"
+    },
+    "identification": {
+      "title": "Ідентифікація відвідувача",
+      "subtitle": "Будь ласка, надайте свою інформацію для доступу до цього спільного доступу",
+      "nameLabel": "Ім'я",
+      "emailLabel": "Електронна пошта",
+      "submit": "Продовжити",
+      "error": "Не вдалося надіслати ідентифікацію. Будь ласка, спробуйте ще раз.",
+      "optional": "Необов'язково",
+      "nameRequired": "Ім'я обов'язкове",
+      "emailRequired": "Електронна пошта обов'язкова",
+      "emailInvalid": "Будь ласка, введіть коректну адресу електронної пошти",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "Ваші доступи та завантаження можуть бути видимими відправнику цього спільного доступу."
+    }
+  },
+  "shareActions": {
+    "fileTitle": "Поділитися файлом",
+    "folderTitle": "Поділитися папкою",
+    "linkTitle": "Створити посилання",
+    "linkDescriptionFile": "Створити індивідуальне посилання для спільного використання файлу",
+    "linkDescriptionFolder": "Створити індивідуальне посилання для спільного використання папки",
+    "aliasLabel": "Псевдонім посилання",
+    "aliasPlaceholder": "Введіть індивідуальний псевдонім",
+    "linkReady": "Ваше посилання для спільного використання готове:",
+    "generateLink": "Створити посилання",
+    "copyLink": "Копіювати посилання",
+    "deleteTitle": "Видалити спільне використання",
+    "deleteConfirmation": "Ви впевнені, що хочете видалити це спільне використання? Цю дію неможливо скасувати.",
+    "addDescriptionPlaceholder": "Додати опис...",
+    "editTitle": "Редагувати спільне використання",
+    "newPasswordLabel": "Новий пароль (залиште порожнім, щоб зберегти поточний)",
+    "newPasswordPlaceholder": "Введіть новий пароль",
+    "manageFilesTitle": "Керувати файлами",
+    "manageFilesDescription": "Виберіть файли та папки для включення в це спільне використання",
+    "manageRecipientsTitle": "Керувати одержувачами",
+    "itemsSelected": "Вибрано елементів: {count}",
+    "editSuccess": "Спільне використання успішно оновлено",
+    "editError": "Не вдалося оновити спільне використання",
+    "editErrorMetadata": "Не вдалося оновити деталі спільного доступу",
+    "editErrorPassword": "Не вдалося оновити пароль спільного доступу",
+    "bulkDeleteConfirmation": "Ви впевнені, що хочете видалити {count, plural, =1 {1 спільне використання} few {# спільних використання} many {# спільних використань} other {# спільних використань}}? Цю дію неможливо скасувати.",
+    "bulkDeleteTitle": "Видалити вибрані спільні використання",
+    "keepCurrentPasswordHint": "Залиште порожнім, щоб зберегти поточний пароль",
+    "passwordRequired": "Пароль необхідний для нової защити паролем"
+  },
+  "shareDetails": {
+    "title": "Деталі спільного використання",
+    "subtitle": "Переглянути та керувати деталями цього спільного використання",
+    "basicInfo": "Основна інформація",
+    "name": "Назва",
+    "description": "Опис",
+    "shareLink": "Посилання для спільного використання",
+    "dates": "Дати",
+    "security": "Безпека",
+    "files": "Файли",
+    "recipients": "Одержувачі",
+    "views": "Перегляди",
+    "created": "Створено",
+    "expires": "Закінчується",
+    "never": "Ніколи",
+    "untitled": "Спільне використання без назви",
+    "noDescription": "Немає опису",
+    "notAvailable": "Н/Д",
+    "invalidDate": "Неправильна дата",
+    "passwordProtected": "Захищено паролем",
+    "publicAccess": "Публічний доступ",
+    "maxViews": "Макс. переглядів:",
+    "noLink": "Посилання не створено",
+    "generateLink": "Створити посилання",
+    "editLink": "Редагувати посилання",
+    "copyLink": "Копіювати посилання",
+    "openLink": "Відкрити посилання",
+    "editSecurity": "Редагувати безпеку",
+    "editExpiration": "Редагувати закінчення",
+    "qrCode": "QR код",
+    "downloadQrCode": "Завантажити QR код",
+    "clickToEnlargeQrCode": "Клікніть, щоб збільшити QR код",
+    "loadError": "Не вдалося завантажити деталі спільного використання",
+    "activity": {
+      "title": "Активність",
+      "noActivity": "Поки що немає записаної активності.",
+      "access": "Переглянуто",
+      "download": "Завантажено",
+      "anonymous": "Анонімно",
+      "loadMore": "Завантажити ще",
+      "showingCount": "Показано {shown} з {total}",
+      "loadError": "Не вдалося завантажити дані активності.",
+      "filterAll": "Усі дії",
+      "filterAccess": "Тільки перегляди",
+      "filterDownload": "Тільки завантаження",
+      "filterAllVisitors": "Усі відвідувачі",
+      "filterIdentified": "Ідентифіковано",
+      "filterAnonymous": "Анонімно",
+      "you": "Ви",
+      "source": {
+        "tracking_token": "Через посилання одержувача",
+        "cookie": "Самоідентифіковано",
+        "selfDeclaredHint": "Самозаявлена ідентичність, не перевірена",
+        "authenticated_user": "Зареєстрований користувач"
+      }
+    },
+    "lastDownloaded": "Останнє завантаження",
+    "privacySummary": "Конфіденційність",
+    "privacyNameField": "Ім''я відвідувача:",
+    "privacyEmailField": "Email відвідувача:",
+    "privacyNotifyOnDownload": "Сповіщення про завантаження увімкнено",
+    "privacyInactivityAlert": "Попередження про неактивність через {days} днів",
+    "fieldValue": {
+      "OPTIONAL": "Необов''язково",
+      "REQUIRED": "Обов''язково"
+    },
+    "recipientNotified": "Сповіщено",
+    "recipientAccess": "{count, plural, one {# доступ} other {# доступів}}",
+    "recipientAccessWithLast": "{count, plural, one {# доступ} other {# доступів}} · останній {lastAccess}"
+  },
+  "shareExpiration": {
+    "title": "Налаштування закінчення спільного доступу",
+    "subtitle": "Налаштуйте, коли буде закінчений цей спільний доступ",
+    "currentStatus": "Поточний статус",
+    "expires": "Закінчується:",
+    "neverExpires": "Ніколи не закінчується",
+    "enableExpiration": "Увімкнути закінчення",
+    "expirationDate": "Дата закінчення",
+    "validation": {
+      "dateRequired": "Будь ласка, виберіть дату закінчення",
+      "dateMustBeFuture": "Дата закінчення повинна бути в майбутньому"
+    },
+    "success": {
+      "expirationSet": "Дата закінчення встановлена успішно",
+      "expirationUpdated": "Дата закінчення оновлена успішно",
+      "expirationRemoved": "Закінчення видалено успішно - спільне використання тепер постійне"
+    },
+    "error": {
+      "updateFailed": "Не вдалося оновити налаштування закінчення"
+    },
+    "info": {
+      "title": "Про закінчення:",
+      "willBeInaccessible": "Спільне використання стане недоступним після цієї дати",
+      "canBeChanged": "Ви можете змінити або видалити дату закінчення в будь-який час",
+      "noExpiration": "Це спільне використання ніколи не закінчиться і залишатиметься доступним безстроково."
+    }
+  },
+  "shareManager": {
+    "deleteSuccess": "Спільне використання видалено успішно",
+    "deleteError": "Не вдалося видалити спільне використання",
+    "updateSuccess": "Спільне використання оновлено успішно",
+    "updateError": "Не вдалося оновити спільне використання",
+    "securityUpdateSuccess": "Налаштування безпеки оновлено успішно",
+    "securityUpdateError": "Не вдалося оновити налаштування безпеки",
+    "expirationUpdateSuccess": "Налаштування закінчення оновлено успішно",
+    "expirationUpdateError": "Не вдалося оновити налаштування закінчення",
+    "filesUpdateSuccess": "Файли оновлено успішно",
+    "filesUpdateError": "Не вдалося оновити файли",
+    "recipientsUpdateSuccess": "Одержувачі оновлено успішно",
+    "recipientsUpdateError": "Не вдалося оновити одержувачів",
+    "linkGenerateSuccess": "Посилання для спільного використання створено успішно",
+    "linkGenerateError": "Не вдалося створити посилання для спільного використання",
+    "notifyLoading": "Надсилання сповіщень...",
+    "notifySuccess": "Одержувачі успішно сповіщені",
+    "notifyError": "Не вдалося сповістити одержувачів",
+    "bulkDeleteError": "Не вдалося видалити спільні використання",
+    "bulkDeleteLoading": "Видалення {count, plural, =1 {1 спільного використання} few {# спільних використань} many {# спільних використань} other {# спільних використань}}...",
+    "bulkDeleteSuccess": "{count, plural, =1 {1 спільне використання видалено успішно} few {# спільних використання видалено успішно} many {# спільних використань видалено успішно} other {# спільних використань видалено успішно}}",
+    "downloadSuccess": "Завантаження розпочато успішно",
+    "downloadError": "Не вдалося завантажити файли спільного використання",
+    "noFilesToDownload": "Немає файлів для завантаження",
+    "creatingZip": "Створення ZIP файлу...",
+    "zipDownloadSuccess": "ZIP файл завантажено успішно",
+    "zipDownloadError": "Не вдалося створити ZIP файл",
+    "errors": {
+      "multipleDownloadNotSupported": "Завантаження кількох спільних використань ще не підтримується - будь ласка, завантажуйте спільні використання окремо"
+    },
+    "singleShareZipName": "{shareName}_files.zip",
+    "multipleSharesZipName": "{count}_shares_files.zip",
+    "defaultShareName": "Спільне використання",
+    "pauseSuccess": "Спільний доступ призупинено",
+    "pauseError": "Не вдалося призупинити спільний доступ",
+    "resumeSuccess": "Спільний доступ відновлено",
+    "resumeError": "Не вдалося відновити спільний доступ. Якщо він закінчився дію або досяг ліміту переглядів, розширте його замість цього."
+  },
+  "shareMultipleFiles": {
+    "title": "Поділитися кількома файлами",
+    "shareNameLabel": "Назва спільного використання",
+    "shareNamePlaceholder": "Введіть назву спільного використання",
+    "descriptionLabel": "Опис",
+    "descriptionPlaceholder": "Введіть опис (необов'язково)",
+    "filesToShare": "Файли для спільного використання",
+    "files": "файли",
+    "totalSize": "Загальний розмір: {size}",
+    "creating": "Створення спільного використання...",
+    "create": "Створити спільне використання",
+    "itemsToShare": "Елементи для спільного використання ({count} {count, plural, =1 {елемент} few {елементи} many {елементів} other {елементів}})",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
+  },
+  "shareSecurity": {
+    "title": "Налаштування безпеки спільного використання",
+    "subtitle": "Налаштуйте захист паролем та опції безпеки для цього спільного використання",
+    "currentStatus": "Поточний статус",
+    "passwordProtection": "Захист паролем",
+    "password": "Пароль",
+    "newPassword": "Новий пароль",
+    "passwordPlaceholder": "Введіть безпечний пароль",
+    "existingPasswordMessage": "Це спільне використання вже має пароль. Якщо ви хочете його оновити, введіть новий пароль у поле нижче та збережіть.",
+    "passwordRequirements": {
+      "title": "Вимоги до пароля:",
+      "minLength": "Принаймні 2 символи"
+    },
+    "info": {
+      "title": "Як це працює:",
+      "withPassword": "Користувачам потрібно буде ввести пароль для доступу до цього спільного використання.",
+      "withoutPassword": "Будь-хто з посиланням може отримати доступ до цього спільного використання без пароля."
+    },
+    "validation": {
+      "passwordRequired": "Пароль обов'язковий",
+      "passwordTooShort": "Пароль повинен містити принаймні 2 символи"
+    },
+    "success": {
+      "passwordSet": "Захист паролем увімкнено успішно",
+      "passwordUpdated": "Пароль оновлено успішно",
+      "passwordRemoved": "Захист паролем видалено успішно"
+    },
+    "error": {
+      "updateFailed": "Не вдалося оновити налаштування безпеки"
+    }
+  },
+  "shares": {
+    "errors": {
+      "loadFailed": "Не вдалося завантажити спільні використання",
+      "notifyFailed": "Не вдалося сповістити одержувачів",
+      "smtpConfigFailed": "Не вдалося завантажити конфігурацію SMTP"
+    },
+    "messages": {
+      "linkCopied": "Посилання скопійовано в буфер обміну",
+      "recipientsNotified": "Одержувачі успішно сповіщені"
+    },
+    "empty": {
+      "message": "Ще не створено жодного спільного використання",
+      "createButton": "Створити спільне використання"
+    },
+    "header": {
+      "title": "Мої спільні використання",
+      "myShares": "Мої спільні використання"
+    },
+    "search": {
+      "title": "Всі спільні використання",
+      "createButton": "Створити спільне використання",
+      "placeholder": "Пошук спільних використань...",
+      "results": "Знайдено {filtered} з {total} спільних використань"
+    },
+    "pageTitle": "Спільні використання"
+  },
+  "sharesTable": {
+    "ariaLabel": "Таблиця спільних використань",
+    "never": "Ніколи",
+    "columns": {
+      "name": "НАЗВА",
+      "description": "ОПИС",
+      "createdAt": "СТВОРЕНО",
+      "expiresAt": "ЗАКІНЧУЄТЬСЯ",
+      "status": "СТАТУС",
+      "security": "БЕЗПЕКА",
+      "files": "ФАЙЛИ",
+      "recipients": "ОДЕРЖУВАЧІ",
+      "actions": "ДІЇ"
+    },
+    "status": {
+      "neverExpires": "Ніколи не закінчується",
+      "active": "Активне",
+      "expired": "Закінчилося",
+      "paused": "Призупинено",
+      "maxViewsReached": "Досягнут ліміт переглядів",
+      "noLink": "Без посилання",
+      "noLinkTooltip": "Це надання ще не має посилання: воно недоступне. Створіть посилання, щоб поділитися ним."
+    },
+    "security": {
+      "protected": "Захищене",
+      "public": "Публічне"
+    },
+    "filesCount": "файли",
+    "folderCount": "папки",
+    "recipientsCount": "одержувачі",
+    "actions": {
+      "menu": "Меню дій спільного використання",
+      "edit": "Редагувати",
+      "manageFiles": "Керувати файлами",
+      "manageRecipients": "Керувати одержувачами",
+      "viewDetails": "Переглянути деталі",
+      "generateLink": "Створити посилання",
+      "editLink": "Редагувати посилання",
+      "copyLink": "Копіювати посилання",
+      "viewQrCode": "Переглянути QR код",
+      "notifyRecipients": "Сповістити одержувачів",
+      "downloadShareFiles": "Завантажити всі файли",
+      "delete": "Видалити",
+      "pause": "Призупинити",
+      "resume": "Відновити",
+      "renew": "Поновити"
+    },
+    "bulkActions": {
+      "actions": "Дії",
+      "download": "Завантажити вибрані",
+      "delete": "Видалити",
+      "selected": "{count, plural, =1 {1 спільне використання вибрано} few {# спільних використання вибрано} many {# спільних використань вибрано} other {# спільних використань вибрано}}"
+    },
+    "selectAll": "Вибрати все",
+    "selectShare": "Вибрати спільне використання {shareName}"
+  },
+  "theme": {
+    "toggle": "Переключити тему",
+    "light": "Світла",
+    "dark": "Темна",
+    "system": "Системна"
+  },
+  "twoFactor": {
+    "title": "Двофакторна автентифікація",
+    "description": "Додайте додатковий рівень безпеки до вашого облікового запису",
+    "enabled": "Ваш обліковий запис захищений двофакторною автентифікацією",
+    "disabled": "Двофакторна автентифікація не увімкнена",
+    "status": {
+      "label": "Статус:",
+      "enabled": "Увімкнено",
+      "disabled": "Вимкнено"
+    },
+    "buttons": {
+      "enable2FA": "Увімкнути 2FA",
+      "disable2FA": "Вимкнути 2FA"
+    },
+    "setup": {
+      "title": "Увімкнути двофакторну автентифікацію",
+      "description": "Відскануйте QR код за допомогою вашого додатку автентифікатора, потім введіть код підтвердження.",
+      "qrCode": "QR код",
+      "manualEntryKey": "Ключ для ручного введення",
+      "verificationCode": "Код підтвердження",
+      "verificationCodePlaceholder": "Введіть 6-значний код",
+      "verificationCodeDescription": "Введіть 6-значний код з вашого додатку автентифікатора",
+      "verifyAndEnable": "Підтвердити та увімкнути",
+      "cancel": "Скасувати",
+      "qrCodeAlt": "QR-код двофакторної автентифікації"
+    },
+    "disable": {
+      "title": "Вимкнути двофакторну автентифікацію",
+      "description": "Введіть ваш пароль для підтвердження вимкнення двофакторної автентифікації.",
+      "password": "Пароль",
+      "passwordPlaceholder": "Введіть ваш пароль",
+      "totpLabel": "Код підтвердження",
+      "totpHint": "Введіть 6-значний код автентифікатора або резервний код",
+      "confirm": "Підтвердити вимкнення",
+      "cancel": "Скасувати",
+      "totpPlaceholder": "000 000"
+    },
+    "backupCodes": {
+      "title": "Резервні коди",
+      "description": "Збережіть ці резервні коди в безпечному місці. Ви можете використовувати їх для доступу до вашого облікового запису, якщо втратите пристрій автентифікатора.",
+      "warning": "Важливо:",
+      "warningText": "Кожен резервний код можна використати лише один раз. Тримайте їх в безпеці і не діліться ними з ніким.",
+      "generateNew": "Створити нові резервні коди",
+      "download": "Завантажити резервні коди",
+      "copyToClipboard": "Копіювати в буфер обміну",
+      "savedMessage": "Я зберіг мої резервні коди",
+      "available": "Доступно резервних кодів: {count}",
+      "instructions": [
+        "• Збережіть ці коди в безпечному місці",
+        "• Кожен резервний код можна використати лише один раз",
+        "• Ви можете створити нові коди в будь-який час"
+      ]
+    },
+    "verification": {
+      "title": "Двофакторна автентифікація",
+      "description": "Введіть 6-значний код з вашого додатку автентифікатора",
+      "backupDescription": "Введіть один з ваших резервних кодів для продовження",
+      "verificationCode": "Код підтвердження",
+      "backupCode": "Резервний код",
+      "verificationCodePlaceholder": "000000",
+      "backupCodePlaceholder": "XXXX-XXXX",
+      "verify": "Підтвердити",
+      "verifying": "Підтвердження...",
+      "useBackupCode": "Використати резервний код замість цього",
+      "useAuthenticatorCode": "Використати код автентифікатора замість цього",
+      "rememberDevice": "Запам'ятати цей пристрій на 30 днів",
+      "rememberDeviceDescription": "Вам не потрібно буде вводити коди 2FA на цьому пристрої протягом 30 днів"
+    },
+    "trustedDevices": {
+      "title": "Довірені пристрої - 2FA",
+      "description": "Пристрої, які не потребують підтвердження 2FA",
+      "noDevices": "Немає довірених пристроїв",
+      "deviceName": "Пристрій",
+      "addedOn": "Додано",
+      "expiresOn": "Закінчується",
+      "remove": "Видалити",
+      "removeAll": "Видалити все",
+      "confirmRemove": "Ви впевнені, що хочете видалити цей довірений пристрій?",
+      "confirmRemoveAll": "Ви впевнені, що хочете видалити всі довірені пристрої?",
+      "deviceRemoved": "Довірений пристрій успішно видалено",
+      "allDevicesRemoved": "Всі довірені пристрої успішно видалено",
+      "loadFailed": "Не вдалося завантажити довірені пристрої",
+      "removeFailed": "Не вдалося видалити довірений пристрій",
+      "removeAllFailed": "Не вдалося видалити всі довірені пристрої",
+      "loading": "Завантаження довірених пристроїв...",
+      "noDevicesDescription": "Пристрої з'являться тут, коли ви оберете довіряти їм під час підтвердження 2FA",
+      "tableHeaders": {
+        "device": "Пристрій",
+        "added": "Додано",
+        "expires": "Закінчується",
+        "lastUsed": "Останнє використання",
+        "ipAddress": "IP адреса",
+        "actions": "Дії"
+      },
+      "status": {
+        "never": "Ніколи",
+        "expired": "Закінчився"
+      },
+      "modals": {
+        "removeDevice": {
+          "title": "Видалити довірений пристрій",
+          "added": "Додано:",
+          "ip": "IP:"
+        },
+        "removeAllDevices": {
+          "title": "Видалити усі довірені пристрої",
+          "description": "Це видалить {count} довірений пристрій/пристроїв. Вам знадобиться вивірити 2FA на всіх пристроях знову."
+        },
+        "buttons": {
+          "cancel": "Скасувати",
+          "removing": "Видалення...",
+          "removeDevice": "Видалити пристрій",
+          "removeAllDevices": "Видалити всі пристрої"
+        }
+      }
+    },
+    "messages": {
+      "enabledSuccess": "Двофакторна автентифікація успішно увімкнена!",
+      "disabledSuccess": "Двофакторна автентифікація успішно вимкнена",
+      "backupCodesGenerated": "Нові резервні коди успішно створено",
+      "backupCodesCopied": "Резервні коди скопійовано в буфер обміну",
+      "setupFailed": "Не вдалося створити налаштування 2FA",
+      "verificationFailed": "Неправильний код підтвердження",
+      "disableFailed": "Не вдалося вимкнути 2FA. Будь ласка, перевірте ваш пароль.",
+      "backupCodesFailed": "Не вдалося створити резервні коди",
+      "backupCodesCopyFailed": "Не вдалося скопіювати резервні коди",
+      "statusLoadFailed": "Не вдалося завантажити статус 2FA",
+      "enterVerificationCode": "Будь ласка, введіть код підтвердження",
+      "enterPassword": "Будь ласка, введіть ваш пароль",
+      "deviceTrusted": "Цей пристрій позначено як довірений на 30 днів"
+    },
+    "errors": {
+      "invalidVerificationCode": "Неправильний код підтвердження",
+      "invalidTwoFactorCode": "Неправильний код двофакторної автентифікації",
+      "twoFactorRequired": "Потрібна двофакторна автентифікація",
+      "twoFactorAlreadyEnabled": "Двофакторна автентифікація вже увімкнена",
+      "twoFactorNotEnabled": "Двофакторна автентифікація не увімкнена",
+      "passwordVerificationRequired": "Потрібне підтвердження пароля",
+      "invalidPassword": "Неправильний пароль",
+      "userNotFound": "Користувача не знайдено"
+    },
+    "deviceNames": {
+      "unknownDevice": "Невідомий пристрій",
+      "browsers": {
+        "chrome": "Chrome",
+        "firefox": "Firefox",
+        "safari": "Safari",
+        "edge": "Edge"
+      },
+      "platforms": {
+        "windows": " у Windows",
+        "macos": " у macOS",
+        "linux": " у Linux",
+        "iphone": " у iPhone",
+        "android": " у Android"
+      }
+    }
+  },
+  "uploadFile": {
+    "title": "Завантажити файл",
+    "multipleTitle": "Завантажити файли",
+    "selectFile": "Клікніть, щоб вибрати файл",
+    "selectMultipleFiles": "Клікніть, щоб вибрати один або кілька файлів",
+    "dragAndDrop": "або перетягніть файли сюди",
+    "filesQueued": "{count, plural, =1 {# файл у черзі на завантаження} few {# файли у черзі на завантаження} many {# файлів у черзі на завантаження} other {# файлів у черзі на завантаження}}",
+    "preview": "Попередній перегляд",
+    "uploadProgress": "Прогрес завантаження",
+    "upload": "Завантажити",
+    "startUploads": "Почати завантаження",
+    "retry": "Повторити",
+    "finish": "Завершити",
+    "success": "Файл успішно завантажено",
+    "allSuccess": "{count, plural, =1 {Файл успішно завантажено} few {# файли успішно завантажено} many {# файлів успішно завантажено} other {# файлів успішно завантажено}}",
+    "partialSuccess": "{success} файлів завантажено успішно, {error} не вдалося",
+    "error": "Не вдалося завантажити файл",
+    "fileSizeExceeded": "Розмір файлу перевищує ліміт {maxsizemb}МБ.",
+    "insufficientStorage": "Недостатньо місця для зберігання. У вас доступно {availablespace}МБ.",
+    "storageFull": "Недостатньо місця для зберігання. Доступно: {available} ГБ, потрібно: {required} ГБ.",
+    "unauthorized": "Неавторизовано: для доступу до цього ресурсу потрібний дійсний токен.",
+    "globalDrop": {
+      "title": "Відпустіть файли для завантаження",
+      "description": "Відпустіть, щоб завантажити ваші файли"
+    },
+    "confirmCancel": {
+      "title": "Скасувати завантаження",
+      "messageSingle": "Триває одне завантаження.",
+      "messageMultiple": "Триває {count} завантажень.",
+      "warning": "Якщо ви закриєте зараз, завантаження будуть скасовані і весь прогрес буде втрачено.",
+      "continue": "Продовжити завантаження",
+      "cancel": "Скасувати завантаження"
+    },
+    "pasteSuccess": "{count, plural, =1 {Зображення вставлено і завантажено успішно} few {# зображення вставлено і завантажено успішно} many {# зображень вставлено і завантажено успішно} other {# зображень вставлено і завантажено успішно}}",
+    "errors": {
+      "addFileFailed": "Не вдалося додати {name}: {error}",
+      "uploadFailed": "Помилка завантаження",
+      "networkError": "Не вдається зʼєднатися з сервером. Перевірте підключення.",
+      "storageUnavailable": "Служба зберігання недоступна. Спробуйте пізніше."
+    }
+  },
+  "groups": {
+    "header": {
+      "title": "Групи",
+      "management": "Управління Групами",
+      "addGroup": "Створити Групу"
+    },
+    "table": {
+      "name": "Назва",
+      "description": "Опис",
+      "members": "Учасники",
+      "maxFileSize": "Макс. розмір файлу",
+      "maxStorage": "Макс. сховище",
+      "storageUsed": "Використано сховища",
+      "actions": "Дії",
+      "inherited": "Успадковано",
+      "unlimited": "Без обмежень",
+      "empty": "Груп поки немає. Створіть одну для початку."
+    },
+    "form": {
+      "titleCreate": "Створити Групу",
+      "titleEdit": "Редагувати Групу",
+      "name": "Назва",
+      "namePlaceholder": "Введіть назву групи",
+      "description": "Опис",
+      "descriptionPlaceholder": "Необов'язковий опис",
+      "ldapDn": {
+        "label": "LDAP Group DN",
+        "placeholder": "напр. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name групи Active Directory для зпоставлення. Залиште порожнім, якщо LDAP не використовується."
+      },
+      "quota": {
+        "title": "Квоти сховища",
+        "maxFileSize": "Макс. розмір файлу",
+        "maxTotalStorage": "Макс. загальне сховище",
+        "inherit": "Успадкувати (глобальне за замовчуванням)",
+        "unlimited": "Без обмежень",
+        "custom": "Користувацький"
+      },
+      "create": "Створити Групу",
+      "save": "Зберегти Зміни"
+    },
+    "delete": {
+      "title": "Видалити Групу",
+      "confirmationWithMembers": "Ця група має {count} учасника/учасників. Їх буде відкріплено, а їхні квоти повернуться до глобальних значень за замовчуванням.",
+      "confirmation": "Ви впевнені, що хочете видалити цю групу?",
+      "confirm": "Видалити Групу"
+    },
+    "detail": {
+      "title": "Деталі Групи",
+      "members": "Учасники",
+      "addMember": "Додати Учасника",
+      "searchUsers": "Пошук користувачів...",
+      "noMembers": "У цій групі немає учасників.",
+      "remove": "Видалити",
+      "moveWarning": "Цей користувач зараз знаходиться в групі \"{groupName}\". Він буде переміщений до цієї групи.",
+      "storageUsed": "Використано сховища",
+      "memberUser": "Користувач",
+      "memberEmail": "Email",
+      "memberStorage": "Сховище",
+      "selectUser": "Виберіть користувача...",
+      "add": "Додати",
+      "userInOtherGroup": "Цей користувач вже є в групі \"{groupName}\". Його буде переміщено."
+    },
+    "validation": {
+      "nameRequired": "Назва групи обов'язкова"
+    },
+    "messages": {
+      "createSuccess": "Групу успішно створено",
+      "updateSuccess": "Групу успішно оновлено",
+      "deleteSuccess": "Групу успішно видалено",
+      "memberAdded": "Учасника додано до групи",
+      "memberRemoved": "Учасника видалено з групи"
+    },
+    "errors": {
+      "submitFailed": "Не вдалося {mode} групу",
+      "deleteFailed": "Не вдалося видалити групу",
+      "memberAddFailed": "Не вдалося додати учасника",
+      "memberRemoveFailed": "Не вдалося видалити учасника"
+    },
+    "actions": {
+      "viewDetails": "Переглянути Деталі",
+      "edit": "Редагувати",
+      "delete": "Видалити"
+    }
+  },
+  "users": {
+    "modes": {
+      "create": "створити",
+      "edit": "редагувати"
+    },
+    "errors": {
+      "loadFailed": "Не вдалося завантажити користувачів",
+      "submitFailed": "Не вдалося {mode} користувача",
+      "deleteFailed": "Не вдалося видалити користувача",
+      "statusUpdateFailed": "Не вдалося оновити статус користувача"
+    },
+    "messages": {
+      "createSuccess": "Користувача успішно створено",
+      "updateSuccess": "Користувача успішно оновлено",
+      "deleteSuccess": "Користувача успішно видалено",
+      "activateSuccess": "Користувача успішно активовано",
+      "deactivateSuccess": "Користувача успішно деактивовано"
+    },
+    "actions": {
+      "edit": "Редагувати",
+      "activate": "Активувати",
+      "deactivate": "Деактивувати",
+      "delete": "Видалити"
+    },
+    "delete": {
+      "title": "Підтвердити видалення користувача",
+      "confirmation": "Ви впевнені, що хочете видалити користувача {firstName} {lastName}? Цю дію неможливо скасувати.",
+      "confirm": "Видалити користувача"
+    },
+    "form": {
+      "titleCreate": "Додати нового користувача",
+      "titleEdit": "Редагувати користувача",
+      "firstName": "Ім'я",
+      "lastName": "Прізвище",
+      "username": "Ім'я користувача",
+      "email": "Електронна пошта",
+      "password": "Пароль",
+      "newPassword": "Новий пароль (необов'язково)",
+      "passwordPlaceholder": "Залиште порожнім, щоб зберегти поточний пароль",
+      "role": "Роль",
+      "roleUser": "Користувач",
+      "roleAdmin": "Адміністратор",
+      "group": "Група",
+      "noGroup": "Без групи",
+      "groupSaveError": "Не вдалося оновити призначення групи",
+      "create": "Створити",
+      "save": "Зберегти",
+      "quota": {
+        "title": "Квоти сховища",
+        "maxFileSize": "Максимальний розмір файлу",
+        "maxTotalStorage": "Максимальний загальний обсяг сховища",
+        "inherit": "Використовувати за замовчуванням",
+        "unlimited": "Без обмежень",
+        "custom": "Власний",
+        "saveSuccess": "Квоту успішно оновлено",
+        "saveError": "Не вдалося оновити квоту",
+        "currentUsage": "Поточне використання",
+        "effectiveMaxFileSize": "Фактичний максимальний розмір файлу",
+        "effectiveMaxStorage": "Фактичний максимальний загальний обсяг",
+        "usagePercent": "Використання",
+        "sourceUser": "Перевизначення користувача",
+        "sourceGroup": "Група",
+        "sourceGlobal": "Глобальне значення за замовчуванням",
+        "sourceAdminDefault": "Значення за замовчуванням адміністратора"
+      }
+    },
+    "status": {
+      "title": "Підтвердити зміну статусу",
+      "confirmation": "Ви впевнені, що хочете {action} користувача {firstName} {lastName}?",
+      "activate": "Активувати",
+      "deactivate": "Деактивувати",
+      "user": "Користувач"
+    },
+    "header": {
+      "title": "Керування користувачами",
+      "addUser": "Додати користувача",
+      "management": "Керування користувачами"
+    },
+    "table": {
+      "user": "USER",
+      "userRole": "Користувач",
+      "email": "ЕЛЕКТРОННА ПОШТА",
+      "status": "СТАТУС",
+      "role": "РОЛЬ",
+      "actions": "ДІЇ",
+      "active": "Активний",
+      "inactive": "Неактивний",
+      "admin": "Адміністратор",
+      "source": "Джерело",
+      "ldap": "LDAP",
+      "local": "Локальний"
+    },
+    "invite": {
+      "button": "Створити посилання для запрошення",
+      "title": "Створити посилання для запрошення користувача",
+      "description": "Створіть одноразове посилання, яке дозволяє комусь створити власний обліковий запис. Посилання закінчується через 15 хвилин.",
+      "generating": "Створення...",
+      "generate": "Створити посилання",
+      "generated": "Посилання для запрошення створено успішно!",
+      "linkReady": "Посилання для запрошення готове",
+      "linkReadyDescription": "Поділіться цим посиланням з особою, яку хочете запросити. Вони зможуть створити власний обліковий запис як звичайний користувач.",
+      "copyLink": "Копіювати посилання",
+      "linkCopied": "Посилання для запрошення скопійовано в буфер обміну!",
+      "expiresIn": "Закінчується через 15 хвилин",
+      "close": "Закрити",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
+      "errors": {
+        "generateFailed": "Не вдалося створити посилання для запрошення",
+        "copyFailed": "Не вдалося скопіювати посилання",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
+      }
+    }
+  },
+  "validation": {
+    "firstNameRequired": "Ім'я обов'язкове",
+    "lastNameRequired": "Прізвище обов'язкове",
+    "usernameLength": "Ім'я користувача повинно містити принаймні 3 символи",
+    "usernameSpaces": "Ім'я користувача не може містити пробіли",
+    "invalidEmail": "Будь ласка, введіть дійсну адресу електронної пошти",
+    "passwordLength": "Пароль повинен містити принаймні 12 символів",
+    "passwordsMatch": "Паролі повинні збігатися",
+    "emailRequired": "Електронна пошта обов'язкова",
+    "emailOrUsernameRequired": "Електронна пошта або ім'я користувача обов'язкові",
+    "passwordRequired": "Пароль обов'язковий",
+    "passwordMinLength": "Пароль повинен містити принаймні 6 символів",
+    "nameRequired": "Назва обов'язкова",
+    "required": "Це поле обов'язкове",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+  },
+  "registerWithInvite": {
+    "title": "Створіть свій обліковий запис",
+    "description": "Заповніть інформацію нижче, щоб створити свій обліковий запис",
+    "labels": {
+      "firstName": "Ім'я",
+      "firstNamePlaceholder": "Введіть ваше ім'я",
+      "lastName": "Прізвище",
+      "lastNamePlaceholder": "Введіть ваше прізвище",
+      "username": "Ім'я користувача",
+      "usernamePlaceholder": "Виберіть ім'я користувача",
+      "email": "Електронна пошта",
+      "emailPlaceholder": "Введіть вашу електронну пошту",
+      "password": "Пароль",
+      "passwordPlaceholder": "Виберіть пароль",
+      "confirmPassword": "Підтвердити пароль",
+      "confirmPasswordPlaceholder": "Підтвердіть ваш пароль"
+    },
+    "buttons": {
+      "creating": "Створення облікового запису...",
+      "createAccount": "Створити обліковий запис"
+    },
+    "validation": {
+      "firstNameRequired": "Ім'я обов'язкове",
+      "lastNameRequired": "Прізвище обов'язкове",
+      "usernameMinLength": "Ім'я користувача має бути щонайменше 3 символи",
+      "invalidEmail": "Неправильна електронна пошта",
+      "passwordMinLength": "Пароль має бути щонайменше 12 символів",
+      "passwordsMatch": "Паролі повинні збігатися",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "messages": {
+      "success": "Обліковий запис створено успішно! Перенаправлення на вхід...",
+      "redirecting": "Перенаправлення на вхід..."
+    },
+    "errors": {
+      "invalidToken": "Помилка з посиланням для запрошення",
+      "tokenUsed": "Це посилання для запрошення вже використано",
+      "tokenExpired": "Термін дії цього посилання для запрошення закінчився",
+      "usernameExists": "Ім'я користувача вже існує",
+      "emailExists": "Електронна пошта вже існує",
+      "createFailed": "Не вдалося створити обліковий запис. Спробуйте ще раз."
+    },
+    "pageTitle": "Створити обліковий запис"
+  },
+  "filesTree": {
+    "noItems": "Немає елементів для відображення"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Змінити мову"
+  },
+  "ldap": {
+    "pageTitle": "LDAP / Active Directory",
+    "pageDescription": "Налаштуйте синхронізацію LDAP для імпорту користувачів із Active Directory",
+    "config": {
+      "title": "Конфігурація",
+      "description": "Налаштування з'єднання сервера LDAP і відображення атрибутів",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
+      "connection": "З'єднання",
+      "serverUrl": "URL сервера",
+      "useTls": "Використовувати TLS (LDAPS)",
+      "tlsSkipVerify": "Пропустити перевірку TLS",
+      "tlsSkipVerifyWarning": "Попередження: Вимкнення перевірки сертифіката дозволяє атаки типу «людина посередині»",
+      "bindDn": "Bind DN",
+      "bindPassword": "Пароль Bind",
+      "bindPasswordPlaceholder": "Введіть пароль для тестування або збереження нового пароля",
+      "search": "Параметри пошуку",
+      "searchBase": "База пошуку",
+      "syncGroupDn": "Синхронізація Group DN",
+      "attributes": "Відображення атрибутів",
+      "usernameAttr": "Атрибут імені користувача",
+      "emailAttr": "Атрибут Email",
+      "displayNameAttr": "Атрибут відображення імені",
+      "syncSettings": "Параметри синхронізації",
+      "syncInterval": "Інтервал синхронізації (хвилини)",
+      "syncIntervalHelp": "Від 15 хвилин до 7 днів (10080 хвилин)",
+      "appUrl": "URL програми",
+      "appUrlHelp": "Використовується у приветствувальних листах, надісланих новим користувачам LDAP",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
+      "appUrlRequired": "URL програми обов'язковий, коли LDAP увімкнено",
+      "bindPasswordRequired": "Пароль Bind обов'язковий для нової конфігурації",
+      "members": "учасники",
+      "save": "Зберегти конфігурацію",
+      "testConnection": "Тестувати з'єднання",
+      "saveSuccess": "Конфігурація LDAP збережена",
+      "saveError": "Не вдалося зберегти конфігурацію LDAP",
+      "testSuccess": "Тест з'єднання успішний",
+      "testError": "Тест з'єднання не вдався"
+    },
+    "groupMapping": {
+      "title": "Відображення групи",
+      "description": "Локальні групи, зпоставлені групам Active Directory для призначення квот",
+      "manageGroups": "Керувати групами",
+      "groupName": "Назва групи",
+      "adGroupDn": "AD Group DN",
+      "noMapping": "Жодного відображення групи не налаштовано. Встановіть LDAP DN-и в управлінні групами для зпоставлення груп AD локальним групам квот."
+    },
+    "sync": {
+      "title": "Операції синхронізації",
+      "description": "Ручна синхронізація та історія синхронізації",
+      "syncNow": "Синхронізувати зараз",
+      "triggered": "Синхронізація LDAP запущена",
+      "error": "Не вдалося запустити синхронізацію LDAP",
+      "lastSync": "Остання синхронізація",
+      "nextSync": "Наступна синхронізація",
+      "noHistory": "Ще немає історії синхронізації",
+      "date": "Дата",
+      "trigger": "Запуск",
+      "duration": "Тривалість",
+      "created": "Створено",
+      "updated": "Оновлено",
+      "deactivated": "Деактивовано",
+      "reactivated": "Реактивовано",
+      "skipped": "Пропущено",
+      "status": "Статус",
+      "statusLabel": {
+        "success": "Успішно",
+        "error": "Помилка",
+        "partial": "Частково",
+        "running": "Виконується"
+      }
+    },
+    "syncDetail": {
+      "title": "Деталі синхронізації",
+      "details": "Деталі пропусків та помилок",
+      "type": "Тип",
+      "username": "Ім'я користувача",
+      "email": "Email",
+      "message": "Повідомлення",
+      "detailType": {
+        "skip": "Пропущено",
+        "error": "Помилка"
+      }
+    },
+    "banner": {
+      "active": "Синхронізація LDAP/AD активна",
+      "disabled": "Синхронізація LDAP/AD вимкнена",
+      "configure": "Налаштувати"
+    },
+    "warnings": {
+      "title": "Попередження конфігурації"
+    },
+    "time": {
+      "justNow": "щойно",
+      "minutesAgo": "{minutes}хв тому",
+      "hoursAgo": "{hours}г тому",
+      "daysAgo": "{days}д тому"
+    },
+    "browse": {
+      "retry": "Retry",
+      "error": "Something went wrong. Please try again.",
+      "directory": {
+        "title": "Browse Directory",
+        "description": "Pick a base DN from the live directory tree.",
+        "buttonLabel": "Browse directory",
+        "useDetectedBase": "Use detected base",
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "loading": "Loading directory…",
+        "noRoots": "No naming contexts found.",
+        "noSubContainers": "No sub-containers"
+      },
+      "groups": {
+        "title": "Find Group",
+        "description": "Search the directory for a group to sync.",
+        "buttonLabel": "Search groups",
+        "placeholder": "Type to search groups…",
+        "prompt": "Start typing to search for a group.",
+        "searching": "Searching…",
+        "empty": "No groups match your search.",
+        "truncated": "Too many results — refine your search.",
+        "resultCount": "{count, plural, =0 {No groups found} one {# group found} other {# groups found}}"
+      }
+    }
+  },
+  "backgroundImages": {
+    "empty": "Фонові зображення не завантажено. Завантажте зображення для активації користувацьких фонів для спільних доступів у стилі WeTransfer.",
+    "add": "Додати зображення",
+    "uploading": "Завантаження...",
+    "uploadSuccess": "Зображення успішно завантажено",
+    "uploadError": "Не вдалося завантажити зображення",
+    "deleteConfirm": "Ви впевнені, що хочете видалити це фонове зображення?",
+    "deleteSuccess": "Зображення успішно видалено",
+    "deleteError": "Не вдалося видалити зображення",
+    "untitled": "Без назви",
+    "rename": "Натисніть для перейменування",
+    "renameSuccess": "Зображення успішно перейменовано",
+    "renameError": "Не вдалося перейменувати зображення",
+    "moveUp": "Перемістити вгору",
+    "moveDown": "Перемістити вниз",
+    "reorderError": "Не вдалося переупорядкувати зображення"
+  },
+  "quickShare": {
+    "dropzone": {
+      "title": "Швидкий спільний доступ",
+      "description": "Перетягніть ваші файли сюди для швидкого спільного доступу",
+      "browse": "або натисніть для перегляду",
+      "dragActive": "Перетягніть файли сюди"
+    },
+    "upload": {
+      "title": "Швидкий спільний доступ",
+      "addMore": "Додати ще файли",
+      "dropToAdd": "Перетягніть файли для додавання",
+      "namePlaceholder": "Назва спільного доступу",
+      "expiration": {
+        "label": "Закінчується через",
+        "1day": "1 день",
+        "7days": "7 днів",
+        "30days": "30 днів",
+        "never": "Ніколи"
+      },
+      "password": {
+        "label": "Захист паролем",
+        "placeholder": "Введіть пароль"
+      },
+      "recipients": {
+        "label": "Одержувачі",
+        "placeholder": "Додайте адреси електронної пошти",
+        "hint": "Натисніть Enter, щоб додати"
+      },
+      "share": "Поділитися",
+      "sharing": "Завантаження спільного доступу...",
+      "waitingUpload": "Завантаження... спільний доступ буде створений автоматично",
+      "defaultName": "{count, plural, one {# файл} other {# файлів}}",
+      "error": "Не вдалося створити спільний доступ",
+      "uploadError": "Не вдалося завантажити деякі файли",
+      "notifyError": "Спільний доступ створено, але не вдалося сповістити одержувачів",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
+      "invalidEmail": "Будь ласка, введіть дійсну адресу електронної пошти"
+    },
+    "confirmation": {
+      "title": "Поділилися!",
+      "copyLink": "Копіювати посилання",
+      "copied": "Посилання скопійовано!",
+      "summary": {
+        "files": "{count, plural, one {# файл} other {# файлів}}",
+        "expires": "закінчується через {duration}",
+        "noExpiry": "без закінчення",
+        "password": "захищено паролем",
+        "noPassword": "без пароля"
+      },
+      "newShare": "Новий спільний доступ",
+      "downloadQr": "Завантажити QR код"
+    }
+  },
+  "notificationPreferences": {
+    "pageTitle": "Параметри сповіщення",
+    "description": "Виберіть, які сповіщення електронною поштою ви отримуєте",
+    "type": "Тип сповіщення",
+    "category": "Категорія",
+    "frequency": "Частота",
+    "immediate": "Негайно",
+    "disabled": "Вимкнено",
+    "alwaysEnabled": "Завжди ввімкнено",
+    "save": "Зберегти параметри",
+    "saveSuccess": "Параметри сповіщення збережено",
+    "saveError": "Помилка збереження параметрів",
+    "noChanges": "Немає змін для збереження",
+    "types": {
+      "password_reset": "Скидання пароля",
+      "welcome": "Привітальне повідомлення",
+      "account_deactivated": "Обліковий запис деактивовано",
+      "account_reactivated": "Обліковий запис повторно активовано",
+      "share_invitation": "Запрошення на спільний доступ",
+      "share_accessed": "Спільний доступ отримав доступ",
+      "share_downloaded": "Файл завантажено зі спільного доступу",
+      "share_expiring": "Спільний доступ скоро закінчиться",
+      "share_expired": "Спільний доступ закінчився",
+      "share_max_views_reached": "Досягнуто максимум переглядів спільного доступу",
+      "share_no_activity": "Немає діяльності на спільному доступі",
+      "reverse_share_invitation": "Запрошення на посилання для отримання",
+      "reverse_share_uploaded": "Файли завантажено на посилання для отримання",
+      "reverse_share_expiring": "Посилання для отримання скоро закінчиться",
+      "reverse_share_expired": "Посилання для отримання закінчилось",
+      "quota_warning": "Попередження про квоту",
+      "quota_exceeded": "Квота перевищена",
+      "files_auto_deleted": "Файли автоматично видалено",
+      "share_auto_deleted": "Спільний доступ автоматично видалено",
+      "admin_user_registered": "Зареєстровано нового користувача (лише для адміністраторів)",
+      "admin_quota_alert": "Сповіщення про квоту користувача (лише для адміністраторів)",
+      "test_email": "Тестове повідомлення",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
+    },
+    "descriptions": {
+      "share_accessed": "Коли хтось відкриває посилання на ваші спільні файли",
+      "share_downloaded": "Коли хтось завантажує файли з вашого спільного доступу",
+      "share_expiring": "Нагадування перед закінченням терміну дії посилання на спільний доступ",
+      "share_expired": "Коли термін дії посилання на спільний доступ закінчився і воно більше не доступне",
+      "share_pending_deletion": "Коли ваш прострочений спільний доступ заплановано до остаточного видалення",
+      "share_max_views_reached": "Коли ваш спільний доступ досяг максимальної кількості дозволених переглядів",
+      "share_no_activity": "Коли ваш спільний доступ не мав завантажень протягом тривалого часу",
+      "reverse_share_uploaded": "Коли хтось завантажує файли через ваше посилання для отримання файлів",
+      "reverse_share_expiring": "Нагадування перед закінченням терміну дії посилання для отримання файлів",
+      "reverse_share_expired": "Коли термін дії посилання для отримання файлів закінчився",
+      "reverse_share_pending_deletion": "Коли ваше прострочене посилання для отримання файлів заплановано до видалення",
+      "reverse_share_auto_deleted": "Коли ваше посилання для отримання файлів автоматично видалено після закінчення терміну дії",
+      "quota_warning": "Коли використання сховища наближається до вашого ліміту квоти",
+      "quota_exceeded": "Коли використання сховища перевищило ваш ліміт квоти",
+      "files_auto_deleted": "Коли файли автоматично видалено для звільнення місця у квоті",
+      "share_auto_deleted": "Коли спільний доступ автоматично видалено системою очищення",
+      "admin_user_registered": "Коли новий користувач реєструється на платформі (лише для адміністраторів)",
+      "admin_quota_alert": "Коли використання сховища користувача перевищує його квоту (лише для адміністраторів)"
+    },
+    "categories": {
+      "account": "Обліковий запис",
+      "shares": "Спільні доступи",
+      "reverseShares": "Посилання для отримання",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
+    },
+    "saving": "Збереження...",
+    "loadError": "Помилка завантаження параметрів сповіщення",
+    "retry": "Повторити",
+    "unsavedChanges": "{count, plural, one {# незбережена зміна} other {# незбережені зміни}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP",
+      "label": "[TO_TRANSLATE] User management"
+    }
+  }
+}

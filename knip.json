@@ -1,0 +1,40 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "ignoreExportsUsedInFile": true,
+  "ignoreIssues": {
+    "apps/server/src/modules/email/transport.ts": ["exports"]
+  },
+  "exclude": ["duplicates", "unresolved"],
+  "ignoreBinaries": ["python3"],
+  "ignoreDependencies": ["vitest", "@commitlint/types"],
+  "ignoreWorkspaces": ["packages/config"],
+  "workspaces": {
+    ".": {
+      "entry": [".lighthouserc.cjs"]
+    },
+    "apps/server": {
+      "entry": ["src/scripts/reset-password.ts"],
+      "project": ["src/**/*.ts"],
+      "ignoreDependencies": ["@prisma/client"]
+    },
+    "apps/web": {
+      "entry": [
+        "src/app/**/{layout,page,loading,error,not-found}.{ts,tsx}",
+        "src/components/ui/*.{ts,tsx}",
+        "src/http/endpoints/index.ts"
+      ],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["tailwindcss", "tw-animate-css"]
+    },
+    "apps/docs": {
+      "entry": [
+        "src/app/**/{layout,page}.{ts,tsx}",
+        "src/app/layout.config.tsx",
+        "source.config.ts",
+        "src/components/ui/*.{ts,tsx}"
+      ],
+      "project": ["src/**/*.{ts,tsx}"],
+      "ignoreDependencies": ["tailwindcss", "tw-animate-css"]
+    }
+  }
+}

@@ -1,0 +1,81 @@
+"use client";
+
+import { motion } from "motion/react";
+
+import { LanguageSwitcher } from "@/components/general/language-switcher";
+import { LoadingScreen } from "@/components/layout/loading-screen";
+import { BackgroundLights } from "@/components/ui/background-lights";
+import { DefaultFooter } from "@/components/ui/default-footer";
+import { useAppInfo } from "@/contexts/app-info-context";
+import { LoginForm } from "./components/login-form";
+import { LoginHeader } from "./components/login-header";
+import { RegisterForm } from "./components/register-form";
+import { TwoFactorVerification } from "./components/two-factor-verification";
+import { useLogin } from "./hooks/use-login";
+
+export default function LoginPage() {
+  const login = useLogin();
+  const { firstAccess } = useAppInfo();
+
+  // Only block while a redirect to the dashboard is imminent (authenticated).
+  // When auth is still resolving (`null`) we render the form rather than a
+  // loading screen: gating on `null` here is what left the page stuck on
+  // "loading" after a session-expiry redirect until a manual reload.
+  if (login.isAuthenticated === true) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <div className="relative flex flex-col min-h-screen">
+      <div className="fixed top-4 end-4 z-50">
+        <LanguageSwitcher />
+      </div>
+
+      <div className="container mx-auto max-w-7xl px-6 flex-grow flex items-center justify-center">
+        <BackgroundLights />
+        <div className="relative w-full max-w-sm">
+          <div
+            aria-hidden
+            className="absolute -inset-3 -z-10 rounded-3xl bg-gradient-brand opacity-[0.12] blur-2xl"
+          />
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="relative flex w-full max-w-sm flex-col gap-4 overflow-hidden rounded-xl bg-card/90 backdrop-blur-sm px-8 pb-10 pt-6 shadow-xl border border-border/60"
+            initial={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -z-10 bg-grid-fade opacity-50"
+            />
+            <LoginHeader firstAccess={firstAccess as boolean} />
+            {firstAccess ? (
+              <RegisterForm
+                isVisible={login.isVisible}
+                onToggleVisibility={login.toggleVisibility}
+              />
+            ) : login.requiresTwoFactor ? (
+              <TwoFactorVerification
+                twoFactorCode={login.twoFactorCode}
+                setTwoFactorCode={login.setTwoFactorCode}
+                onSubmit={login.onTwoFactorSubmit}
+                error={login.error}
+                isSubmitting={login.isSubmitting}
+              />
+            ) : (
+              <LoginForm
+                error={login.error}
+                isVisible={login.isVisible}
+                onSubmit={login.onSubmit}
+                onToggleVisibility={login.toggleVisibility}
+                passwordAuthEnabled={login.passwordAuthEnabled}
+                authConfigLoading={login.authConfigLoading}
+              />
+            )}
+          </motion.div>
+        </div>
+      </div>
+      <DefaultFooter />
+    </div>
+  );
+}

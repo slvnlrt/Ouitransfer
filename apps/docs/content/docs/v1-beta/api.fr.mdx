@@ -1,0 +1,488 @@
+---
+title: Référence API
+icon: Code
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+L'API Ouitransfer est une API REST construite avec Fastify 5, Zod et TypeScript. Elle alimente l'ensemble des opérations de la plateforme : le frontend web communique directement avec elle via les routes `/api/*`, mais vous pouvez également l'appeler directement pour l'automatisation, les intégrations ou des clients personnalisés.
+
+## URL de base
+
+Le serveur API s'exécute sur le port **3333** par défaut (configurable via la variable d'environnement `PORT`). Pour un accès direct à l'API, utilisez l'URL du serveur :
+
+```
+http://your-server:3333
+```
+
+<Callout type="info">
+  En production, un reverse proxy (comme Traefik) route le chemin `/api/*` directement vers le backend Fastify. En développement, un middleware Edge Next.js redirige les requêtes `/api/*` vers le port Fastify (3333). Pour un accès direct à l'API (scripts, CI/CD, clients personnalisés), ciblez toujours directement le port 3333 du serveur Fastify.
+</Callout>
+
+Pour exposer le port de l'API dans Docker Compose, ajoutez `ports: ["3333:3333"]` au service `server`. Consultez le [guide de démarrage rapide](/docs/v1-beta/quick-start) pour un exemple de déploiement complet.
+
+---
+
+## Authentification
+
+L'API utilise des **cookies httpOnly signés** pour l'authentification : il n'existe pas de système de clé API. Authentifiez-vous en appelant le point de terminaison de connexion, puis incluez les cookies retournés dans les requêtes suivantes.
+
+### Flux de connexion
+
+1. **Obtenir un jeton CSRF** : `GET /csrf-token` retourne une valeur `token` et pose un cookie `_csrf`.
+2. **Connexion** : `POST /auth/login` avec les identifiants. En cas de succès, le serveur pose les cookies `token` (jeton d'accès JWT) et `refreshToken`.
+3. **Effectuer des requêtes** : incluez les cookies dans toutes les requêtes suivantes. Le JWT est de courte durée (15 minutes) ; utilisez `POST /auth/refresh` pour en obtenir un nouveau. Le point de terminaison de rafraîchissement ne retourne aucun jeton dans le corps de la réponse : le nouveau jeton d'accès et le jeton de rafraîchissement rotatif sont tous deux posés comme cookies httpOnly.
+
+### Protection CSRF
+
+Toutes les **requêtes mutantes** (POST, PUT, PATCH, DELETE) nécessitent un jeton CSRF, sauf si le point de terminaison est explicitement exempté. Ouitransfer utilise le pattern **double-submit cookie** :
+
+- Le cookie `_csrf` contient un secret posé par le serveur.
+- Le client doit envoyer un jeton correspondant dans l'en-tête de requête `X-CSRF-Token`.
+- Obtenez le jeton via `GET /csrf-token`.
+- Les requêtes GET, HEAD et OPTIONS ne nécessitent pas l'en-tête CSRF.
+
+<Callout type="warn">
+  Le jeton CSRF est requis pour **toutes les requêtes POST, PUT, PATCH et DELETE**, même les points de terminaison marqués `Auth: Public` (publics). Les mutations publiques comme les téléchargements de fichiers (`POST /files/download-url`) nécessitent toujours un en-tête `X-CSRF-Token` valide, sauf s'ils sont explicitement listés comme exempts CSRF. Voir la liste des exemptions ci-dessous.
+</Callout>
+
+**Points de terminaison exempts CSRF** (mutations publiques ou non authentifiées) : `/auth/login`, `/auth/refresh`, `/auth/forgot-password`, `/auth/reset-password`, `/auth/2fa/login`, `/register-with-invite`, les points de terminaison d'accès par mot de passe aux partages et partages inversés, et tous les points de terminaison publics de téléversement vers les partages inversés.
+
+### Exemple : connexion avec curl
+
+```bash
+# 1. Get CSRF token
+CSRF=$(curl -s -c cookies.txt http://localhost:3333/csrf-token | jq -r '.token')
+
+# 2. Login
+curl -s -b cookies.txt -c cookies.txt \
+  -H "Content-Type: application/json" \
+  -H "X-CSRF-Token: $CSRF" \
+  -d '{"emailOrUsername":"admin@example.com","password":"yourpassword"}' \
+  http://localhost:3333/auth/login
+
+# 3. Make authenticated requests (cookies are sent automatically)
+curl -s -b cookies.txt http://localhost:3333/files
+```
+
+---
+
+## Documentation interactive
+
+Lorsque la documentation API est activée (toujours en développement, optionnelle en production via `ENABLE_API_DOCS=true`), deux interfaces de documentation interactive sont disponibles :
+
+- **Scalar** : `http://localhost:3333/docs`
+- **Swagger UI** : `http://localhost:3333/swagger`
+
+Les deux offrent l'exploration des points de terminaison, des constructeurs de requêtes et une visualisation des réponses générée à partir des schémas Zod.
+
+<Callout type="warn">
+Ces interfaces sont **désactivées par défaut** en production et ne sont enregistrées que si vous l'activez explicitement via `ENABLE_API_DOCS=true`. Une fois activées, elles sont accessibles **sans authentification** et exposent toute la surface de l'API (chaque route et schéma) ; `ENABLE_API_DOCS=true` n'est donc **pas** destiné aux déploiements exposés sur Internet — il est préférable de laisser la documentation désactivée en production.
+</Callout>
+
+---
+
+## Référence des points de terminaison
+
+### Authentification
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| POST | `/auth/login` | Public | Connexion avec email/nom d'utilisateur et mot de passe |
+| POST | `/auth/2fa/login` | Public | Finaliser la connexion avec un code de vérification 2FA |
+| POST | `/auth/logout` | Public | Déconnexion et suppression des cookies de session |
+| GET | `/auth/me` | Public | Obtenir l'utilisateur authentifié courant (retourne `null` si non connecté) |
+| POST | `/auth/forgot-password` | Public | Demander un email de réinitialisation de mot de passe |
+| POST | `/auth/reset-password` | Public | Réinitialiser le mot de passe avec le jeton reçu par email |
+| POST | `/auth/refresh` | Public | Rafraîchir le jeton d'accès via le cookie de jeton de rafraîchissement (rotation ; l'ancien jeton de rafraîchissement est invalidé) |
+| GET | `/auth/config` | Public | Obtenir la configuration d'authentification (si l'auth par mot de passe est activée) |
+| GET | `/auth/trusted-devices` | User | Lister les appareils 2FA de confiance |
+| DELETE | `/auth/trusted-devices/:id` | User | Supprimer un appareil de confiance spécifique |
+| DELETE | `/auth/trusted-devices` | User | Supprimer tous les appareils de confiance |
+| GET | `/csrf-token` | Public | Obtenir un jeton CSRF (pose le cookie `_csrf`) |
+
+**Remarque sur les points de terminaison à authentification optionnelle :** `/auth/me` retourne l'utilisateur courant si une session valide existe, `null` sinon : aucune authentification n'est requise pour l'appeler. `/auth/logout` efface les cookies de session même sans session valide. Aucun des deux ne retourne de `401` quand il est appelé sans identifiants. Notez que `/auth/logout` nécessite quand même un jeton CSRF (comme tous les points de terminaison POST) même s'il ne requiert pas de session JWT.
+
+**Connexion** retourne l'objet utilisateur en cas de succès. Si le compte a la 2FA activée, il retourne `{ requiresTwoFactor: true, challengeToken: "..." }` : transmettez le jeton de défi et le code TOTP à `/auth/2fa/login` pour compléter l'authentification.
+
+**Limites de débit :** Connexion : 5 tentatives par minute par IP. Mot de passe oublié : 3 par minute par IP. Réinitialisation du mot de passe : 3 par minute par IP. Rafraîchissement du jeton : 10 par minute par IP.
+
+**Verrouillage de compte :** Après 10 échecs de connexion consécutifs en 15 minutes, le compte est temporairement verrouillé et retourne un code d'erreur `ACCOUNT_LOCKED` avec `403 Forbidden`. Le verrouillage expire automatiquement 15 minutes après la plus ancienne tentative échouée ; aucune intervention d'un administrateur n'est requise. Une connexion réussie remet à zéro le compteur d'échecs.
+
+---
+
+### Utilisateurs
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| POST | `/auth/register` | Admin | Enregistrer un nouvel utilisateur (le premier utilisateur contourne la vérification admin) |
+| GET | `/users` | Admin | Lister tous les utilisateurs |
+| GET | `/users/:id` | Admin | Obtenir un utilisateur par son ID |
+| PUT | `/users` | Admin | Mettre à jour les données d'un utilisateur (le corps inclut `id`) |
+| PATCH | `/users/:id/activate` | Admin | Activer un compte utilisateur |
+| PATCH | `/users/:id/deactivate` | Admin | Désactiver un compte utilisateur |
+| DELETE | `/users/:id` | Admin | Supprimer un utilisateur |
+| PATCH | `/users/:id/image` | Admin | Mettre à jour l'URL de l'image de profil d'un utilisateur |
+| POST | `/users/avatar` | User | Téléverser un avatar utilisateur (multipart/form-data, max 5 Mo) |
+| DELETE | `/users/avatar` | User | Supprimer l'avatar utilisateur |
+
+**Remarque :** Le premier enregistrement d'utilisateur (lorsqu'aucun utilisateur n'existe) contourne l'authentification admin et connecte automatiquement l'utilisateur créé.
+
+---
+
+### Partages
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| POST | `/shares` | User | Créer un nouveau partage |
+| GET | `/shares/me` | User | Lister les partages créés par l'utilisateur courant |
+| GET | `/shares/:shareId` | Public | Obtenir un partage par son ID (public pour les partages sans mot de passe) |
+| POST | `/shares/:shareId/access` | Public | Accéder à un partage protégé par mot de passe |
+| PUT | `/shares` | User | Mettre à jour un partage (le corps inclut `id`) |
+| DELETE | `/shares/:id` | User | Supprimer un partage (propriétaire uniquement) |
+| PATCH | `/shares/:shareId/password` | User | Mettre à jour ou supprimer le mot de passe d'un partage |
+| POST | `/shares/:shareId/items` | User | Ajouter des fichiers/dossiers à un partage |
+| DELETE | `/shares/:shareId/items` | User | Supprimer des fichiers/dossiers d'un partage |
+| POST | `/shares/:shareId/recipients` | User | Ajouter des destinataires email à un partage |
+| DELETE | `/shares/:shareId/recipients` | User | Supprimer des destinataires email d'un partage |
+| POST | `/shares/:shareId/notify` | User | Envoyer une notification email aux destinataires |
+| POST | `/shares/:shareId/alias` | User | Créer ou mettre à jour l'alias d'un partage |
+| GET | `/shares/alias/:alias` | Public | Obtenir un partage par alias (public) |
+| POST | `/shares/alias/:alias/access` | Public | Accéder à un partage protégé par mot de passe via alias |
+| GET | `/shares/alias/:alias/metadata` | Public | Obtenir les métadonnées d'un partage pour les aperçus Open Graph |
+| POST | `/shares/alias/:alias/identify` | Public | Soumettre le formulaire d'identification du visiteur (nom/email) |
+| GET | `/shares/:shareId/visits` | User | Lister les visites d'un partage (paginé, filtrable par action et statut d'identification) |
+
+**Accès aux partages :** Pour les partages protégés par mot de passe, le mot de passe doit être envoyé dans le corps de la requête via les points de terminaison `/access` ; jamais en paramètre de requête. Les partages sans mot de passe sont accessibles sans authentification.
+
+**Jetons de suivi :** Les points de terminaison d'accès aux partages acceptent un paramètre de requête optionnel `?t=<token>`. Lorsqu'il est présent, le visiteur est automatiquement identifié comme le destinataire propriétaire de ce jeton de suivi. Voir [Partages : Identification des visiteurs](/docs/v1-beta/shares#visitor-identification).
+
+**Visites de partage :** Le point de terminaison `GET /shares/:shareId/visits` retourne des enregistrements de visites paginés. Paramètres de requête : `page` (défaut 1), `limit` (défaut 10), `action` (`access` ou `download`), `identified` (`true` ou `false`). Seul le propriétaire du partage peut accéder à ce point de terminaison. Chaque enregistrement inclut un champ `identificationSource` (`tracking_token`, `cookie`, `authenticated_user` ou `anonymous`) et un booléen `isOwner` indiquant si la visite a été attribuée au créateur du partage.
+
+---
+
+### Fichiers
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/files/presigned-url` | User | Obtenir une URL présignée pour le téléversement S3 |
+| POST | `/files` | User | Enregistrer les métadonnées d'un fichier téléversé |
+| POST | `/files/check` | User | Vérification préalable : valider un fichier par rapport aux quotas (ne crée pas d'enregistrement) |
+| GET | `/files` | User | Lister les fichiers de l'utilisateur (optionnellement filtrés par dossier) |
+| PATCH | `/files/:id` | User | Mettre à jour les métadonnées d'un fichier (nom, description) |
+| PUT | `/files/:id/move` | User | Déplacer un fichier vers un autre dossier |
+| DELETE | `/files/:id` | User | Supprimer un fichier (`?force=true` si le fichier est dans des partages) |
+| POST | `/files/download-url` | Public | Obtenir une URL présignée de téléchargement (mot de passe du partage dans le corps) |
+| POST | `/files/download` | Public | Télécharger le contenu d'un fichier (streaming, mot de passe du partage dans le corps) |
+| GET | `/embed/:token` | Public | Intégrer un fichier média via un jeton signé |
+| POST | `/files/embed-token` | User | Générer un jeton d'intégration signé pour un fichier dans un partage (expiration 24 heures) |
+
+**Téléversement multipart** (pour les fichiers volumineux ≥100 Mo) :
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| POST | `/files/multipart/create` | User | Initialiser un téléversement multipart |
+| GET | `/files/multipart/part-url` | User | Obtenir une URL présignée pour une partie |
+| POST | `/files/multipart/complete` | User | Finaliser le téléversement multipart |
+| POST | `/files/multipart/abort` | User | Annuler le téléversement multipart |
+| GET | `/files/multipart/list-parts` | User | Lister les parties téléversées (pour la reprise) |
+
+**Flux de téléversement :** Obtenez une URL présignée → téléversez le fichier directement vers S3 → enregistrez les métadonnées du fichier via `POST /files`. Le point de terminaison `POST /files/check` est une vérification préalable qui valide le fichier par rapport aux quotas sans créer d'enregistrement.
+
+**Limites de débit :** URL présignée de téléversement : 30 par minute. URL de téléchargement / téléchargement : 20 par minute chacun.
+
+---
+
+### Dossiers
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| POST | `/folders` | User | Créer un nouveau dossier |
+| POST | `/folders/check` | User | Vérification préalable : valider l'unicité du nom de dossier |
+| GET | `/folders` | User | Lister les dossiers de l'utilisateur (récursif par défaut) |
+| PATCH | `/folders/:id` | User | Mettre à jour les métadonnées d'un dossier |
+| PUT | `/folders/:id/move` | User | Déplacer un dossier vers un autre parent |
+| DELETE | `/folders/:id` | User | Supprimer un dossier et son contenu (`?force=true` si dans des partages) |
+
+---
+
+### Partages inversés
+
+Les partages inversés permettent aux utilisateurs authentifiés de créer des liens de téléversement que n'importe qui (même les visiteurs non authentifiés) peut utiliser pour envoyer des fichiers vers le compte du créateur.
+
+**Points de terminaison authentifiés** (gestion des partages inversés) :
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| POST | `/reverse-shares` | User | Créer un partage inversé |
+| GET | `/reverse-shares` | User | Lister les partages inversés de l'utilisateur |
+| GET | `/reverse-shares/:id` | User | Obtenir les détails d'un partage inversé |
+| PUT | `/reverse-shares` | User | Mettre à jour un partage inversé (le corps inclut `id`) |
+| PUT | `/reverse-shares/:id/password` | User | Mettre à jour ou supprimer le mot de passe d'un partage inversé |
+| DELETE | `/reverse-shares/:id` | User | Supprimer un partage inversé et tous ses fichiers |
+| PATCH | `/reverse-shares/:id/activate` | User | Activer un partage inversé |
+| PATCH | `/reverse-shares/:id/deactivate` | User | Désactiver un partage inversé |
+| POST | `/reverse-shares/:reverseShareId/alias` | User | Créer ou mettre à jour un alias |
+| GET | `/reverse-shares/files/:fileId/download` | User | Télécharger un fichier depuis un partage inversé |
+| DELETE | `/reverse-shares/files/:fileId` | User | Supprimer un fichier d'un partage inversé |
+| PUT | `/reverse-shares/files/:fileId` | User | Mettre à jour le nom/la description d'un fichier |
+| POST | `/reverse-shares/files/:fileId/copy` | User | Copier un fichier vers les fichiers personnels de l'utilisateur |
+
+**Points de terminaison publics** (téléversement vers des partages inversés, aucune authentification requise) :
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/reverse-shares/:id/upload` | Public | Obtenir les informations du partage inversé pour le téléversement |
+| POST | `/reverse-shares/:id/upload/access` | Public | Accéder à un partage inversé protégé par mot de passe |
+| GET | `/reverse-shares/alias/:alias/upload` | Public | Obtenir les informations du partage inversé par alias |
+| POST | `/reverse-shares/alias/:alias/upload/access` | Public | Accéder à un partage inversé protégé par mot de passe via alias |
+| POST | `/reverse-shares/:id/presigned-url` | Public | Obtenir une URL présignée de téléversement |
+| POST | `/reverse-shares/alias/:alias/presigned-url` | Public | Obtenir une URL présignée de téléversement via alias |
+| POST | `/reverse-shares/:id/register-file` | Public | Enregistrer un fichier téléversé |
+| POST | `/reverse-shares/alias/:alias/register-file` | Public | Enregistrer un fichier téléversé via alias |
+| POST | `/reverse-shares/:id/check-password` | Public | Vérifier le mot de passe d'un partage inversé |
+| GET | `/reverse-shares/alias/:alias/metadata` | Public | Obtenir les métadonnées pour les aperçus Open Graph |
+
+**Téléversement multipart** (public, pour les gros fichiers vers des partages inversés) :
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| POST | `/reverse-shares/alias/:alias/multipart/create` | Public | Initialiser un téléversement multipart |
+| POST | `/reverse-shares/alias/:alias/multipart/part-url` | Public | Obtenir une URL présignée pour une partie |
+| POST | `/reverse-shares/alias/:alias/multipart/complete` | Public | Finaliser le téléversement multipart |
+| POST | `/reverse-shares/alias/:alias/multipart/abort` | Public | Annuler le téléversement multipart |
+| POST | `/reverse-shares/alias/:alias/multipart/list-parts` | Public | Lister les parties téléversées |
+
+---
+
+### Groupes
+
+Tous les points de terminaison de groupes nécessitent une authentification **admin**.
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/groups` | Admin | Lister tous les groupes avec le nombre de membres et l'utilisation du stockage |
+| GET | `/groups/:id` | Admin | Obtenir les détails d'un groupe avec la liste des membres |
+| POST | `/groups` | Admin | Créer un groupe |
+| PUT | `/groups/:id` | Admin | Mettre à jour un groupe |
+| DELETE | `/groups/:id` | Admin | Supprimer un groupe (les membres sont désassignés) |
+| POST | `/groups/:id/members` | Admin | Ajouter un utilisateur à un groupe |
+| DELETE | `/groups/:id/members/:userId` | Admin | Supprimer un utilisateur d'un groupe |
+
+---
+
+### Quotas
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/users/:id/quota` | Admin | Obtenir le statut de quota effectif d'un utilisateur (utilisation, limites, sources) |
+| PATCH | `/users/:id/quota` | Admin | Définir les remplacements de quota par utilisateur (`null` = hériter, `0` = illimité) |
+
+---
+
+### Authentification à deux facteurs
+
+Tous les points de terminaison de gestion 2FA nécessitent une authentification **utilisateur** (JWT). Les routes 2FA sont enregistrées sous le préfixe `/auth`.
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| POST | `/auth/2fa/setup` | User | Générer un QR code et un secret pour la configuration 2FA |
+| POST | `/auth/2fa/verify-setup` | User | Vérifier le jeton de configuration et activer la 2FA |
+| POST | `/auth/2fa/verify` | User | Vérifier un jeton 2FA |
+| POST | `/auth/2fa/disable` | User | Désactiver la 2FA (nécessite le mot de passe + le code TOTP) |
+| POST | `/auth/2fa/backup-codes` | User | Générer de nouveaux codes de secours |
+| GET | `/auth/2fa/status` | User | Obtenir le statut 2FA actuel |
+
+**Limite de débit :** Vérification 2FA : 5 tentatives par minute.
+
+---
+
+### Invitations
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| POST | `/invite-tokens` | Admin | Générer un jeton d'invitation à usage unique |
+| GET | `/invite-tokens/:token` | Public | Valider un jeton d'invitation |
+| POST | `/register-with-invite` | Public | Enregistrer un nouvel utilisateur avec un jeton d'invitation |
+
+---
+
+### Fournisseurs d'authentification (OIDC / OAuth)
+
+Les routes de fournisseurs d'authentification sont enregistrées sous le préfixe `/auth`.
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/auth/providers` | Public | Lister les fournisseurs d'authentification activés (public, pour la page de connexion) |
+| GET | `/auth/providers/all` | Admin | Lister tous les fournisseurs d'authentification (y compris les désactivés) |
+| POST | `/auth/providers` | Admin | Créer un nouveau fournisseur d'authentification |
+| PUT | `/auth/providers/:id` | Admin | Mettre à jour un fournisseur d'authentification |
+| DELETE | `/auth/providers/:id` | Admin | Supprimer un fournisseur d'authentification personnalisé |
+| PUT | `/auth/providers/order` | Admin | Mettre à jour l'ordre d'affichage des fournisseurs |
+| GET | `/auth/providers/:provider/authorize` | Public | Initier le flux de connexion OAuth/OIDC (redirige vers le fournisseur) |
+| GET | `/auth/providers/:provider/callback` | Public | Gérer le callback OAuth/OIDC (redirige vers l'application) |
+
+---
+
+### LDAP / Active Directory
+
+Tous les points de terminaison LDAP nécessitent une authentification **admin**.
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/admin/ldap/config` | Admin | Obtenir la configuration LDAP (mot de passe masqué) |
+| PUT | `/admin/ldap/config` | Admin | Créer ou mettre à jour la configuration LDAP |
+| POST | `/admin/ldap/test` | Admin | Tester la connexion LDAP avec les paramètres fournis |
+| POST | `/admin/ldap/sync` | Admin | Déclencher une synchronisation LDAP manuelle |
+| GET | `/admin/ldap/sync/logs` | Admin | Lister l'historique des synchronisations LDAP |
+| GET | `/admin/ldap/sync/logs/:id` | Admin | Obtenir le détail d'un journal de synchronisation |
+| GET | `/admin/ldap/status` | Admin | Obtenir le statut de synchronisation LDAP et la prochaine synchronisation planifiée |
+
+---
+
+### Journaux d'audit
+
+Tous les points de terminaison de journaux d'audit nécessitent une authentification **admin**.
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/admin/audit-logs` | Admin | Obtenir les journaux d'audit paginés avec filtres |
+| GET | `/admin/audit-logs/export` | Admin | Exporter les journaux d'audit en CSV ou JSON (streaming) |
+
+Pour la documentation détaillée des paramètres de requête, consultez la page [Journal d'activité](/docs/v1-beta/activity-log).
+
+---
+
+### Notifications
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/notifications/preferences` | User | Obtenir toutes les préférences de notification (fusionnées avec les valeurs par défaut du catalogue) |
+| PUT | `/notifications/preferences` | User | Mettre à jour les préférences de notification (tableau de `{ type, frequency }`) |
+| GET | `/notifications/unsubscribe?token=...` | Public | Valider le jeton de désabonnement et retourner le type de notification |
+| POST | `/notifications/unsubscribe` | Public | Confirmer le désabonnement (définit la fréquence à `disabled`) |
+
+Le point de terminaison des préférences retourne les 22 types de notification avec leur fréquence actuelle, si elles sont configurables et si elles sont critiques. Seuls les types configurables et non critiques peuvent être mis à jour. Pour les détails, consultez [Préférences de notification](/docs/v1-beta/notification-preferences).
+
+---
+
+### File d'attente email (admin)
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/admin/email/stats` | Admin | Obtenir les compteurs de la file d'attente email (pending, sentLast24h, failed, digestPending) ainsi que le `status` du sous-système (`ok`/`disabled`/`degraded`/`down`), le booléen `smtpConfigured` et `lastError` (dernière erreur d'envoi, ou null) |
+| POST | `/admin/email/test` | Admin | Envoyer un email de test à l'adresse email de l'admin courant |
+
+Pour les détails sur le système de distribution des emails, consultez [Configuration SMTP : Système de distribution des emails](/docs/v1-beta/configuring-smtp#email-delivery-system).
+
+---
+
+### Admin / Paramètres de l'application
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/admin/stats` | Admin | Obtenir les statistiques globales de la plateforme (utilisateurs, fichiers, partages) |
+| GET | `/app/info` | Public | Obtenir le nom, la description, le logo et le statut de premier utilisateur de l'application |
+| GET | `/app/system-info` | Public | Obtenir les informations système (type de fournisseur de stockage) |
+| GET | `/app/configs/public` | Public | Lister les valeurs de configuration publiques |
+| GET | `/app/configs` | Admin | Lister toutes les valeurs de configuration (y compris les sensibles) |
+| PATCH | `/app/configs/:key` | Admin | Mettre à jour une seule valeur de configuration |
+| PATCH | `/app/configs` | Admin | Mettre à jour plusieurs valeurs de configuration en lot |
+| POST | `/app/test-smtp` | Admin | Tester la connexion SMTP |
+| POST | `/app/logo` | Admin | Téléverser le logo de l'application (multipart/form-data, max 5 Mo) |
+| DELETE | `/app/logo` | Admin | Supprimer le logo de l'application |
+
+---
+
+### Images d'arrière-plan
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/background-images` | Public | Lister toutes les images d'arrière-plan (public) |
+| POST | `/background-images` | Admin | Téléverser une image d'arrière-plan (multipart/form-data) |
+| PATCH | `/background-images/order` | Admin | Réordonner les images d'arrière-plan |
+| PATCH | `/background-images/:id` | Admin | Mettre à jour le nom d'une image d'arrière-plan |
+| DELETE | `/background-images/:id` | Admin | Supprimer une image d'arrière-plan |
+
+---
+
+### Stockage
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/storage/disk-space` | User | Obtenir l'espace disque / les informations de quota |
+| GET | `/storage/check-upload` | User | Vérifier si un téléversement de fichier est autorisé (par taille) |
+
+---
+
+### Santé
+
+| Méthode | Chemin | Auth | Description |
+|---------|--------|------|-------------|
+| GET | `/health` | Public | Sonde de vivacité. Retourne `200` avec un `{ status, timestamp, uptime }` grossier lorsque le service est vivant, `503` lorsque la base de données est indisponible. Aucun détail par sous-système n'est exposé sans authentification. |
+| GET | `/health/status` | Authentifié | État de santé détaillé par sous-système : `checks` inclut `database`, `storage` et `email` (`ok`/`disabled`/`degraded`/`down`). Nécessite un utilisateur authentifié, afin que le détail (quel backend est dégradé) ne soit pas exposé sans authentification. |
+
+---
+
+## Codes de réponse courants
+
+| Code | Signification |
+|------|---------------|
+| 200 | OK : requête réussie |
+| 201 | Created : ressource créée avec succès |
+| 302 | Redirect : redirections du flux OAuth/OIDC |
+| 400 | Bad Request : échec de validation (schéma Zod) |
+| 401 | Unauthorized : non authentifié, jeton invalide ou non-concordance CSRF |
+| 403 | Forbidden : authentifié mais permissions insuffisantes |
+| 404 | Not Found : la ressource n'existe pas |
+| 409 | Conflict : ressource en double ou conflit fichier-dans-partages |
+| 410 | Gone : partage ou partage inversé expiré |
+| 413 | Payload Too Large : le corps de la requête dépasse la limite de taille de 50 Mo |
+| 429 | Too Many Requests : limite de débit dépassée |
+| 500 | Internal Server Error |
+
+Toutes les réponses d'erreur suivent une structure JSON cohérente :
+
+```json
+{
+  "error": "Human-readable description",
+  "code": "ERROR_CODE",
+  "statusCode": 400,
+  "timestamp": "2025-01-15T12:00:00.000Z"
+}
+```
+
+Le champ `error` contient un message lisible par l'humain, `code` est le code d'erreur lisible par la machine (ex. `VALIDATION_ERROR`, `NOT_FOUND`, `ACCOUNT_LOCKED`), et `timestamp` est une chaîne ISO 8601. Certaines erreurs incluent un objet `details` supplémentaire avec des métadonnées structurées.
+
+---
+
+## Limitation du débit
+
+Limite de débit globale : **100 requêtes par minute par IP**. Certains points de terminaison peuvent imposer des limites plus strictes :
+
+| Point de terminaison | Limite |
+|----------------------|--------|
+| `POST /auth/login` | 5 / minute |
+| `POST /auth/2fa/login` | 5 / minute |
+| `POST /auth/forgot-password` | 3 / minute |
+| `POST /auth/reset-password` | 3 / minute |
+| `POST /auth/refresh` | 10 / minute |
+| `POST /auth/2fa/verify` | 5 / minute |
+| `GET /files/presigned-url` | 30 / minute |
+| `POST /files/download-url` | 20 / minute |
+| `POST /files/download` | 20 / minute |
+| `GET /csrf-token` | 30 / minute |
+
+En cas de dépassement de la limite, le serveur retourne `429 Too Many Requests` avec un champ `retryAfter` indiquant le nombre de secondes avant la réinitialisation de la limite.
+
+<Callout type="info">
+  Les réponses d'erreur de limite de débit ont une structure différente des erreurs API standard ; elles n'incluent pas les champs `code` ni `timestamp`. Une réponse de limite de débit ressemble à :
+
+  ```json
+  { "error": "Too many requests", "message": "Rate limit exceeded. Try again in 15 seconds.", "retryAfter": 15 }
+  ```
+</Callout>
+
+### Limites de taille des requêtes
+
+L'API impose une limite de taille de corps de **50 Mo** sur les requêtes non-multipart. Les téléversements de fichiers contournent cette limite en utilisant des URLs présignées S3 ; le contenu du fichier va directement vers S3, pas via le serveur API.

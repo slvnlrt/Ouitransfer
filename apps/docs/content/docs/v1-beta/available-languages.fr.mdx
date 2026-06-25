@@ -1,0 +1,78 @@
+---
+title: Langues disponibles
+icon: Globe
+---
+
+Le projet s'appuie sur next-intl, une bibliothèque d'internationalisation (i18n) puissante et flexible, pour offrir une prise en charge complète des langues dans l'ensemble de l'application. Cette solution robuste permet une gestion fluide des traductions, du formatage des dates et heures, du formatage des nombres et des règles de pluralisation selon les différentes locales.
+
+L'intégration de next-intl garantit une internationalisation cohérente dans tous les composants, pages et fonctionnalités de l'application, tout en maintenant des performances optimales grâce à un découpage efficace des paquets et au chargement différé des ressources linguistiques. Grâce à sa compatibilité avec TypeScript et les React Server Components, next-intl constitue le socle pour offrir une expérience utilisateur véritablement mondiale et accessible.
+
+## Langues prises en charge
+
+OUITRANSFER prend actuellement en charge 23 langues avec des traductions complètes pour l'ensemble des fonctionnalités et interfaces de l'application.
+
+---
+
+| Language             | Code  | Description                                              | Translation |
+| -------------------- | ----- | -------------------------------------------------------- | ----------- |
+| English              | en-US | Primary development language and default fallback option | 100%        |
+| Portuguese           | pt-BR | Standard Brazilian Portuguese support                    | 100%        |
+| French               | fr-FR | Standard French language support                         | 100%        |
+| Spanish              | es-ES | Standard Spanish language support                        | 100%        |
+| German               | de-DE | Standard German language support                         | 100%        |
+| Russian              | ru-RU | Standard Russian language support                        | 100%        |
+| Hindi                | hi-IN | Standard Hindi language support                          | 100%        |
+| Arabic               | ar-SA | Standard Arabic language support with RTL                | 100%        |
+| Japanese             | ja-JP | Standard Japanese language support                       | 100%        |
+| Korean               | ko-KR | Standard Korean language support                         | 100%        |
+| Turkish              | tr-TR | Standard Turkish language support                        | 100%        |
+| Chinese (Simplified) | zh-CN | Standard Simplified Chinese support                      | 100%        |
+| Italian              | it-IT | Standard Italian language support                        | 100%        |
+| Dutch                | nl-NL | Standard Dutch language support                          | 100%        |
+| Polish               | pl-PL | Standard Polish language support                         | 100%        |
+| Greek                | el-GR | Standard Greek language support                          | 100%        |
+| Persian              | fa-IR | Standard Persian (Farsi) language support with RTL      | 100%        |
+| Hebrew               | he-IL | Standard Hebrew language support with RTL                | 100%        |
+| Indonesian           | id-ID | Standard Indonesian language support                     | 100%        |
+| Swedish              | sv-SE | Standard Swedish language support                        | 100%        |
+| Thai                 | th-TH | Standard Thai language support                           | 100%        |
+| Ukrainian            | uk-UA | Standard Ukrainian language support                      | 100%        |
+| Vietnamese           | vi-VN | Standard Vietnamese language support                     | 100%        |
+
+## Sélection de la langue
+
+L'application propose deux méthodes pratiques pour sélectionner la langue, afin de garantir une expérience fluide selon les préférences de chaque utilisateur.
+
+### Détection automatique
+
+L'application intègre une détection automatique sophistiquée des paramètres de langue préférés du navigateur. Elle exploite intelligemment les préférences linguistiques préconfigurées du navigateur pour définir la langue initiale de l'application, offrant ainsi une expérience localisée immédiate sans intervention de l'utilisateur.
+
+### Sélection manuelle
+
+![Language Selector](/assets/v1/languages/languages.png)
+
+Les utilisateurs ont un contrôle total pour sélectionner manuellement leur langue préférée via une interface de sélection de langue intuitive dans l'interface utilisateur. Le sélecteur de langue est facilement accessible et permet un changement de langue immédiat.
+
+Les préférences de langue sélectionnées sont stockées de manière persistante dans le `localStorage` du navigateur, garantissant une expérience cohérente entre les sessions et évitant de devoir resélectionner la langue à chaque visite.
+
+## Langue par défaut
+
+L'anglais (en-US) sert de langue de secours du système, assurant un fonctionnement cohérent même en cas de problème lors de la détection ou de la sélection de la langue. Cela signifie que si la langue préférée d'un utilisateur n'est pas disponible ou si des problèmes surviennent lors de la sélection, l'application bascule automatiquement vers l'anglais.
+
+Ce mécanisme de secours est essentiel pour maintenir une expérience utilisateur fluide et prévenir toute interruption liée à la langue. De plus, toutes les nouvelles fonctionnalités et mises à jour sont d'abord implémentées en anglais avant d'être traduites dans les autres langues prises en charge, garantissant que la version anglaise reste toujours la plus récente et la plus complète.
+
+## Détection de la langue
+
+L'application emploie des mécanismes de détection avancés pour identifier et appliquer automatiquement les paramètres de langue du navigateur de l'utilisateur comme configuration de langue initiale. Ce processus analyse les préférences linguistiques du navigateur et les compare aux traductions disponibles.
+
+Pour une flexibilité maximale, les utilisateurs peuvent à tout moment remplacer cette sélection automatique en utilisant le sélecteur de langue, accessible via l'icône de globe affichée en évidence dans la barre de navigation.
+
+## Prise en charge du sens d'écriture droite à gauche (RTL)
+
+L'application intègre une gestion complète du texte de droite à gauche (RTL) pour les langues qui nécessitent cette direction de lecture. Les langues RTL actuellement prises en charge sont :
+
+- **Arabic (ar-SA)** - Standard Arabic with full RTL support
+- **Persian (fa-IR)** - Farsi language with RTL text direction
+- **Hebrew (he-IL)** - Hebrew language with RTL support
+
+Cela inclut l'alignement correct du texte, la direction de la mise en page et les éléments d'interface qui s'adaptent aux schémas de lecture RTL. La prise en charge du RTL garantit aux locuteurs de ces langues une expérience native et intuitive, avec tous les éléments d'interface correctement orientés et le texte s'écoulant dans le bon sens pour une lisibilité et une utilisabilité optimales.

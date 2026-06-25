@@ -1,0 +1,190 @@
+---
+title: Automatic Cleanup
+icon: Trash2
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Automatic Cleanup is Ouitransfer's lifecycle management system. It removes content that has reached the end of its useful life: expired share links, files uploaded to expired reverse shares, files belonging to deactivated accounts, and orphaned storage objects. It notifies owners before anything is permanently deleted.
+
+<Callout type="warn">
+  Automatic deletion is **off by default** and conservative by design. Nothing is ever deleted automatically until an administrator consciously turns it on. Data safety beats storage economy.
+</Callout>
+
+## Overview
+
+All settings live in the **Automatic Cleanup** group on the **Admin → Settings** page. The system is built on three principles:
+
+- **Opt-in.** Every operation that destroys content a user might still want is gated behind a toggle that defaults to **disabled**.
+- **Conservative defaults.** Long grace periods, a warning email before deletion, and a rule that content still inside an active share is never touched.
+- **Auditable.** Every automated deletion writes an entry to the [Activity Log](/docs/v1-beta/activity-log).
+
+A background scheduler runs at a configurable interval. On each run, if and only when the relevant toggle is enabled, it performs the cleanup tasks described below. Configuration is re-read on every run, so changes take effect without a restart.
+
+## The two-phase share lifecycle
+
+Shares and reverse shares follow an explicit, persisted lifecycle with two distinct phases. Nothing jumps straight from "live" to "gone":
+
+```
+active ──(expires │ hits view limit │ manually paused)──▶ deactivated ──(grace period)──▶ deleted
+   ▲                                                            │
+   └──────────── resumed, renewed, or extended ────────────────┘
+```
+
+1. **Deactivated** (reversible). When a share's expiration passes, it reaches its view limit, or its owner manually pauses it, the share is marked **deactivated**: it stops being accessible to visitors, a reason is recorded (`expired`, `view limit`, or `paused`), and the moment of deactivation is timestamped. The owner sees the state and reason on the share, and can resume or renew it. No content is deleted in this phase.
+2. **Deleted** (permanent). After a single, uniform **grace period** measured from the moment of deactivation, the deactivated content is permanently deleted. However, this **only** applies when the content was deactivated automatically (expired or view limit). The deletion scope is the same as before: an expired/max-views regular share loses only its share link; an expired reverse share loses its uploaded files and their storage objects.
+
+<Callout type="warn">
+  **Manually paused content is never auto-deleted.** A share you pause by hand stays deactivated indefinitely until you resume it. The deletion phase only applies to content that was deactivated automatically. If a manually paused share later also expires, its reason is upgraded to `expired` and the grace clock starts from that point.
+</Callout>
+
+### Pausing, resuming, and renewing
+
+Owners (and administrators) can **pause** a share or reverse share at any time, which deactivates it immediately with the `paused` reason. **Resuming** reactivates it and clears the deactivation state. Content that is deactivated because it **expired** or hit its **view limit** cannot simply be resumed. It must be **renewed** by extending its expiration date or raising its view limit, which reactivates it and restarts its life. Each reactivation is recorded in the [Activity Log](/docs/v1-beta/activity-log).
+
+## What is and isn't deleted
+
+This is the most important section to understand before enabling cleanup. Ouitransfer's data model is **file-manager-centric**, not transfer-centric: a file lives in the owner's file manager and can be referenced by several shares at once.
+
+| Content | What cleanup does |
+|---------|-------------------|
+| **Expired regular share** | Deletes the **share link only** (the share, its password/security, recipients, visit records, and alias). The owner's underlying files and folders are **never** deleted. |
+| **Max-views regular share** | Same as above; deletes the **share link only**, after the grace period that follows deactivation. |
+| **Expired reverse share** | Deletes the reverse share **and the files uploaded to it**, including their storage objects. This reclaims storage. |
+| **Deactivated account** | Account deactivation immediately **blocks** the user's shares (reversible). File deletion happens only later, and only if explicitly enabled. |
+| **Deleted account** | Full cascade: all of the user's files, shares, reverse shares, and storage objects are removed. |
+| **Orphaned files/objects** | A two-way sweep reconciles the database and storage when explicitly enabled. |
+
+<Callout type="info">
+  Deleting an expired share link does **not** delete the owner's files. Files live in the file manager, can belong to multiple shares, and exist independently of any share. Removing them would cause data loss. Storage from regular shares is reclaimed instead through account deletion, account-deactivation cleanup, and the orphan sweep.
+</Callout>
+
+## Configuration keys
+
+All eight keys live in the **Automatic Cleanup** settings group. Defaults are conservative and the three destructive features are off by default.
+
+| Key | Default | Meaning |
+|-----|--------:|---------|
+| **Enable Automatic Cleanup** | `off` | Master switch for the scheduled cleanup of deactivated share links, expired reverse-share files, and orphans. Off by default; nothing is deleted automatically until you turn this on. |
+| **Cleanup Interval (hours)** | `24` | How often the cleanup task runs. Minimum 1 hour. |
+| **Grace Period (days)** | `7` | Days a share or reverse share is kept after it is **deactivated** (because it expired or hit its view limit) before it is permanently deleted. `0` means delete as soon as the grace period elapses. The same uniform grace applies to every automatic deactivation reason. Manually paused content is never deleted. |
+| **Warn Before Deletion (days)** | `3` | Send the owner a "pending permanent deletion" warning email this many days before the content is deleted. `0` disables the warning. Should be at most the grace period. |
+| **Delete Deactivated Accounts' Files** | `off` | When on, files belonging to a deactivated account are permanently deleted after the delay below. Off by default; deactivation alone never deletes files. |
+| **Deactivation Cleanup Delay (days)** | `30` | Days after an account is deactivated before its files are deleted (only when the option above is enabled). Minimum 1. |
+| **Sweep Orphaned Files** | `off` | When on, runs a two-way sweep that removes database records pointing to missing storage objects and storage objects with no database record. Off by default. |
+| **Orphan Minimum Age (hours)** | `24` | Only files and objects older than this are considered during the orphan sweep, protecting uploads still in progress. Minimum 1. |
+
+## Expired and max-views shares
+
+When **Enable Automatic Cleanup** is on, the scheduler removes share links that have outlived their usefulness. The share is always processed through the two-phase lifecycle: first **deactivated** (with reason `expired` or `view limit`), then deleted once the grace period measured from deactivation has elapsed.
+
+- **Expired shares**: when a share passes its expiration date it is deactivated. Its link is deleted once the grace period since deactivation has elapsed. The owner's files stay in the file manager.
+- **Max-views shares**: when a share reaches its view limit it is deactivated. Its link is deleted once the grace period since deactivation has elapsed.
+
+In both cases only the **share link** is removed. The owner keeps their files. The same single grace period applies to both reasons.
+
+## Reverse shares
+
+Files uploaded through a reverse share have no independent existence. They belong solely to that reverse share. A reverse share follows the same two-phase lifecycle: when it expires it is **deactivated** (reason `expired`), and once the grace period measured from deactivation has elapsed the reverse share and all of its uploaded files are deleted, including their storage objects. This is the path that reclaims storage from inbound transfers. A manually paused reverse share is never auto-deleted.
+
+## Account deactivation
+
+Deactivating an account has two distinct effects:
+
+1. **Immediate, reversible blocking.** As soon as an account is deactivated, all of that user's share links stop working. This is derived at read time from the account's status, so **reactivating the account restores access** with no further action. No files are deleted.
+2. **Optional, delayed file deletion.** If **Delete Deactivated Accounts' Files** is enabled, the deactivated account's files are permanently deleted after the configured delay. This is opt-in and off by default; deactivation alone never deletes files.
+
+## Account deletion
+
+Deleting a user is an explicit administrator action and always performs a **full cascade**: the user's files, shares, reverse shares, and their storage objects are all removed. This leaves no orphaned content behind. Because it is a deliberate admin action and a correctness guarantee, it is not gated behind any toggle.
+
+## Orphan sweep
+
+When **Sweep Orphaned Files** is enabled, the scheduler runs a bidirectional reconciliation between the database and object storage:
+
+- **Database record with no storage object**: the dangling database record is removed.
+- **Storage object with no database record**: the orphaned storage object is deleted.
+- **Incomplete (abandoned) multipart upload**: when a large file is uploaded in parts and the upload is never completed or aborted (for example, the browser was closed mid-transfer or the client crashed), its parts linger in storage consuming space and are invisible to the ordinary object listing. The sweep now also enumerates these incomplete multipart uploads and **aborts** any that were initiated before the minimum age, discarding their parts.
+
+Only items older than the **Orphan Minimum Age** are considered, which protects uploads that are still in progress. An object referenced by any record is never deleted.
+
+### Multipart upload backstop (internal storage)
+
+Independently of the sweep, internal storage gets an **always-on safety net**: at startup Ouitransfer applies an `AbortIncompleteMultipartUpload` lifecycle rule to its bucket so the storage backend automatically aborts any incomplete multipart upload **7 days** after it was initiated. This runs regardless of whether **Sweep Orphaned Files** is enabled, and is applied on a best-effort basis (if the backend does not support lifecycle rules, startup continues without it).
+
+<Callout type="info">
+  This lifecycle backstop is applied only to Ouitransfer's own internal storage. It is never applied to an external S3 bucket you provide. If you use external S3, configure an equivalent `AbortIncompleteMultipartUpload` lifecycle rule on your own bucket. The application-level orphan sweep above still aborts abandoned multipart uploads on external storage when it is enabled.
+</Callout>
+
+## Storage quota policy
+
+Beyond expiry-based cleanup, Ouitransfer enforces per-user storage quotas with a layered policy: it **warns** owners as they approach their limit, optionally **frees space conservatively** once they stay over it, and applies a **softer rule to inbound (reverse-share) uploads** so external contributors are not blocked by an owner's overage. Like the rest of automatic cleanup, the destructive part is **off by default**.
+
+<Callout type="info">
+  This policy only applies to users who have a finite quota. Users with an unlimited quota are never warned, never have files auto-deleted for overage, and never have inbound uploads blocked by these rules.
+</Callout>
+
+### Threshold warnings
+
+As a user's storage usage climbs, the owner is emailed the first time it **crosses a configured threshold upward**:
+
+- **Thresholds** are set with **Quota Warning Thresholds**, a comma-separated list of percentages (default `"80,90"`). Each value is a whole number between 1 and 99.
+- When usage first crosses a threshold (for example, passing 80%), the owner receives a **quota warning** email. At 100% or more, they receive a **quota exceeded** email instead.
+- Warnings are **deduplicated**: the system remembers the highest threshold already warned and will not re-send for the same level on every upload. If usage later drops back below the lowest threshold, the warnings **re-arm**, so the owner is warned again the next time usage climbs.
+
+These emails are event-driven; they fire as part of completing an upload, both for the owner's own files and for files received through a reverse share. They use the standard [notification system](/docs/v1-beta/notification-preferences) and require SMTP to be configured.
+
+### Grace period and smart deletion (opt-in)
+
+When **Enable Quota Smart Deletion** is turned on, a user who stays over 100% of their quota for longer than the **Quota Grace Period** can have files automatically deleted to bring them back under the limit. This is the only quota feature that destroys content, and it is **off by default**.
+
+<Callout type="warn">
+  Smart deletion is **off by default**. Until an administrator enables it, exceeding a quota only produces warning emails and blocks new direct uploads. No files are ever deleted for being over quota.
+</Callout>
+
+When it runs, the scheduler frees space in a strict **safe order**, oldest first, deleting only as much as needed to get back under the limit:
+
+1. **Orphan uploads first.** Files the user has uploaded but that are not part of any share are deleted first, oldest first.
+2. **Then files in inactive shares.** Files whose shares have seen no activity for at least the **Quota Inactive Share Days** window become eligible next, oldest first.
+3. **Otherwise, block; never touch active shares.** If freeing space would require deleting files that are still in an active, recently-used share, smart deletion **deletes nothing**. The user simply stays blocked from new direct uploads until they free space themselves.
+
+<Callout type="warn">
+  **Files inside an active share are never auto-deleted for quota overage.** When everything a user owns is in an active share, the system prefers to keep the user blocked rather than delete content someone might still be downloading. Data safety takes priority over storage economy.
+</Callout>
+
+When files are deleted this way, the owner receives an "auto-deleted" notice and the action is written to the [Activity Log](/docs/v1-beta/activity-log) as `QUOTA_FILES_DELETED`. A share that a deletion happens to leave empty is **not** removed; it is simply left empty.
+
+### Reverse-share soft enforcement
+
+External contributors uploading to a [reverse share](/docs/v1-beta/reverse-shares) should not be turned away just because the share's owner is over quota. **Reverse Share Soft Enforcement** (on by default) relaxes the limit for these inbound uploads:
+
+- An external upload to a reverse share is allowed **even when the owner is over quota**, until the projected usage would exceed `min(limit × factor, absolute cap)`, where the factor is **Reverse Share Max Overage Factor** (default `3`) and the cap is **Reverse Share Absolute Max Bytes** (`0` means no absolute cap). Past that ceiling the upload is blocked.
+- While the owner is in this overage zone, they are alerted to regularize their storage.
+- The owner's **own direct uploads keep hard enforcement**: they are still blocked at 100% of the quota, exactly as before. The soft rule applies only to inbound reverse-share uploads.
+- When **Reverse Share Soft Enforcement** is turned off, reverse-share uploads fall back to the same hard block as direct uploads.
+
+### Quota policy configuration keys
+
+These seven keys live in the **Storage** settings group on the **Admin → Settings** page.
+
+| Key | Default | Meaning |
+|-----|--------:|---------|
+| **Quota Warning Thresholds** | `80,90` | Comma-separated percentages (each 1-99) at which the owner is emailed a quota warning. |
+| **Quota Grace Period (days)** | `7` | How long a user may stay over 100% before smart deletion may act. Minimum 0. |
+| **Enable Quota Smart Deletion** | `off` | Master opt-in for automatic deletion of an over-quota user's files. Off by default. |
+| **Quota Inactive Share Days** | `30` | A share's files become eligible for smart deletion after this many days without activity. Minimum 1. |
+| **Reverse Share Soft Enforcement** | `on` | Allow external reverse-share uploads beyond the owner's quota, up to the ceiling below. On by default. |
+| **Reverse Share Max Overage Factor** | `3` | Multiple of the owner's limit up to which reverse uploads are tolerated. Minimum 1. |
+| **Reverse Share Absolute Max Bytes** | `0` | Absolute storage ceiling for the reverse-share tolerance. `0` means no absolute cap. |
+
+## Warning emails
+
+Before an expired share or reverse share is permanently deleted, Ouitransfer can send the owner a "pending permanent deletion" warning email. It is sent the configured number of days ahead of the deletion, and is sent only once per item. Set **Warn Before Deletion** to `0` to disable these warnings. When content is deleted, the owner also receives an "auto-deleted" notice. These emails use the standard [notification system](/docs/v1-beta/notification-preferences), so they respect each user's preferences and require SMTP to be configured.
+
+<Callout type="info">
+  The warning only fires if **Warn Before Deletion** is at most the **Grace Period**. If you set it larger than the grace period, the deletion happens before a warning could ever be sent.
+</Callout>
+
+## Audit logging
+
+Both lifecycle transitions are recorded in the [Activity Log](/docs/v1-beta/activity-log). Deactivation and reactivation write `SHARE_DEACTIVATED` / `SHARE_REACTIVATED` (and the reverse-share equivalents), with the reason in their metadata. Every automated deletion writes its own entry too: expired and max-views share-link removals, reverse-share deletions, deactivated-account file cleanups, quota smart-deletion (`QUOTA_FILES_DELETED`), the full user-deletion cascade, both directions of the orphan sweep, and aborted incomplete multipart uploads (`ORPHAN_MULTIPART_ABORTED`). This gives administrators a complete, searchable record of what the cleanup system deactivated, removed, and when.

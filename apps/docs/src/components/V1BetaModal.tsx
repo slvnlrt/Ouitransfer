@@ -1,0 +1,103 @@
+"use client";
+
+import { FlaskConical } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import type { SiteContent } from "@/lib/content-i18n";
+
+const V1_BETA_MODAL_KEY = "OUITRANSFER-v1-beta-modal-shown";
+
+interface V1BetaModalProps {
+  /** Localized modal copy. */
+  content: SiteContent["modal"];
+  /** Locale-prefixed path to the quick-start guide. */
+  quickStartHref: string;
+}
+
+export function V1BetaModal({ content, quickStartHref }: V1BetaModalProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    // Show once when visiting the v1-beta docs for the first time
+    if (pathname?.includes("/docs/v1-beta")) {
+      const hasSeenModal = localStorage.getItem(V1_BETA_MODAL_KEY);
+
+      if (!hasSeenModal) {
+        setIsOpen(true);
+      }
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    // Also open when the banner button dispatches the custom event
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener("open-v1-beta-modal", handleOpen);
+    return () => window.removeEventListener("open-v1-beta-modal", handleOpen);
+  }, []);
+
+  const handleClose = () => {
+    localStorage.setItem(V1_BETA_MODAL_KEY, "true");
+    setIsOpen(false);
+  };
+
+  const handleGoToQuickStart = () => {
+    handleClose();
+    router.push(quickStartHref);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="w-[600px] max-w-[90vw] sm:max-w-[600px] border-2 border-indigo-400 shadow-2xl backdrop-blur-md">
+        <DialogHeader>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2">
+              <FlaskConical className="h-8 w-8 text-indigo-500" />
+            </div>
+            <DialogTitle className="text-xl font-bold">{content.title}</DialogTitle>
+          </div>
+          <DialogDescription asChild className="text-left space-y-4 pt-2 text-base leading-relaxed">
+            <div>
+              <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-lg p-4 mb-4">
+                <p className="text-indigo-800 dark:text-indigo-200 text-sm font-medium">
+                  {content.note}
+                </p>
+              </div>
+              <p>{content.intro}</p>
+              <p>
+                {content.feedback}{" "}
+                <a
+                  href="https://github.com/slvnlrt/ouitransfer"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-indigo-600 underline underline-offset-2"
+                >
+                  GitHub
+                </a>
+                .
+              </p>
+            </div>
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex gap-3 justify-end pt-6">
+          <Button onClick={handleClose} className="px-6">
+            {content.gotIt}
+          </Button>
+          <Button onClick={handleGoToQuickStart} className="px-6">
+            {content.getStarted}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

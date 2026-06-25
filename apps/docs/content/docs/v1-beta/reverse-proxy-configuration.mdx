@@ -1,0 +1,276 @@
+---
+title: Reverse Proxy Configuration
+icon: "Shield"
+---
+
+When deploying **OUITRANSFER** behind a reverse proxy (like Traefik, Nginx, or Cloudflare), you need to configure secure cookie settings to ensure proper authentication. This guide covers the `SECURE_SITE` environment variable and related proxy configurations.
+
+## Overview
+
+Reverse proxies terminate SSL/TLS connections and forward requests to OUITRANSFER, which can cause authentication issues if cookies aren't configured properly for HTTPS environments. The `SECURE_SITE` environment variable controls cookie security settings to handle these scenarios.
+
+## The SECURE_SITE Environment Variable
+
+The `SECURE_SITE` variable configures how OUITRANSFER handles authentication cookies based on your deployment environment:
+
+### Configuration Options
+
+| Value   | Cookie Settings                       | Use Case                            |
+| ------- | ------------------------------------- | ----------------------------------- |
+| `true`  | `secure: true`, `sameSite: "lax"`     | HTTPS/Production with reverse proxy |
+| `false` | `secure: false`, `sameSite: "strict"` | HTTP/Development (default)          |
+
+### When to Use SECURE_SITE=true
+
+Set `SECURE_SITE=true` in the following scenarios:
+
+- ✅ **Reverse Proxy with HTTPS**: Traefik, Nginx, HAProxy with SSL termination
+- ✅ **Cloud Providers**: Cloudflare, AWS ALB, Azure Application Gateway
+- ✅ **CDN with HTTPS**: Any CDN that terminates SSL
+- ✅ **Production Deployments**: When users access via HTTPS
+
+### When to Use SECURE_SITE=false
+
+Keep `SECURE_SITE=false` (default) for:
+
+- ✅ **Local Development**: Running on `http://localhost`
+- ✅ **Direct HTTP Access**: No reverse proxy involved
+- ✅ **Testing Environments**: When using HTTP
+- ✅ **HTTP Reverse Proxy**: Nginx, Apache, etc. without SSL termination
+
+---
+
+## HTTP Reverse Proxy Setup
+
+**Docker Compose for HTTP Nginx:**
+
+```yaml
+environment:
+  - SECURE_SITE=false # HTTP = false
+```
+
+> **⚠️ HTTP Security**: Remember that HTTP transmits data in plain text. Consider using HTTPS in production environments.
+
+---
+
+## Troubleshooting Authentication Issues
+
+### Common Symptoms
+
+If you experience authentication issues behind a reverse proxy:
+
+- ❌ Login appears successful but redirects to login page
+- ❌ "No Authorization was found in request.cookies" errors
+- ❌ API requests return 401 Unauthorized
+- ❌ User registration fails silently
+
+### Diagnostic Steps
+
+1. **Check Browser Developer Tools**:
+   - Look for cookies in Application/Storage tab
+   - Verify cookie has `Secure` flag when using HTTPS
+   - Check if `SameSite` attribute is appropriate
+
+2. **Verify Environment Variables**:
+
+   ```bash
+   docker exec -it ouitransfer-server env | grep SECURE_SITE
+   ```
+
+3. **Test Cookie Settings**:
+   - With `SECURE_SITE=false`: Should work on HTTP
+   - With `SECURE_SITE=true`: Should work on HTTPS
+
+### Common Fixes
+
+**Problem**: Authentication fails with reverse proxy
+
+**Solution**: Set `SECURE_SITE=true` and ensure proper headers:
+
+```yaml
+environment:
+  - SECURE_SITE=true
+```
+
+**Problem**: Mixed content errors
+
+**Solution**: Ensure proxy passes correct headers:
+
+```yaml
+# Traefik
+- "traefik.http.middlewares.ouitransfer-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+# Nginx
+proxy_set_header X-Forwarded-Proto $scheme;
+```
+
+**Problem**: Authentication fails with HTTP reverse proxy
+
+**Solution**: Use `SECURE_SITE=false` and ensure proper cookie headers:
+
+```yaml
+environment:
+  - SECURE_SITE=false # For HTTP proxy
+```
+
+```nginx
+# Nginx - Add these headers for cookie handling
+proxy_set_header Cookie $http_cookie;
+proxy_pass_header Set-Cookie;
+```
+
+**Problem**: SQLite "readonly database" error with bind mounts
+
+**Solution**: Configure proper UID/GID permissions:
+
+```yaml
+environment:
+  - OUITRANSFER_UID=1000 # Your host UID (check with: id)
+  - OUITRANSFER_GID=1000 # Your host GID
+
+```
+
+> **💡 Note**: Check your host UID/GID with `id` command and use those values. See [UID/GID Configuration](/docs/v1-beta/uid-gid-configuration) for detailed setup.
+
+---
+
+## Security Considerations
+
+> **⚠️ Important**: Always use HTTPS in production environments. The `SECURE_SITE=true` setting ensures cookies are only sent over encrypted connections.
+
+---
+
+## Advanced Configuration
+
+### Multiple Domains
+
+If serving OUITRANSFER on multiple domains, ensure consistent cookie settings:
+
+```yaml
+environment:
+  - SECURE_SITE=true # Use for all HTTPS domains
+```
+
+### Development vs Production
+
+Use environment-specific configurations:
+
+**Development (HTTP):**
+
+```yaml
+environment:
+  - SECURE_SITE=false
+```
+
+**Production (HTTPS):**
+
+```yaml
+environment:
+  - SECURE_SITE=true
+```
+
+### Health Checks
+
+Add health checks to ensure proper proxy configuration. In the 3-container architecture, the health endpoint lives on the **server** container (port 3333), not the web container:
+
+```yaml
+services:
+  server:
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
+    container_name: ouitransfer-server
+    # ... other config
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3333/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+```
+
+The health endpoint returns `{ status, timestamp, uptime, checks: { database, storage } }`. It returns HTTP 200 when all subsystems are healthy, or HTTP 503 when degraded.
+
+---
+
+## URL Configuration
+
+OUITRANSFER uses two public URL variables, `FRONTEND_ORIGIN` and `STORAGE_PUBLIC_URL`, that control how browsers reach the application and its storage. Getting these right is critical: incorrect values cause silent failures in file uploads and downloads.
+
+### What each variable controls
+
+**`FRONTEND_ORIGIN`**: The URL where users open the web interface in their browser (e.g. `http://192.168.1.100:5487` or `https://files.example.com`).
+
+The Docker Compose file propagates it to:
+- `CORS_ORIGINS` on the **server**: allows the API to accept requests from the frontend
+- `RUSTFS_CORS_ALLOWED_ORIGINS` on the **storage**: allows the storage service to accept direct upload/download requests from the frontend
+
+**`STORAGE_PUBLIC_URL`**: The URL where browsers upload and download files directly from the storage service (e.g. `http://192.168.1.100:9000` or `https://storage.example.com`).
+
+The Docker Compose file propagates it to:
+- `STORAGE_URL` on the **server**: the base URL embedded in presigned URLs sent to browsers
+- `CSP_STORAGE_ORIGINS` on the **web** container: the Content Security Policy origin browsers are allowed to connect to
+
+### How file transfers work (the presigned URL flow)
+
+OUITRANSFER does not proxy file data through the API server. Instead:
+
+1. The browser asks the API server for a presigned URL, a short-lived signed URL (uploads: 1 hour, downloads: 15 min by default)
+2. The browser uses that URL to upload or download **directly** from the storage service
+3. The presigned URL contains the base from `STORAGE_PUBLIC_URL`; the browser must be able to reach that address
+
+This is why `STORAGE_PUBLIC_URL` must be an address reachable by the **user's browser**, not an internal Docker hostname like `storage:9000`.
+
+### Common mistakes
+
+| Mistake | Symptom |
+|---------|---------|
+| Using `localhost` when browsers run on a different machine | Uploads fail silently: browser tries to connect to its own machine |
+| HTTP `STORAGE_PUBLIC_URL` with an HTTPS web interface | Browser blocks the mixed-content request |
+| Omitting the port (e.g. missing `:9000`) when not behind a reverse proxy | Connection refused on upload/download |
+| Using the internal Docker hostname (`storage:9000`) | DNS resolution fails in the browser |
+
+### With a reverse proxy
+
+When using a reverse proxy, the storage service can be exposed on a custom domain or path, so port 9000 does not need to be publicly open. Update your `.env` to use the public addresses:
+
+```bash
+FRONTEND_ORIGIN=https://files.example.com
+STORAGE_PUBLIC_URL=https://storage.example.com
+```
+
+If your reverse proxy exposes storage on a subpath of the same domain (e.g. `https://files.example.com/s3`), use that full URL as `STORAGE_PUBLIC_URL`. The important thing is that the URL resolves correctly in the user's browser.
+
+Don't forget to also set `SECURE_SITE=true` on the **server** service when using HTTPS (see [above](#the-secure_site-environment-variable)).
+
+### Overriding individual variables
+
+The Docker Compose file maps `FRONTEND_ORIGIN` and `STORAGE_PUBLIC_URL` to their downstream counterparts automatically. If you need to set them to different values (e.g. storage on a completely separate domain from the frontend), you can override the downstream variables directly in `docker-compose.yml`:
+
+```yaml
+services:
+  server:
+    environment:
+      STORAGE_URL: "https://storage.example.com"      # overrides STORAGE_PUBLIC_URL
+      CORS_ORIGINS: "https://files.example.com"        # overrides FRONTEND_ORIGIN
+
+  storage:
+    environment:
+      RUSTFS_CORS_ALLOWED_ORIGINS: "https://files.example.com"  # overrides FRONTEND_ORIGIN
+
+  web:
+    environment:
+      CSP_STORAGE_ORIGINS: "https://storage.example.com"         # overrides STORAGE_PUBLIC_URL
+```
+
+Multiple CORS origins are comma-separated; multiple CSP origins are space-separated.
+
+---
+
+## Need Help?
+
+If you're still experiencing issues after following this guide:
+
+1. **Check the Logs**: `docker compose logs server` (or `docker compose logs web` for frontend issues)
+2. **Verify Headers**: Use browser dev tools or `curl -I`
+3. **Test Direct Access**: Try accessing OUITRANSFER directly (bypassing proxy)
+4. **Open an Issue**: [Report bugs on GitHub](https://github.com/slvnlrt/ouitransfer/issues)
+
+> **💡 Pro Tip**: When reporting issues, include your reverse proxy configuration and any relevant error messages from both OUITRANSFER and your proxy logs.

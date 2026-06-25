@@ -1,0 +1,132 @@
+---
+title: Notification Preferences
+icon: BellRing
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Ouitransfer can send email notifications for a variety of events: share access, file downloads, quota warnings, and more. The Notification Preferences page lets you control which notifications you receive.
+
+<Callout type="info">
+  Email notifications require [SMTP to be configured](/docs/v1-beta/configuring-smtp) by an administrator. If SMTP is not enabled, no notifications are sent regardless of your preferences.
+</Callout>
+
+---
+
+## Accessing preferences
+
+Navigate to **Settings** (click your profile picture in the header) then select **Notification Preferences**. The page groups notification types by category, each with a frequency dropdown.
+
+---
+
+## Configurable notifications
+
+The following notification types can be individually enabled or disabled. The frequency options are **Immediate** (send as soon as the event occurs) and **Disabled** (never send).
+
+### Shares
+
+| Notification | Default | Description |
+|---|---|---|
+| **Share Access Notifications** | Disabled | Someone viewed your share page |
+| **Share Download Notifications** | Disabled | Someone downloaded a file from your share |
+| **Share Expiring Soon** | Immediate | Your share is approaching its expiration date |
+| **Share Expired** | Immediate | Your share has expired |
+| **Share Max Views Reached** | Immediate | Your share reached its maximum view count |
+| **Share No Activity Alert** | Immediate | No downloads on a share for the configured inactivity period |
+
+### Reverse Shares
+
+| Notification | Default | Description |
+|---|---|---|
+| **Reverse Share Upload Notifications** | Disabled | Someone uploaded a file to your reverse share |
+| **Reverse Share Expiring Soon** | Immediate | Your reverse share is approaching its expiration date |
+| **Reverse Share Expired** | Immediate | Your reverse share has expired |
+
+### Quota
+
+| Notification | Default | Description |
+|---|---|---|
+| **Storage Quota Warning** | Immediate | Your storage usage is approaching the limit |
+| **Storage Quota Exceeded** | Immediate | Your storage usage has exceeded the limit |
+| **Files Auto-Deleted** | Immediate | Files were automatically deleted (e.g., expired share cleanup) |
+| **Share Auto-Deleted** | Immediate | A share was automatically deleted |
+
+### Admin
+
+These notifications are only relevant for administrator accounts.
+
+| Notification | Default | Description |
+|---|---|---|
+| **New User Registration** | Immediate | A new user account was created on the platform |
+| **User Quota Alert** | Immediate | A user's storage quota has reached a warning or critical threshold |
+
+<Callout type="info">
+  **Share Access** and **Share Download** notifications default to **Disabled** because they can generate a high volume of emails on popular shares. Enable them selectively if you need to track access on specific shares, or use the per-share notification overrides described below.
+</Callout>
+
+---
+
+## Non-configurable notifications
+
+Some notifications are critical for account operation and are always sent. They do not appear on the preferences page and cannot be disabled:
+
+| Notification | Description |
+|---|---|
+| **Welcome** | Sent when your account is created |
+| **Password Reset** | Sent when you request a password reset |
+| **Account Deactivated** | Sent when your account is deactivated by an admin |
+| **Account Reactivated** | Sent when your account is reactivated |
+| **Share Invitations** | Sent to recipients when they are invited to a share |
+| **Reverse Share Invitations** | Sent to recipients of a reverse share invitation |
+| **Test Email** | Sent by admins to verify SMTP configuration |
+
+---
+
+## Per-share overrides
+
+Individual shares and reverse shares can override your global preferences:
+
+- On a [share](/docs/v1-beta/shares), the **Notify on each download** toggle enables download notifications for that specific share, even if your global **Share Download Notifications** preference is disabled.
+- On a [share](/docs/v1-beta/shares), the **Inactivity alert** setting triggers a notification after a configured number of days without downloads, using the **Share No Activity Alert** type.
+- On a [reverse share](/docs/v1-beta/reverse-shares), the **Notify on upload** toggle enables upload notifications for that specific reverse share, even if your global **Reverse Share Upload Notifications** preference is disabled.
+
+<Callout type="warn">
+  If a notification type is **Disabled** in your global preferences, per-share overrides can still trigger notifications for that type. Per-share settings act as explicit opt-ins for individual shares.
+</Callout>
+
+---
+
+## Cooldown periods
+
+To prevent excessive emails on busy shares, certain notification types enforce a cooldown:
+
+| Notification | Cooldown |
+|---|---|
+| Share Access Notifications | 15 minutes per share |
+| Share Download Notifications | 15 minutes per share |
+| Reverse Share Upload Notifications | 5 minutes per reverse share |
+
+During the cooldown window, additional events of the same type on the same share are silently skipped; they are not queued or batched for later delivery.
+
+---
+
+## Unsubscribing
+
+Every non-critical notification email includes an **Unsubscribe** link at the bottom. Clicking it opens a confirmation page where you can disable that notification type with a single click.
+
+This is equivalent to setting the notification to **Disabled** on your preferences page. You can re-enable it at any time from Settings.
+
+---
+
+## API reference
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/notifications/preferences` | User | Get all notification preferences (merged with catalog defaults) |
+| `PUT` | `/notifications/preferences` | User | Update notification preferences (batch) |
+| `GET` | `/notifications/unsubscribe?token=...` | Public | Validate unsubscribe token and return notification type |
+| `POST` | `/notifications/unsubscribe` | Public | Confirm unsubscribe (sets frequency to `disabled`) |
+
+The `GET /notifications/preferences` endpoint returns all 22 notification types with their current frequency, whether they are configurable, and whether they are critical. The `PUT` endpoint accepts an array of `{ type, frequency }` objects; only configurable, non-critical types can be updated.
+
+For the full API reference, see the [API documentation](/docs/v1-beta/api).

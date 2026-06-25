@@ -1,0 +1,67 @@
+# WEB
+apps/web/logs
+apps/web/*.log
+apps/web/npm-debug.log*
+apps/web/yarn-debug.log*
+apps/web/yarn-error.log*
+apps/web/pnpm-debug.log*
+apps/web/lerna-debug.log*
+
+apps/web/node_modules
+apps/web/dist
+apps/web/dist-ssr
+apps/web/*.local
+
+# Editor directories and files
+apps/web/.vscode/*
+apps/web/!.vscode/extensions.json
+apps/web/.idea
+apps/web/.DS_Store
+apps/web/*.suo
+apps/web/*.ntvs*
+apps/web/*.njsproj
+apps/web/*.sln
+apps/web/*.sw?
+
+#SERVER
+apps/server/node_modules
+apps/server/.env
+apps/server/dist/*
+
+# SQLite dev database (local only — never commit)
+apps/server/prisma/*.db
+apps/server/prisma/*.db-journal
+apps/server/prisma/*.db-shm
+apps/server/prisma/*.db-wal
+
+#DOCS
+apps/docs/node_modules
+apps/docs/.env
+
+#DEFAULT
+.env
+.steering
+data/
+.next/
+node_modules/
+screenshots/
+# Exception: doc assets are tracked
+!apps/docs/public/assets/**/screenshots/
+!apps/docs/public/assets/**/screenshots/**
+*.tsbuildinfo
+
+# Turbo
+.turbo
+
+# Playwright
+playwright-report/
+test-results/
+
+# Shared package dist (compiled by Dockerfile shared-builder stage — never commit)
+packages/shared/dist/
+
+# Prisma generated client (v7)
+apps/server/src/generated/
+
+# Superpowers brainstorm session artifacts
+.superpowers/

@@ -1,0 +1,195 @@
+---
+title: Quotas de stockage
+icon: Gauge
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Les quotas de stockage contrôlent la quantité de données que chaque utilisateur peut stocker ainsi que la taille maximale des fichiers individuels qu'il peut téléverser. Ouitransfer applique deux limites indépendantes par utilisateur : un plafond de **taille maximale de fichier** pour tout fichier téléversé individuellement, et un plafond de **stockage total maximal** sur l'ensemble des données stockées par l'utilisateur.
+
+## Vue d'ensemble
+
+Ouitransfer utilise un système de quotas à deux niveaux :
+
+- **Valeurs par défaut globales** : configurées sur la page Paramètres. Elles s'appliquent à tous les utilisateurs ordinaires qui ne bénéficient d'aucune dérogation personnelle ou de groupe.
+- **Dérogations par utilisateur** : définies par utilisateur dans la Gestion des utilisateurs. Elles ont la priorité sur les valeurs par défaut globales pour l'utilisateur concerné.
+- **Héritage au niveau du groupe** : un utilisateur peut appartenir à un groupe qui possède ses propres dérogations de quota, situées entre les dérogations par utilisateur et les valeurs par défaut globales. Consultez la page [Groupes](/docs/v1-beta/groups) pour plus de détails.
+
+Les administrateurs sont exemptés des valeurs par défaut globales par conception. Sauf si vous définissez explicitement une dérogation sur un compte administrateur, les administrateurs disposent d'un stockage et d'une taille de fichier illimités.
+
+## Fonctionnement de la résolution des quotas
+
+Lorsqu'un utilisateur initie un téléversement, le serveur résout les limites effectives de cet utilisateur en appliquant la chaîne de priorité suivante :
+
+```
+Dérogation par utilisateur  →  Dérogation de groupe  →  Valeur par défaut globale
+```
+
+La première valeur non-`null` dans cette chaîne est retenue. La résolution s'applique indépendamment aux deux limites (taille maximale de fichier et stockage total maximal), ce qui vous permet de surcharger l'une sans toucher à l'autre.
+
+### Cas particulier : les administrateurs
+
+Les comptes administrateur ont une limite **illimitée** (aucun plafond) par défaut quand ni dérogation par utilisateur ni dérogation de groupe n'est définie. Vous pouvez néanmoins imposer un plafond strict à un administrateur en définissant explicitement une dérogation par utilisateur.
+
+### Sémantique des valeurs
+
+| Valeur | Signification |
+|--------|---------------|
+| `null` | Aucune dérogation : hérite du niveau suivant dans la chaîne |
+| `0` | Illimité : aucune limite appliquée |
+| `> 0` | Limite explicite en octets |
+
+Les valeurs BigInt en octets sont sérialisées sous forme de chaînes dans les réponses API.
+
+<Callout type="info">
+  La source de chaque limite effective est visible dans le panneau d'édition de l'utilisateur : l'interface indique si une valeur provient d'une dérogation par utilisateur, d'un groupe, de la valeur par défaut globale ou de la valeur par défaut administrateur.
+</Callout>
+
+## Valeurs par défaut globales
+
+Accédez à **Admin → Paramètres** pour configurer les valeurs par défaut globales :
+
+| Paramètre | Description |
+|-----------|-------------|
+| **Taille maximale de fichier** | Taille maximale d'un fichier téléversé individuellement, en octets. S'applique à tous les utilisateurs ordinaires sans dérogation. |
+| **Stockage total maximal par utilisateur** | Stockage cumulé maximal qu'un utilisateur ordinaire peut occuper, en octets. |
+
+Ces paramètres s'appliquent à tout utilisateur ordinaire ne disposant ni de dérogation par utilisateur ni de dérogation de groupe. Les comptes administrateur ne sont pas concernés, sauf dérogation explicite.
+
+## Dérogations par utilisateur
+
+Accédez à **Admin → Gestion des utilisateurs**, puis ouvrez le dialogue **Modifier** d'un utilisateur. La section **Quota** en bas du formulaire vous permet de configurer les dérogations de cet utilisateur :
+
+- **Taille maximale de fichier** : choisissez **Hériter** (utiliser le niveau suivant dans la chaîne), **Illimité**, ou **Personnalisé** (saisir une valeur en octets).
+- **Stockage total maximal** : mêmes trois options.
+
+Le formulaire affiche également un résumé en lecture seule des limites effectives actuelles de l'utilisateur (résolues à travers la chaîne complète), son utilisation actuelle du stockage, et la source de chaque valeur effective (dérogation utilisateur, nom du groupe, valeur par défaut globale ou valeur par défaut administrateur).
+
+L'enregistrement du formulaire persiste à la fois les modifications du profil et les dérogations de quota en une seule soumission.
+
+<Callout type="warn">
+  Définir une dérogation par utilisateur sur **Hériter** (`null`) supprime entièrement la dérogation. L'utilisateur revient alors au quota de son groupe, ou à la valeur par défaut globale s'il n'appartient à aucun groupe.
+</Callout>
+
+## Ce qui compte dans le stockage
+
+Le total de stockage d'un utilisateur est calculé comme suit :
+
+```
+Total = SUM(File.size pour les fichiers appartenant à l'utilisateur)
+      + SUM(ReverseShareFile.size pour les partages inversés créés par l'utilisateur)
+```
+
+Points importants :
+
+- Seuls les fichiers finalisés enregistrés en base de données sont comptabilisés. Les fragments de téléversement multipart en cours, stockés côté S3, sont exclus (il s'agit d'une préoccupation du cycle de vie S3, pas d'une préoccupation de quota).
+- Les **partages** sont des vues sur des fichiers existants et ne sont pas comptabilisés séparément. La création d'un partage ne consomme pas de stockage supplémentaire.
+- Les fichiers reçus via un **partage inversé** appartenant à l'utilisateur *sont* comptabilisés ; ils sont stockés sous son compte une fois acceptés.
+
+<Callout type="info">
+  Pour nettoyer automatiquement les fragments de téléversement multipart incomplets, configurez une politique de cycle de vie `AbortIncompleteMultipartUpload` sur votre compartiment S3-compatible. Cela n'est pas géré par l'application.
+</Callout>
+
+## Comportement de blocage
+
+| Action | Utilisateur en dépassement de quota ? | Résultat |
+|--------|---------------------------------------|----------|
+| Téléverser un fichier | Oui | **Bloqué** : erreur 400 avec un message explicite |
+| Téléverser un fichier | Non | Vérifié par rapport à la taille maximale de fichier et au stockage total maximal |
+| Créer un partage | Oui | **Autorisé** : les partages ne consomment pas de nouveau stockage |
+| Créer un partage inversé | Oui | **Autorisé** (avec un avertissement dans l'application) |
+| Téléversements tiers vers un partage inversé | Oui | **Autorisé** : les téléverseurs externes ne sont jamais bloqués |
+
+La raison pour laquelle les téléversements tiers vers un partage inversé ne sont pas bloqués : le créateur peut être en dépassement de quota, mais bloquer les clients externes romprait le contrat de service. Le prochain téléversement direct du créateur sera bloqué, l'incitant à libérer de l'espace.
+
+<Callout type="info">
+  Les vérifications de quota sont optimistes. Deux téléversements simultanés peuvent chacun passer la vérification individuellement tout en dépassant ensemble la limite. Le léger dépassement est acceptable ; le téléversement suivant sera bloqué. Les fichiers font généralement quelques mégaoctets tandis que les quotas sont en gigaoctets, les dépassements sont donc négligeables.
+</Callout>
+
+## Indicateur de quota
+
+Chaque utilisateur authentifié voit un **indicateur d'utilisation du stockage** dans la Barre de statut système, le panneau rétractable qui apparaît sous la barre de navigation sur le tableau de bord. Développez-le pour consulter les détails du quota.
+
+L'indicateur affiche :
+
+- L'utilisation actuelle et la limite effective avec une barre de progression (ex. « 5,0 Go / 10,0 Go »)
+- Une barre de progression dont la couleur varie selon le niveau d'alerte :
+
+| Niveau d'alerte | Seuil | Couleur |
+|-----------------|-------|---------|
+| `none` | < 80 % | Par défaut |
+| `warning` | 80-89 % | Jaune |
+| `critical` | 90-99 % | Orange |
+| `exceeded` | ≥ 100 % | Rouge |
+
+- Si la limite effective est **illimitée** (`0`), l'indicateur affiche uniquement l'utilisation actuelle sans barre de progression.
+
+Lorsque le niveau d'alerte est `warning` ou `critical`, un badge de pourcentage apparaît sur l'onglet réduit de la Barre de statut système pour attirer l'attention sans nécessiter l'ouverture du panneau.
+
+## Référence API (administrateur)
+
+Tous les points de terminaison de gestion des quotas nécessitent une session administrateur authentifiée. Les requêtes non administrateur reçoivent `403 Forbidden`.
+
+| Méthode | Chemin | Description |
+|---------|--------|-------------|
+| `GET` | `/users/:id/quota` | Retourne les limites effectives de l'utilisateur, son utilisation actuelle du stockage, le niveau d'alerte et les valeurs de dérogation. Les champs BigInt sont retournés sous forme de chaînes. |
+| `PATCH` | `/users/:id/quota` | Définit les dérogations de quota par utilisateur. Accepte `null` (supprimer la dérogation / hériter), `"0"` (illimité) ou une valeur positive en octets sous forme de nombre ou de chaîne numérique. Les deux champs sont optionnels ; omettez un champ pour le laisser inchangé. |
+
+### `GET /users/:id/quota` : Réponse
+
+```json
+{
+  "used": "5368709120",
+  "maxTotalStorage": "10737418240",
+  "maxFileSize": "1073741824",
+  "percentage": 50,
+  "warningLevel": "none",
+  "uploadAllowed": true,
+  "overrides": {
+    "maxFileSizeOverride": null,
+    "maxTotalStorageOverride": null
+  },
+  "sources": {
+    "maxFileSizeSource": "global",
+    "maxTotalStorageSource": "global",
+    "groupName": null
+  }
+}
+```
+
+Les champs **`sources`** décrivent l'origine de chaque limite effective :
+
+| Valeur | Signification |
+|--------|---------------|
+| `"user"` | Dérogation par utilisateur définie |
+| `"group"` | Héritée du groupe de l'utilisateur |
+| `"global"` | Retour à la valeur par défaut globale |
+| `"admin-default"` | Compte administrateur sans dérogation (illimité) |
+
+### `PATCH /users/:id/quota` : Corps de la requête
+
+```json
+{
+  "maxFileSizeOverride": null,
+  "maxTotalStorageOverride": "21474836480"
+}
+```
+
+Les deux champs sont optionnels. N'envoyez que les champs que vous souhaitez modifier.
+
+| Champ | Type | Description |
+|-------|------|-------------|
+| `maxFileSizeOverride` | `number \| string \| null` | `null` = hériter, `0` = illimité, `> 0` = limite en octets. Valeur maximale : 1 Po. |
+| `maxTotalStorageOverride` | `number \| string \| null` | Mêmes sémantiques que ci-dessus. |
+
+**Réponse :**
+
+```json
+{
+  "message": "User quota overrides updated",
+  "overrides": {
+    "maxFileSizeOverride": null,
+    "maxTotalStorageOverride": "21474836480"
+  }
+}
+```

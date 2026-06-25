@@ -1,0 +1,76 @@
+---
+title: Quick Share
+icon: Share2
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+Quick Share is the fastest way to share files from the dashboard. Drop files, set options, and get a shareable link without navigating away from the main page.
+
+For the full set of share options (visitor identification, per-share notifications, activity tracking), see the [Shares](/docs/v1-beta/shares) page. Quick Share creates a regular share with a simplified interface.
+
+## How it works
+
+The Quick Share widget lives at the top of the dashboard and guides you through three steps.
+
+<Steps>
+<Step>
+
+### Drop your files
+
+Drag and drop files onto the widget, or click anywhere on it to open a file picker. You can drop multiple files at once. Uploads start immediately.
+
+</Step>
+<Step>
+
+### Configure the share
+
+While files upload, configure the share options:
+
+| Option | Default | Description |
+|---|---|---|
+| **Name** | Filename (1 file) or "N files" | Free text label for the share |
+| **Expires in** | 7 days | 1 day, 7 days, 30 days, or Never |
+| **Password protection** | Off | Require a password to access the share |
+| **Recipients** | None | Email addresses to notify when the share is ready (requires SMTP) |
+
+The name is auto-filled and updates if you add more files, as long as you have not edited it manually.
+
+</Step>
+<Step>
+
+### Share
+
+Click **Share**. If uploads are still in progress, the share is created automatically the moment they complete; no need to wait and click again.
+
+You get a QR code and a shareable link. Copy the link or download the QR code as a PNG.
+
+</Step>
+</Steps>
+
+## Adding more files
+
+You can add more files after the initial drop, either by clicking **Add more files** in the header or by dragging additional files onto the upload card. The name field updates automatically (unless you have edited it manually).
+
+<Callout type="info">
+  If you remove all files from the list, the widget resets to the initial dropzone state.
+</Callout>
+
+## Recipients
+
+The **Recipients** field is only shown when [SMTP is configured](/docs/v1-beta/configuring-smtp). Add email addresses by typing an address and pressing **Enter**. Remove an address by clicking the × on its tag.
+
+When the share is created, Ouitransfer sends an invitation email to each recipient with a personalized link. This happens automatically: there is no separate "send" step. Each recipient's link contains a tracking token so you can see who accessed the share. See [Shares: Recipients and invitations](/docs/v1-beta/shares#recipients-and-invitations) for details.
+
+
+
+## Errors
+
+If a file fails to upload, a retry button appears next to it. Fix the issue and retry before clicking **Share**; the share will only include files that uploaded successfully.
+
+If all files fail, the **Share** button is disabled until at least one file is uploaded successfully.
+
+## Starting over
+
+Click **New share** on the confirmation screen to reset the widget and share another batch of files.

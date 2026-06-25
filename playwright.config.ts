@@ -1,0 +1,54 @@
+import { defineConfig, devices } from "@playwright/test";
+
+export default defineConfig({
+  testDir: "./e2e",
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: process.env.CI ? "github" : "html",
+  use: {
+    // CI uses Docker Compose (production port 5487); local dev uses Next.js dev (port 3000)
+    baseURL: process.env.CI ? "http://localhost:5487" : "http://localhost:3000",
+    trace: "on-first-retry",
+    screenshot: "only-on-failure",
+  },
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    // Firefox and WebKit run locally only — CI installs only the Chromium headless shell
+    ...(process.env.CI
+      ? []
+      : [
+          {
+            name: "firefox",
+            use: { ...devices["Desktop Firefox"] },
+          },
+          {
+            name: "webkit",
+            use: { ...devices["Desktop Safari"] },
+          },
+        ]),
+  ],
+  // Only start dev servers locally — CI uses Docker Compose
+  ...(process.env.CI
+    ? {}
+    : {
+        webServer: [
+          {
+            command: "pnpm dev:server",
+            port: 3333,
+            reuseExistingServer: true,
+            timeout: 30000,
+          },
+          {
+            command: "pnpm dev:web",
+            port: 3000,
+            reuseExistingServer: true,
+            timeout: 30000,
+          },
+        ],
+      }),
+});

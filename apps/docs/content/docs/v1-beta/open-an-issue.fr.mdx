@@ -1,0 +1,60 @@
+---
+title: Comment ouvrir une issue
+icon: Ticket
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Vous avez trouvé un bug, avez une demande de fonctionnalité ou avez besoin d'une clarification ? Ouvrez une issue sur GitHub. C'est le meilleur moyen d'obtenir la visibilité des mainteneurs et de la communauté.
+
+Le dépôt se trouve à : [github.com/slvnlrt/ouitransfer](https://github.com/slvnlrt/ouitransfer)
+
+---
+
+## Avant d'ouvrir une issue
+
+- **Cherchez d'abord** : vérifiez si l'issue existe déjà (ouverte et fermée). Évitez les doublons.
+- **Rassemblez les détails** : collectez les messages d'erreur, les journaux, les étapes de reproduction et votre environnement (système d'exploitation, version Docker, navigateur).
+
+---
+
+## Rapports de bug
+
+Incluez :
+
+- **Étapes de reproduction** : numérotées, minimales et fiables
+- **Comportement attendu** vs. **comportement réel**
+- **Environnement** : système d'exploitation, version Docker, navigateur (le cas échéant), version d'Ouitransfer
+- **Journaux** : journaux serveur (`docker compose logs server`), erreurs de la console du navigateur
+- **Captures d'écran** : si le problème est visuel
+
+<Callout type="info">
+  Pour les problèmes d'authentification ou de stockage, vérifiez `docker compose logs server` en premier ; les journaux du serveur contiennent généralement la cause racine.
+</Callout>
+
+---
+
+## Demandes de fonctionnalité
+
+Incluez :
+
+- Ce que vous souhaitez faire et pourquoi
+- Comment vous contournez actuellement la limitation (le cas échéant)
+- Les idées d'implémentation que vous avez (optionnel)
+
+---
+
+## Rédiger un bon titre
+
+Utilisez un titre concis et descriptif qui résume le problème :
+
+- `File upload fails silently when storage quota is exceeded`: bon
+- `Bug` ou `Problem with files`: inutile
+
+---
+
+## Après la soumission
+
+Surveillez votre issue pour les questions de suivi. Les mainteneurs peuvent demander des détails supplémentaires ou des clarifications. Répondre rapidement accélère la résolution.
+
+[Ouvrir une issue sur GitHub →](https://github.com/slvnlrt/ouitransfer/issues/new/choose)

@@ -1,0 +1,39 @@
+{
+  "name": "ouitransfer-monorepo",
+  "version": "0.0.0-dev",
+  "description": "Ouitransfer monorepo — self-hosted file transfer",
+  "private": true,
+  "packageManager": "pnpm@11.5.1",
+  "scripts": {
+    "prepare": "lefthook install",
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "format": "turbo format",
+    "type-check": "turbo type-check",
+    "validate": "turbo validate",
+    "test": "turbo test",
+    "dev:server": "turbo dev --filter=ouitransfer-api",
+    "dev:web": "turbo dev --filter=ouitransfer-web",
+    "dev:docs": "turbo dev --filter=ouitransfer-docs",
+    "build:server": "turbo build --filter=ouitransfer-api",
+    "build:web": "turbo build --filter=ouitransfer-web",
+    "build:docs": "turbo build --filter=ouitransfer-docs",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:report": "playwright show-report",
+    "lighthouse": "lhci autorun",
+    "knip": "knip"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.16",
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "@playwright/test": "^1.60.0",
+    "@lhci/cli": "^0.15.1",
+    "knip": "^6.15.0",
+    "lefthook": "^2.1.9",
+    "turbo": "^2.9.16",
+    "vitest": "catalog:"
+  }
+}

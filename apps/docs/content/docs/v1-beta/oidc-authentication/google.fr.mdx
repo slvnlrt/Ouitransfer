@@ -1,0 +1,335 @@
+---
+title: Google
+icon: Chrome
+---
+
+import { ZoomableImage } from "@/components/ui/zoomable-image";
+
+Google est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER. Il offre une authentification sécurisée et fiable via Google OAuth 2.0. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER avec leur compte Google existant, offrant une expérience d'authentification unique transparente.
+
+<ZoomableImage src="/assets/v1/oidc/google/sign-in-with-google.png" alt="Se connecter avec Google" />
+
+## Pourquoi utiliser l'authentification Google ?
+
+L'authentification Google présente plusieurs avantages pour les administrateurs comme pour les utilisateurs :
+
+- **Expérience de connexion transparente** - Les utilisateurs accèdent à OUITRANSFER avec leur compte Google existant
+- **Sécurité renforcée** - Bénéficiez de l'infrastructure de sécurité robuste de Google et de son authentification à deux facteurs
+- **Réduction de la fatigue des mots de passe** - Plus besoin de créer et de mémoriser des mots de passe supplémentaires
+- **Intégration en entreprise** - Idéal pour les organisations utilisant déjà Google Workspace
+- **Provisionnement automatique des utilisateurs** - Les nouveaux utilisateurs sont créés automatiquement lors de leur première connexion
+
+---
+
+## Prérequis
+
+Avant de configurer l'authentification Google, assurez-vous de disposer des éléments suivants :
+
+- **Accès à Google Cloud Console** - Capacité à créer et gérer des projets
+- **Privilèges administrateur dans OUITRANSFER** - Requis pour configurer les paramètres OIDC
+- **Propriété du domaine** - Pour les déploiements en production avec des domaines personnalisés
+
+> **Remarque :** Google est préconfiguré en tant que fournisseur officiel dans OUITRANSFER, ce qui signifie que la configuration technique est gérée automatiquement. Vous devez uniquement fournir vos identifiants OAuth.
+
+---
+
+## Configurer Google Cloud Console
+
+### Créer un projet Google Cloud
+
+Pour démarrer avec l'authentification Google, vous devez configurer un projet dans Google Cloud Console.
+
+1. **Accéder à Google Cloud Console** : Rendez-vous sur [console.cloud.google.com](https://console.cloud.google.com/)
+
+<ZoomableImage src="/assets/v1/oidc/google/cloud-console-home.png" alt="Accueil de Google Cloud Console" />
+
+2. **Créer ou sélectionner un projet** : Choisissez un projet existant ou créez-en un nouveau pour votre installation OUITRANSFER
+
+<ZoomableImage src="/assets/v1/oidc/google/select-project-modal.png" alt="Fenêtre de sélection de projet Google Cloud Console" />
+
+3. **Activer le projet** : Vérifiez que le projet est actif et sélectionné
+
+### Configurer l'écran de consentement OAuth
+
+L'écran de consentement OAuth est ce que voient les utilisateurs lorsqu'ils s'authentifient avec Google.
+
+1. **Accéder à l'écran de consentement OAuth** : Naviguez vers **APIs & Services** > **OAuth consent screen**
+
+<ZoomableImage
+  src="/assets/v1/oidc/google/oauth-consent-dropdown.png"
+  alt="Menu déroulant de consentement OAuth dans Google Cloud Console"
+/>
+
+2. **Choisir le type d'utilisateur** :
+   - **Internal** - Pour les organisations Google Workspace (uniquement les utilisateurs de votre domaine)
+   - **External** - Pour une utilisation publique (tout utilisateur Google peut s'authentifier)
+
+<ZoomableImage src="/assets/v1/oidc/google/user-type-select.png" alt="Sélection du type d'utilisateur dans Google Cloud Console" />
+
+3. **Remplir les informations requises** :
+   - **Application name** : Saisissez un nom descriptif comme « OUITRANSFER File Sharing »
+   - **User support email** : Indiquez une adresse e-mail de support valide
+   - **Developer contact information** : Ajoutez votre e-mail de contact pour les communications Google
+
+> **Conseil :** Pour un usage professionnel, choisissez « Internal » si vous disposez de Google Workspace. Cela restreint l'accès aux utilisateurs de votre organisation et simplifie le processus d'approbation.
+
+### Créer les identifiants OAuth 2.0
+
+Vous allez maintenant créer les identifiants que OUITRANSFER utilisera pour s'authentifier auprès de Google.
+
+1. **Accéder aux identifiants** : Naviguez vers **APIs & Services** > **Credentials**
+
+<ZoomableImage src="/assets/v1/oidc/google/credentials-select.png" alt="Sélection des identifiants dans Google Cloud Console" />
+
+2. **Créer un client OAuth** : Cliquez sur **+ CREATE CREDENTIALS** > **OAuth client ID**
+
+<ZoomableImage
+  src="/assets/v1/oidc/google/create-oauth-client-id.png"
+  alt="Création d'un Client ID OAuth dans Google Cloud Console"
+/>
+
+3. **Sélectionner le type d'application** : Choisissez **Web application**
+
+<ZoomableImage src="/assets/v1/oidc/google/web-app-select.png" alt="Sélection de l'application web dans Google Cloud Console" />
+
+4. **Configurer les URI autorisées et les URI de redirection autorisées** :
+
+Vous devez configurer plusieurs URL dans vos identifiants Google Cloud Console. Voici ce qu'il faut ajouter pour chaque environnement :
+
+### URI autorisées
+
+| Environnement | URL                           |
+| ------------- | ----------------------------- |
+| Production    | `https://yourdomain.com`      |
+| Développement | `http://localhost:3000`       |
+| Port personnalisé | `https://yourdomain.com:5487` |
+
+### URI de redirection autorisées
+
+| Environnement | URL                                                              |
+| ------------- | ---------------------------------------------------------------- |
+| Production    | `https://yourdomain.com/api/auth/providers/google/callback`      |
+| Développement | `http://localhost:3000/api/auth/providers/google/callback`       |
+| Port personnalisé | `https://yourdomain.com:5487/api/auth/providers/google/callback` |
+
+> **Remarque :** Remplacez `yourdomain.com` par votre nom de domaine réel dans toutes les URL de production et de port personnalisé.
+> **Remarque :** Vous pouvez ajouter plusieurs URI de redirection pour différents environnements (développement, pré-production, production).
+
+<ZoomableImage src="/assets/v1/oidc/google/allowed-urls.png" alt="URL autorisées dans Google Cloud Console" />
+
+5. **Créer et enregistrer les identifiants** : Cliquez sur **Create** et copiez le **Client ID** ainsi que le **Client Secret**
+
+<ZoomableImage
+  src="/assets/v1/oidc/google/oauth-client-created.png"
+  alt="Client ID et Client Secret dans Google Cloud Console"
+  legend="Le Client ID et le Client Secret affichés dans l'image sont fournis à titre d'exemple uniquement (identifiants fictifs). Vous devez utiliser vos propres identifiants depuis Google Cloud Console."
+/>
+
+> **Important :** Remplacez `yourdomain.com` par votre domaine réel. Vous pouvez ajouter plusieurs URI pour différents environnements (développement, pré-production, production).
+
+---
+
+## Configurer OUITRANSFER
+
+### Accéder aux paramètres OIDC
+
+Pour configurer l'authentification Google dans OUITRANSFER, vous devez disposer d'un accès administrateur au panneau de paramètres.
+
+1. **Se connecter en tant qu'administrateur** : Connectez-vous à OUITRANSFER avec un compte administrateur
+
+2. **Accéder aux paramètres** : Cliquez sur votre photo de profil dans l'en-tête et sélectionnez **Settings**
+
+3. **Accéder à l'authentification** : Trouvez et cliquez sur la section de configuration **Authentication Providers**
+
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+
+### Activer le fournisseur Google
+
+Google est préconfiguré en tant que fournisseur officiel, ce qui simplifie le processus de configuration.
+
+1. **Localiser le fournisseur Google** : Trouvez Google dans la liste des fournisseurs disponibles
+
+2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
+
+<ZoomableImage src="/assets/v1/oidc/google/OUITRANSFER-enabled-google.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+
+Après avoir activé le fournisseur, cliquez sur l'icône de crayon pour le configurer.
+
+3. **Configurer les identifiants** :
+   - **Client ID** : Collez le Client ID provenant de Google Cloud Console
+   - **Client Secret** : Collez le Client Secret provenant de Google Cloud Console
+   - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `openid`, `profile` et `email`.
+
+<ZoomableImage src="/assets/v1/oidc/google/edit-google.png" alt="Modifier le fournisseur Google" />
+
+### Options de configuration avancées
+
+Configurez des paramètres supplémentaires pour personnaliser le comportement de l'authentification :
+
+**Auto Registration** : Activez cette option pour créer automatiquement des comptes utilisateurs lors de la première authentification.
+
+**Admin Email Domains** : Spécifiez les domaines qui doivent recevoir automatiquement des privilèges administrateur. Par exemple, saisir `yourcompany.com` accordera l'accès administrateur à toute personne disposant d'un e-mail de ce domaine.
+
+**Sort Order** : Contrôlez l'ordre d'affichage du bouton de connexion Google par rapport aux autres fournisseurs d'authentification.
+
+**Icon** : vous pouvez choisir l'icône à utiliser pour le bouton de connexion Google (par défaut : `FcGoogle`).
+
+<ZoomableImage src="/assets/v1/oidc/google/google-icon.png" alt="Icône Google" />
+
+> **Considération de sécurité :** Soyez prudent avec l'inscription automatique et les domaines administrateurs. N'activez ces options que si vous faites confiance à la base d'utilisateurs ou si des restrictions de domaine sont en place.
+
+---
+
+## Liaison de comptes
+
+Par défaut, si un utilisateur est déjà inscrit dans OUITRANSFER avec son adresse e-mail Google, il sera automatiquement lié à son compte OUITRANSFER.
+
+> **Remarque :** Il n'est pas possible de désactiver la liaison de comptes. Si vous souhaitez dissocier un utilisateur de son compte Google, vous devez supprimer l'utilisateur dans OUITRANSFER.
+
+---
+
+## Configuration technique
+
+La configuration technique de Google est gérée automatiquement, mais comprendre cette configuration peut aider au dépannage :
+
+```yaml
+Provider Type: OAuth 2.0 with OIDC Discovery
+Issuer URL: https://accounts.google.com
+Authorization Endpoint: /o/oauth2/v2/auth
+Token Endpoint: /o/oauth2/token
+UserInfo Endpoint: https://www.googleapis.com/oauth2/v3/userinfo
+Scopes: openid profile email
+```
+
+### Correspondances de champs
+
+OUITRANSFER mappe automatiquement les informations utilisateur Google vers les comptes utilisateurs locaux :
+
+- **User ID** : Correspond au champ `sub` de Google
+- **Email** : Correspond au champ `email` de Google
+- **Full Name** : Correspond au champ `name` de Google
+- **First Name** : Correspond au champ `given_name` de Google
+- **Last Name** : Correspond au champ `family_name` de Google
+- **Avatar** : Correspond au champ `picture` de Google
+
+---
+
+## Tester la configuration
+
+### Vérifier la configuration
+
+Après avoir configuré l'authentification Google, testez l'intégration pour vous assurer que tout fonctionne correctement.
+
+1. **Vérifier la page de connexion** : Accédez à la page de connexion de OUITRANSFER et vérifiez que le bouton « Sign in with Google » s'affiche
+
+2. **Tester le flux d'authentification** : Cliquez sur le bouton de connexion Google et complétez le processus d'authentification
+
+3. **Vérifier la création de l'utilisateur** : Confirmez qu'un nouveau compte utilisateur est créé (si l'inscription automatique est activée)
+
+### Vérification du flux de connexion
+
+Le processus d'authentification complet doit fonctionner comme suit :
+
+1. **L'utilisateur clique sur « Sign in with Google »** : Le navigateur est redirigé vers la page d'authentification de Google
+2. **L'utilisateur s'authentifie avec Google** : L'utilisateur saisit ses identifiants Google ou confirme sa session existante
+3. **Google redirige vers OUITRANSFER** : L'utilisateur revient sur OUITRANSFER avec les jetons d'authentification
+4. **OUITRANSFER crée ou met à jour l'utilisateur** : Le compte utilisateur est automatiquement géré selon votre configuration
+5. **L'utilisateur accède à OUITRANSFER** : L'utilisateur est connecté et peut utiliser toutes les fonctionnalités selon ses permissions
+
+---
+
+## Résolution des problèmes courants
+
+### Erreur de non-correspondance de l'URI de redirection
+
+**Message d'erreur** : `Error 400: redirect_uri_mismatch`
+
+**Cause** : L'URI de redirection dans votre requête ne correspond pas à celle configurée dans Google Cloud Console.
+
+**Solution** :
+
+1. Vérifiez l'URL exacte dans le message d'erreur
+2. Ajoutez cette URL exacte dans vos identifiants Google Cloud Console
+3. Assurez-vous d'inclure le bon protocole (http/https) et le bon port
+4. Supprimez les barres obliques de fin sauf si elles figurent dans le message d'erreur
+
+### Erreur d'accès refusé
+
+**Message d'erreur** : `Error 403: access_denied`
+
+**Cause** : L'utilisateur a refusé les permissions ou l'écran de consentement OAuth n'est pas correctement configuré.
+
+**Solution** :
+
+1. Vérifiez que l'écran de consentement OAuth est publié (pour le type d'utilisateur External)
+2. Vérifiez que les scopes requis sont correctement configurés
+3. Pour les applications Internal, assurez-vous que l'utilisateur appartient à votre organisation Google Workspace
+4. Vérifiez et simplifiez les permissions demandées
+
+### Erreur de client invalide
+
+**Message d'erreur** : `Error 401: invalid_client`
+
+**Cause** : Client ID ou Client Secret incorrect.
+
+**Solution** :
+
+1. Vérifiez que vous avez correctement copié les identifiants depuis Google Cloud Console
+2. Assurez-vous qu'il n'y a pas d'espaces ou de caractères supplémentaires dans les identifiants
+3. Régénérez les identifiants si nécessaire
+4. Vérifiez que vous utilisez le bon projet dans Google Cloud Console
+
+### Problèmes avec le point de terminaison de découverte
+
+**Cause** : Problèmes de connectivité réseau ou de résolution DNS.
+
+**Solution** :
+
+1. Vérifiez le pare-feu du serveur et la connectivité réseau
+2. Vérifiez la résolution DNS depuis votre serveur
+3. Prenez en compte les configurations de proxy ou CDN susceptibles de bloquer la requête
+
+---
+
+## Bonnes pratiques de sécurité
+
+### Gestion des identifiants
+
+- **Ne jamais exposer les secrets** : Gardez votre Client Secret sécurisé et ne le committez jamais dans le contrôle de version
+- **Rotation régulière des identifiants** : Générez de nouveaux identifiants périodiquement pour renforcer la sécurité
+- **Utiliser des variables d'environnement** : Stockez les configurations sensibles dans des variables d'environnement, pas dans des fichiers de configuration
+- **Surveiller les journaux d'accès** : Examinez régulièrement les journaux d'authentification pour détecter toute activité suspecte
+
+### Restrictions de domaine et d'utilisateurs
+
+- **Limiter les domaines administrateurs** : N'ajoutez que des domaines de confiance à la liste des administrateurs
+- **Examiner l'inscription automatique** : Envisagez de désactiver l'inscription automatique si vous souhaitez une approbation manuelle des utilisateurs
+- **Utiliser OAuth Internal** : Pour les organisations avec Google Workspace, utilisez l'écran de consentement OAuth Internal
+- **Revues d'accès régulières** : Examinez périodiquement les accès des utilisateurs et supprimez les comptes inactifs
+
+### Considérations pour la production
+
+- **Utiliser HTTPS** : Utilisez toujours HTTPS dans les environnements de production
+- **Configurer les bons domaines** : Utilisez les domaines de production dans Google Cloud Console
+- **Tester rigoureusement** : Vérifiez le flux d'authentification complet avant la mise en production
+- **Prévoir les pannes** : Ayez des méthodes d'authentification de secours disponibles
+
+---
+
+## Prochaines étapes
+
+Avec l'authentification Google configurée, vous pouvez envisager de :
+
+- **Configurer des fournisseurs supplémentaires** : Mettre en place d'autres fournisseurs OIDC pour plus d'options d'authentification
+- **Personnaliser la gestion des utilisateurs** : Affiner les règles d'inscription automatique et d'attribution des droits administrateur
+- **Examiner les paramètres de sécurité** : Vous assurer que votre configuration d'authentification répond à vos exigences de sécurité
+- **Surveiller l'utilisation** : Suivre les schémas d'authentification et l'activité des utilisateurs
+
+Pour plus d'informations sur l'authentification OIDC dans OUITRANSFER, consultez la [présentation de l'authentification OIDC](/docs/v1-beta/oidc-authentication).
+
+## Ressources utiles
+
+- [Documentation Google Identity Platform](https://developers.google.com/identity)
+- [OAuth 2.0 pour les applications web serveur](https://developers.google.com/identity/protocols/oauth2/web-server)
+- [OpenID Connect](https://developers.google.com/identity/protocols/oauth2/openid-connect)
+- [Google Cloud Console](https://console.cloud.google.com/apis/credentials)

@@ -1,0 +1,593 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  firstName String
+  lastName  String
+  username  String   @unique
+  email     String   @unique
+  password  String?
+  image     String?
+  isAdmin   Boolean  @default(false)
+  emailVerified Boolean @default(false) // True once the address is proven owned (verified-email claim from a federated IdP, or a future local-verification flow). A federated identity is NEVER auto-linked to a pre-existing account unless the IdP asserts email_verified for the SAME address (A5-02).
+  isActive  Boolean  @default(true)
+  deactivatedAt DateTime? // Set when the account is deactivated; cleared on reactivation. Drives delayed file cleanup.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  twoFactorEnabled     Boolean @default(false)
+  twoFactorSecret      String? // AES-256-GCM encrypted at rest (see utils/encryption.ts, purpose "totp-secret")
+  twoFactorBackupCodes String? // JSON array of HMAC-SHA256 hashes — never the plaintext codes
+  twoFactorVerified    Boolean @default(false)
+  lastTotpStep         Int? // Highest TOTP time-step already consumed — rejects replay within the validity window (RFC 6238 §5.2)
+
+  maxFileSizeOverride     BigInt? // Per-user max file size override (bytes). null=inherit, 0=unlimited.
+  maxTotalStorageOverride BigInt? // Per-user max total storage override (bytes). null=inherit, 0=unlimited.
+
+  quotaLastWarnedThreshold Int?      // Highest quota-usage threshold already warned about (5.2 Phase B B1 dedup). null = re-armed.
+  quotaExceededSince       DateTime? // When usage first crossed 100% (5.2 Phase B B2 grace); cleared when back under.
+
+  groupId String?
+  group   Group?  @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
+  ldapDn String? @unique // DN in AD — null = local account
+
+  tokenVersion Int @default(0)
+
+  locale String @default("en") // User's preferred locale for emails (ISO 639-1)
+
+  files         File[]
+  folders       Folder[]
+  shares        Share[]
+  reverseShares ReverseShare[]
+
+  passwordResets         PasswordReset[]
+  authProviders          UserAuthProvider[]
+  trustedDevices         TrustedDevice[]
+  refreshTokens          RefreshToken[]
+  notificationPreferences NotificationPreference[]
+  shareVisits            ShareVisit[]
+
+  @@map("users")
+}
+
+model Group {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+
+  // Per-member quota inheritance (null = inherit global, 0 = unlimited, >0 = bytes)
+  maxFileSizeOverride     BigInt?
+  maxTotalStorageOverride BigInt?
+
+  // Future LDAP mapping (5.3) — DN of the AD group mapped to this group
+  ldapDn String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members User[]
+
+  @@map("groups")
+}
+
+model File {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  extension   String
+  size        BigInt
+  objectName  String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  folderId String?
+  folder   Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shares Share[] @relation("ShareFiles")
+
+  @@index([folderId])
+  @@map("files")
+}
+
+model Share {
+  id          String    @id @default(cuid())
+  name        String?
+  views       Int       @default(0)
+  maxViews    Int?
+  expiration  DateTime?
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  creatorId String?
+  creator   User?   @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+
+  securityId String        @unique
+  security   ShareSecurity @relation(fields: [securityId], references: [id])
+
+  nameFieldRequired    FieldRequirement @default(HIDDEN)
+  emailFieldRequired   FieldRequirement @default(HIDDEN)
+  inactivityAlertDays  Int?
+  inactivityAlertSent  Boolean   @default(false)
+  lastDownloadedAt     DateTime?
+  notifyOnDownload     Boolean   @default(false)
+  isActive             Boolean   @default(true)
+  deactivatedAt        DateTime? // Set when the share is deactivated (expired/maxViews/manual); cleared on reactivation. Drives delayed deletion.
+  deactivationReason   DeactivationReason?
+  notifiedForExpiring  Boolean   @default(false)
+  notifiedForExpired   Boolean   @default(false)
+  notifiedForMaxViews  Boolean   @default(false)
+  notifiedForPendingDeletion Boolean @default(false)
+
+  files      File[]           @relation("ShareFiles")
+  folders    Folder[]         @relation("ShareFolders")
+  recipients ShareRecipient[]
+  visits     ShareVisit[]
+
+  alias ShareAlias?
+
+  @@map("shares")
+}
+
+model ShareSecurity {
+  id        String   @id @default(cuid())
+  password  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  share Share?
+
+  @@map("share_security")
+}
+
+model ShareRecipient {
+  id    String @id @default(cuid())
+  email String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shareId String
+  share   Share  @relation(fields: [shareId], references: [id], onDelete: Cascade)
+
+  name           String?
+  trackingToken  String?   @unique
+  notifiedAt     DateTime?
+  lastAccessedAt DateTime?
+  accessCount    Int       @default(0)
+  // downloadCount = number of files fetched (trackShareDownload runs once per file),
+  // NOT the number of download sessions. A "download all" of N files adds N.
+  downloadCount    Int       @default(0)
+  lastDownloadedAt DateTime?
+
+  visits         ShareVisit[]
+
+  @@unique([shareId, email])
+  @@map("share_recipients")
+}
+
+model AppConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      String
+  group     String
+  isSystem  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("app_configs")
+}
+
+model EmailJob {
+  id            String    @id @default(cuid())
+  type          String
+  to            String
+  subject       String
+  htmlBody      String?
+  textBody      String?
+  locale        String    @default("en")
+  status        String    @default("pending")
+  priority      Int       @default(0)
+  attempts      Int       @default(0)
+  maxAttempts   Int       @default(3)
+  nextAttemptAt DateTime  @default(now())
+  lastError     String?
+  lockedAt      DateTime?
+  sentAt        DateTime?
+  payload       String?   /// Reserved for future digest aggregation. Digest jobs will store raw payload JSON here for deferred rendering.
+  relatedId     String?
+  listUnsubscribe String?
+  senderUserId  String?   /// The authenticated user who triggered this email (when applicable). Drives the per-user anti-spam daily quota (A6-03); null for system/critical mail (resets, admin alerts) that does not count toward a user's quota.
+  createdAt     DateTime  @default(now())
+
+  @@index([status, nextAttemptAt])
+  @@index([status, priority, nextAttemptAt])
+  @@index([senderUserId, createdAt])
+  @@map("email_jobs")
+}
+
+model NotificationPreference {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  frequency String @default("immediate")
+
+  @@unique([userId, type])
+  @@map("notification_preferences")
+}
+
+model ShareVisit {
+  id           String          @id @default(cuid())
+  shareId      String
+  share        Share           @relation(fields: [shareId], references: [id], onDelete: Cascade)
+  recipientId  String?
+  recipient    ShareRecipient? @relation(fields: [recipientId], references: [id], onDelete: SetNull)
+  userId       String?
+  user         User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  visitorName  String?
+  visitorEmail String?
+  ipAddress    String?
+  userAgent    String?
+  action       String
+  fileId       String?
+  // How the recipient on this visit was attributed: "token" (verified — arrived via a
+  // personalized ?t= link) | "self_declared" (matched the identification-form email,
+  // spoofable comfort signal) | "authenticated_user" (logged-in Ouitransfer user, JWT-verified)
+  // | null (anonymous / no recipient linked).
+  identificationSource String?
+  createdAt    DateTime        @default(now())
+
+  @@index([shareId, createdAt])
+  @@map("share_visits")
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  email     String
+  ipAddress String
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
+  @@index([createdAt])
+  @@map("login_attempts")
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("password_resets")
+}
+
+model ShareAlias {
+  id        String   @id @default(cuid())
+  alias     String   @unique
+  shareId   String   @unique
+  share     Share    @relation(fields: [shareId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("share_aliases")
+}
+
+model AuthProvider {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  displayName String
+  type        String
+  icon        String?
+  enabled     Boolean @default(false)
+
+  issuerUrl    String?
+  clientId     String?
+  clientSecret String?
+  redirectUri  String?
+  scope        String? @default("openid profile email")
+
+  authorizationEndpoint String?
+  tokenEndpoint         String?
+  userInfoEndpoint      String?
+
+  metadata String?
+
+  autoRegister      Boolean @default(true)
+  adminEmailDomains String?
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userAuthProviders UserAuthProvider[]
+
+  @@map("auth_providers")
+}
+
+model UserAuthProvider {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  providerId   String
+  authProvider AuthProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  provider String?
+
+  externalId String
+  metadata   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, providerId])
+  @@unique([providerId, externalId])
+  @@map("user_auth_providers")
+}
+
+model ReverseShare {
+  id                 String           @id @default(cuid())
+  name               String?
+  description        String?
+  expiration         DateTime?
+  maxFiles           Int?
+  maxFileSize        BigInt?
+  allowedFileTypes   String?
+  password           String?
+  pageLayout         PageLayout       @default(DEFAULT)
+  isActive           Boolean          @default(true)
+  deactivatedAt      DateTime? // Set when the reverse share is deactivated (expired/manual); cleared on reactivation. Drives delayed deletion.
+  deactivationReason DeactivationReason?
+  nameFieldRequired  FieldRequirement @default(OPTIONAL)
+  emailFieldRequired FieldRequirement @default(OPTIONAL)
+  notifyOnUpload       Boolean          @default(false)
+  bypassUploadCooldown Boolean          @default(false)
+  notifiedForExpiring  Boolean          @default(false)
+  notifiedForExpired   Boolean          @default(false)
+  notifiedForPendingDeletion Boolean    @default(false)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  backgroundImageId  String?
+  backgroundImage    BackgroundImage? @relation(fields: [backgroundImageId], references: [id], onDelete: SetNull)
+
+  creatorId String
+  creator   User   @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  files ReverseShareFile[]
+  alias ReverseShareAlias?
+  recipients ReverseShareRecipient[]
+
+  @@map("reverse_shares")
+}
+
+model ReverseShareFile {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  extension     String
+  size          BigInt
+  objectName    String
+  uploaderEmail String?
+  uploaderName  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  reverseShareId String
+  reverseShare   ReverseShare @relation(fields: [reverseShareId], references: [id], onDelete: Cascade)
+
+  @@map("reverse_share_files")
+}
+
+model ReverseShareAlias {
+  id             String       @id @default(cuid())
+  alias          String       @unique
+  reverseShareId String       @unique
+  reverseShare   ReverseShare @relation(fields: [reverseShareId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@map("reverse_share_aliases")
+}
+
+model ReverseShareRecipient {
+  id             String    @id @default(cuid())
+  email          String
+  name           String?
+  notifiedAt     DateTime?
+  // uploadCount = number of files uploaded by this recipient (best-effort: only counts
+  // when an optional uploaderEmail matches). uploadedAt = first matched upload timestamp.
+  uploadCount    Int       @default(0)
+  uploadedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  reverseShareId String
+  reverseShare   ReverseShare @relation(fields: [reverseShareId], references: [id], onDelete: Cascade)
+
+  @@unique([reverseShareId, email])
+  @@map("reverse_share_recipients")
+}
+
+model BackgroundImage {
+  id             String   @id @default(cuid())
+  name           String?
+  s3Key          String
+  thumbnailS3Key String
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  reverseShares ReverseShare[]
+
+  @@map("background_images")
+}
+
+enum FieldRequirement {
+  HIDDEN
+  OPTIONAL
+  REQUIRED
+}
+
+enum PageLayout {
+  DEFAULT
+  WETRANSFER
+}
+
+enum DeactivationReason {
+  expired
+  max_views
+  manual
+}
+
+model TrustedDevice {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // HMAC-SHA256 of a random, server-issued device secret (stored in an httpOnly
+  // cookie on the client). Never derived from spoofable UA/IP. Scoped per-user
+  // via the composite unique below, so identical hashes across users cannot collide.
+  deviceHash String
+  deviceName String?
+  userAgent  String?
+  ipAddress  String?
+  lastUsedAt DateTime @default(now())
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, deviceHash])
+  @@map("trusted_devices")
+}
+
+model Folder {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  objectName  String
+
+  parentId String?
+  parent   Folder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children Folder[] @relation("FolderHierarchy")
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  files File[]
+
+  shares Share[] @relation("ShareFolders")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([parentId])
+  @@map("folders")
+}
+
+model InviteToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  email     String?   /// The invited email (lowercased) when the admin targeted a specific address. When set, the token is email-bound: registration must use this exact address (A6-04). When null the token is an open/bearer invite by design.
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("invite_tokens")
+}
+
+model RefreshToken {
+  id         String    @id @default(cuid())
+  token      String    @unique
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent  String?
+  ipAddress  String?
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  replacedBy String?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String
+  ipAddress  String
+  userAgent  String?
+  metadata   String?
+  targetType String?
+  targetId   String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
+  @@index([createdAt])
+  @@index([targetType, targetId, action, createdAt])
+  @@map("audit_logs")
+}
+
+model LdapConfig {
+  id                   String   @id @default(cuid())
+  enabled              Boolean  @default(false)
+  serverUrl            String
+  bindDn               String
+  bindPassword         String   // AES-256-GCM encrypted
+  searchBase           String
+  syncGroupDn          String
+  usernameAttribute    String   @default("sAMAccountName")
+  emailAttribute       String   @default("mail")
+  displayNameAttribute String   @default("displayName")
+  defaultLocale        String   @default("en")
+  syncIntervalMinutes  Int      @default(360)
+  useTls               Boolean  @default(true)
+  tlsSkipVerify        Boolean  @default(false)
+  appUrl               String?  // Base URL for invite emails (e.g., https://transfer.company.com)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("ldap_configs")
+}
+
+model LdapSyncLog {
+  id               String    @id @default(cuid())
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+  status           String    // success, partial, error
+  trigger          String    // scheduled, manual
+  usersCreated     Int       @default(0)
+  usersUpdated     Int       @default(0)
+  usersDeactivated Int       @default(0)
+  usersSkipped     Int       @default(0)
+  usersReactivated Int       @default(0)
+  details          String?   // JSON: [{type: "skip"|"error", username, email?, message}]
+  createdAt        DateTime  @default(now())
+
+  @@index([startedAt])
+  @@map("ldap_sync_logs")
+}

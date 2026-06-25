@@ -1,0 +1,305 @@
+---
+title: GitHub
+icon: Github
+---
+
+import { ZoomableImage } from "@/components/ui/zoomable-image";
+
+GitHub est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER, offrant une authentification sécurisée via GitHub OAuth 2.0. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER avec leur compte GitHub existant, ce qui en fait une solution idéale pour les équipes de développeurs, les projets open source et les organisations qui utilisent déjà GitHub pour le contrôle de version et la collaboration.
+
+<ZoomableImage src="/assets/v1/oidc/github/sign-in-with-github.png" alt="Connexion avec GitHub" />
+
+## Pourquoi utiliser l'authentification GitHub ?
+
+L'authentification GitHub offre plusieurs avantages pour les organisations et équipes orientées développement :
+
+- **Adapté aux développeurs** - Idéal pour les équipes qui utilisent déjà GitHub au quotidien
+- **Intégration open source** - Parfait pour les projets et communautés open source
+- **Profils développeurs enrichis** - Accès aux noms d'utilisateur, avatars et appartenances aux organisations GitHub
+- **Accès aux dépôts** - Possibilité de s'appuyer sur le système de permissions GitHub pour des fonctionnalités avancées
+- **Aucun compte supplémentaire** - Les développeurs accèdent à OUITRANSFER avec leurs identifiants GitHub existants
+
+---
+
+## Prérequis
+
+Avant de configurer l'authentification GitHub, assurez-vous de disposer des éléments suivants :
+
+- **Compte GitHub** - Capacité à créer des OAuth Apps sur GitHub
+- **Privilèges administrateur dans OUITRANSFER** - Requis pour configurer les paramètres OIDC
+
+> **Remarque :** GitHub est préconfiguré en tant que fournisseur officiel dans OUITRANSFER, ce qui signifie que la configuration technique est gérée automatiquement. Vous n'avez qu'à fournir vos identifiants OAuth.
+
+---
+
+## Création de l'OAuth App GitHub
+
+### Créer une OAuth App GitHub
+
+Pour commencer avec l'authentification GitHub, vous devez créer une OAuth App dans vos paramètres développeur GitHub.
+
+1. **Accéder aux paramètres développeur GitHub** : Rendez-vous sur [github.com/settings/developers](https://github.com/settings/developers)
+
+2. **Créer une nouvelle OAuth App** : Cliquez sur le bouton **"New OAuth App"**
+
+<ZoomableImage src="/assets/v1/oidc/github/developer-settings.png" alt="Paramètres développeur GitHub" />
+
+3. **Renseigner les détails de l'application** :
+   - **Application name** : Saisissez un nom explicite, par exemple "OUITRANSFER File Sharing"
+   - **Homepage URL** : Saisissez l'URL de votre instance OUITRANSFER (ex. : `https://yourdomain.com`)
+   - **Application description** : Ajoutez une description claire de votre instance OUITRANSFER
+   - **Authorization callback URL** : Saisissez votre URL de rappel (voir ci-dessous)
+
+<ZoomableImage
+  src="/assets/v1/oidc/github/oauth-app-details.png"
+  alt="Détails de l'OAuth App GitHub"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+**Configurer les URL de rappel** : Dans le champ **"Authorization callback URL"**, ajoutez l'URL de rappel de votre instance OUITRANSFER :
+
+Vous devez configurer plusieurs URL dans les paramètres de votre OAuth App GitHub. Voici ce qu'il faut ajouter pour chaque environnement :
+
+### URL de rappel d'autorisation
+
+| Environnement | URL                                                              |
+| ------------- | ---------------------------------------------------------------- |
+| Production    | `https://yourdomain.com/api/auth/providers/github/callback`      |
+| Développement | `http://localhost:3000/api/auth/providers/github/callback`       |
+| Port personnalisé | `https://yourdomain.com:5487/api/auth/providers/github/callback` |
+
+> **Remarque :** Remplacez `yourdomain.com` par votre nom de domaine réel dans toutes les URL de production et à port personnalisé.
+> **Remarque :** Vous pouvez ajouter plusieurs URL de rappel pour différents environnements (développement, staging, production).
+
+4. **Créer l'application** : Cliquez sur **"Register application"** pour générer votre OAuth App
+
+### Obtenir les identifiants OAuth
+
+Vous allez maintenant récupérer les identifiants qu'OUITRANSFER utilisera pour s'authentifier auprès de GitHub.
+
+1. **Copier le Client ID** : Le Client ID est affiché sur la page de votre OAuth App
+
+2. **Générer le Client Secret** : Cliquez sur **"Generate a new client secret"** pour créer un nouveau secret
+
+<ZoomableImage
+  src="/assets/v1/oidc/github/oauth-credentials.png"
+  alt="Identifiants OAuth GitHub"
+  legend="Le Client ID et le Client Secret affichés dans l'image sont des exemples uniquement (identifiants fictifs). Vous devez utiliser vos propres identifiants provenant de GitHub."
+/>
+
+3. **Sauvegarder les identifiants** : Copiez le **Client ID** et le **Client Secret** pour une utilisation ultérieure
+
+> **Important :** Remplacez `yourdomain.com` par votre domaine réel. Vous pouvez ajouter plusieurs URL de rappel pour différents environnements (développement, staging, production) en créant des OAuth Apps séparées.
+
+---
+
+## Configuration d'OUITRANSFER
+
+### Accéder aux paramètres OIDC
+
+Pour configurer l'authentification GitHub dans OUITRANSFER, vous devez disposer d'un accès administrateur au panneau de paramètres.
+
+1. **Se connecter en tant qu'administrateur** : Connectez-vous à OUITRANSFER avec un compte administrateur
+
+2. **Accéder aux paramètres** : Cliquez sur votre photo de profil dans l'en-tête et sélectionnez **Settings**
+
+3. **Naviguer vers l'authentification** : Trouvez et cliquez sur la section de configuration **Authentication Providers**
+
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+
+### Activer le fournisseur GitHub
+
+GitHub est préconfiguré en tant que fournisseur officiel, ce qui simplifie le processus de configuration.
+
+1. **Localiser le fournisseur GitHub** : Trouvez GitHub dans la liste des fournisseurs disponibles
+
+2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
+
+<ZoomableImage src="/assets/v1/oidc/github/enabled-github.png" alt="Fournisseur GitHub OUITRANSFER activé" />
+
+Après avoir activé le fournisseur, cliquez sur l'icône en forme de crayon pour le configurer.
+
+3. **Configurer les identifiants** :
+   - **Client ID** : Collez le Client ID de votre OAuth App GitHub
+   - **Client Secret** : Collez le Client Secret de votre OAuth App GitHub
+   - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `user:email`.
+
+<ZoomableImage
+  src="/assets/v1/oidc/github/edit-github.png"
+  alt="Modifier le fournisseur GitHub"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+### Options de configuration avancées
+
+Configurez des paramètres supplémentaires pour personnaliser le comportement de l'authentification :
+
+**Auto Registration** : Activez cette option pour créer automatiquement des comptes utilisateurs lors de la première authentification.
+
+**Admin Email Domains** : Spécifiez les domaines qui doivent recevoir automatiquement les privilèges administrateur. Par exemple, saisir `yourcompany.com` accordera l'accès administrateur à toute personne disposant d'une adresse e-mail de ce domaine.
+
+**Sort Order** : Contrôlez l'ordre d'affichage du bouton de connexion GitHub par rapport aux autres fournisseurs d'authentification.
+
+**Icon** : Vous pouvez choisir l'icône à utiliser pour le bouton de connexion GitHub (la valeur par défaut est `SiGithub`).
+
+<ZoomableImage src="/assets/v1/oidc/github/github-icon.png" alt="Icône GitHub" />
+
+> **Conseil pour les développeurs :** L'authentification GitHub fonctionne parfaitement pour les équipes de développement et les projets open source.
+
+---
+
+## Liaison de comptes
+
+Par défaut, si un utilisateur est déjà inscrit dans OUITRANSFER avec son adresse e-mail GitHub, il sera automatiquement lié à son compte OUITRANSFER.
+
+> **Remarque :** Il n'est pas possible de désactiver la liaison de comptes. Si vous souhaitez dissocier un utilisateur de son compte GitHub, vous devez supprimer l'utilisateur d'OUITRANSFER.
+
+---
+
+## Configuration technique
+
+La configuration technique de GitHub est gérée automatiquement, mais comprendre le paramétrage peut aider lors du dépannage :
+
+```yaml
+Provider Type: OAuth 2.0 with OIDC Discovery
+Issuer URL: https://github.com
+Authorization Endpoint: /login/oauth/authorize
+Token Endpoint: /login/oauth/access_token
+UserInfo Endpoint: https://api.github.com/user
+Scopes: user:email
+```
+
+### Correspondances de champs
+
+OUITRANSFER mappe automatiquement les informations utilisateur GitHub vers les comptes utilisateurs locaux :
+
+- **User ID** : Correspond au champ `id` de GitHub
+- **Email** : Correspond au champ `email` de GitHub (depuis le scope user:email)
+- **Full Name** : Correspond au champ `name` de GitHub
+- **Username** : Correspond au champ `login` de GitHub
+- **Avatar** : Correspond au champ `avatar_url` de GitHub
+
+---
+
+## Test de la configuration
+
+### Vérifier la configuration
+
+Après avoir configuré l'authentification GitHub, testez l'intégration pour vous assurer que tout fonctionne correctement.
+
+1. **Vérifier la page de connexion** : Accédez à la page de connexion de votre instance OUITRANSFER et vérifiez que le bouton "Sign in with GitHub" apparaît
+
+2. **Tester le flux d'authentification** : Cliquez sur le bouton de connexion GitHub et effectuez le processus d'authentification
+
+3. **Vérifier la création du compte** : Confirmez qu'un nouveau compte utilisateur est créé (si l'inscription automatique est activée)
+
+### Vérification du flux de connexion
+
+Le processus d'authentification complet doit se dérouler comme suit :
+
+1. **L'utilisateur clique sur "Sign in with GitHub"** : Le navigateur redirige vers la page d'autorisation de GitHub
+2. **L'utilisateur autorise l'application** : L'utilisateur accorde les permissions pour les scopes demandés
+3. **GitHub redirige vers OUITRANSFER** : L'utilisateur revient sur OUITRANSFER avec les jetons d'authentification
+4. **OUITRANSFER crée ou met à jour l'utilisateur** : Le compte utilisateur est géré automatiquement avec les informations GitHub
+5. **L'utilisateur accède à OUITRANSFER** : L'utilisateur est connecté avec son identité GitHub
+
+---
+
+## Résolution des problèmes courants
+
+### Erreur de non-concordance de l'URI de redirection
+
+**Message d'erreur** : `The redirect_uri MUST match the registered callback URL for this application`
+
+**Cause** : L'URI de redirection dans votre requête ne correspond pas à celle configurée dans l'OAuth App GitHub.
+
+**Solution** :
+
+1. Vérifiez l'URL exacte indiquée dans le message d'erreur
+2. Ajoutez cette URL exacte à l'URL de rappel de votre OAuth App GitHub
+3. Assurez-vous d'inclure le protocole correct (http/https) et le port
+4. Supprimez les barres obliques de fin sauf si elles font partie de l'URL de rappel
+
+### Erreur d'accès refusé
+
+**Message d'erreur** : `access_denied`
+
+**Cause** : L'utilisateur a refusé les permissions ou l'OAuth App n'est pas correctement configurée.
+
+**Solution** :
+
+1. Vérifiez que votre OAuth App GitHub demande les scopes corrects
+2. Assurez-vous que les utilisateurs accordent les permissions lors du flux d'autorisation
+3. Vérifiez que votre OAuth App n'est pas restreinte ou désactivée
+4. Confirmez que l'application dispose des permissions appropriées
+
+### Erreur de client invalide
+
+**Message d'erreur** : `invalid_client`
+
+**Cause** : Client ID ou Client Secret incorrect.
+
+**Solution** :
+
+1. Vérifiez que vous avez correctement copié les identifiants depuis GitHub
+2. Assurez-vous qu'il n'y a pas d'espaces superflus ou de caractères parasites dans les identifiants
+3. Générez un nouveau Client Secret si nécessaire
+4. Vérifiez que vous utilisez la bonne OAuth App dans GitHub
+
+### Erreur d'adresse e-mail non disponible
+
+**Message d'erreur** : Email not provided or scope missing
+
+**Cause** : L'OAuth App GitHub n'est pas configurée avec le scope `user:email`, ou l'adresse e-mail de l'utilisateur est privée.
+
+**Solution** :
+
+1. Vérifiez que votre OAuth App GitHub demande le scope `user:email`
+2. Assurez-vous que les utilisateurs ont une adresse e-mail publique ou ont accordé l'accès à leur e-mail
+3. Confirmez que la configuration des scopes correspond à ce qu'OUITRANSFER attend
+4. Testez avec un compte GitHub disposant d'une adresse e-mail publique
+
+---
+
+## Bonnes pratiques de sécurité
+
+### Gestion des identifiants
+
+- **Ne jamais exposer les secrets** : Gardez votre Client Secret sécurisé et ne le commitez jamais dans un système de contrôle de version
+- **Faire tourner les identifiants régulièrement** : Générez de nouveaux Client Secrets périodiquement pour renforcer la sécurité
+- **Utiliser des variables d'environnement** : Stockez la configuration sensible dans des variables d'environnement, pas dans des fichiers de configuration
+- **Surveiller les journaux d'accès** : Examinez régulièrement les journaux d'authentification pour détecter toute activité suspecte
+
+### Gestion des scopes et des permissions
+
+- **Scopes minimaux** : Ne demandez que les scopes `user:email` requis par OUITRANSFER
+- **Consentement des utilisateurs** : Assurez-vous que les utilisateurs comprennent les permissions qu'ils accordent
+- **Audits réguliers** : Vérifiez quels utilisateurs ont connecté leur compte GitHub
+- **Révisions des accès** : Vérifiez périodiquement les accès utilisateurs et supprimez les comptes inactifs
+
+### Considérations en production
+
+- **Utiliser HTTPS** : Utilisez toujours HTTPS dans les environnements de production
+- **Configurer les domaines appropriés** : Utilisez des domaines de production dans l'OAuth App GitHub
+- **Tester minutieusement** : Vérifiez le flux d'authentification complet avant la mise en production
+- **Prévoir les défaillances** : Disposez de méthodes d'authentification de secours
+
+---
+
+## Prochaines étapes
+
+Une fois l'authentification GitHub configurée, vous pourriez vouloir :
+
+- **Configurer des fournisseurs supplémentaires** : Mettez en place d'autres fournisseurs OIDC pour plus d'options d'authentification
+- **Personnaliser la gestion des utilisateurs** : Affinez les règles d'inscription automatique et d'attribution des rôles administrateur
+- **Revoir les paramètres de sécurité** : Assurez-vous que votre configuration d'authentification répond à vos exigences de sécurité
+- **Surveiller l'utilisation** : Suivez les schémas d'authentification et l'activité des utilisateurs
+
+Pour plus d'informations sur l'authentification OIDC dans OUITRANSFER, consultez la [vue d'ensemble de l'authentification OIDC](/docs/v1-beta/oidc-authentication).
+
+## Ressources utiles
+
+- [Documentation des OAuth Apps GitHub](https://docs.github.com/en/apps/oauth-apps)
+- [Scopes OAuth GitHub](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps)
+- [Paramètres développeur GitHub](https://github.com/settings/developers)
+- [Documentation de l'API GitHub](https://docs.github.com/en/rest)

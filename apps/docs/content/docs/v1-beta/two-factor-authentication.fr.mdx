@@ -1,0 +1,104 @@
+---
+title: Authentification à deux facteurs
+icon: ShieldCheck
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+L'authentification à deux facteurs (2FA) ajoute une étape à la connexion : après votre mot de passe,
+vous saisissez aussi un code à usage unique fourni par une application d'authentification.
+Ouitransfer utilise des **mots de passe à usage unique basés sur le temps (TOTP, RFC 6238)**,
+compatibles avec des applications telles que Google Authenticator, Microsoft Authenticator, Authy et
+1Password.
+
+La 2FA est facultative et se configure par utilisateur depuis votre propre compte. Il n'y a pas
+d'interrupteur global : chaque utilisateur l'active pour lui-même.
+
+## Activer la 2FA
+
+Vous gérez la 2FA depuis votre page **Profil** (les paramètres de votre compte).
+
+<Steps>
+<Step>
+**Démarrer la configuration.** Ouvrez votre Profil et lancez la configuration à deux facteurs.
+Ouitransfer génère un secret et affiche un QR code.
+</Step>
+<Step>
+**Ajouter le compte à votre application.** Scannez le QR code avec votre application
+d'authentification, ou saisissez la clé affichée manuellement. Les codes comportent 6 chiffres et
+changent toutes les 30 secondes.
+</Step>
+<Step>
+**Confirmer.** Saisissez le code à 6 chiffres actuel de votre application ainsi que le **mot de
+passe de votre compte**, puis confirmez. L'étape du mot de passe garantit qu'une personne ayant
+seulement emprunté votre session ouverte ne puisse pas enrôler son propre appareil.
+</Step>
+<Step>
+**Enregistrer vos codes de secours.** Ouitransfer affiche **10 codes de secours à usage unique**.
+Conservez-les en lieu sûr (un gestionnaire de mots de passe convient bien). Ils ne sont affichés
+**qu'une seule fois** et constituent votre solution de repli si vous perdez l'accès à votre
+application d'authentification.
+</Step>
+</Steps>
+
+<Callout type="warn">
+Activer la 2FA déconnecte vos autres sessions actives. Vous devrez vous reconnecter (avec votre
+nouveau second facteur) sur vos autres appareils.
+</Callout>
+
+## Se connecter avec la 2FA
+
+Après avoir saisi votre identifiant et votre mot de passe, Ouitransfer demande votre second facteur.
+Saisissez le code à 6 chiffres actuel de votre application d'authentification, ou l'un de vos **codes
+de secours** si vous n'avez pas votre application sous la main.
+
+### Appareils de confiance
+
+Lorsque la 2FA vous est demandée, vous pouvez marquer l'appareil courant comme étant de confiance.
+Un appareil de confiance évite la demande de 2FA pendant **30 jours**, après quoi elle est de nouveau
+demandée. Vous pouvez consulter et supprimer les appareils de confiance depuis votre Profil à tout
+moment, et tous les appareils de confiance sont révoqués automatiquement lorsque vous désactivez la
+2FA.
+
+## Codes de secours
+
+Les codes de secours vous permettent de vous connecter lorsque votre application d'authentification
+n'est pas disponible.
+
+- Vous recevez **10 codes** lorsque vous activez la 2FA. Chaque code fonctionne **une seule fois**.
+- Votre Profil indique combien de codes inutilisés il reste.
+- Vous pouvez **régénérer** un nouveau jeu à tout moment. La régénération requiert votre mot de passe
+  et un code actuel (application ou code de secours), et elle invalide le jeu précédent.
+
+<Callout type="warn">
+Les codes de secours sont le seul moyen de revenir si vous perdez votre application
+d'authentification. Ouitransfer n'a aucune action de « réinitialisation de la 2FA », ni en libre
+service ni côté administrateur : si vous perdez **à la fois** votre application et l'ensemble de vos
+codes de secours, un opérateur devra effacer l'indicateur de 2FA directement dans la base de données
+du serveur pour rétablir l'accès. Conservez vos codes en sécurité.
+</Callout>
+
+## Désactiver la 2FA
+
+Vous pouvez désactiver la 2FA depuis votre Profil. Par sécurité, il s'agit d'une action de
+ré-authentification : elle requiert votre **mot de passe et un code actuel (application ou code de
+secours)**. Désactiver la 2FA révoque aussi tous vos appareils de confiance et déconnecte vos autres
+sessions.
+
+## Comment c'est protégé
+
+- **Paramètres TOTP :** SHA-1, 6 chiffres, période de 30 secondes, avec une tolérance d'un pas de
+  chaque côté pour la dérive d'horloge (RFC 6238).
+- **Chiffré au repos :** le secret TOTP est chiffré en AES-256-GCM à l'aide du `ENCRYPTION_SECRET`
+  du serveur, de sorte qu'une fuite de la base de données n'expose pas la graine.
+- **Codes de secours hachés :** les codes de secours sont stockés sous forme de hachages HMAC-SHA256
+  à clé, jamais en clair, et sont comparés en temps constant.
+- **Protection contre le rejeu :** un code à usage unique ne peut pas être réutilisé. Une fois un pas
+  de temps consommé à la connexion, il est rejeté s'il est présenté de nouveau.
+
+<Callout type="info">
+La 2FA est indépendante de l'authentification unique. Lorsque vous vous connectez via un
+[fournisseur OIDC / SSO](/docs/v1-beta/oidc-authentication), le second facteur est géré par ce
+fournisseur ; la configuration TOTP d'Ouitransfer s'applique donc aux comptes par mot de passe.
+</Callout>

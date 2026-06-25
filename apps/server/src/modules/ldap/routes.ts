@@ -1,0 +1,468 @@
+import type { FastifyPluginAsyncZod } from "@fastify/type-provider-zod";
+import { z } from "zod";
+import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
+import { AppError, NotFoundError, ValidationError } from "../../utils/app-error.js";
+import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
+import { getLogger } from "../../utils/logger.js";
+import { logAuditEvent } from "../audit/service.js";
+import { resolveBindPassword } from "./bind-password.js";
+import { LdapConfigRepository } from "./config.repository.js";
+import { MASKED_PASSWORD } from "./constants.js";
+import {
+  LdapBrowseSchema,
+  LdapConfigSchema,
+  LdapSearchGroupsSchema,
+  LdapTestSchema,
+  SyncLogsQuerySchema,
+} from "./dto.js";
+import { encrypt } from "./encryption.js";
+import { LdapClient } from "./ldap.client.js";
+import { LdapSyncLogRepository } from "./sync.repository.js";
+import { getNextSyncAt, startScheduler, stopScheduler } from "./sync.scheduler.js";
+import { LdapSyncService } from "./sync.service.js";
+
+const configRepository = new LdapConfigRepository();
+const syncLogRepository = new LdapSyncLogRepository();
+const syncService = new LdapSyncService();
+
+const adminPreValidation = createAdminPreValidation({ allowSetupBypass: false });
+
+// ── Response schemas for the directory-browse / group-search routes ──────────
+const LdapDirectoryNodeSchema = z.object({
+  dn: z.string(),
+  name: z.string(),
+  type: z.enum(["ou", "container", "domain", "group"]),
+  hasChildren: z.boolean(),
+});
+
+const LdapBrowseResponseSchema = z.object({
+  nodes: z.array(LdapDirectoryNodeSchema),
+  defaultBaseDn: z.string().nullable(),
+});
+
+const LdapSearchGroupsResponseSchema = z.object({
+  groups: z.array(LdapDirectoryNodeSchema),
+  truncated: z.boolean(),
+});
+
+/**
+ * Map a thrown error to a client-safe error for the browse/search routes.
+ *
+ * Surfaces only our own `LDAP_*` configuration errors (scheme / SSRF / attribute
+ * / bind-password resolution) — these are safe, actionable config feedback.
+ * Everything else (raw connection/bind/search failures) is logged server-side
+ * and replaced with a generic message so the endpoint never becomes a port-scan
+ * or topology oracle. Mirrors LdapClient.testConnection's discipline.
+ */
+function toClientSafeLdapError(error: unknown): AppError {
+  if (error instanceof AppError && error.code?.startsWith("LDAP_")) {
+    return error;
+  }
+  getLogger().warn(
+    { err: error instanceof Error ? error.message : "unknown" },
+    "LDAP directory request failed",
+  );
+  return new AppError(
+    400,
+    "Connection failed. Check the server URL, credentials, and network reachability.",
+    "LDAP_CONNECTION_FAILED",
+  );
+}
+
+export const ldapRoutes: FastifyPluginAsyncZod = async (app) => {
+  app.route({
+    method: "GET",
+    url: "/admin/ldap/config",
+    preValidation: [adminPreValidation],
+    schema: {
+      tags: ["ldap"],
+      operationId: "getLdapConfig",
+      summary: "Get LDAP configuration",
+      response: {
+        200: z.object({}).passthrough(),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (_request, reply) => {
+      const config = await configRepository.get();
+      if (!config) {
+        return reply.send({ configured: false });
+      }
+      return reply.send({
+        configured: true,
+        id: config.id,
+        enabled: config.enabled,
+        serverUrl: config.serverUrl,
+        bindDn: config.bindDn,
+        bindPassword: MASKED_PASSWORD,
+        searchBase: config.searchBase,
+        syncGroupDn: config.syncGroupDn,
+        usernameAttribute: config.usernameAttribute,
+        emailAttribute: config.emailAttribute,
+        displayNameAttribute: config.displayNameAttribute,
+        defaultLocale: config.defaultLocale,
+        syncIntervalMinutes: config.syncIntervalMinutes,
+        useTls: config.useTls,
+        tlsSkipVerify: config.tlsSkipVerify,
+        appUrl: config.appUrl,
+        createdAt: config.createdAt,
+        updatedAt: config.updatedAt,
+      });
+    },
+  });
+
+  app.route({
+    method: "PUT",
+    url: "/admin/ldap/config",
+    preValidation: [adminPreValidation],
+    schema: {
+      tags: ["ldap"],
+      operationId: "updateLdapConfig",
+      summary: "Create or update LDAP configuration",
+      body: LdapConfigSchema,
+      response: {
+        200: z.object({}).passthrough(),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const data = request.body;
+
+      // appUrl is required when enabling LDAP (used for welcome emails)
+      if (data.enabled && !data.appUrl) {
+        throw new ValidationError(
+          "Application URL is required when LDAP is enabled (used for welcome emails)",
+        );
+      }
+
+      // Handle bind password
+      let bindPassword: string;
+      if (data.bindPassword && data.bindPassword !== MASKED_PASSWORD) {
+        // Validate ENCRYPTION_SECRET is set before attempting to encrypt
+        if (!process.env.ENCRYPTION_SECRET) {
+          throw new ValidationError(
+            "ENCRYPTION_SECRET environment variable must be set to save LDAP configuration with a bind password",
+          );
+        }
+        bindPassword = encrypt(data.bindPassword);
+      } else {
+        const existing = await configRepository.get();
+        if (!existing) {
+          throw new ValidationError("Bind password is required for new configuration");
+        }
+        bindPassword = existing.bindPassword;
+      }
+
+      const config = await configRepository.upsert({
+        enabled: data.enabled,
+        serverUrl: data.serverUrl,
+        bindDn: data.bindDn,
+        bindPassword,
+        searchBase: data.searchBase,
+        syncGroupDn: data.syncGroupDn,
+        usernameAttribute: data.usernameAttribute,
+        emailAttribute: data.emailAttribute,
+        displayNameAttribute: data.displayNameAttribute,
+        defaultLocale: data.defaultLocale,
+        syncIntervalMinutes: data.syncIntervalMinutes,
+        useTls: data.useTls,
+        tlsSkipVerify: data.tlsSkipVerify,
+        appUrl: data.appUrl ?? null,
+      });
+
+      // Reload scheduler
+      if (config.enabled) {
+        startScheduler(config.syncIntervalMinutes);
+      } else {
+        stopScheduler();
+      }
+
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "LDAP_CONFIG_UPDATE",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "ldap_config",
+        targetId: config.id,
+        metadata: { enabled: config.enabled },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+
+      return reply.send({
+        configured: true,
+        id: config.id,
+        enabled: config.enabled,
+        serverUrl: config.serverUrl,
+        bindDn: config.bindDn,
+        bindPassword: MASKED_PASSWORD,
+        searchBase: config.searchBase,
+        syncGroupDn: config.syncGroupDn,
+        usernameAttribute: config.usernameAttribute,
+        emailAttribute: config.emailAttribute,
+        displayNameAttribute: config.displayNameAttribute,
+        defaultLocale: config.defaultLocale,
+        syncIntervalMinutes: config.syncIntervalMinutes,
+        useTls: config.useTls,
+        tlsSkipVerify: config.tlsSkipVerify,
+        appUrl: config.appUrl,
+        createdAt: config.createdAt,
+        updatedAt: config.updatedAt,
+      });
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/admin/ldap/test",
+    preValidation: [adminPreValidation],
+    schema: {
+      tags: ["ldap"],
+      operationId: "testLdapConnection",
+      summary: "Test LDAP connection",
+      body: LdapTestSchema,
+      response: {
+        200: z.object({
+          success: z.boolean(),
+          memberCount: z.number(),
+          message: z.string(),
+        }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const data = request.body;
+      const client = new LdapClient();
+      const result = await client.testConnection({
+        serverUrl: data.serverUrl,
+        bindDn: data.bindDn,
+        bindPassword: data.bindPassword,
+        useTls: data.useTls,
+        tlsSkipVerify: data.tlsSkipVerify,
+        searchBase: data.searchBase,
+        syncGroupDn: data.syncGroupDn,
+        usernameAttribute: data.usernameAttribute,
+        emailAttribute: data.emailAttribute,
+        displayNameAttribute: data.displayNameAttribute,
+      });
+      return reply.send(result);
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/admin/ldap/browse",
+    preValidation: [adminPreValidation],
+    schema: {
+      tags: ["ldap"],
+      operationId: "browseLdapDirectory",
+      summary: "Browse the LDAP directory tree",
+      body: LdapBrowseSchema,
+      response: {
+        200: LdapBrowseResponseSchema,
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const data = request.body;
+      const client = new LdapClient();
+      try {
+        const bindPassword = await resolveBindPassword(data);
+        await client.connect({
+          serverUrl: data.serverUrl,
+          bindDn: data.bindDn,
+          bindPassword,
+          useTls: data.useTls,
+          tlsSkipVerify: data.tlsSkipVerify,
+        });
+
+        if (!data.baseDn) {
+          const { namingContexts, defaultNamingContext } = await client.readRootDse();
+          return reply.send({
+            nodes: namingContexts.map((dn) => ({
+              dn,
+              name: dn,
+              type: "domain" as const,
+              hasChildren: true,
+            })),
+            defaultBaseDn: defaultNamingContext,
+          });
+        }
+
+        const nodes = await client.browseContainers(data.baseDn);
+        return reply.send({ nodes, defaultBaseDn: null });
+      } catch (error) {
+        throw toClientSafeLdapError(error);
+      } finally {
+        await client.disconnect();
+      }
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/admin/ldap/search-groups",
+    preValidation: [adminPreValidation],
+    schema: {
+      tags: ["ldap"],
+      operationId: "searchLdapGroups",
+      summary: "Search the LDAP directory for groups",
+      body: LdapSearchGroupsSchema,
+      response: {
+        200: LdapSearchGroupsResponseSchema,
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const data = request.body;
+      const client = new LdapClient();
+      try {
+        const bindPassword = await resolveBindPassword(data);
+        await client.connect({
+          serverUrl: data.serverUrl,
+          bindDn: data.bindDn,
+          bindPassword,
+          useTls: data.useTls,
+          tlsSkipVerify: data.tlsSkipVerify,
+        });
+
+        const { groups, truncated } = await client.searchGroups(data.searchBase, data.query);
+        return reply.send({ groups, truncated });
+      } catch (error) {
+        throw toClientSafeLdapError(error);
+      } finally {
+        await client.disconnect();
+      }
+    },
+  });
+
+  app.route({
+    method: "POST",
+    url: "/admin/ldap/sync",
+    preValidation: [adminPreValidation],
+    schema: {
+      tags: ["ldap"],
+      operationId: "triggerLdapSync",
+      summary: "Trigger manual LDAP sync",
+      response: {
+        200: z.object({ logId: z.string() }),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        409: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const logId = await syncService.runSync("manual");
+      logAuditEvent({
+        userId: request.user?.userId,
+        action: "LDAP_SYNC_TRIGGERED",
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        targetType: "ldap_sync_log",
+        targetId: logId,
+        metadata: { manual: true },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+      return reply.send({ logId });
+    },
+  });
+
+  app.route({
+    method: "GET",
+    url: "/admin/ldap/sync/logs",
+    preValidation: [adminPreValidation],
+    schema: {
+      tags: ["ldap"],
+      operationId: "getLdapSyncLogs",
+      summary: "List LDAP sync history",
+      querystring: SyncLogsQuerySchema,
+      response: {
+        200: z.object({}).passthrough(),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const { limit, offset } = request.query;
+      const result = await syncLogRepository.list(limit, offset);
+      return reply.send(result);
+    },
+  });
+
+  app.route({
+    method: "GET",
+    url: "/admin/ldap/sync/logs/:id",
+    preValidation: [adminPreValidation],
+    schema: {
+      tags: ["ldap"],
+      operationId: "getLdapSyncLogDetail",
+      summary: "Get LDAP sync log detail",
+      params: z.object({ id: z.string() }),
+      response: {
+        200: z.object({}).passthrough(),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+        404: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const log = await syncLogRepository.getById(request.params.id);
+      if (!log) {
+        throw new NotFoundError("Sync log not found");
+      }
+      return reply.send(log);
+    },
+  });
+
+  app.route({
+    method: "GET",
+    url: "/admin/ldap/status",
+    preValidation: [adminPreValidation],
+    schema: {
+      tags: ["ldap"],
+      operationId: "getLdapStatus",
+      summary: "Get LDAP sync status",
+      response: {
+        200: z.object({}).passthrough(),
+        401: ErrorResponseSchema,
+        403: ErrorResponseSchema,
+      },
+    },
+    handler: async (_request, reply) => {
+      const config = await configRepository.get();
+      const lastLog = await syncLogRepository.getLatest();
+
+      const warnings: string[] = [];
+      if (!process.env.ENCRYPTION_SECRET && config) {
+        warnings.push("ENCRYPTION_SECRET is not set — LDAP password encryption is unavailable");
+      }
+
+      return reply.send({
+        configured: !!config,
+        enabled: config?.enabled ?? false,
+        syncInProgress: syncService.isSyncInProgress(),
+        lastSync: lastLog
+          ? {
+              id: lastLog.id,
+              status: lastLog.status,
+              startedAt: lastLog.startedAt,
+              completedAt: lastLog.completedAt,
+              usersCreated: lastLog.usersCreated,
+              usersUpdated: lastLog.usersUpdated,
+              usersDeactivated: lastLog.usersDeactivated,
+              usersReactivated: lastLog.usersReactivated,
+              usersSkipped: lastLog.usersSkipped,
+            }
+          : null,
+        nextSyncAt: getNextSyncAt(),
+        warnings,
+      });
+    },
+  });
+};

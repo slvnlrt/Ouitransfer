@@ -1,0 +1,376 @@
+---
+title: Fournisseurs S3
+icon: Package
+---
+
+Ce guide fournit des instructions de configuration complètes pour intégrer OUITRANSFER avec divers fournisseurs de stockage compatibles S3. Que vous utilisiez des services cloud comme AWS S3 ou des solutions auto-hébergées comme RustFS, ce guide vous aidera à mettre en place un stockage objet fiable pour vos fichiers.
+
+> **Vue d'ensemble :** OUITRANSFER prend en charge tout fournisseur de stockage compatible S3, vous donnant la flexibilité de choisir la solution la mieux adaptée à vos besoins et à votre budget.
+
+> **Remarque :** Certaines options de configuration (comme l'expiration des URLs présignées) s'appliquent quel que soit le fournisseur compatible S3 utilisé (RustFS intégré ou S3 externe). Elles sont indiquées en conséquence dans la documentation.
+
+## Quand utiliser le stockage compatible S3
+
+Envisagez d'utiliser le stockage compatible S3 lorsque vous avez besoin de :
+
+- **Stockage cloud** pour les déploiements distribués
+- **Évolutivité** au-delà des limites du système de fichiers local
+- **Redondance** et capacités de sauvegarde
+- **Intégration CDN** pour une distribution de fichiers plus rapide
+- **Distribution multi-région** des fichiers
+
+## Variables d'environnement
+
+### Configuration générale (applicable à tous les types de stockage)
+
+| Variable                       | Description                                                              | Requis | Défaut              |
+| ------------------------------ | ------------------------------------------------------------------------ | ------ | ------------------- |
+| `PRESIGNED_URL_EXPIRATION`     | Durée d'expiration des URLs présignées de **téléversement** en secondes (60 à 86400) | Non    | `3600` (1 heure)    |
+| `PRESIGNED_GET_URL_EXPIRATION` | Durée d'expiration des URLs présignées de **téléchargement** en secondes (60 à 86400) | Non    | `900` (15 minutes)  |
+
+### Configuration spécifique à S3
+
+Pour activer le stockage compatible S3, définissez `ENABLE_S3=true` et configurez les variables d'environnement suivantes :
+
+| Variable                 | Description                                        | Requis | Défaut              |
+| ------------------------ | -------------------------------------------------- | ------ | ------------------- |
+| `S3_ENDPOINT`            | URL du point d'accès du fournisseur S3             | Oui    | -                   |
+| `S3_PORT`                | Port de connexion                                  | Non    | Selon le protocole  |
+| `S3_USE_SSL`             | Activer le chiffrement SSL/TLS                     | Oui    | `true`              |
+| `S3_ACCESS_KEY`          | Clé d'accès pour l'authentification                | Oui    | -                   |
+| `S3_SECRET_KEY`          | Clé secrète pour l'authentification                | Oui    | -                   |
+| `S3_REGION`              | Région de stockage                                 | Oui    | -                   |
+| `S3_BUCKET_NAME`         | Nom du bucket/conteneur                            | Oui    | -                   |
+| `S3_FORCE_PATH_STYLE`    | Utiliser des URLs en style chemin                  | Non    | `false`             |
+| `S3_REJECT_UNAUTHORIZED` | Activer la validation stricte des certificats SSL  | Non    | `true`              |
+
+## Configurations des fournisseurs
+
+Vous trouverez ci-dessous des configurations testées pour les fournisseurs compatibles S3 les plus courants. Remplacez les valeurs d'exemple par vos identifiants et paramètres réels.
+
+> **Note de sécurité :** Ne committez jamais vos vrais identifiants dans le contrôle de version. Utilisez des fichiers d'environnement ou des systèmes de gestion des secrets sécurisés.
+
+### AWS S3
+
+Amazon S3 est le service S3 original, offrant une disponibilité mondiale et de nombreuses fonctionnalités.
+
+```bash
+ENABLE_S3=true
+S3_ENDPOINT=s3.amazonaws.com
+S3_USE_SSL=true
+S3_ACCESS_KEY=your-access-key-id
+S3_SECRET_KEY=your-secret-access-key
+S3_REGION=us-east-1
+S3_BUCKET_NAME=your-bucket-name
+S3_FORCE_PATH_STYLE=false
+# PRESIGNED_URL_EXPIRATION=3600  # Optionnel : 1 heure (défaut)
+```
+
+**Obtenir les identifiants :**
+
+1. Accédez à la console AWS IAM
+2. Créez un nouvel utilisateur avec les permissions S3
+3. Générez des clés d'accès pour l'accès programmatique
+
+### RustFS (auto-hébergé)
+
+RustFS est idéal pour les déploiements auto-hébergés et les environnements de développement.
+
+```bash
+ENABLE_S3=true
+S3_ENDPOINT=localhost
+S3_PORT=9000
+S3_USE_SSL=false
+S3_ACCESS_KEY=dev
+S3_SECRET_KEY=devsecret
+S3_REGION=us-east-1
+S3_BUCKET_NAME=your-bucket-name
+S3_FORCE_PATH_STYLE=true
+```
+
+**Notes de configuration :**
+
+- Utilisez `S3_FORCE_PATH_STYLE=true` pour RustFS
+- Le port RustFS par défaut est 9000
+- SSL peut être désactivé pour le développement local
+
+**Pour RustFS avec des certificats SSL auto-signés :**
+
+```bash
+ENABLE_S3=true
+S3_ENDPOINT=your-rustfs-domain.com
+S3_PORT=9000
+S3_USE_SSL=true
+S3_ACCESS_KEY=dev
+S3_SECRET_KEY=devsecret
+S3_REGION=us-east-1
+S3_BUCKET_NAME=your-bucket-name
+S3_FORCE_PATH_STYLE=true
+S3_REJECT_UNAUTHORIZED=false  # Autorise les certificats auto-signés
+```
+
+### Google Cloud Storage
+
+Google Cloud Storage offre des tarifs compétitifs et une infrastructure mondiale.
+
+```bash
+ENABLE_S3=true
+S3_ENDPOINT=storage.googleapis.com
+S3_USE_SSL=true
+S3_ACCESS_KEY=your-hmac-access-id
+S3_SECRET_KEY=your-hmac-secret
+S3_REGION=us-central1
+S3_BUCKET_NAME=your-bucket-name
+S3_FORCE_PATH_STYLE=false
+```
+
+**Obtenir les identifiants :**
+
+1. Activez l'API Cloud Storage dans Google Cloud Console
+2. Créez des clés HMAC pour la compatibilité S3
+3. Utilisez l'ID d'accès et le secret générés
+
+### DigitalOcean Spaces
+
+DigitalOcean Spaces fournit un stockage objet simple et évolutif.
+
+```bash
+ENABLE_S3=true
+S3_ENDPOINT=nyc3.digitaloceanspaces.com
+S3_USE_SSL=true
+S3_ACCESS_KEY=your-spaces-access-key
+S3_SECRET_KEY=your-spaces-secret-key
+S3_REGION=nyc3
+S3_BUCKET_NAME=your-space-name
+S3_FORCE_PATH_STYLE=false
+```
+
+**Régions disponibles :**
+
+- `nyc3` (New York)
+- `ams3` (Amsterdam)
+- `sgp1` (Singapour)
+- `fra1` (Francfort)
+
+### Backblaze B2
+
+Backblaze B2 offre un stockage économique avec une API compatible S3.
+
+```bash
+ENABLE_S3=true
+S3_ENDPOINT=s3.us-west-002.backblazeb2.com
+S3_USE_SSL=true
+S3_ACCESS_KEY=your-key-id
+S3_SECRET_KEY=your-application-key
+S3_REGION=us-west-002
+S3_BUCKET_NAME=your-bucket-name
+S3_FORCE_PATH_STYLE=false
+# PRESIGNED_URL_EXPIRATION=7200  # Optionnel : 2 heures pour les gros fichiers
+```
+
+**Avantage tarifaire :**
+
+- Coûts de stockage nettement inférieurs
+- Sortie gratuite vers Cloudflare CDN
+- Modèle de tarification à l'usage
+
+### Wasabi
+
+Wasabi propose un stockage cloud à chaud avec une tarification prévisible.
+
+```bash
+ENABLE_S3=true
+S3_ENDPOINT=s3.wasabisys.com
+S3_USE_SSL=true
+S3_ACCESS_KEY=your-access-key
+S3_SECRET_KEY=your-secret-key
+S3_REGION=us-east-1
+S3_BUCKET_NAME=your-bucket-name
+S3_FORCE_PATH_STYLE=false
+```
+
+**Avantages :**
+
+- Aucun frais de sortie
+- Performances élevées
+- Structure tarifaire simple
+
+### Azure Blob Storage
+
+Azure Blob Storage avec une API compatible S3 pour l'intégration dans l'écosystème Microsoft.
+
+```bash
+ENABLE_S3=true
+S3_ENDPOINT=your-account.blob.core.windows.net
+S3_USE_SSL=true
+S3_ACCESS_KEY=your-access-key
+S3_SECRET_KEY=your-secret-key
+S3_REGION=eastus
+S3_BUCKET_NAME=your-container-name
+S3_FORCE_PATH_STYLE=false
+```
+
+**Prérequis de configuration :**
+
+- Activez l'API compatible S3 dans Azure
+- Utilisez le nom du conteneur comme nom de bucket
+- Configurez les politiques d'accès appropriées
+
+## Configuration des URLs présignées
+
+OUITRANSFER utilise des URLs présignées pour fournir un accès temporaire et sécurisé aux fichiers. Ces URLs ont une durée d'expiration configurable pour équilibrer sécurité et facilité d'utilisation.
+
+> **Remarque :** Cette configuration s'applique aussi bien au stockage RustFS intégré qu'aux fournisseurs S3 externes.
+
+### Comprendre les URLs présignées
+
+Les URLs présignées sont des URLs temporaires qui permettent un accès direct aux fichiers sans exposer les identifiants de stockage ni nécessiter d'authentification. Elles expirent automatiquement après une durée spécifiée, renforçant la sécurité en limitant la durée d'accès.
+
+**Fonctionnement :**
+
+- Les URLs sont signées par les identifiants du fournisseur compatible S3 (RustFS ou S3 externe)
+- La signature encode la durée d'expiration: les URLs expirées sont rejetées par le service de stockage
+
+**Comportement par défaut :**
+
+- URLs de téléversement : 1 heure (3600 secondes), définie par `PRESIGNED_URL_EXPIRATION`
+- URLs de téléchargement : 15 minutes (900 secondes), définie par `PRESIGNED_GET_URL_EXPIRATION`
+
+### Configurer la durée d'expiration
+
+Les URLs de téléversement et de téléchargement se configurent indépendamment : `PRESIGNED_URL_EXPIRATION` contrôle les téléversements, `PRESIGNED_GET_URL_EXPIRATION` contrôle les téléchargements. Les deux acceptent une durée en secondes (60 à 86400). Par exemple, pour étendre les URLs de téléversement à 2 heures :
+
+```bash
+# Définir l'expiration à 2 heures (7200 secondes)
+PRESIGNED_URL_EXPIRATION=7200
+
+# Définir l'expiration à 30 minutes (1800 secondes)
+PRESIGNED_URL_EXPIRATION=1800
+
+# Définir l'expiration à 6 heures (21600 secondes)
+PRESIGNED_URL_EXPIRATION=21600
+```
+
+### Choisir la bonne durée d'expiration
+
+**Expiration courte (15-30 minutes) :**
+
+- [+] Sécurité renforcée
+- [+] Risque réduit d'accès non autorisé
+- [-] Peut interrompre les téléversements/téléchargements longs
+- [-] Les utilisateurs peuvent avoir besoin de rafraîchir les liens plus souvent
+
+**Expiration longue (2-6 heures) :**
+
+- [+] Meilleure expérience utilisateur pour les gros fichiers
+- [+] Moins d'interruptions pendant les transferts
+- [-] Fenêtre d'exposition plus longue en cas de compromission des URLs
+- [-] Risque de coûts de stockage accrus si les utilisateurs laissent des téléchargements incomplets
+
+**Paramètres recommandés :**
+
+- **Environnements haute sécurité :** 1800 secondes (30 minutes)
+- **Usage standard :** 3600 secondes (1 heure) - défaut
+- **Transferts de gros fichiers :** 7200-21600 secondes (2-6 heures)
+
+### Exemples de configurations
+
+**Pour Backblaze B2 avec expiration étendue :**
+
+```bash
+ENABLE_S3=true
+S3_ENDPOINT=s3.us-west-002.backblazeb2.com
+S3_USE_SSL=true
+S3_ACCESS_KEY=your-key-id
+S3_SECRET_KEY=your-application-key
+S3_REGION=us-west-002
+S3_BUCKET_NAME=your-bucket-name
+S3_FORCE_PATH_STYLE=false
+PRESIGNED_URL_EXPIRATION=7200  # 2 heures pour les transferts de gros fichiers
+```
+
+**Pour les environnements haute sécurité :**
+
+```bash
+ENABLE_S3=true
+S3_ENDPOINT=s3.amazonaws.com
+S3_USE_SSL=true
+S3_ACCESS_KEY=your-access-key-id
+S3_SECRET_KEY=your-secret-access-key
+S3_REGION=us-east-1
+S3_BUCKET_NAME=your-bucket-name
+S3_FORCE_PATH_STYLE=false
+PRESIGNED_URL_EXPIRATION=1800  # 30 minutes pour une sécurité renforcée
+```
+
+## Bonnes pratiques de configuration
+
+### Considérations de sécurité
+
+- **Utilisez des politiques IAM** pour limiter l'accès à des buckets et opérations spécifiques
+- **Activez le chiffrement** au repos et en transit
+- **Faites tourner les identifiants** régulièrement
+- **Surveillez les journaux d'accès** pour détecter toute activité inhabituelle
+- **Utilisez HTTPS** pour toutes les connexions (`S3_USE_SSL=true`)
+
+### Optimisation des performances
+
+- **Choisissez des régions** proches de vos utilisateurs ou de l'emplacement de votre serveur
+- **Configurez un CDN** pour une distribution de fichiers plus rapide
+- **Utilisez les politiques de bucket appropriées** pour l'accès public aux fichiers
+- **Surveillez l'utilisation de la bande passante** et les coûts
+
+### Résolution des problèmes courants
+
+**Erreurs de connexion :**
+
+- Vérifiez l'URL du point d'accès et les paramètres de port
+- Vérifiez le pare-feu et la connectivité réseau
+- Assurez-vous que les paramètres SSL/TLS correspondent aux exigences du fournisseur
+
+**Erreurs de certificat SSL (certificats auto-signés) :**
+
+Si vous rencontrez des erreurs du type `unable to verify the first certificate` ou `UNABLE_TO_VERIFY_LEAF_SIGNATURE`, vous utilisez probablement des certificats SSL auto-signés. Cela est courant avec RustFS auto-hébergé ou d'autres services compatibles S3.
+
+**Solution :**
+Définissez `S3_REJECT_UNAUTHORIZED=false` dans vos variables d'environnement pour autoriser les certificats auto-signés :
+
+```bash
+S3_REJECT_UNAUTHORIZED=false
+```
+
+**Remarque :** La validation des certificats SSL est activée par défaut (`true`) pour des raisons de sécurité. Définissez-la à `false` uniquement lors de l'utilisation de services S3 auto-hébergés avec des certificats auto-signés.
+
+**Échecs d'authentification :**
+
+- Vérifiez que la clé d'accès et la clé secrète sont correctes
+- Vérifiez les permissions IAM pour les opérations sur le bucket
+- Vérifiez si les identifiants ont expiré
+
+**Problèmes d'accès au bucket :**
+
+- Assurez-vous que le bucket existe et est accessible
+- Vérifiez que les paramètres de région correspondent à l'emplacement du bucket
+- Vérifiez les politiques de bucket et les paramètres ACL
+
+## Tester votre configuration
+
+Après avoir configuré votre fournisseur S3, testez la connexion en :
+
+1. **Téléversant un fichier test** via l'interface OUITRANSFER
+2. **Vérifiant que le fichier apparaît** dans votre bucket S3
+3. **Téléchargeant le fichier** pour confirmer que la récupération fonctionne
+4. **Vérifiant les permissions de fichier** et les contrôles d'accès
+
+> **Astuce :** Commencez avec un bucket de développement pour tester votre configuration avant d'utiliser le stockage de production.
+
+## Changer de fournisseur
+
+Pour passer du stockage RustFS intégré à un fournisseur S3 externe (ou entre fournisseurs S3) :
+
+1. **Sauvegardez les fichiers existants** avant de changer ; les fichiers ne sont pas migrés automatiquement
+2. **Mettez à jour les variables d'environnement** avec les paramètres du nouveau fournisseur (définissez `ENABLE_S3=true` pour un S3 externe)
+3. **Redémarrez le conteneur OUITRANSFER** pour appliquer les modifications
+4. **Testez les opérations sur les fichiers** pour vous assurer que tout fonctionne correctement
+
+N'oubliez pas que les fichiers existants ne seront pas automatiquement migrés lors du changement de fournisseur de stockage.

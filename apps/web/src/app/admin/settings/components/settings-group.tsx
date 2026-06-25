@@ -1,0 +1,125 @@
+import { Save } from "lucide-react";
+import { useTranslations } from "next-intl";
+import React, { useMemo } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { createFieldDescriptions, createGroupMetadata } from "../constants";
+import type { SettingsGroupProps } from "../types";
+import { isFieldHidden, SettingsInput } from "./settings-input";
+import { SmtpTestButton } from "./smtp-test-button";
+
+export function SettingsGroup({ group, configs, form, onSubmit }: SettingsGroupProps) {
+  const t = useTranslations();
+  // Built once per locale (t is stable across renders); this component re-renders
+  // on every watched-field change, so recomputing the full metadata/description
+  // maps each time would be ~46 wasted translation lookups per render.
+  const GROUP_METADATA = useMemo(() => createGroupMetadata(t), [t]);
+  const FIELD_DESCRIPTIONS = useMemo(() => createFieldDescriptions(t), [t]);
+
+  const metadata = GROUP_METADATA[group as keyof typeof GROUP_METADATA] || {
+    title: group,
+    description: t("settings.groups.defaultDescription"),
+  };
+
+  const isEmailGroup = group === "email";
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <Card>
+        <CardHeader className="flex flex-row items-center gap-8 py-4">
+          {metadata.icon &&
+            React.createElement(metadata.icon, { className: "text-xl text-muted-foreground" })}
+          <p className="text-sm text-muted-foreground">
+            {t(`settings.groups.${group}.description`, { defaultValue: metadata.description })}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <Separator className="mb-6" />
+          <div className="flex flex-col gap-4">
+            {configs
+              .filter((config) => !isFieldHidden(config.key))
+              .map((config) => {
+                const smtpEnabled = form.watch("configs.smtpEnabled");
+                const smtpNoAuth = form.watch("configs.smtpNoAuth");
+                const isSmtpAuthField = config.key === "smtpUser" || config.key === "smtpPass";
+
+                const smtpFields = [
+                  "smtpHost",
+                  "smtpPort",
+                  "smtpUser",
+                  "smtpPass",
+                  "smtpSecure",
+                  "smtpNoAuth",
+                  "smtpTrustSelfSigned",
+                  "smtpFromName",
+                  "smtpFromEmail",
+                ];
+
+                if (smtpEnabled !== "true" && smtpFields.includes(config.key)) {
+                  return null;
+                }
+
+                if (isSmtpAuthField && smtpNoAuth === "true") {
+                  return null;
+                }
+
+                return (
+                  <div key={config.key} className="space-y-2 mb-3">
+                    <SettingsInput
+                      config={config}
+                      error={form.formState.errors.configs?.[config.key]}
+                      register={form.register}
+                      setValue={form.setValue}
+                      smtpEnabled={form.watch("configs.smtpEnabled")}
+                      authProvidersEnabled={form.watch("configs.authProvidersEnabled")}
+                      watch={form.watch}
+                    />
+                    <p className="text-xs text-muted-foreground ms-1">
+                      {t(`settings.fields.${config.key}.description`, {
+                        defaultValue:
+                          FIELD_DESCRIPTIONS[config.key as keyof typeof FIELD_DESCRIPTIONS] ||
+                          config.description ||
+                          t("settings.fields.noDescription"),
+                      })}
+                    </p>
+                  </div>
+                );
+              })}
+          </div>
+          <div className="flex justify-between items-center mt-4">
+            <div className="flex">
+              {isEmailGroup && form.watch("configs.smtpEnabled") === "true" && (
+                <SmtpTestButton
+                  smtpEnabled={form.watch("configs.smtpEnabled") || "false"}
+                  getFormValues={() => ({
+                    smtpEnabled: form.getValues("configs.smtpEnabled") || "false",
+                    smtpHost: form.getValues("configs.smtpHost") || "",
+                    smtpPort: form.getValues("configs.smtpPort") || "",
+                    smtpUser: form.getValues("configs.smtpUser") || "",
+                    smtpPass: form.getValues("configs.smtpPass") || "",
+                    smtpSecure: form.getValues("configs.smtpSecure") || "auto",
+                    smtpNoAuth: form.getValues("configs.smtpNoAuth") || "false",
+                    smtpTrustSelfSigned: form.getValues("configs.smtpTrustSelfSigned") || "false",
+                  })}
+                />
+              )}
+            </div>
+            <Button
+              variant="default"
+              disabled={form.formState.isSubmitting}
+              className="flex items-center gap-2"
+              type="submit"
+            >
+              {!form.formState.isSubmitting && <Save className="h-4 w-4" />}
+              {t("settings.buttons.save", {
+                group: t(`settings.groups.${group}.title`, { defaultValue: metadata.title }),
+              })}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </form>
+  );
+}

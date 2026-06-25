@@ -1,0 +1,258 @@
+---
+title: Repository Structure
+icon: Github
+---
+
+import { File, Files, Folder } from "fumadocs-ui/components/files";
+import { Callout } from "fumadocs-ui/components/callout";
+import {
+  GitBranch,
+  GitPullRequest,
+  PackageCheck,
+  ShieldAlert,
+  Hammer,
+  CircleCheck,
+  Tag,
+  Play,
+  Layers,
+  HeartPulse,
+  Gauge,
+  Globe,
+  FileUp,
+  OctagonX,
+  CloudUpload,
+} from "lucide-react";
+
+OUITRANSFER is a **pnpm monorepo** managed with Turborepo. This page covers the repository layout, monorepo tooling, and CI/CD pipelines. For the runtime architecture (Docker containers, request flow), see [Architecture](/docs/v1-beta/architecture).
+
+## Repository layout
+
+<Files>
+  <Folder name="apps" defaultOpen>
+    <Folder name="server" defaultOpen>
+      <Folder name="src">
+        <Folder name="modules">
+          <File name="auth/, file/, share/, user/, ..." />
+        </Folder>
+        <File name="app.ts: Fastify app factory" />
+        <File name="server.ts: entrypoint" />
+        <File name="env.ts: Zod-validated env" />
+      </Folder>
+      <File name="prisma/schema.prisma" />
+    </Folder>
+    <Folder name="web" defaultOpen>
+      <Folder name="src">
+        <Folder name="app">
+          <File name="[locale]/: locale-aware routes" />
+        </Folder>
+        <File name="components/: shared UI" />
+        <File name="hooks/: custom React hooks" />
+        <File name="http/: API client (TanStack Query)" />
+        <File name="proxy.ts: dev Edge middleware" />
+      </Folder>
+      <File name="messages/: i18n JSON (23 languages)" />
+    </Folder>
+    <Folder name="docs">
+      <File name="content/docs/: MDX pages" />
+      <File name="src/components/: custom MDX components" />
+    </Folder>
+  </Folder>
+  <Folder name="packages" defaultOpen>
+    <Folder name="shared">
+      <File name="@ouitransfer/shared: MIME utils" />
+    </Folder>
+    <Folder name="config">
+      <File name="@ouitransfer/config: tsconfig presets" />
+    </Folder>
+  </Folder>
+  <Folder name=".github">
+    <Folder name="workflows">
+      <File name="ci.yml: lint, type-check, test, build" />
+      <File name="e2e.yml: E2E, Lighthouse, Docker publish" />
+    </Folder>
+  </Folder>
+  <File name="docker-compose.yaml: production stack" />
+  <File name="docker-compose.ci.yml: CI overrides" />
+  <File name="Justfile: task runner recipes" />
+  <File name="pnpm-workspace.yaml: workspace + catalogs" />
+  <File name="turbo.json: build pipeline" />
+  <File name="biome.json: lint + format config" />
+  <File name="lefthook.yml: git hooks" />
+</Files>
+
+### Server module structure
+
+Each feature lives in `apps/server/src/modules/<feature>/` and follows the same layout:
+
+| File | Role |
+|------|------|
+| `routes.ts` | Fastify route registration, Zod schema declarations |
+| `controller.ts` | Request/response handling, input validation |
+| `service.ts` | Business logic, Prisma queries |
+| `dto.ts` | Shared Zod schemas and TypeScript types |
+
+Current modules: `admin`, `app`, `audit`, `auth`, `auth-providers`, `background-image`, `cleanup`, `config`, `email`, `file`, `folder`, `group`, `health`, `invite`, `ldap`, `notification`, `quota`, `reverse-share`, `share`, `storage`, `two-factor`, `user`. A few of these (`cleanup`, `config`, `email`, `notification`) are service- or scheduler-only and expose no HTTP routes of their own.
+
+---
+
+## Monorepo tooling
+
+| Tool | Role |
+|------|------|
+| **pnpm 10.6.0** | Package manager + workspace management |
+| **pnpm catalogs** | Shared dependency versions across packages (defined in `pnpm-workspace.yaml`) |
+| **Turborepo** | Build pipeline orchestration: runs `lint`, `type-check`, `test`, `build` in parallel across packages |
+| **Biome** | Unified linter + formatter (replaces ESLint + Prettier). `noExplicitAny` enforced. |
+| **Lefthook** | Git hooks: runs checks before every commit and validates commit messages |
+| **commitlint** | Enforces [Conventional Commits](https://www.conventionalcommits.org/) on all commit messages |
+| **Knip** | Dead code and unused export detection |
+| **`just`** | Task runner: run `just --list` for all available recipes |
+
+Common `just` recipes for contributors:
+
+```bash
+just setup-dev       # First-time local setup (install + DB init)
+just dev             # Start all apps in watch mode
+just test            # Run all Vitest tests
+just lint            # Run Biome across the monorepo
+just validate        # type-check + lint + test (mirrors CI)
+just db-generate     # Regenerate Prisma client after schema changes
+just db-migrate-dev  # Apply pending migrations
+```
+
+### Pre-commit hooks
+
+Lefthook installs two hooks automatically when you run `just setup-dev` (or `pnpm exec lefthook install`):
+
+**`pre-commit`**: runs in parallel on every `git commit`:
+
+| Check | What it does |
+|-------|-------------|
+| **Biome** | Lints and auto-formats **staged files only** (`--staged`). Fixed files are automatically re-staged, so you don't need to `git add` again. |
+| **Knip** | Scans for unused exports, dead code, and unresolved imports across the monorepo. Fails the commit if issues are found. |
+
+**`commit-msg`**: validates the commit message format using commitlint.
+
+### Commit message format
+
+Messages must follow the [Conventional Commits](https://www.conventionalcommits.org/) specification with these enforced rules:
+
+```
+<type>(<scope>): <description>
+```
+
+**Allowed types:**
+
+`feat` `fix` `docs` `style` `refactor` `perf` `test` `build` `ci` `chore` `revert` `security`
+
+**Allowed scopes (required):**
+
+`server` `web` `docs` `infra` `deps` `ci` `monorepo`
+
+Both type and scope are validated at commit time: the commit is rejected if either is missing or not in the allowed list. Subject must not start with an uppercase letter.
+
+**Examples:**
+
+```
+feat(server): add per-user quota enforcement
+fix(web): correct presigned URL handling on Safari
+docs(docs): update reverse proxy configuration guide
+chore(deps): upgrade Fastify to 5.3.0
+ci(ci): add Lighthouse step to release workflow
+```
+
+---
+
+## CI/CD pipelines
+
+### CI (`ci.yml`): pull request gate
+
+Triggers on **push to `main`** and **pull requests targeting `main`**. Concurrent runs on the same ref are cancelled automatically.
+
+<Pipeline>
+  <PipelineTriggers>
+    <PipelineStep variant="trigger" icon={<GitBranch size={14} />}>Push to main</PipelineStep>
+    <PipelineStep variant="trigger" icon={<GitPullRequest size={14} />}>Pull Request → main</PipelineStep>
+  </PipelineTriggers>
+  <PipelineArrow />
+  <PipelineStep icon={<PackageCheck size={14} />}>Install dependencies</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep icon={<Layers size={14} />}>Prisma migration drift check</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep variant="warn" badge="non-blocking" icon={<ShieldAlert size={14} />}>Security audit</PipelineStep>
+  <PipelineArrow />
+  <PipelineParallel label="Turborepo · runs in parallel">
+    <PipelineParallelItem>Lint</PipelineParallelItem>
+    <PipelineParallelItem>Type-check</PipelineParallelItem>
+    <PipelineParallelItem>Tests</PipelineParallelItem>
+  </PipelineParallel>
+  <PipelineArrow />
+  <PipelineStep icon={<Hammer size={14} />}>Build all apps</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep variant="success" icon={<CircleCheck size={14} />}>All checks pass</PipelineStep>
+</Pipeline>
+
+**Steps:**
+
+1. **Install**: `pnpm install --frozen-lockfile` (no lock file drift allowed)
+2. **Prisma migration drift check**: `prisma migrate diff --from-migrations … --to-schema … --exit-code`. Fails the build if `schema.prisma` was changed without a matching committed migration, so the schema and the migration history can never drift apart.
+3. **Security audit**: `pnpm audit --audit-level=high`. Non-blocking (transitive vulnerabilities from upstream don't gate the build, but surface as warnings).
+4. **Lint + Type-check + Test**: `turbo lint type-check test --continue`. Turbo runs all three task types in parallel across all packages. `--continue` ensures all tasks run even if one fails, so you get the full picture in one pass.
+5. **Build**: `pnpm build` with a minimal `JWT_SECRET` to satisfy env validation.
+
+This pipeline must pass before any PR can be merged.
+
+### Release Validation (`e2e.yml`): tag gate + Docker publish
+
+Triggers on **`v*` tags** (releases) and **manual dispatch** (`workflow_dispatch`). Concurrent release runs are cancelled.
+
+<Pipeline>
+  <PipelineTriggers>
+    <PipelineStep variant="trigger" icon={<Tag size={14} />}>Git tag (v*)</PipelineStep>
+    <PipelineStep variant="trigger" icon={<Play size={14} />}>Manual trigger</PipelineStep>
+  </PipelineTriggers>
+  <PipelineArrow />
+  <PipelineStep icon={<PackageCheck size={14} />}>Install dependencies & browsers</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep icon={<Hammer size={14} />}>Build Docker images</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep icon={<Layers size={14} />}>Start 4-container stack</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep icon={<HeartPulse size={14} />}>Health checks · server, web, docs</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep variant="warn" badge="non-blocking" icon={<Gauge size={14} />}>Lighthouse audit</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep icon={<Globe size={14} />}>E2E tests (Playwright)</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep icon={<FileUp size={14} />}>Upload test report</PipelineStep>
+  <PipelineArrow />
+  <PipelineStep variant="muted" badge="always" icon={<OctagonX size={14} />}>Stop stack</PipelineStep>
+  <PipelineArrow />
+  <PipelineFork question="Tag push?">
+    <PipelineForkBranch label="yes" highlight>
+      <PipelineStep icon={<CloudUpload size={14} />}>Publish to GHCR</PipelineStep>
+      <PipelineArrow />
+      <PipelineStep variant="success" icon={<CircleCheck size={14} />}>Done</PipelineStep>
+    </PipelineForkBranch>
+    <PipelineForkBranch label="no">
+      <PipelineStep variant="success" icon={<CircleCheck size={14} />}>Done</PipelineStep>
+    </PipelineForkBranch>
+  </PipelineFork>
+</Pipeline>
+
+**Steps:**
+
+1. **Build Docker images**: `docker compose build` using `docker-compose.ci.yml` overrides. The git tag name becomes `NEXT_PUBLIC_APP_VERSION` (e.g. `v1.2.3` → `1.2.3`), which is injected at build time into the Next.js bundle.
+2. **Start stack**: full 4-container stack (storage + server + web + docs) with CI overrides.
+3. **Wait for health**: polls `GET /health` (server), the web port, and `/docs` (docs) until all respond, with a 120-second timeout each.
+4. **Lighthouse CI**: performance audit. Non-blocking.
+5. **E2E tests**: full Playwright suite against the live Docker stack. Blocking.
+6. **Upload Playwright report**: stored as a GitHub Actions artifact (14-day retention).
+7. **Stop stack**: always runs, even on failure.
+8. **Publish to GHCR**: only on tag pushes (skipped on `workflow_dispatch`). Pushes the `server`, `web`, and `docs` images to `ghcr.io/slvnlrt/ouitransfer-{server,web,docs}`, each with three tags: `latest`, `1.2.3` (semver), and `1.2` (minor).
+
+<Callout type="info">
+**Why two separate workflows?**
+
+CI runs on every PR and must be fast: no Docker builds, no E2E. The release workflow is heavier (Docker build + full E2E) and only runs when cutting a release or triggering manually. This keeps PR feedback loops short.
+</Callout>

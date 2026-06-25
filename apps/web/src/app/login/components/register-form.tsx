@@ -1,0 +1,195 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useAppInfo } from "@/contexts/app-info-context";
+import { registerUser } from "@/http/endpoints";
+import { createPasswordPolicySchema } from "@/lib/password-policy";
+import { MultiProviderButtons } from "./multi-provider-buttons";
+import { PasswordVisibilityToggle } from "./password-visibility-toggle";
+
+interface RegisterFormProps {
+  isVisible: boolean;
+  onToggleVisibility: () => void;
+}
+
+export function RegisterForm({ isVisible, onToggleVisibility }: RegisterFormProps) {
+  const t = useTranslations();
+  const { refreshAppInfo } = useAppInfo();
+  const [error, setError] = useState<string | null>(null);
+
+  const registerSchema = z.object({
+    firstName: z.string().min(1, t("register.validation.firstNameRequired")),
+    lastName: z.string().min(1, t("register.validation.lastNameRequired")),
+    username: z.string().min(3, t("register.validation.usernameMinLength")),
+    email: z.string().email(t("register.validation.invalidEmail")),
+    password: createPasswordPolicySchema({
+      minLength: t("register.validation.passwordMinLength"),
+      maxLength: t("register.validation.passwordMaxLength"),
+      complexity: t("register.validation.passwordComplexity"),
+    }),
+  });
+
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      username: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: z.infer<typeof registerSchema>) => {
+    setError(null);
+    try {
+      await registerUser({
+        ...data,
+      });
+
+      // The server sets firstUserAccess=false and auto-logs in the first user,
+      // so we just need to refresh app info to reflect the updated state.
+      await refreshAppInfo();
+      toast.success(t("register.validation.success"));
+    } catch {
+      setError(t("register.validation.error"));
+      toast.error(t("register.validation.error"));
+    }
+  };
+
+  const renderErrorMessage = () => (
+    <p className="text-destructive text-sm text-center bg-destructive/10 p-2 rounded-md">{error}</p>
+  );
+
+  const renderForm = () => (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <FormField
+          control={form.control}
+          name="firstName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("register.labels.firstName")}</FormLabel>
+              <FormControl className="-mb-1">
+                <Input
+                  {...field}
+                  placeholder={t("register.labels.firstName")}
+                  disabled={form.formState.isSubmitting}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="lastName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("register.labels.lastName")}</FormLabel>
+              <FormControl className="-mb-1">
+                <Input
+                  {...field}
+                  placeholder={t("register.labels.lastName")}
+                  disabled={form.formState.isSubmitting}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("register.labels.username")}</FormLabel>
+              <FormControl className="-mb-1">
+                <Input
+                  {...field}
+                  placeholder={t("register.labels.username")}
+                  disabled={form.formState.isSubmitting}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("register.labels.email")}</FormLabel>
+              <FormControl className="-mb-1">
+                <Input
+                  {...field}
+                  type="email"
+                  placeholder={t("register.labels.email")}
+                  disabled={form.formState.isSubmitting}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("register.labels.password")}</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Input
+                    {...field}
+                    type={isVisible ? "text" : "password"}
+                    placeholder={t("register.labels.password")}
+                    disabled={form.formState.isSubmitting}
+                    className="pe-10"
+                  />
+                  <PasswordVisibilityToggle isVisible={isVisible} onToggle={onToggleVisibility} />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button className="w-full mt-4 cursor-pointer" variant="brand" size="lg" type="submit">
+          {form.formState.isSubmitting
+            ? t("register.buttons.creating")
+            : t("register.buttons.createAdmin")}
+        </Button>
+      </form>
+    </Form>
+  );
+
+  return (
+    <>
+      {error && renderErrorMessage()}
+      {renderForm()}
+      <MultiProviderButtons />
+    </>
+  );
+}

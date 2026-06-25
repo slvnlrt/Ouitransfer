@@ -1,0 +1,233 @@
+---
+title: Shares
+icon: Share2
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+Shares are the primary way to send files in Ouitransfer. Select files from your file manager, configure sharing options, and send the link to your recipients. Each share gets a unique URL and optional QR code.
+
+For a faster, drag-and-drop alternative, see the [Quick Share](/docs/v1-beta/quick-share) widget.
+
+To receive files from external people instead, see [Reverse Shares](/docs/v1-beta/reverse-shares).
+
+---
+
+## Creating a share
+
+<Steps>
+<Step>
+
+### Select files
+
+Navigate to the **file manager** and select the files and folders you want to share using the checkboxes, then click the **Share** button in the toolbar. This opens the share creation dialog.
+
+</Step>
+<Step>
+
+### Configure the share
+
+Fill in the share details:
+
+| Option | Required | Description |
+|---|---|---|
+| **Name** | Yes | A label for the share. Free text. |
+| **Description** | No | An optional description shown to recipients on the share page. |
+| **Password** | No | Toggle on to require a password before accessing the share. |
+| **Expiration** | No | A date (and optional time) after which the share becomes inaccessible. If only a date is selected, it expires at the end of that day (23:59:59). |
+| **Max views** | No | Maximum number of times the share page can be accessed before it becomes unavailable. |
+
+</Step>
+<Step>
+
+### Confirm file selection
+
+Switch to the **Files** tab to review and adjust your selection. You can search, check, and uncheck files and folders before finalizing.
+
+</Step>
+<Step>
+
+### Share
+
+Click **Create**. You receive a shareable link and a QR code. Copy the link or download the QR code as PNG.
+
+</Step>
+</Steps>
+
+---
+
+## Managing a share
+
+Click on a share from your **My Shares** list to open the share details panel. From here you can:
+
+- **View statistics**: total views, file count, recipient count
+- **Edit name and description** inline (click the text to edit)
+- **Copy the share link** or scan the QR code
+- **Change the expiration**: toggle on/off, set a new date
+- **Update password protection**: add, change, or remove the password
+- **Manage files**: add or remove files and folders
+- **Add recipients**: send invitation emails (see below)
+- **View activity**: track who accessed and downloaded the share (see below)
+
+### Share alias
+
+Every share gets a short alias that produces a clean, human-readable URL (`/s/my-alias`). The alias is auto-generated from the share name but can be customized.
+
+---
+
+## Recipients and invitations
+
+You can add email recipients to a share. Each recipient receives an invitation email with a personalized link that points to the share.
+
+<Callout type="info">
+  Sending invitation emails requires SMTP to be configured. See [Configuring SMTP](/docs/v1-beta/configuring-smtp).
+</Callout>
+
+### Adding recipients
+
+In the share details panel, use the **Recipients** section to add email addresses. You can provide an optional name alongside each email address.
+
+### Personalized tracking links
+
+Each recipient receives a unique link containing a **tracking token**. When a recipient opens the share through their personalized link, Ouitransfer automatically identifies them; no additional action is required from the visitor.
+
+This means you can see in the [activity tab](#activity-tracking) exactly which recipient accessed the share and how many times, without requiring them to fill in any form.
+
+### Sending notifications
+
+Once recipients are added, click **Notify** to send the invitation email. The email contains the share name, a download button with the personalized link, and the sender's name. Recipients are notified in a single batch.
+
+### Download status per recipient
+
+Each recipient in the list shows an explicit status badge:
+
+- **Downloaded** (green): the recipient has downloaded at least one file from the share. A tooltip shows the date of the last download.
+- **Pending** (muted): the recipient was notified but has not downloaded anything yet.
+
+This status is distinct from the **views** count (the number of times the share page was opened). A recipient can open the share several times without downloading any file, so "views" and "Downloaded" track different things.
+
+<Callout type="info">
+  The download status is a **comfort feature, not a security control**. When a recipient arrives through their personalized email link, their identity is **verified** (it comes from a unique tracking token). When a visitor instead types a name or email into the identification form that happens to match a recipient, the attribution is **self-declared** and unverified (a subtle hint is shown in the activity view in that case). A self-declared identity could be spoofed, so do not treat "Downloaded" as proof of who downloaded.
+</Callout>
+
+### Reminding non-downloaders
+
+When some recipients have not downloaded yet, you can send them a reminder. A **Remind (N)** button (where N is the number of pending recipients) sends a fresh reminder email (using each recipient's personalized link) only to recipients who were notified but have **not** downloaded anything. Recipients who already downloaded are skipped.
+
+Reminders are **manual and creator-triggered**. There is no automatic scheduler: Ouitransfer never sends reminders on its own. The button is disabled when there are no pending recipients.
+
+<Callout type="info">
+  Sending reminders requires SMTP to be configured. The reminder uses a dedicated, non-configurable email type and is recorded in the [activity log](/docs/v1-beta/activity-log).
+</Callout>
+
+---
+
+## Visitor identification
+
+Ouitransfer offers four mechanisms to identify who accesses a share, from most to least precise:
+
+### 1. Tracking tokens (automatic)
+
+When a share has **recipients with email addresses**, each recipient's invitation link contains a unique tracking token. If a visitor arrives via one of these links, they are identified automatically with no friction.
+
+### 2. Identification form
+
+Shares can require visitors to identify themselves before accessing the content. Two fields can be configured independently:
+
+| Field | Options | Description |
+|---|---|---|
+| **Name** | Hidden / Optional / Required | Whether the visitor's name is collected |
+| **Email** | Hidden / Optional / Required | Whether the visitor's email is collected |
+
+When at least one field is set to **Optional** or **Required**, visitors see an identification dialog before accessing the share. Required fields must be filled to proceed; optional fields can be skipped.
+
+The dialog also displays a short **privacy notice** informing visitors that their accesses and downloads may be visible to the sender of the share, so they are aware their activity is tracked before they identify themselves.
+
+<Callout type="info">
+  If a visitor has already been identified via a tracking token (from a recipient invitation link), the identification form is not shown; the token takes priority.
+</Callout>
+
+### 3. Authenticated Ouitransfer user
+
+When a logged-in, non-owner Ouitransfer user accesses a share without a tracking token and without a matched identification-form entry, they are identified by their account. This is a **verified** attribution: it comes from their authenticated session, not a self-declared value. It is represented as the `authenticated_user` identification source in the activity view.
+
+The precedence order (first match wins) is: tracking token → self-declared form match → authenticated account → anonymous.
+
+### 4. Anonymous access
+
+When none of the above apply, the visitor is recorded as **anonymous**. Only their IP address and user agent are captured for audit purposes.
+
+### Setting identification requirements
+
+For regular shares, visitor identification fields (`nameFieldRequired`, `emailFieldRequired`) can be set when creating or updating a share via the [API](/docs/v1-beta/api) (`POST /shares` or `PUT /shares`). Both fields accept the values `HIDDEN`, `OPTIONAL`, or `REQUIRED` and default to `HIDDEN`.
+
+<Callout type="warn">
+  The share creation dialog in the web UI does not currently expose these fields. Use the API to configure visitor identification on regular shares. For [reverse shares](/docs/v1-beta/reverse-shares), the creation form includes a dedicated **Visitor Identification** section.
+</Callout>
+
+---
+
+## Activity tracking
+
+Share owners can monitor who accesses and downloads their shared files through the **Activity** tab in the share details panel.
+
+### What is tracked
+
+Each visit records:
+
+| Field | Description |
+|---|---|
+| **Action** | `Access` (share page loaded) or `Download` (file downloaded) |
+| **Visitor identity** | Name and/or email of the visitor, or "Anonymous" |
+| **Identification source** | How the visitor was identified: `tracking_token` (verified, arrived via a personalized link), `cookie` (self-declared from the identification form), `authenticated_user` (verified: a logged-in Ouitransfer account), or `anonymous` |
+| **Recipient** | If the visitor was linked to a recipient, the recipient email is shown alongside the source so you can tell a verified attribution from a self-declared one |
+| **Timestamp** | When the event occurred |
+| **isOwner** | Whether the visit was attributed to the share's own creator (rarely true in practice, as routine owner accesses are not tracked) |
+
+<Callout type="info">
+  Both `tracking_token` and `authenticated_user` sources are verified. A `cookie` source means the visitor typed an identity into the form (or matched a recipient by self-declared email); it is convenient but unverified: a self-declared identity could be spoofed and should not be relied on as proof of identity.
+</Callout>
+
+### Filters
+
+The activity tab provides two filter dropdowns:
+
+- **Action**: show all events, only accesses, or only downloads
+- **Identity**: show all visitors, only identified visitors, or only anonymous visitors
+
+Results are paginated (10 per page).
+
+<Callout type="info">
+  Activity tracking is visible only to the share **owner**. Other users with the share link do not see the activity tab.
+</Callout>
+
+---
+
+## Per-share notifications
+
+In addition to your [global notification preferences](/docs/v1-beta/notification-preferences), you can enable notifications for specific shares:
+
+| Option | Description |
+|---|---|
+| **Notify on each download** | Receive an email every time someone downloads a file from this share. Overrides your global `Share Download Notifications` preference for this specific share. |
+| **Inactivity alert** | Receive an email if the share has not been downloaded for a specified number of days. Triggers the `Share No Activity Alert` notification. |
+
+These settings are visible in the **Privacy** summary of the share details panel.
+
+<Callout type="info">
+  Per-share notifications require SMTP and are subject to cooldown periods to avoid excessive emails. Download and access notifications have a 15-minute cooldown per share.
+</Callout>
+
+---
+
+## Share expiration and lifecycle
+
+Shares can expire based on two conditions:
+
+- **Expiration date**: the share becomes inaccessible after the configured date. Visitors see an "expired" message.
+- **Max views**: the share becomes inaccessible after the configured number of accesses.
+
+When a share is about to expire (or has expired), the owner receives a notification if enabled in their [notification preferences](/docs/v1-beta/notification-preferences).
+
+Expired shares are not automatically deleted; they remain in the owner's share list and can be reactivated by extending the expiration date or increasing the view limit.

@@ -1,0 +1,131 @@
+---
+title: Comment contribuer
+icon: Users
+---
+
+Merci de l'intérêt que vous portez à la contribution à **Ouitransfer** ! Cette page couvre l'essentiel pour vous permettre de démarrer rapidement. Pour le guide complet de configuration développeur, consultez [**CONTRIBUTING.md**](https://github.com/slvnlrt/ouitransfer/blob/main/CONTRIBUTING.md) dans le dépôt.
+
+---
+
+## Prérequis
+
+| Outil | Version |
+|-------|---------|
+| Node.js | 24 |
+| pnpm | 10.6.0 |
+| Docker | toute version récente (pour le stockage RustFS) |
+| `just` | toute version récente (gestionnaire de tâches) |
+
+Installez `just` depuis [https://github.com/casey/just](https://github.com/casey/just) ou votre gestionnaire de paquets système.
+
+---
+
+## Configuration rapide
+
+```bash
+# 1. Fork the repo on GitHub, then clone your fork
+git clone https://github.com/your-username/ouitransfer
+cd ouitransfer
+
+# 2. Install deps + generate Prisma client + create local SQLite DB
+just setup-dev
+
+# 3. Start all apps in development mode
+just dev
+```
+
+Services en cours d'exécution :
+- **API** (Fastify) : http://localhost:3333
+- **Web** (Next.js) : http://localhost:3000
+- **Docs** (Fumadocs) : http://localhost:3001
+
+**Aucune configuration S3 requise.** Le serveur démarre sans stockage. L'authentification, la configuration et l'interface fonctionnent tous. Les opérations sur les fichiers ne sont pas disponibles tant que vous ne connectez pas S3 (voir `apps/server/.env.development` pour la configuration RustFS locale). Les secrets de développement (`JWT_SECRET` etc.) sont commités dans les fichiers `.env.development`, donc aucune configuration manuelle n'est nécessaire.
+
+---
+
+## Outils de développement
+
+### Lint et formatage
+
+[**Biome**](https://biomejs.dev/) gère à la fois le lint et le formatage (remplace ESLint + Prettier). [**Lefthook**](https://github.com/evilmartians/lefthook) exécute Biome automatiquement sur les fichiers stagés avant chaque commit ; aucun formatage manuel n'est nécessaire.
+
+```bash
+just lint                      # Check all files
+pnpm biome check --write .     # Auto-fix
+```
+
+### Tests
+
+- **Unitaires / intégration** : [Vitest](https://vitest.dev/) : `just test`
+- **E2E** : [Playwright](https://playwright.dev/) : `pnpm e2e` (nécessite un serveur de développement en cours d'exécution)
+
+### Recettes `just`
+
+Exécutez `just --list` pour tout voir. Les plus courantes :
+
+| Commande | Description |
+|----------|-------------|
+| `just setup-dev` | Configuration initiale de l'environnement local |
+| `just dev` | Démarrer toutes les applications en mode watch |
+| `just test` | Exécuter tous les tests Vitest |
+| `just lint` | Exécuter Biome sur le monorepo |
+| `just validate` | vérification des types + lint + tests (vérification CI complète) |
+| `just db-generate` | Régénérer le client Prisma après des changements de schéma |
+| `just db-dev-init` | (Re-)créer la base de données SQLite locale |
+| `just db-migrate-dev` | Appliquer les migrations en attente |
+| `just db-seed` | Alimenter la base de données |
+
+### Orchestration du build
+
+[**Turborepo**](https://turborepo.com/) gère le pipeline de build sur `apps/` et `packages/`. Exécutez toujours `pnpm install` et les commandes de build depuis la **racine du dépôt**, et non depuis les répertoires d'applications individuels.
+
+---
+
+## Format des commits
+
+Les commits sont imposés par **commitlint** (via Lefthook) en utilisant la spécification [Conventional Commits](https://www.conventionalcommits.org/) :
+
+```
+<type>(<scope>): <description>
+```
+
+Le **type** et le **scope** sont tous deux obligatoires et doivent figurer dans les listes autorisées ; le commit est rejeté dans le cas contraire. Consultez [Structure du dépôt → Format des messages de commit](/docs/v1-beta/github-architecture#commit-message-format) pour la référence complète.
+
+Exemples :
+```
+feat(server): add password-protected share expiry
+fix(web): correct token refresh cookie path
+docs(docs): update manual installation guide
+chore(deps): update Fastify to v5.3
+```
+
+---
+
+## Soumettre une pull request
+
+1. Créez une branche depuis `main` : `git checkout -b fix/your-branch-name upstream/main`
+2. Effectuez des commits atomiques et conventionnels
+3. Exécutez `just validate` : doit passer avant d'ouvrir une pull request
+4. Ouvrez une pull request contre la branche `main` de `slvnlrt/ouitransfer`
+5. Remplissez le modèle de pull request en indiquant ce qui a changé et pourquoi
+
+Gardez les pull requests ciblées : un seul sujet par pull request facilite la révision. Consultez [la documentation GitHub sur les pull requests](https://docs.github.com/en/pull-requests) pour les mécanismes de fork et d'ouverture de pull requests.
+
+---
+
+## Nommage des branches
+
+Utilisez des noms descriptifs suivant ce pattern :
+
+- `feature/user-authentication` : nouvelles fonctionnalités
+- `fix/login-bug` : corrections de bugs
+- `docs/api-documentation` : mises à jour de documentation
+- `refactor/database-queries` : améliorations du code
+
+---
+
+## Lectures complémentaires
+
+- [**CONTRIBUTING.md**](https://github.com/slvnlrt/ouitransfer/blob/main/CONTRIBUTING.md) : guide complet incluant les notes d'architecture, la structure du projet et les patterns de test
+- [Spécification Conventional Commits](https://www.conventionalcommits.org/)
+- [GitHub : Travailler avec des forks](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks)

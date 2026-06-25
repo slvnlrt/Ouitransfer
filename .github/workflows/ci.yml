@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: ".node-version"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - name: Prisma migration drift check
+        # Fails if schema.prisma was changed without a matching migration.
+        run: >-
+          pnpm --filter ouitransfer-api exec prisma migrate diff
+          --from-migrations prisma/migrations
+          --to-schema prisma/schema.prisma
+          --exit-code
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: turbo-${{ runner.os }}-
+
+      - name: Security Audit
+        # Transitive vulnerabilities may cause failures until upstream patches.
+        # Non-blocking: surfaces warnings without gating the build.
+        run: pnpm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Lint, Type Check & Test
+        # Turbo runs all three task types in parallel across packages.
+        # --continue ensures all tasks run even if one fails early.
+        run: pnpm exec turbo lint type-check test --continue
+
+      - name: Build
+        run: pnpm build
+        env:
+          JWT_SECRET: ci-build-jwt-secret-minimum-32-characters-long
+
+      - name: Cleanup stale caches
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Cleaning unused and stale caches..."
+          cutoff=$(date -u -d '2 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+          gh cache list --limit 100 --json id,createdAt,lastAccessedAt \
+            --jq ".[] | select(.createdAt == .lastAccessedAt or .createdAt < \"$cutoff\") | .id" \
+            | xargs -r -I{} gh cache delete {} 2>/dev/null || true
+          echo "Done."

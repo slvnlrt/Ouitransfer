@@ -1,0 +1,364 @@
+---
+title: Configuration UID/GID
+icon: "Users"
+---
+
+Configurez les permissions d'utilisateur et de groupe pour une compatibilité optimale des montages liés (bind mounts) sur différents systèmes hôtes, notamment les environnements NAS.
+
+## Vue d'ensemble
+
+OUITRANSFER prend en charge la configuration UID/GID à l'exécution pour résoudre les conflits de permissions lors de l'utilisation de montages liés. Cela élimine la nécessité d'une gestion manuelle des permissions sur votre système hôte.
+
+**⚠️ Important** : OUITRANSFER utilise **UID 1001, GID 1001** par défaut. De nombreux systèmes Linux utilisent UID/GID 1000 pour le premier utilisateur, ce qui crée une incompatibilité et provoque des problèmes de permissions avec les montages liés.
+
+## Le problème de permissions
+
+### Pourquoi cela se produit
+
+- **Valeur par défaut OUITRANSFER** : UID 1001, GID 1001 (conteneur)
+- **Standard Linux** : UID 1000, GID 1000 (la plupart des systèmes hôtes)
+- **Conséquence** : L'incompatibilité provoque des erreurs de permissions sur les répertoires montés
+
+### Scénarios d'erreur courants
+
+```bash
+# Lorsque vous voyez des erreurs comme :
+EACCES: permission denied, open '/app/server/data/database.db'
+```
+
+```bash
+# Ou lors de la vérification des permissions :
+$ ls -la data/
+drwxr-xr-x 2 user user 4096 Jan 15 10:00 data/
+# Le conteneur tente d'écrire avec un UID/GID différent du propriétaire du répertoire
+```
+
+## Correction rapide
+
+### Option 1 : Configurer OUITRANSFER pour utiliser l'UID/GID standard (Recommandé)
+
+Ajoutez ces variables d'environnement au service **server** dans votre `docker-compose.yaml` :
+
+```yaml
+services:
+  server:
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
+    container_name: ouitransfer-server
+    environment:
+      OUITRANSFER_UID: "1000"
+      OUITRANSFER_GID: "1000"
+      # ... (services storage et web omis pour la concision)
+    volumes:
+      - ./server-data:/app/server
+    restart: unless-stopped
+```
+
+### Option 2 : Modifier les permissions du répertoire hôte
+
+Si vous préférez conserver les valeurs par défaut d'OUITRANSFER :
+
+```bash
+# Créez le répertoire avec la propriété correcte
+mkdir -p server-data
+chown -R 1001:1001 server-data
+```
+
+## Variables d'environnement
+
+Configurez les permissions à l'aide de ces variables d'environnement optionnelles sur le service **server** :
+
+| Variable    | Description                          | Défaut | Exemple |
+| ----------- | ------------------------------------ | ------ | ------- |
+| `OUITRANSFER_UID` | ID utilisateur pour les processus du conteneur  | `1001`  | `1000`  |
+| `OUITRANSFER_GID` | ID de groupe pour les processus du conteneur | `1001`  | `1000`  |
+
+---
+
+## Trouver votre UID/GID hôte
+
+Déterminez les IDs d'utilisateur et de groupe de votre système hôte :
+
+```bash
+# Vérifier l'utilisateur actuel
+id
+
+# Exemple de sortie
+uid=1000(user) gid=1000(group) groups=1000(group),27(sudo)
+```
+
+Utilisez les valeurs `uid` et `gid` pour configurer `OUITRANSFER_UID` et `OUITRANSFER_GID`.
+
+---
+
+## Exemples de configuration
+
+### Système Linux standard (cas le plus courant)
+
+```yaml
+services:
+  server:
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
+    container_name: ouitransfer-server
+    environment:
+      OUITRANSFER_UID: "1000"
+      OUITRANSFER_GID: "1000"
+      # ... (autres variables d'environnement du serveur, services storage et web omis pour la concision)
+    volumes:
+      - ./server-data:/app/server
+    restart: unless-stopped
+```
+
+### Synology NAS
+
+```yaml
+services:
+  server:
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
+    container_name: ouitransfer-server
+    environment:
+      OUITRANSFER_UID: "1026"
+      OUITRANSFER_GID: "100"
+      # ... (autres variables d'environnement du serveur, services storage et web omis pour la concision)
+    volumes:
+      - /volume1/docker/ouitransfer/server-data:/app/server
+    restart: unless-stopped
+```
+
+### QNAP NAS
+
+```yaml
+services:
+  server:
+    image: ghcr.io/slvnlrt/ouitransfer-server:latest
+    container_name: ouitransfer-server
+    environment:
+      OUITRANSFER_UID: "1000"
+      OUITRANSFER_GID: "100"
+      # ... (autres variables d'environnement du serveur, services storage et web omis pour la concision)
+    volumes:
+      - /share/Container/ouitransfer/server-data:/app/server
+    restart: unless-stopped
+```
+
+---
+
+## Permissions du service de stockage (RustFS)
+
+L'image de stockage RustFS s'exécute sous **UID 10001** par défaut. Cela affecte les montages liés pour le service de stockage :
+
+### Volumes nommés (aucune action requise)
+
+Les volumes nommés Docker gèrent les permissions automatiquement. C'est l'approche recommandée.
+
+### Montages liés
+
+Si vous utilisez des montages liés pour le service de stockage, vous devez définir la propriété correcte :
+
+```bash
+mkdir -p storage-data
+chown -R 10001:10001 storage-data
+```
+
+Puis dans votre `docker-compose.yaml` :
+
+```yaml
+services:
+  storage:
+    image: rustfs/rustfs:latest
+    volumes:
+      - ./storage-data:/data
+    # ...
+```
+
+Si le répertoire possède une propriété incorrecte, RustFS échouera au démarrage avec des erreurs de permissions.
+
+---
+
+## Dépannage
+
+### Erreurs de permissions courantes
+
+**Erreur** : `EACCES: permission denied`
+
+```bash
+# 1. Vérifiez votre UID/GID actuel
+id
+
+# 2. Vérifiez la propriété du répertoire
+ls -la server-data/
+
+# 3. Correction via les variables d'environnement (méthode préférée)
+# Ajoutez au service server dans docker-compose.yaml :
+# OUITRANSFER_UID: "1000"
+# OUITRANSFER_GID: "1000"
+
+# 4. Ou correction via chown (alternative)
+chown -R 1001:1001 server-data
+```
+
+**Erreur** : Le conteneur démarre mais les fichiers ne sont pas accessibles
+
+```bash
+# Vérifiez la configuration UID/GID du conteneur
+docker compose logs server | grep -E "🔧|Runtime UID/GID"
+
+# Vérifiez la propriété des fichiers à l'intérieur du conteneur
+docker exec ouitransfer-server ls -la /app/server/
+```
+
+### Commandes de vérification
+
+Vérifiez que les paramètres UID/GID sont correctement appliqués :
+
+```bash
+# Consultez les journaux de démarrage pour la configuration UID/GID
+docker compose logs server | head -20
+
+# Vérifiez la propriété des fichiers dans le conteneur
+docker exec ouitransfer-server ls -la /app/server/
+
+# Vérifiez que le processus s'exécute avec le bon UID/GID
+docker exec ouitransfer-server ps aux | grep node
+
+# Vérifiez les variables d'environnement
+docker exec ouitransfer-server env | grep OUITRANSFER
+```
+
+### Dépannage avancé
+
+**Débogage spécifique aux NAS :**
+
+```bash
+# Synology - Vérifier la propriété du point de montage
+ls -la /volume1/docker/ouitransfer/
+
+# QNAP - Vérifier la propriété du point de montage
+ls -la /share/Container/ouitransfer/
+
+# Vérifier la configuration des utilisateurs NAS
+cat /etc/passwd | grep -v nobody
+```
+
+**Problèmes de montages liés Docker :**
+
+```bash
+# Vérifier si le répertoire de données existe et est accessible en écriture
+test -w server-data && echo "data writable" || echo "data NOT writable"
+
+# Créer le répertoire avec les permissions correctes
+mkdir -p server-data
+sudo chown -R $(id -u):$(id -g) server-data
+```
+
+---
+
+## Quand configurer
+
+La configuration UID/GID est **obligatoire** dans les cas suivants :
+
+- ✅ Utilisation de montages liés (cas le plus courant)
+- ✅ Erreurs « permission denied » rencontrées
+- ✅ Déploiement sur des systèmes NAS (Synology, QNAP, etc.)
+- ✅ Le système hôte utilise des valeurs UID/GID par défaut différentes
+- ✅ Exécution de plusieurs conteneurs devant partager des fichiers
+
+La configuration UID/GID est **optionnelle** dans les cas suivants :
+
+- ❌ Utilisation de volumes nommés Docker (Docker gère les permissions)
+- ❌ Pas d'utilisation de montages liés
+- ❌ Aucune erreur de permissions rencontrée
+
+---
+
+## Guide de migration
+
+### Installations existantes
+
+Pour ajouter la configuration UID/GID à des installations en cours d'exécution :
+
+1. **Arrêtez les conteneurs**
+
+   ```bash
+   docker compose down
+   ```
+
+2. **Sauvegardez vos données**
+
+   ```bash
+   cp -r ./server-data ./server-data-backup
+   ```
+
+3. **Vérifiez votre UID/GID**
+
+   ```bash
+   id
+   ```
+
+4. **Mettez à jour la configuration**
+   Ajoutez les variables UID/GID au service server dans votre `docker-compose.yaml` :
+
+   ```yaml
+   environment:
+     OUITRANSFER_UID: "1000"
+     OUITRANSFER_GID: "1000"
+   ```
+
+5. **Redémarrez avec la nouvelle configuration**
+   ```bash
+   docker compose up -d
+   ```
+
+---
+
+## Détails d'implémentation
+
+Le processus de configuration UID/GID :
+
+1. **Détection** - Les variables d'environnement sont lues au démarrage du conteneur
+2. **Mise à jour de la propriété** - Les permissions des fichiers sont ajustées pour correspondre à l'UID/GID cible
+3. **Abandon des privilèges** - L'application s'exécute avec les permissions de l'utilisateur spécifié via `su-exec`
+4. **Journalisation** - Les modifications de configuration sont enregistrées dans les journaux pour vérification
+
+Le conteneur server démarre en tant que root pour permettre la configuration UID/GID à l'exécution, puis abandonne les privilèges au profit de l'utilisateur cible via `su-exec`. Le conteneur web s'exécute sans privilèges root (utilisateur `nextjs`) par défaut, car il n'a pas besoin de la substitution UID/GID.
+
+Cette approche fournit une gestion automatique des permissions sans création d'utilisateur ni modification du système.
+
+---
+
+## Configuration au moment de la construction
+
+Pour les images de base personnalisées avec des valeurs par défaut différentes :
+
+```bash
+docker build \
+  --build-arg OUITRANSFER_UID=2000 \
+  --build-arg OUITRANSFER_GID=2000 \
+  -t ouitransfer:custom .
+```
+
+Les variables d'environnement à l'exécution remplacent les valeurs par défaut définies à la construction.
+
+---
+
+## Avantages
+
+- **Zéro configuration** - Fonctionne automatiquement lorsque les variables d'environnement sont définies
+- **Compatibilité universelle** - Prend en charge toute combinaison UID/GID valide
+- **Optimisé pour les NAS** - Testé avec les principales plateformes NAS
+- **Rétrocompatible** - Les déploiements existants continuent de fonctionner sans modification
+- **Performant** - Implémentation légère utilisant `su-exec`
+
+## Résumé
+
+Pour la plupart des utilisateurs rencontrant des problèmes de permissions avec les montages liés :
+
+1. **Trouvez votre UID/GID** : Exécutez la commande `id`
+2. **Ajoutez dans docker-compose.yaml** (service server) :
+   ```yaml
+   environment:
+     OUITRANSFER_UID: "1000"
+     OUITRANSFER_GID: "1000"
+   ```
+3. **Redémarrez** : `docker compose down && docker compose up -d`
+
+Cela garantit la compatibilité entre l'UID/GID d'OUITRANSFER et la propriété des fichiers sur votre système hôte.

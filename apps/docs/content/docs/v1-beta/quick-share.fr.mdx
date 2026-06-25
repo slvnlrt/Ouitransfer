@@ -1,0 +1,76 @@
+---
+title: Partage rapide
+icon: Share2
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+Le partage rapide est le moyen le plus rapide de partager des fichiers depuis le tableau de bord. Déposez vos fichiers, définissez les options, et obtenez un lien partageable sans quitter la page principale.
+
+Pour l'ensemble complet des options de partage (identification des visiteurs, notifications par partage, suivi de l'activité), consultez la page [Partages](/docs/v1-beta/shares). Le partage rapide crée un partage classique avec une interface simplifiée.
+
+## Fonctionnement
+
+Le widget de partage rapide se trouve en haut du tableau de bord et vous guide en trois étapes.
+
+<Steps>
+<Step>
+
+### Déposer vos fichiers
+
+Glissez-déposez des fichiers sur le widget, ou cliquez n'importe où dessus pour ouvrir un sélecteur de fichiers. Vous pouvez déposer plusieurs fichiers à la fois. Les téléversements démarrent immédiatement.
+
+</Step>
+<Step>
+
+### Configurer le partage
+
+Pendant que les fichiers sont téléversés, configurez les options du partage :
+
+| Option | Défaut | Description |
+|---|---|---|
+| **Nom** | Nom du fichier (1 fichier) ou « N fichiers » | Libellé en texte libre pour le partage |
+| **Expire dans** | 7 jours | 1 jour, 7 jours, 30 jours, ou Jamais |
+| **Protection par mot de passe** | Désactivée | Exiger un mot de passe pour accéder au partage |
+| **Destinataires** | Aucun | Adresses e-mail à notifier lorsque le partage est prêt (nécessite SMTP) |
+
+Le nom est prérempli automatiquement et se met à jour si vous ajoutez d'autres fichiers, tant que vous ne l'avez pas modifié manuellement.
+
+</Step>
+<Step>
+
+### Partager
+
+Cliquez sur **Partager**. Si des téléversements sont encore en cours, le partage est créé automatiquement dès qu'ils sont terminés ; inutile d'attendre et de cliquer à nouveau.
+
+Vous obtenez un QR code et un lien partageable. Copiez le lien ou téléchargez le QR code au format PNG.
+
+</Step>
+</Steps>
+
+## Ajouter d'autres fichiers
+
+Vous pouvez ajouter d'autres fichiers après le dépôt initial, soit en cliquant sur **Ajouter d'autres fichiers** dans l'en-tête, soit en faisant glisser des fichiers supplémentaires sur la carte de téléversement. Le champ du nom se met à jour automatiquement (sauf si vous l'avez modifié manuellement).
+
+<Callout type="info">
+  Si vous supprimez tous les fichiers de la liste, le widget revient à l'état initial de la zone de dépôt.
+</Callout>
+
+## Destinataires
+
+Le champ **Destinataires** n'est affiché que lorsque [SMTP est configuré](/docs/v1-beta/configuring-smtp). Ajoutez des adresses e-mail en saisissant une adresse et en appuyant sur **Entrée**. Supprimez une adresse en cliquant sur le × de son étiquette.
+
+Lors de la création du partage, Ouitransfer envoie un e-mail d'invitation à chaque destinataire avec un lien personnalisé. Cela se fait automatiquement : il n'y a pas d'étape d'envoi séparée. Le lien de chaque destinataire contient un jeton de suivi qui vous permet de voir qui a accédé au partage. Consultez [Partages : Destinataires et invitations](/docs/v1-beta/shares#recipients-and-invitations) pour plus de détails.
+
+
+
+## Erreurs
+
+Si un fichier échoue au téléversement, un bouton de réessai apparaît à côté de celui-ci. Résolvez le problème et réessayez avant de cliquer sur **Partager** ; le partage n'inclura que les fichiers téléversés avec succès.
+
+Si tous les fichiers échouent, le bouton **Partager** est désactivé jusqu'à ce qu'au moins un fichier soit téléversé avec succès.
+
+## Recommencer
+
+Cliquez sur **Nouveau partage** sur l'écran de confirmation pour réinitialiser le widget et partager un autre lot de fichiers.

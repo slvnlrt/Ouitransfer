@@ -1,0 +1,369 @@
+---
+title: Kinde Auth
+icon: Users
+---
+
+import { ZoomableImage } from "@/components/ui/zoomable-image";
+
+Kinde Auth est l'un des fournisseurs OIDC officiellement pris en charge par OUITRANSFER, offrant une authentification moderne via la plateforme d'identité Kinde, orientée développeurs. Cette intégration permet aux utilisateurs de se connecter à OUITRANSFER grâce au système d'authentification complet de Kinde, ce qui en fait une solution idéale pour les développeurs, les startups et les organisations ayant besoin d'une solution d'authentification moderne et évolutive avec une excellente expérience développeur.
+
+<ZoomableImage src="/assets/v1/oidc/kinde/sign-in-with-kinde.png" alt="Connexion avec Kinde" />
+
+## Pourquoi utiliser l'authentification Kinde Auth ?
+
+L'authentification Kinde Auth présente plusieurs avantages pour les applications modernes et les équipes de développement :
+
+- **Expérience orientée développeurs** - API claires, SDK complets et documentation excellente
+- **Authentification moderne** - Conçue selon les standards et bonnes pratiques du Web moderne
+- **Infrastructure évolutive** - Fiabilité de niveau entreprise avec une tarification adaptée aux startups
+- **Conformité intégrée** - Conformité native avec le RGPD, SOC 2 et d'autres standards
+- **Fonctionnalités avancées** - Authentification multifacteur, connexions sociales et personnalisation de marque
+
+---
+
+## Prérequis
+
+Avant de configurer l'authentification Kinde Auth, assurez-vous de disposer des éléments suivants :
+
+- **Compte Kinde** - Capacité à créer des applications et à gérer des tenants
+- **Privilèges administrateur dans OUITRANSFER** - Nécessaires pour configurer les paramètres OIDC
+- **Configuration du domaine** - Pour les déploiements en production avec des domaines personnalisés
+
+> **Remarque :** Kinde Auth est préconfiguré comme fournisseur officiel dans OUITRANSFER, ce qui signifie que la configuration technique est gérée automatiquement. Vous n'avez qu'à fournir vos identifiants OAuth.
+
+---
+
+## Configuration de l'application Kinde Auth
+
+### Création d'une application Kinde
+
+Pour démarrer avec l'authentification Kinde Auth, vous devez créer une application dans votre tableau de bord Kinde.
+
+1. **Accédez au tableau de bord Kinde** : Rendez-vous sur [your-tenant.kinde.com/admin](https://your-tenant.kinde.com/admin)
+
+<ZoomableImage src="/assets/v1/oidc/kinde/kinde-dashboard.png" alt="Tableau de bord Kinde" />
+
+2. **Créer une nouvelle application** : Cliquez sur le bouton **"Add application"** au centre de la page.
+
+3. **Sélectionner le type d'application** : Choisissez **"Back-end web"** pour les instances OUITRANSFER basées sur le Web
+
+4. **Saisir les détails de l'application** :
+   - **Name** : Saisissez un nom descriptif tel que "OUITRANSFER File Sharing"
+
+<ZoomableImage src="/assets/v1/oidc/kinde/application-type.png" alt="Sélection du type d'application Kinde" />
+
+5. **Créer l'application** : Cliquez sur **"Save"** pour générer votre application Kinde
+
+### Configuration des paramètres de l'application
+
+Après avoir créé votre application, vous serez redirigé vers la page de l'application.
+
+<ZoomableImage src="/assets/v1/oidc/kinde/application-page.png" alt="Page de l'application Kinde" />
+
+Cliquez sur l'onglet **"Details"** dans la barre latérale pour configurer les paramètres de l'application et récupérer les identifiants OAuth.
+
+<ZoomableImage
+  src="/assets/v1/oidc/kinde/application-details.png"
+  alt="Détails de l'application Kinde"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+### Récupération des identifiants OAuth
+
+Vous allez maintenant obtenir les identifiants qu'OUITRANSFER utilisera pour s'authentifier auprès de Kinde.
+
+1. **Copier le domaine** : Notez votre domaine Kinde (ex. : `your-tenant.kinde.com`)
+
+2. **Copier le Client ID** : Le Client ID est affiché dans le champ **"Client ID"**
+
+3. **Copier le Client Secret** : Le Client Secret est affiché dans le champ **"Client secret"**
+
+<ZoomableImage
+  src="/assets/v1/oidc/kinde/oauth-credentials.png"
+  alt="Identifiants OAuth Kinde"
+  legend="Le Client ID et le Client Secret affichés dans l'image sont donnés à titre d'exemple uniquement (identifiants fictifs). Vous devez utiliser vos propres identifiants Kinde."
+/>
+
+4. **Enregistrer les identifiants** : Copiez le **domaine**, le **Client ID** et le **Client Secret** pour une utilisation ultérieure
+
+> **Remarque :** Pour l'instant, vous n'avez besoin que de cette configuration ; vous pourrez revenir ici plus tard pour personnaliser l'application à votre convenance.
+
+###**Configurer les URLs de l'application** :
+
+Vous devez configurer plusieurs URLs dans les paramètres de votre application Kinde. Voici ce qu'il faut ajouter pour chaque environnement :
+
+#### URLs de rappel autorisées
+
+| Environnement     | URL                                                             |
+| ----------------- | --------------------------------------------------------------- |
+| Production        | `https://yourdomain.com/api/auth/providers/kinde/callback`      |
+| Développement     | `http://localhost:3000/api/auth/providers/kinde/callback`       |
+| Port personnalisé | `https://yourdomain.com:5487/api/auth/providers/kinde/callback` |
+
+#### URI de la page d'accueil de l'application
+
+| Environnement     | URL                           |
+| ----------------- | ----------------------------- |
+| Production        | `https://yourdomain.com`      |
+| Développement     | `http://localhost:3000`       |
+| Port personnalisé | `https://yourdomain.com:5487` |
+
+#### URI de connexion de l'application
+
+| Environnement     | URL                                 |
+| ----------------- | ----------------------------------- |
+| Production        | `https://yourdomain.com/login`      |
+| Développement     | `http://localhost:3000/login`       |
+| Port personnalisé | `https://yourdomain.com:5487/login` |
+
+#### URLs de déconnexion autorisées
+
+| Environnement     | URL                           |
+| ----------------- | ----------------------------- |
+| Production        | `https://yourdomain.com`      |
+| Développement     | `http://localhost:3000`       |
+| Port personnalisé | `https://yourdomain.com:5487` |
+
+> **Remarque :** Remplacez `yourdomain.com` par votre nom de domaine réel dans toutes les URLs de production et de port personnalisé.
+> **Remarque :** Vous pouvez ajouter plusieurs URI de redirection pour différents environnements (développement, recette, production).
+
+<ZoomableImage
+  src="/assets/v1/oidc/kinde/config-urls.png"
+  alt="Configuration des URLs de l'application Kinde"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+2. **Enregistrer les modifications** : Cliquez sur **"Save"** en haut à droite pour appliquer votre configuration
+
+---
+
+## Configuration d'OUITRANSFER
+
+### Accès aux paramètres OIDC
+
+Pour configurer l'authentification Kinde Auth dans OUITRANSFER, vous devez disposer d'un accès administrateur au panneau de paramètres.
+
+1. **Connexion en tant qu'administrateur** : Connectez-vous à OUITRANSFER avec un compte administrateur
+
+2. **Accéder aux paramètres** : Cliquez sur votre photo de profil dans l'en-tête et sélectionnez **Settings**
+
+3. **Accéder à l'authentification** : Recherchez et cliquez sur la section de configuration **Authentication Providers**
+
+<ZoomableImage src="/assets/v1/oidc/auth-providers.png" alt="Fournisseurs d'authentification OUITRANSFER" />
+
+### Activation du fournisseur Kinde Auth
+
+Kinde Auth est préconfiguré comme fournisseur officiel, ce qui simplifie le processus de configuration.
+
+1. **Localiser le fournisseur Kinde Auth** : Trouvez Kinde Auth dans la liste des fournisseurs disponibles
+
+2. **Activer le fournisseur** : Basculez le statut sur **Enabled**
+
+<ZoomableImage src="/assets/v1/oidc/kinde/enabled-kinde.png" alt="Fournisseur Kinde Auth activé dans OUITRANSFER" />
+
+Après avoir activé le fournisseur, cliquez sur l'icône de crayon pour le configurer.
+
+3. **Configurer les identifiants** :
+   - **Provider URL** : Collez votre domaine Kinde (ex. : `https://your-tenant.kinde.com`)
+   - **Client ID** : Collez le Client ID de l'application Kinde
+   - **Client Secret** : Collez le Client Secret de l'application Kinde
+   - **Scopes** : Ajoutez les scopes que vous souhaitez utiliser. Les scopes par défaut sont `openid`, `profile` et `email`. Vous n'avez pas besoin de les modifier si vous n'êtes pas certain de ce que vous faites.
+
+<ZoomableImage
+  src="/assets/v1/oidc/kinde/edit-kinde.png"
+  alt="Modifier le fournisseur Kinde Auth"
+  legend="Il s'agit d'une application fictive, vous devez utiliser la vôtre."
+/>
+
+### Options de configuration avancées
+
+Configurez des paramètres supplémentaires pour personnaliser le comportement de l'authentification :
+
+**Auto Registration** : Activez cette option pour créer automatiquement des comptes utilisateurs lors de la première authentification.
+
+**Sort Order** : Contrôlez la position du bouton de connexion Kinde Auth par rapport aux autres fournisseurs d'authentification.
+
+**Icon** : vous pouvez choisir l'icône à utiliser pour le bouton de connexion Kinde Auth (par défaut : `FaKey`).
+
+<ZoomableImage src="/assets/v1/oidc/kinde/kinde-icon.png" alt="Icône Kinde Auth" />
+
+> **Conseil développeur :** L'authentification Kinde Auth convient parfaitement aux applications modernes nécessitant une excellente expérience développeur et une infrastructure d'authentification évolutive.
+
+---
+
+## Liaison de comptes
+
+Par défaut, si un utilisateur est déjà inscrit dans OUITRANSFER avec son adresse e-mail Kinde Auth, il sera automatiquement lié à son compte OUITRANSFER.
+
+> **Remarque :** Vous ne pouvez pas désactiver la liaison de comptes. Si vous souhaitez dissocier un utilisateur de son compte Kinde Auth, vous devez le supprimer d'OUITRANSFER.
+
+---
+
+## Configuration technique
+
+La configuration technique de Kinde Auth est gérée automatiquement, mais comprendre la mise en place peut aider au dépannage :
+
+```yaml
+Provider Type: OAuth 2.0 with OIDC Discovery
+Issuer URL: https://your-tenant.kinde.com
+Authorization Endpoint: /oauth2/auth
+Token Endpoint: /oauth2/token
+UserInfo Endpoint: /oauth2/user_profile
+Scopes: openid profile email
+```
+
+### Correspondances de champs
+
+OUITRANSFER mappe automatiquement les informations utilisateur Kinde Auth vers les comptes utilisateurs locaux :
+
+- **User ID** : Provient du champ `id` de Kinde
+- **Email** : Provient du champ `preferred_email` de Kinde
+- **Full Name** : Provient des champs `first_name` et `last_name` de Kinde
+- **First Name** : Provient du champ `first_name` de Kinde
+- **Last Name** : Provient du champ `last_name` de Kinde
+- **Avatar** : Provient du champ `picture` de Kinde
+- **Username** : Provient du champ `preferred_username` de Kinde
+
+### Fonctionnalités spécifiques à Kinde Auth
+
+- **Custom Claims** : Peuvent inclure des métadonnées utilisateur personnalisées et des métadonnées d'application
+- **Social Logins** : Prend en charge l'intégration avec divers fournisseurs sociaux
+- **Multi-factor Authentication** : Prend en charge les fonctionnalités MFA de Kinde
+- **Modern APIs** : API REST claires et SDK complets
+- **Developer Tools** : Documentation excellente et expérience développeur de qualité
+
+---
+
+## Test de la configuration
+
+### Vérification de la configuration
+
+Après avoir configuré l'authentification Kinde Auth, testez l'intégration pour vous assurer que tout fonctionne correctement.
+
+1. **Vérifier la page de connexion** : Accédez à la page de connexion OUITRANSFER et vérifiez que le bouton "Sign in with Kinde" apparaît
+
+2. **Tester le flux d'authentification** : Cliquez sur le bouton de connexion Kinde Auth et terminez le processus d'authentification
+
+3. **Vérifier la création de l'utilisateur** : Confirmez qu'un nouveau compte utilisateur est créé (si l'inscription automatique est activée)
+
+### Vérification du flux de connexion
+
+Le processus d'authentification complet doit fonctionner comme suit :
+
+1. **L'utilisateur clique sur "Sign in with Kinde"** : Le navigateur est redirigé vers la page d'autorisation de Kinde
+2. **L'utilisateur s'authentifie** : L'utilisateur termine l'authentification via Kinde (connexion, MFA, etc.)
+3. **Kinde redirige vers OUITRANSFER** : L'utilisateur revient sur OUITRANSFER avec les jetons d'authentification
+4. **OUITRANSFER crée ou met à jour l'utilisateur** : Le compte utilisateur est géré automatiquement avec les informations Kinde
+5. **L'utilisateur accède à OUITRANSFER** : L'utilisateur est connecté avec son identité Kinde
+
+---
+
+## Résolution des problèmes courants
+
+### Erreur de non-concordance de l'URI de redirection
+
+**Message d'erreur** : `invalid_redirect_uri`
+
+**Cause** : L'URI de redirection de votre requête ne correspond pas à celle configurée dans l'application Kinde.
+
+**Solution** :
+
+1. Vérifiez l'URL exacte dans le message d'erreur
+2. Ajoutez cette URL exacte aux URI de redirection de votre application Kinde
+3. Assurez-vous d'inclure le bon protocole (http/https) et le bon port
+4. Supprimez les barres obliques finales sauf si elles font partie de l'URL de rappel
+
+### Erreur d'accès refusé
+
+**Message d'erreur** : `access_denied`
+
+**Cause** : L'utilisateur a refusé les autorisations ou l'application n'est pas correctement configurée.
+
+**Solution** :
+
+1. Vérifiez que votre application Kinde demande les scopes corrects
+2. Assurez-vous que les utilisateurs accordent les autorisations pendant le flux d'autorisation
+3. Vérifiez que votre application n'est pas restreinte ou désactivée
+4. Vérifiez que l'application dispose des autorisations appropriées
+
+### Erreur de client non valide
+
+**Message d'erreur** : `invalid_client`
+
+**Cause** : Client ID, Client Secret ou domaine incorrect.
+
+**Solution** :
+
+1. Vérifiez que vous avez copié correctement les identifiants depuis Kinde
+2. Assurez-vous qu'il n'y a pas d'espaces ou de caractères supplémentaires dans les identifiants
+3. Vérifiez que vous utilisez le bon format de domaine (ex. : `your-tenant.kinde.com`)
+4. Générez un nouveau Client Secret si nécessaire
+
+### Problèmes de configuration de domaine
+
+**Message d'erreur** : Domaine introuvable ou non valide
+
+**Cause** : Domaine Kinde incorrect ou configuration du tenant erronée.
+
+**Solution** :
+
+1. Vérifiez que votre domaine Kinde est correct (ex. : `your-tenant.kinde.com`)
+2. Assurez-vous que votre tenant Kinde est actif et non suspendu
+3. Vérifiez que vous utilisez la bonne région pour votre tenant
+4. Vérifiez la résolution DNS de votre domaine Kinde
+
+### Claims personnalisés indisponibles
+
+**Cause** : Les claims personnalisés ne sont pas correctement configurés dans Kinde.
+
+**Solution** :
+
+1. Vérifiez la configuration des claims personnalisés dans Kinde
+2. Vérifiez que les claims personnalisés sont inclus dans le jeton ID
+3. Assurez-vous que les claims sont correctement formatés et accessibles
+4. Testez avec un utilisateur possédant les claims personnalisés attendus
+
+---
+
+## Bonnes pratiques de sécurité
+
+### Gestion des identifiants
+
+- **Ne jamais exposer les secrets** : Gardez votre Client Secret sécurisé et ne le committez jamais dans un système de gestion de version
+- **Rotation régulière des identifiants** : Générez régulièrement de nouveaux Client Secrets pour renforcer la sécurité
+- **Utiliser des variables d'environnement** : Stockez les configurations sensibles dans des variables d'environnement, pas dans des fichiers de configuration
+- **Surveiller les journaux d'accès** : Examinez régulièrement les journaux d'authentification pour détecter toute activité suspecte
+
+### Gestion des scopes et des autorisations
+
+- **Scopes minimaux** : Demandez uniquement les scopes `openid`, `profile` et `email` requis par OUITRANSFER
+- **Consentement des utilisateurs** : Assurez-vous que les utilisateurs comprennent les autorisations qu'ils accordent
+- **Audits réguliers** : Examinez quels utilisateurs ont connecté leurs comptes Kinde Auth
+- **Revues d'accès** : Vérifiez périodiquement les accès des utilisateurs et supprimez les comptes inactifs
+
+### Considérations pour la production
+
+- **Utiliser HTTPS** : Utilisez toujours HTTPS dans les environnements de production
+- **Configurer les bons domaines** : Utilisez les domaines de production dans les paramètres de l'application Kinde
+- **Tester minutieusement** : Vérifiez le flux d'authentification complet avant la mise en production
+- **Prévoir les pannes** : Disposez de méthodes d'authentification de secours
+
+---
+
+## Prochaines étapes
+
+Avec l'authentification Kinde Auth configurée, vous pourriez souhaiter :
+
+- **Configurer des fournisseurs supplémentaires** : Mettre en place d'autres fournisseurs OIDC pour plus d'options d'authentification
+- **Personnaliser la gestion des utilisateurs** : Affiner les règles d'inscription automatique et d'attribution des droits administrateur
+- **Vérifier les paramètres de sécurité** : S'assurer que votre configuration d'authentification répond à vos exigences de sécurité
+- **Surveiller l'utilisation** : Suivre les schémas d'authentification et l'activité des utilisateurs
+
+Pour plus d'informations sur l'authentification OIDC dans OUITRANSFER, consultez la [vue d'ensemble de l'authentification OIDC](/docs/v1-beta/oidc-authentication).
+
+## Ressources utiles
+
+- [Documentation Kinde](https://kinde.com/docs)
+- [Guide OAuth 2.0 Kinde](https://kinde.com/docs/developer-tools/oauth2)
+- [OpenID Connect Kinde](https://kinde.com/docs/developer-tools/openid-connect)
+- [Tableau de bord Kinde](https://app.kinde.com)

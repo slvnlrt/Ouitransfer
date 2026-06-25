@@ -1,0 +1,3004 @@
+{
+  "a11y": {
+    "skipToContent": "Vai al contenuto"
+  },
+  "auth": {
+    "errors": {
+      "account_inactive": "Account inattivo. Contatta l'amministratore.",
+      "registration_disabled": "Registrazione tramite SSO disabilitata.",
+      "token_expired": "Token scaduto. Riprova.",
+      "config_error": "Errore di configurazione. Contatta il supporto.",
+      "auth_failed": "Autenticazione fallita. Riprova."
+    },
+    "authenticationFailed": "Autenticazione fallita",
+    "successfullyAuthenticated": "Autenticazione completata con successo!",
+    "sessionExpired": "La sessione è scaduta. Effettua di nuovo l'accesso.",
+    "callback": {
+      "errors": {
+        "oauth_error": "Autenticazione OAuth non riuscita",
+        "missing_parameters": "Parametri di autenticazione mancanti",
+        "missing_code": "Codice di autorizzazione mancante",
+        "registration_disabled": "La registrazione è disabilitata per questo provider",
+        "provider_disabled": "Questo provider di autenticazione è disabilitato",
+        "state_expired": "Sessione di autenticazione scaduta",
+        "account_inactive": "Il tuo account è inattivo",
+        "no_email": "Nessun indirizzo e-mail trovato nel tuo account",
+        "token_exchange_failed": "Autenticazione con il provider non riuscita",
+        "missing_user_info": "Informazioni utente incomplete dal provider"
+      }
+    }
+  },
+  "authProviders": {
+    "title": "Provider di Autenticazione",
+    "description": "Configura provider di autenticazione esterni per SSO",
+    "enabledCount": "{count} abilitati",
+    "loadingProviders": "Caricamento provider...",
+    "providersConfigured": "{count} provider configurati",
+    "enabledOfTotal": "{enabled} abilitati su {total} provider",
+    "hideDisabledProviders": "Nascondi provider disabilitati",
+    "addProvider": "Aggiungi Provider",
+    "addProviderTitle": "Aggiungi Provider",
+    "editProvider": "Modifica Provider",
+    "deleteProvider": "Elimina Provider",
+    "enabled": "Abilitato",
+    "disabled": "Disabilitato",
+    "officialProvider": "Provider Ufficiale",
+    "dragToReorder": "Trascina per riordinare",
+    "dragDisabledMessage": "Il trascinamento è disabilitato durante il filtraggio dei provider. Mostra tutti i provider per riordinarli.",
+    "dragEnabledMessage": "Trascina i provider per riordinarli. Quest'ordine sarà riflesso nella pagina di accesso.",
+    "noProvidersEnabled": "Nessun provider di autenticazione abilitato",
+    "noProvidersConfigured": "Nessun provider di autenticazione configurato",
+    "form": {
+      "providerName": "Nome Provider",
+      "providerNamePlaceholder": "es. miazienda",
+      "displayName": "Nome Visualizzato",
+      "displayNamePlaceholder": "es. SSO Mia Azienda",
+      "type": "Tipo",
+      "typeOidc": "OIDC (OpenID Connect)",
+      "typeOauth2": "OAuth 2.0",
+      "icon": "Icona",
+      "iconPlaceholder": "Seleziona un'icona",
+      "clientId": "ID Client",
+      "clientIdPlaceholder": "Il tuo ID client OAuth",
+      "clientSecret": "Client Secret",
+      "clientSecretPlaceholder": "Il tuo client secret OAuth",
+      "oauthScopes": "Scope OAuth",
+      "scopesPlaceholder": "Inserisci gli scope (es. openid, profile, email)",
+      "scopesHelpOidc": "Scope suggeriti automaticamente in base all'URL del Provider. Scope OIDC comuni: openid, profile, email, groups",
+      "scopesHelpOauth2": "Scope suggeriti automaticamente in base all'URL del Provider. Gli scope OAuth2 comuni dipendono dal provider",
+      "providerUrl": "URL Provider",
+      "providerUrlPlaceholder": "https://auth.esempio.com",
+      "providerUrlAutoPlaceholder": "https://tuo-provider.com (gli endpoint saranno rilevati automaticamente)",
+      "providerUrlManualPlaceholder": "https://tuo-provider.com",
+      "autoDiscoveryHelp": "Il sistema rileverà automaticamente gli endpoint di autorizzazione, token e userinfo",
+      "manualConfigurationHelp": "URL base del tuo provider (gli endpoint saranno relativi a questo)",
+      "authorizationEndpoint": "Endpoint di Autorizzazione",
+      "authorizationEndpointPlaceholder": "https://auth.esempio.com/auth",
+      "tokenEndpoint": "Endpoint Token",
+      "tokenEndpointPlaceholder": "https://auth.esempio.com/token",
+      "userInfoEndpoint": "Endpoint Info Utente",
+      "userInfoEndpointPlaceholder": "https://auth.esempio.com/userinfo",
+      "configurationMethod": "Metodo di Configurazione",
+      "autoDiscovery": "Rilevamento Automatico",
+      "autoDiscoveryDescription": "Rileva automaticamente gli endpoint dall'URL del Provider",
+      "manualEndpoints": "Endpoint Manuali (Consigliato)",
+      "manualEndpointsDescription": "Configura manualmente gli endpoint di autorizzazione, token e info utente",
+      "callbackUrl": "URL di Callback",
+      "callbackUrlDescription": "Usa questo URL nella configurazione del tuo provider OAuth",
+      "copyCallbackUrl": "Copia URL di Callback",
+      "callbackUrlCopied": "URL di Callback copiato negli appunti!",
+      "adminEmailDomains": "Domini Email Admin",
+      "adminEmailDomainsPlaceholder": "Inserisci domini (es. admin.azienda.com)",
+      "adminEmailDomainsHelp": "Gli utenti con email da questi domini riceveranno privilegi di amministratore",
+      "autoRegister": "Registra automaticamente nuovi utenti",
+      "officialProviderUrlPlaceholder": "Sostituisci il segnaposto con il tuo URL {displayName}",
+      "officialProviderHelp": "Questo è un provider ufficiale. Gli endpoint sono pre-configurati. Puoi modificare solo questo URL.",
+      "officialProviderIconHelp": "Puoi personalizzare l'icona per questo provider ufficiale."
+    },
+    "buttons": {
+      "cancel": "Annulla",
+      "save": "Salva",
+      "saving": "Salvataggio...",
+      "adding": "Aggiunta...",
+      "updating": "Aggiornamento...",
+      "saveProvider": "Salva Provider",
+      "delete": "Elimina",
+      "deleting": "Eliminazione...",
+      "edit": "Modifica",
+      "enable": "Abilita",
+      "disable": "Disabilita"
+    },
+    "messages": {
+      "providerAdded": "Provider aggiunto con successo",
+      "providerUpdated": "Provider aggiornato con successo",
+      "providerDeleted": "Provider eliminato con successo",
+      "providerOrderUpdated": "Ordine dei provider aggiornato con successo",
+      "fillRequiredFields": "Compila tutti i campi obbligatori (nome, nome visualizzato, ID client, client secret)",
+      "provideUrlOrEndpoints": "Fornisci un URL Provider per il rilevamento automatico OPPURE tutti e tre gli endpoint personalizzati",
+      "chooseDiscoveryOrManual": "Scegli il rilevamento automatico (URL Provider) O gli endpoint manuali, non entrambi",
+      "loadFailed": "Caricamento dei provider fallito",
+      "addFailed": "Aggiunta del provider fallita",
+      "updateFailed": "Aggiornamento del provider fallito",
+      "deleteFailed": "Eliminazione del provider fallita",
+      "orderUpdateFailed": "Aggiornamento dell'ordine dei provider fallito"
+    },
+    "info": {
+      "title": "Informazioni",
+      "officialProvidersRecommended": "Per una migliore funzionalità, considera l'uso di provider ufficiali. Se hai problemi con un provider personalizzato, considera di aprire una segnalazione su",
+      "github": "GitHub",
+      "officialProvider": "Provider Ufficiale",
+      "officialProviderDescription": "Questo provider è ottimizzato da OUITRANSFER. Possono essere modificate solo le credenziali e la configurazione.",
+      "manualConfigTitle": "Configurazione Manuale",
+      "manualConfigDescription": "Stai fornendo tutti gli endpoint manualmente. Assicurati che siano corretti per il tuo provider."
+    },
+    "deleteModal": {
+      "title": "Elimina Provider di Autenticazione",
+      "confirmMessage": "Sei sicuro di voler eliminare il provider \"{displayName}\"? Questa azione non può essere annullata.",
+      "providerId": "ID Provider: {name}",
+      "cancel": "Annulla",
+      "delete": "Elimina Provider",
+      "deleting": "Eliminazione..."
+    }
+  },
+  "bulkDownload": {
+    "title": "Download di Massa",
+    "zipNameLabel": "Nome file ZIP",
+    "zipNamePlaceholder": "Inserisci nome file",
+    "description": "{count, plural, =1 {1 file sarà compresso} other {# file saranno compressi}}",
+    "download": "Scarica ZIP"
+  },
+  "common": {
+    "loading": "Caricamento, attendere prego...",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "delete": "Elimina",
+    "close": "Chiudi",
+    "download": "Scarica",
+    "unexpectedError": "Si è verificato un errore inaspettato. Si prega di riprovare.",
+    "yes": "Sì",
+    "no": "No",
+    "dashboard": "Dashboard",
+    "back": "Indietro",
+    "updating": "Aggiornamento...",
+    "saving": "Salvataggio...",
+    "update": "Aggiorna",
+    "clickToActivate": "Clicca per attivare",
+    "clickToDeactivate": "Clicca per disattivare",
+    "creating": "Creazione in corso...",
+    "loadingSimple": "Caricamento...",
+    "create": "Crea",
+    "deleting": "Eliminazione...",
+    "move": "Sposta",
+    "rename": "Rinomina",
+    "search": "Cerca",
+    "share": "Condividi",
+    "copied": "Copiato",
+    "copy": "Copia",
+    "retry": "Retry",
+    "unavailable": "non disponibile",
+    "days": "giorni",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    },
+    "moving": "Spostamento…"
+  },
+  "createShare": {
+    "title": "Crea Condivisione",
+    "nameLabel": "Nome Condivisione",
+    "descriptionLabel": "Descrizione",
+    "descriptionPlaceholder": "Inserisci una descrizione (opzionale)",
+    "expirationLabel": "Data di Scadenza",
+    "expirationPlaceholder": "DD/MM/AAAA HH:MM",
+    "maxViewsLabel": "Visualizzazioni Massime",
+    "maxViewsPlaceholder": "Lascia vuoto per illimitato",
+    "passwordProtection": "Protetto da Password",
+    "passwordLabel": "Password",
+    "create": "Crea Condivisione",
+    "success": "Condivisione creata con successo",
+    "error": "Errore nella creazione della condivisione",
+    "namePlaceholder": "Inserisci un nome per la tua condivisione",
+    "nextSelectFiles": "Avanti: Seleziona file",
+    "searchLabel": "Cerca",
+    "tabs": {
+      "shareDetails": "Dettagli condivisione",
+      "selectFiles": "Seleziona file",
+      "shareLink": "Link di condivisione"
+    },
+    "errors": {
+      "nameRequired": "Il nome della condivisione è obbligatorio"
+    },
+    "itemsSelected": "{count, plural, =0 {Nessun elemento selezionato} =1 {1 elemento selezionato} other {# elementi selezionati}}",
+    "passwordPlaceholder": "Inserisci password",
+    "privacySection": "Privacy e notifiche",
+    "nameFieldRequired": "Richiedere il nome del visitatore",
+    "emailFieldRequired": "Richiedere l'email del visitatore",
+    "notifyOnDownload": "Notificami ad ogni download",
+    "notifyOnDownloadHelp": "Quando abilitato, riceverete notifiche via email quando i file vengono scaricati da questa condivisione, indipendentemente dalle preferenze di notifica globali.",
+    "inactivityAlertDays": "Avvisare se nessun download dopo",
+    "inactivityAlertPlaceholder": "Lasciare vuoto per disabilitare",
+    "fieldHidden": "Nascosto",
+    "fieldOptional": "Facoltativo",
+    "fieldRequired": "Obbligatorio",
+    "filesOptionalHint": "L'aggiunta di file è facoltativa, è possibile creare una condivisione vuota ora e aggiungere file in seguito.",
+    "nextGenerateLink": "Avanti: link",
+    "linkStepDescription": "Genera un link personalizzato per rendere accessibile questa condivisione, oppure salta questo passaggio e aggiungilo in seguito.",
+    "nameFieldRequiredHelp": "Indica se al visitatore viene chiesto il nome all'apertura della condivisione.",
+    "emailFieldRequiredHelp": "Indica se al visitatore viene chiesta l'email all'apertura della condivisione."
+  },
+  "customization": {
+    "breadcrumb": "Personalizzazione",
+    "colors": {
+      "title": "Colori del Tema",
+      "description": "Scegli il tuo colore primario preferito per il tema",
+      "presets": "Colori Disponibili",
+      "presetsDescription": "Seleziona tra i temi colore disponibili",
+      "reset": "Ripristina Predefinito"
+    },
+    "fonts": {
+      "title": "Tipografia",
+      "description": "Scegli la tua famiglia di caratteri preferita",
+      "available": "Caratteri Disponibili",
+      "availableDescription": "Seleziona tra le famiglie di caratteri disponibili",
+      "reset": "Ripristina Predefinito"
+    },
+    "radius": {
+      "title": "Raggio dei Bordi",
+      "description": "Personalizza la rotondità degli elementi dell'interfaccia",
+      "available": "Opzioni di Rotondità",
+      "availableDescription": "Scegli come dovrebbero apparire gli angoli arrotondati",
+      "reset": "Ripristina Predefinito"
+    },
+    "background": {
+      "title": "Colori di Sfondo",
+      "description": "Personalizza i colori di sfondo per le modalità chiara e scura",
+      "lightMode": "Modalità Chiara",
+      "darkMode": "Modalità Scura",
+      "availableDescription": "Scegli i colori di sfondo per entrambi i temi chiari e scuri",
+      "reset": "Ripristina Predefinito"
+    },
+    "theme": {
+      "title": "Modalità Tema",
+      "description": "Scegli tra tema chiaro, scuro o di sistema",
+      "selectTheme": "Preferenza Tema",
+      "availableDescription": "Seleziona la tua modalità tema preferita",
+      "reset": "Ripristina Sistema"
+    },
+    "pageTitle": "Personalizzazione"
+  },
+  "dashboard": {
+    "loadError": "Errore durante il caricamento dei dati del pannello di controllo",
+    "linkCopied": "Link copiato negli appunti",
+    "pageTitle": "Pannello di controllo",
+    "breadcrumb": "Pannello di controllo",
+    "recentFiles": {
+      "description": "I tuoi file caricati più di recente",
+      "title": "File Recenti"
+    },
+    "systemStatus": {
+      "title": "Stato del sistema",
+      "refresh": "Aggiorna",
+      "status": {
+        "healthy": "Operativo",
+        "degraded": "Degradato",
+        "unhealthy": "Non disponibile"
+      },
+      "checks": {
+        "database": "Database",
+        "storage": "Archiviazione",
+        "ok": "OK",
+        "error": "Errore",
+        "notConfigured": "Non configurato"
+      },
+      "uptime": "Tempo di attività",
+      "diskSpace": {
+        "label": "Spazio su disco",
+        "ariaLabel": "Barra di avanzamento dell'utilizzo dello spazio su disco"
+      },
+      "quota": {
+        "label": "Quota di archiviazione",
+        "ariaLabel": "Barra di avanzamento della quota di archiviazione",
+        "notConfigured": "Quote non configurate",
+        "unlimited": "Illimitato",
+        "used": "{used} di {total} utilizzato",
+        "usedOnly": "{used} utilizzato",
+        "exceeded": {
+          "banner": "La tua quota di archiviazione è stata superata. Non puoi caricare nuovi file finché non liberi spazio eliminando file o condivisioni esistenti."
+        },
+        "warning": {
+          "banner": "Stai utilizzando il {percentage}% della tua quota di archiviazione."
+        }
+      },
+      "metrics": {
+        "users": "Utenti",
+        "files": "File",
+        "shares": "Condivisioni",
+        "reverseShares": "Condivisioni inverse",
+        "myFiles": "I miei file",
+        "activeShares": "Condivisioni attive"
+      },
+      "email": {
+        "label": "Email / Notifiche",
+        "status": {
+          "ok": "Operativo",
+          "disabled": "Non configurato",
+          "degraded": "Degradato",
+          "down": "Offline"
+        },
+        "queue": {
+          "pending": "In attesa",
+          "failed": "Falliti",
+          "sent24h": "Inviati 24h"
+        },
+        "lastError": "Ultimo errore",
+        "userDisrupted": "Notifiche interrotte",
+        "userOffline": "Notifiche offline"
+      },
+      "errors": {
+        "title": "Stato non disponibile",
+        "fetchFailed": "Impossibile recuperare lo stato del sistema. Riprova più tardi.",
+        "diskSpaceError": "Impossibile recuperare le informazioni sullo spazio su disco.",
+        "statsError": "Impossibile caricare le statistiche della piattaforma.",
+        "emailStatsError": "Impossibile caricare le statistiche delle notifiche email."
+      },
+      "collapse": "Comprimi stato del sistema",
+      "expand": "Espandi stato del sistema"
+    }
+  },
+  "deleteConfirmation": {
+    "filesToDelete": "File da eliminare",
+    "sharesToDelete": "Condivisioni che saranno eliminate",
+    "foldersToDelete": "Cartelle da eliminare",
+    "itemsToDelete": "Elementi da eliminare"
+  },
+  "downloadQueue": {
+    "downloadQueued": "Download in coda: {fileName}",
+    "queuedDescription": "Il tuo download inizierà automaticamente quando si libera uno slot",
+    "queuePosition": "Download in coda alla posizione {position}: {fileName}",
+    "estimatedWait": "Tempo di attesa stimato: {time}",
+    "queueFull": "Coda di download piena",
+    "queueFullDescription": "Riprova tra qualche minuto quando la coda avrà spazio",
+    "cancelSuccess": "Download annullato con successo",
+    "cancelError": "Impossibile annullare il download: {error}",
+    "status": {
+      "pending": "Preparazione...",
+      "queued": "In coda",
+      "downloading": "Download in corso",
+      "completed": "Completato",
+      "failed": "Fallito"
+    },
+    "waitTime": {
+      "seconds": "{seconds}s",
+      "minutes": "{minutes}m",
+      "hoursMinutes": "{hours}h {minutes}m"
+    },
+    "indicator": {
+      "title": "Download",
+      "downloads": "Coda Download",
+      "active": "Attivi",
+      "queued": "In Coda",
+      "position": "Posizione {position}",
+      "estimatedWait": "Attesa: {time}",
+      "unknownFile": "File sconosciuto",
+      "noDownloads": "Nessun download in corso",
+      "refresh": "Aggiorna Coda"
+    }
+  },
+  "emptyState": {
+    "noFiles": "Nessun file caricato ancora",
+    "uploadFile": "Carica File"
+  },
+  "errors": {
+    "invalidCredentials": "Email o password non validi",
+    "networkError": "Impossibile raggiungere il server. Controlla la tua connessione.",
+    "userNotFound": "Utente non trovato",
+    "accountLocked": "Il tuo account è stato temporaneamente bloccato a causa di troppi tentativi di accesso non riusciti. Riprova tra {minutes} minuti.",
+    "unexpectedError": "Si è verificato un errore imprevisto. Riprova",
+    "Invalid password": "Password non valida",
+    "Invalid two-factor authentication code": "Codice di autenticazione a due fattori non valido",
+    "Invalid verification code": "Codice di verifica non valido",
+    "Password verification required": "Verifica della password richiesta",
+    "Two-factor authentication is already enabled": "L'autenticazione a due fattori è già abilitata",
+    "Two-factor authentication is not enabled": "L'autenticazione a due fattori non è abilitata",
+    "Two-factor authentication required": "Autenticazione a due fattori richiesta",
+    "noUserData": "Nessun dato utente",
+    "somethingWentWrong": "Qualcosa è andato storto",
+    "tryAgain": "Riprova",
+    "goHome": "Vai alla home",
+    "pageNotFound": "Pagina non trovata",
+    "pageNotFoundMessage": "La pagina che stai cercando non esiste o è stata spostata.",
+    "shareUnavailable": "Condivisione non disponibile",
+    "shareErrorMessage": "Si è verificato un errore durante il caricamento di questa condivisione.",
+    "uploadUnavailable": "Caricamento non disponibile",
+    "uploadErrorMessage": "Si è verificato un errore durante il caricamento di questa pagina.",
+    "accessDenied": "Accesso negato",
+    "accessDeniedMessage": "Non disponi dei privilegi di amministratore per accedere a questa pagina.",
+    "errorLoadingSettings": "Errore nel caricamento delle impostazioni",
+    "refreshPage": "Aggiorna la pagina"
+  },
+  "fileActions": {
+    "editFile": "Modifica File",
+    "nameLabel": "Nome",
+    "namePlaceholder": "Inserisci nuovo nome",
+    "extension": "Estensione",
+    "descriptionLabel": "Descrizione",
+    "descriptionPlaceholder": "Inserisci descrizione del file",
+    "addDescriptionPlaceholder": "Aggiungi descrizione...",
+    "deleteFile": "Elimina File",
+    "deleteConfirmation": "Sei sicuro di voler eliminare ?",
+    "deleteWarning": "Questa azione non può essere annullata.",
+    "inSharesWarningTitle": "Questo file è incluso nelle condivisioni",
+    "inSharesWarningBody": "Questo file è incluso in {count, plural, one {# condivisione} other {# condivisioni}}. Eliminarlo lo rimuoverà da tutte le condivisioni.",
+    "deleteAnyway": "Elimina comunque",
+    "bulkInSharesWarningTitle": "Alcuni file sono inclusi nelle condivisioni",
+    "bulkInSharesWarningBody": "{count, plural, one {# file è} other {# file sono}} inclusi nelle condivisioni. L'eliminazione li rimuoverà da tutte le condivisioni."
+  },
+  "fileManager": {
+    "downloadError": "Errore durante il download del file",
+    "updateSuccess": "File aggiornato con successo",
+    "updateError": "Errore durante l'aggiornamento del file",
+    "deleteSuccess": "File eliminato con successo",
+    "deleteError": "Errore durante l'eliminazione del file"
+  },
+  "filePreview": {
+    "title": "Anteprima File",
+    "description": "Anteprima e download del file",
+    "loading": "Caricamento...",
+    "notAvailable": "Anteprima non disponibile per questo tipo di file.",
+    "downloadToView": "Utilizzare il pulsante di download per scaricare il file.",
+    "loadError": "Errore nel caricamento dell'anteprima del file.",
+    "downloadSuccess": "Download started",
+    "downloadError": "Errore nel download del file.",
+    "audioNotSupported": "Il tuo browser non supporta l'elemento audio.",
+    "videoNotSupported": "Il tuo browser non supporta l'elemento video.",
+    "pdfPreviewNotAvailable": "L'anteprima PDF non è disponibile. Prova la vista alternativa o scarica.",
+    "tryAlternativeView": "Prova Vista Alternativa",
+    "loadingAlternative": "Caricamento vista alternativa...",
+    "loadingAudio": "Caricamento audio...",
+    "downloading": "Download in corso..."
+  },
+  "fileSelector": {
+    "availableFiles": "File Disponibili ({count})",
+    "shareFiles": "File Condivisi ({count})",
+    "shareFilesDescription": "File attualmente nella condivisione",
+    "availableFilesDescription": "Seleziona i file da aggiungere alla condivisione",
+    "searchPlaceholder": "Cerca file...",
+    "searchSelectedFiles": "Cerca nei file selezionati...",
+    "noMatchingFiles": "Nessun file corrispondente",
+    "noAvailableFiles": "Nessun file disponibile",
+    "noFilesInShare": "Nessun file nella condivisione",
+    "noFilesFound": "Nessun file trovato",
+    "noFilesFoundWith": "Nessun file trovato con \"{query}\"",
+    "addFilesFromList": "Aggiungi file dalla lista sottostante",
+    "tryDifferentSearch": "Prova termini di ricerca diversi",
+    "allFilesInShare": "Tutti i file sono già nella condivisione",
+    "uploadNewFiles": "Carica nuovi file per aggiungerli",
+    "fileCount": "{count, plural, =1 {file} other {file}}",
+    "filesSelected": "{count, plural, =0 {Nessun file selezionato} =1 {1 file selezionato} other {# file selezionati}}",
+    "editFile": "Modifica file",
+    "previewFile": "Anteprima file",
+    "addToShare": "Aggiungi alla condivisione",
+    "removeFromShare": "Rimuovi dalla condivisione",
+    "saveChanges": "Salva Modifiche",
+    "editFolder": "Modifica cartella",
+    "itemsSelected": "{count, plural, =0 {Nessun elemento selezionato} =1 {1 elemento selezionato} other {# elementi selezionati}}"
+  },
+  "files": {
+    "title": "Tutti i File",
+    "uploadFile": "Carica File",
+    "loadError": "Errore nel caricamento dei file",
+    "pageTitle": "I Miei File",
+    "breadcrumb": "I Miei File",
+    "downloadStart": "Download avviato",
+    "downloadError": "Errore nel download del file",
+    "updateSuccess": "File aggiornato con successo",
+    "updateError": "Errore nell'aggiornamento del file",
+    "deleteSuccess": "File eliminato con successo",
+    "deleteError": "Errore nell'eliminazione del file",
+    "bulkDownloadSuccess": "Download dei file avviato con successo",
+    "bulkDownloadError": "Errore nella creazione del file ZIP",
+    "bulkDownloadFileError": "Errore nel download del file {fileName}",
+    "bulkDeleteSuccess": "{count, plural, =1 {1 file eliminato con successo} other {# file eliminati con successo}}",
+    "bulkDeleteError": "Errore nell'eliminazione dei file selezionati",
+    "bulkDeleteTitle": "Elimina File Selezionati",
+    "bulkDeleteConfirmation": "Sei sicuro di voler eliminare {count, plural, =1 {1 file} other {# file}}? Questa azione non può essere annullata.",
+    "viewMode": {
+      "table": "Tabella",
+      "grid": "Griglia"
+    },
+    "totalFiles": "{count, plural, =0 {Nessun file} =1 {1 file} other {# file}}",
+    "actions": {
+      "open": "Apri",
+      "rename": "Rinomina",
+      "delete": "Elimina"
+    },
+    "empty": {
+      "title": "Ancora nessun file o cartella",
+      "description": "Carica il tuo primo file o crea una cartella per iniziare"
+    },
+    "files": "file",
+    "folders": "cartelle",
+    "errors": {
+      "moveItemsFailed": "Impossibile spostare gli elementi. Riprova.",
+      "cannotMoveHere": "Impossibile spostare gli elementi in questa posizione"
+    },
+    "openFolder": "Apri cartella",
+    "drag": {
+      "folderMoved": "Cartella «{name}» spostata in «{target}»",
+      "fileMoved": "File «{name}» spostato in «{target}»",
+      "itemsMoved": "{count} elementi spostati in «{target}»",
+      "folderMovedToRoot": "Cartella «{name}» spostata nella cartella radice",
+      "fileMovedToRoot": "File «{name}» spostato nella cartella radice",
+      "itemsMovedToRoot": "{count} elementi spostati nella cartella radice"
+    }
+  },
+  "filesTable": {
+    "ariaLabel": "Tabella dei file",
+    "selectAll": "Seleziona tutto",
+    "selectFile": "Seleziona file {fileName}",
+    "columns": {
+      "name": "NOME",
+      "description": "DESCRIZIONE",
+      "size": "DIMENSIONE",
+      "createdAt": "CREATO IL",
+      "updatedAt": "AGGIORNATO IL",
+      "actions": "AZIONI"
+    },
+    "actions": {
+      "menu": "Menu azioni file",
+      "preview": "Anteprima",
+      "edit": "Modifica",
+      "share": "Condividi",
+      "download": "Scarica",
+      "delete": "Elimina"
+    },
+    "bulkActions": {
+      "selected": "{count, plural, =1 {1 file selezionato} other {# file selezionati}}",
+      "actions": "Azioni",
+      "download": "Scarica Selezionati",
+      "share": "Condividi Selezionati",
+      "delete": "Elimina Selezionati"
+    }
+  },
+  "folderActions": {
+    "editFolder": "Modifica cartella",
+    "folderName": "Nome cartella",
+    "folderNamePlaceholder": "Inserisci nome cartella",
+    "folderDescription": "Descrizione",
+    "folderDescriptionPlaceholder": "Inserisci descrizione cartella (opzionale)",
+    "createFolder": "Crea nuova cartella",
+    "renameFolder": "Rinomina cartella",
+    "moveFolder": "Sposta cartella",
+    "shareFolder": "Condividi cartella",
+    "deleteFolder": "Elimina cartella",
+    "moveTo": "Sposta in",
+    "selectDestination": "Seleziona cartella destinazione",
+    "rootFolder": "Radice",
+    "folderCreated": "Cartella creata con successo",
+    "folderRenamed": "Cartella rinominata con successo",
+    "folderMoved": "Cartella spostata con successo",
+    "folderDeleted": "Cartella eliminata con successo",
+    "folderShared": "Cartella condivisa con successo",
+    "createFolderError": "Errore nella creazione della cartella",
+    "renameFolderError": "Errore nella rinominazione della cartella",
+    "moveFolderError": "Errore nello spostamento della cartella",
+    "deleteFolderError": "Errore nell'eliminazione della cartella",
+    "shareFolderError": "Errore nella condivisione della cartella",
+    "deleteConfirmation": "Sei sicuro di voler eliminare questa cartella?",
+    "deleteWarning": "Questa azione non può essere annullata.",
+    "inSharesWarningTitle": "Questa cartella è inclusa nelle condivisioni",
+    "inSharesWarningBody": "Questa cartella (e il suo contenuto) è inclusa in {count, plural, one {# condivisione} other {# condivisioni}}. Eliminandola la rimuoverai da tutte le condivisioni.",
+    "bulkInSharesWarningTitle": "Alcune cartelle sono incluse nelle condivisioni",
+    "bulkInSharesWarningBody": "{count, plural, one {# cartella è} other {# cartelle sono}} incluse nelle condivisioni. L'eliminazione le rimuoverà da tutte le condivisioni.",
+    "deleteAnyway": "Elimina comunque"
+  },
+  "footer": {
+    "projectHomepage": "Homepage di OUITRANSFER"
+  },
+  "forgotPassword": {
+    "emailLabel": "Indirizzo Email",
+    "emailPlaceholder": "Inserisci la tua email",
+    "sending": "Invio in corso...",
+    "submit": "Invia Istruzioni di Reimpostazione",
+    "backToLogin": "Torna all'Accesso",
+    "title": "Parola d'accesso Dimenticata",
+    "description": "Inserisci il tuo indirizzo email e ti invieremo le istruzioni per reimpostare la parola d'accesso.",
+    "resetInstructions": "Istruzioni di reimpostazione inviate alla tua email",
+    "pageTitle": "Parola d'accesso Dimenticata",
+    "passwordAuthDisabled": "L'autenticazione tramite password è disabilitata. Contatta il tuo amministratore o utilizza un provider di autenticazione esterno."
+  },
+  "generateShareLink": {
+    "generateTitle": "Genera link di condivisione",
+    "updateTitle": "Aggiorna link di condivisione",
+    "generateDescription": "Genera un link per condividere i tuoi file",
+    "updateDescription": "Aggiorna l'alias per questo link di condivisione",
+    "aliasPlaceholder": "Inserisci alias",
+    "linkReady": "Il tuo link di condivisione è pronto:",
+    "generateButton": "Genera link",
+    "updateButton": "Aggiorna link",
+    "copyButton": "Copia link",
+    "success": "Link generato con successo",
+    "error": "Errore nella generazione del link",
+    "copied": "Link copiato negli appunti",
+    "readyDescription": "Il tuo link di condivisione è pronto. Puoi scansionare il codice QR direttamente, scaricarlo per un uso successivo, o copiare il link qui sotto.",
+    "tabs": {
+      "link": "Link",
+      "qrcode": "QR Code"
+    },
+    "later": "Più tardi"
+  },
+  "home": {
+    "pageTitle": "Home",
+    "tagline": "Trasferimento file sicuro",
+    "subtitle": "Invia e condividi i tuoi file in sicurezza.",
+    "login": "Accedi",
+    "partners": {
+      "title": "Hai ricevuto un link?",
+      "description": "Utilizza il link che ti è stato inviato per accedere ai tuoi file. Se non riesci a trovarlo, contatta la persona che te lo ha inviato."
+    }
+  },
+  "iconPicker": {
+    "title": "Seleziona Icona",
+    "placeholder": "Seleziona un'icona",
+    "searchPlaceholder": "Cerca icone...",
+    "loadingMore": "Caricamento altre icone...",
+    "allIconsLoaded": "Tutte le {count} icone caricate",
+    "noIconsFound": "Nessuna icona trovata per \"{search}\"",
+    "tabs": {
+      "all": "Tutte le Icone",
+      "popular": "Popolari",
+      "auth": "Provider di Autenticazione"
+    },
+    "stats": "{iconCount} icone da {libraryCount} librerie",
+    "categoryBadge": "{category} ({count} icone)"
+  },
+  "imageEdit": {
+    "title": "Modifica Immagine",
+    "rotate": "Ruota",
+    "zoom": "Zoom",
+    "cropInstructions": "Trascina per riposizionare, ridimensiona gli angoli per adattare l'area di ritaglio",
+    "cropAlt": "Immagine da ritagliare"
+  },
+  "login": {
+    "welcome": "Benvenuto in",
+    "signInToContinue": "Accedi per continuare",
+    "emailOrUsernameLabel": "Email o Nome utente",
+    "emailOrUsernamePlaceholder": "Inserisci la tua email o nome utente",
+    "emailLabel": "Indirizzo Email",
+    "emailPlaceholder": "Inserisci la tua email",
+    "passwordLabel": "Parola d'accesso",
+    "passwordPlaceholder": "Inserisci la tua parola d'accesso",
+    "signIn": "Accedi",
+    "signingIn": "Accesso in corso...",
+    "forgotPassword": "Parola d'accesso dimenticata?",
+    "pageTitle": "Accesso",
+    "or": "oppure",
+    "continueWithSSO": "Continua con SSO",
+    "processing": "Elaborazione autenticazione...",
+    "orContinueWith": "Oppure continua con",
+    "continueWith": "Continua con {name}",
+    "providerNotConfigured": "{name} non è configurato correttamente"
+  },
+  "logo": {
+    "labels": {
+      "appLogo": "Logo dell'App"
+    },
+    "buttons": {
+      "upload": "Carica Logo",
+      "remove": "Rimuovi Logo"
+    },
+    "messages": {
+      "uploadSuccess": "Logo caricato con successo",
+      "removeSuccess": "Logo rimosso con successo"
+    },
+    "errors": {
+      "uploadFailed": "Errore durante il caricamento del logo",
+      "removeFailed": "Errore durante la rimozione del logo"
+    }
+  },
+  "moveItems": {
+    "itemsToMove": "Elementi da spostare:",
+    "movingToFolder": "Spostamento in: {folder}",
+    "title": "Sposta {count, plural, =1 {elemento} other {elementi}}",
+    "description": "Sposta {count, plural, =1 {elemento} other {elementi}} in una nuova posizione",
+    "success": "Spostati con successo {count} {count, plural, =1 {elemento} other {elementi}}",
+    "errors": {
+      "moveFailed": "Impossibile spostare gli elementi"
+    }
+  },
+  "audit": {
+    "pageTitle": "Log Attività",
+    "pageDescription": "Visualizza e cerca tutte le attività del sistema",
+    "table": {
+      "date": "Data",
+      "user": "Utente",
+      "action": "Azione",
+      "target": "Destinazione",
+      "ipAddress": "Indirizzo IP",
+      "details": "Dettagli",
+      "noResults": "Nessun log di audit trovato",
+      "anonymous": "Anonimo",
+      "system": "Sistema",
+      "resultCount": "{count, plural, one {# risultato} other {# risultati}}"
+    },
+    "filters": {
+      "action": "Azione",
+      "user": "Utente",
+      "targetType": "Tipo di Destinazione",
+      "dateFrom": "Da",
+      "dateTo": "A",
+      "search": "Cerca",
+      "searchPlaceholder": "Cerca per IP o azione...",
+      "clearAll": "Cancella Filtri"
+    },
+    "export": {
+      "button": "Esporta",
+      "csv": "CSV",
+      "json": "JSON",
+      "dateRangeRequired": "Seleziona un intervallo di date per esportare"
+    },
+    "actions": {
+      "LOGIN_SUCCESS": "Accesso riuscito",
+      "LOGIN_FAILURE": "Accesso fallito",
+      "LOGOUT": "Disconnessione",
+      "PASSWORD_CHANGE": "Password modificata",
+      "PASSWORD_RESET": "Password reimpostata",
+      "PASSWORD_RESET_REQUEST": "Reimpostazione password richiesta",
+      "ACCOUNT_LOCKED": "Account bloccato",
+      "LOGIN_LOCKED": "Accesso bloccato",
+      "TRUSTED_DEVICE_REMOVE": "Dispositivo attendibile rimosso",
+      "TRUSTED_DEVICE_REMOVE_ALL": "Tutti i dispositivi attendibili rimossi",
+      "AUTH_PROVIDER_LOGIN": "Accesso SSO",
+      "TWO_FACTOR_ENABLE": "2FA abilitato",
+      "TWO_FACTOR_DISABLE": "2FA disabilitato",
+      "TWO_FACTOR_BACKUP_REGENERATED": "Codici di backup 2FA rigenerati",
+      "USER_CREATE": "Utente creato",
+      "USER_UPDATE": "Utente aggiornato",
+      "USER_DELETE": "Utente eliminato",
+      "USER_ROLE_CHANGE": "Ruolo utente modificato",
+      "USER_QUOTA_CHANGE": "Quota utente modificata",
+      "USER_ACTIVATE": "Utente attivato",
+      "USER_DEACTIVATE": "Utente disattivato",
+      "SHARE_CREATE": "Condivisione creata",
+      "SHARE_UPDATE": "Condivisione aggiornata",
+      "SHARE_DELETE": "Condivisione eliminata",
+      "SHARE_ACCESS": "Condivisione accessibile",
+      "SHARE_PASSWORD_VERIFIED": "Password di condivisione verificata",
+      "SHARE_PASSWORD_FAILED": "Password di condivisione fallita",
+      "SHARE_PASSWORD_UPDATE": "Password di condivisione aggiornata",
+      "SHARE_RECIPIENT_ADD": "Destinatari di condivisione aggiunti",
+      "SHARE_RECIPIENT_REMOVE": "Destinatari di condivisione rimossi",
+      "SHARE_RECIPIENT_NOTIFY": "Destinatari di condivisione notificati",
+      "SHARE_RECIPIENT_REMIND": "Destinatari senza download sollecitati",
+      "SHARE_ITEMS_ADD": "Elementi di condivisione aggiunti",
+      "SHARE_ITEMS_REMOVE": "Elementi di condivisione rimossi",
+      "FILE_UPLOAD": "File caricato",
+      "FILE_DOWNLOAD": "File scaricato",
+      "FILE_DELETE": "File eliminato",
+      "FILE_MOVE": "File spostato",
+      "FILE_UPDATE": "File aggiornato",
+      "FOLDER_CREATE": "Cartella creata",
+      "FOLDER_UPDATE": "Cartella aggiornata",
+      "FOLDER_MOVE": "Cartella spostata",
+      "FOLDER_DELETE": "Cartella eliminata",
+      "REVERSE_SHARE_CREATE": "Condivisione inversa creata",
+      "REVERSE_SHARE_UPDATE": "Condivisione inversa aggiornata",
+      "REVERSE_SHARE_DELETE": "Condivisione inversa eliminata",
+      "REVERSE_SHARE_ACCESS": "Condivisione inversa accessibile",
+      "REVERSE_SHARE_PASSWORD_VERIFIED": "Password di condivisione inversa verificata",
+      "REVERSE_SHARE_PASSWORD_FAILED": "Password di condivisione inversa fallita",
+      "REVERSE_SHARE_PASSWORD_UPDATE": "Password di condivisione inversa aggiornata",
+      "REVERSE_SHARE_UPLOAD": "File caricato in condivisione inversa",
+      "REVERSE_SHARE_FILE_DELETE": "File di condivisione inversa eliminato",
+      "REVERSE_SHARE_FILE_COPY": "File di condivisione inversa copiato",
+      "REVERSE_SHARE_FILE_DOWNLOAD": "File di condivisione inversa scaricato",
+      "GROUP_CREATE": "Gruppo creato",
+      "GROUP_UPDATE": "Gruppo aggiornato",
+      "GROUP_DELETE": "Gruppo eliminato",
+      "GROUP_MEMBER_ADD": "Membro del gruppo aggiunto",
+      "GROUP_MEMBER_REMOVE": "Membro del gruppo rimosso",
+      "LDAP_CONFIG_UPDATE": "Configurazione LDAP aggiornata",
+      "LDAP_SYNC_TRIGGERED": "Sincronizzazione LDAP avviata",
+      "LDAP_SYNC_COMPLETED": "Sincronizzazione LDAP completata",
+      "LDAP_SYNC_ERROR": "Errore di sincronizzazione LDAP",
+      "AUTH_PROVIDER_CREATE": "Provider di autenticazione creato",
+      "AUTH_PROVIDER_UPDATE": "Provider di autenticazione aggiornato",
+      "AUTH_PROVIDER_DELETE": "Provider di autenticazione eliminato",
+      "INVITE_TOKEN_CREATE": "Token di invito creato",
+      "INVITE_TOKEN_USED": "Token di invito utilizzato",
+      "ADMIN_CONFIG_CHANGE": "Configurazione modificata",
+      "LOGO_UPLOAD": "Logo caricato",
+      "LOGO_REMOVE": "Logo rimosso",
+      "SMTP_TEST": "Test SMTP eseguito",
+      "BACKGROUND_IMAGE_UPLOAD": "Immagine di sfondo caricata",
+      "BACKGROUND_IMAGE_DELETE": "Immagine di sfondo eliminata",
+      "AUDIT_RETENTION_CLEANUP": "Pulizia log di audit",
+      "SHARE_DEACTIVATED": "Condivisione disattivata",
+      "SHARE_REACTIVATED": "Condivisione riattivata",
+      "REVERSE_SHARE_DEACTIVATED": "Link di ricezione disattivato",
+      "REVERSE_SHARE_REACTIVATED": "Link di ricezione riattivato",
+      "SHARE_AUTO_DELETED": "Condivisione eliminata automaticamente",
+      "REVERSE_SHARE_AUTO_DELETED": "Link di ricezione eliminato automaticamente",
+      "ACCOUNT_FILES_CLEANED": "File dell'account ripuliti",
+      "ORPHAN_S3_DELETED": "Oggetto di archiviazione orfano eliminato",
+      "ORPHAN_DB_DELETED": "Record del database orfano eliminato",
+      "ORPHAN_MULTIPART_ABORTED": "Caricamento multiparte incompleto interrotto",
+      "QUOTA_FILES_DELETED": "File oltre quota eliminati"
+    },
+    "targetTypes": {
+      "user": "Utente",
+      "share": "Condivisione",
+      "reverse_share": "Condivisione Inversa",
+      "file": "File",
+      "folder": "Cartella",
+      "group": "Gruppo",
+      "ldap_config": "Configurazione LDAP",
+      "ldap_sync_log": "Sincronizzazione LDAP",
+      "setting": "Impostazione",
+      "auth_provider": "Provider di Autenticazione",
+      "background_image": "Immagine di Sfondo",
+      "invite_token": "Token di Invito",
+      "trusted_device": "Dispositivo Attendibile",
+      "logo": "Logo"
+    },
+    "actionCategories": {
+      "auth": "Autenticazione",
+      "share": "Condivisioni",
+      "file": "File",
+      "folder": "Cartelle",
+      "reverseShare": "Condivisioni Inverse",
+      "user": "Utente",
+      "group": "Gruppi",
+      "ldap": "LDAP",
+      "admin": "Amministrazione",
+      "system": "Sistema"
+    },
+    "metadata": {
+      "method": "Metodo",
+      "reason": "Motivo",
+      "email": "Email",
+      "count": "Conteggio",
+      "via": "Creato tramite",
+      "fields": "Campi modificati",
+      "oldRole": "Ruolo precedente",
+      "newRole": "Nuovo ruolo",
+      "oldQuota": "Quota precedente",
+      "newQuota": "Nuova quota",
+      "name": "Nome",
+      "fileName": "Nome file",
+      "fileSize": "Dimensione file",
+      "fileCount": "Conteggio file",
+      "folderCount": "Conteggio cartelle",
+      "hasPassword": "Protetto da password",
+      "expiration": "Scadenza",
+      "shareId": "Condivisione",
+      "emails": "Email",
+      "recipientCount": "Conteggio destinatari",
+      "fromFolderId": "Dalla cartella",
+      "toFolderId": "Alla cartella",
+      "maxFiles": "File massimi",
+      "maxFileSize": "Dimensione massima file",
+      "uploaderEmail": "Email uploader",
+      "uploaderName": "Nome uploader",
+      "targetFileId": "File di destinazione",
+      "providerType": "Tipo provider",
+      "providerName": "Nome provider",
+      "deletedCount": "Voci eliminate",
+      "olderThan": "Più vecchio di",
+      "syncLogId": "Log di sincronizzazione",
+      "error": "Errore",
+      "manual": "Attivazione manuale",
+      "recipientEmail": "Email destinatario",
+      "fromParentId": "Dal genitore",
+      "toParentId": "Al genitore",
+      "oldMaxFileSize": "Dimensione massima file precedente",
+      "newMaxFileSize": "Nuova dimensione massima file",
+      "oldMaxTotalStorage": "Archiviazione totale massima precedente",
+      "newMaxTotalStorage": "Nuova archiviazione totale massima",
+      "changedFields": "Campi modificati",
+      "unassignedCount": "Membri non assegnati",
+      "previousGroupId": "Gruppo precedente",
+      "memberId": "Membro",
+      "parentId": "Cartella padre",
+      "targetFolderId": "Cartella di destinazione",
+      "extension": "Estensione",
+      "size": "Dimensione",
+      "enabled": "Abilitato",
+      "passwordCleared": "Password cancellata",
+      "trigger": "Attivatore",
+      "status": "Stato",
+      "usersCreated": "Utenti creati",
+      "usersUpdated": "Utenti aggiornati",
+      "usersDeactivated": "Utenti disattivati",
+      "usersReactivated": "Utenti riattivati",
+      "usersSkipped": "Utenti ignorati",
+      "createdUserId": "Utente creato",
+      "deletedUserId": "Utente eliminato",
+      "emailOrUsername": "Email/Nome utente",
+      "remainingMinutes": "Minuti rimasti",
+      "keys": "Chiavi di configurazione",
+      "type": "Tipo",
+      "yes": "Sì",
+      "no": "No",
+      "key": "[TO_TRANSLATE] Setting",
+      "usingCustomConfig": "[TO_TRANSLATE] Custom config",
+      "smtpHost": "[TO_TRANSLATE] SMTP host",
+      "files": "[TO_TRANSLATE] Files",
+      "shares": "[TO_TRANSLATE] Shares",
+      "reverseShares": "[TO_TRANSLATE] Reverse shares",
+      "folders": "[TO_TRANSLATE] Folders",
+      "s3Errors": "[TO_TRANSLATE] Storage errors",
+      "recipientId": "[TO_TRANSLATE] Recipient",
+      "identificationSource": "[TO_TRANSLATE] Identification",
+      "expiresAt": "[TO_TRANSLATE] Expires at",
+      "userId": "[TO_TRANSLATE] User",
+      "shareName": "[TO_TRANSLATE] Share",
+      "reverseShareName": "[TO_TRANSLATE] Reverse share",
+      "filesDeleted": "[TO_TRANSLATE] Files deleted",
+      "bytesFreed": "[TO_TRANSLATE] Storage freed",
+      "objectName": "[TO_TRANSLATE] Object",
+      "fileId": "[TO_TRANSLATE] File"
+    }
+  },
+  "navbar": {
+    "logoAlt": "Logo dell'App",
+    "profileMenu": "Menu Profilo",
+    "profile": "Profilo",
+    "settings": "Impostazioni",
+    "usersManagement": "Gestione Utenti",
+    "groupsManagement": "Gruppi",
+    "ldap": "LDAP",
+    "activityLog": "Activity Log",
+    "logout": "Logout",
+    "customization": "Personalizzazione",
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
+  },
+  "navigation": {
+    "dashboard": "Pannello di controllo"
+  },
+  "notifications": {
+    "permissionGranted": "Notifiche download abilitate",
+    "permissionDenied": "Notifiche download disabilitate",
+    "downloadComplete": {
+      "title": "Download Completato",
+      "body": "Il download di {fileName} è terminato"
+    },
+    "downloadFailed": {
+      "title": "Download Fallito",
+      "body": "Impossibile scaricare {fileName}: {error}",
+      "unknownError": "Errore sconosciuto"
+    },
+    "queueProcessing": {
+      "title": "Download in Avvio",
+      "body": "{fileName} sta ora scaricando{position}",
+      "position": " (era #{position} in coda)"
+    }
+  },
+  "profile": {
+    "password": {
+      "title": "Cambia Parola d'accesso",
+      "newPassword": "Nuova Parola d'accesso",
+      "confirmPassword": "Conferma Nuova Parola d'accesso",
+      "updateButton": "Aggiorna Parola d'accesso"
+    },
+    "form": {
+      "title": "Informazioni Profilo",
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "username": "Nome Utente",
+      "email": "Indirizzo email",
+      "updateButton": "Aggiorna Profilo"
+    },
+    "header": {
+      "title": "Profilo",
+      "subtitle": "Gestisci le tue informazioni personali e la password"
+    },
+    "picture": {
+      "title": "Foto Profilo",
+      "description": "Clicca sull'icona della fotocamera per cambiare la tua foto profilo",
+      "uploadPhoto": "Carica Foto",
+      "removePhoto": "Rimuovi Foto"
+    },
+    "errors": {
+      "loadFailed": "Errore durante il caricamento dei dati utente",
+      "updateFailed": "Errore durante l'aggiornamento del profilo",
+      "passwordFailed": "Errore durante l'aggiornamento della parola d'accesso",
+      "imageFailed": "Errore durante l'aggiornamento dell'immagine profilo",
+      "imageRemoveFailed": "Errore durante la rimozione dell'immagine profilo"
+    },
+    "messages": {
+      "noChanges": "Nessuna modifica da salvare",
+      "updateSuccess": "Profilo aggiornato con successo",
+      "fillPasswords": "Compila entrambi i campi parola d'accesso",
+      "passwordSuccess": "Parola d'accesso aggiornata con successo",
+      "imageSuccess": "Immagine profilo aggiornata con successo",
+      "imageRemoved": "Immagine profilo rimossa con successo"
+    },
+    "pageTitle": "Profilo"
+  },
+  "qrCodeModal": {
+    "title": "Condividi QR Code",
+    "description": "Scansiona questo codice QR per accedere al link.",
+    "download": "Scarica QR Code"
+  },
+  "quickAccess": {
+    "files": {
+      "title": "I Miei File",
+      "description": "Accedi e gestisci i tuoi file caricati"
+    },
+    "shares": {
+      "title": "Le Mie Condivisioni",
+      "description": "Visualizza e gestisci i tuoi file condivisi"
+    },
+    "reverseShares": {
+      "title": "Ricevi File",
+      "description": "Crea link per permettere ad altri di inviarti file"
+    }
+  },
+  "recentFiles": {
+    "title": "Caricamenti Recenti",
+    "viewAll": "Visualizza Tutti",
+    "uploadFile": "Carica File",
+    "noFiles": "Nessun file caricato ancora",
+    "upload": "Carica"
+  },
+  "recentShares": {
+    "title": "Condivisioni Recenti",
+    "viewAll": "Visualizza Tutte",
+    "createShare": "Crea Condivisione",
+    "noShares": "Nessuna condivisione creata ancora",
+    "createFirst": "Crea la tua prima condivisione"
+  },
+  "recipientSelector": {
+    "emailPlaceholder": "Inserisci email destinatario",
+    "add": "Aggiungi",
+    "recipients": "Destinatari ({count})",
+    "notifyAll": "Notifica Tutti",
+    "noRecipients": "Nessun destinatario aggiunto ancora",
+    "addSuccess": "Destinatario aggiunto con successo",
+    "addError": "Errore durante l'aggiunta del destinatario",
+    "removeSuccess": "Destinatario rimosso con successo",
+    "removeError": "Errore durante la rimozione del destinatario",
+    "sendingNotifications": "Invio notifiche in corso...",
+    "notifySuccess": "Destinatari notificati con successo",
+    "notifyError": "Errore durante la notifica dei destinatari",
+    "bulkNotifySuccess": "Notifiche inviate a {count} destinatari",
+    "selectAll": "Seleziona tutto",
+    "singleNotifySuccess": "Notifica inviata a {email}",
+    "removeSingle": "Rimuovi questo destinatario",
+    "selectRecipient": "Seleziona {email}",
+    "bulkRemoveSuccess": "{count} destinatari rimossi con successo",
+    "notifySingle": "Notifica questo destinatario",
+    "notifySelected": "Notifica Selezionati",
+    "invalidEmail": "Inserisci un indirizzo email valido",
+    "noRecipientsDescription": "Aggiungi destinatari per condividere questo contenuto via email",
+    "singleNotifyError": "Impossibile notificare il destinatario",
+    "bulkRemoveError": "Impossibile rimuovere i destinatari selezionati",
+    "modalDescription": "Aggiungi e gestisci destinatari per questa condivisione. Puoi notificare tutti o destinatari specifici quando SMTP è configurato.",
+    "duplicateEmail": "Questo destinatario è già stato aggiunto",
+    "removeSelected": "Rimuovi Selezionati",
+    "selectedCount": "{count} selezionati",
+    "addRecipient": "Aggiungi Destinatario",
+    "bulkNotifyError": "Impossibile notificare i destinatari selezionati",
+    "notified": "Notificato",
+    "views": "{count, plural, one {# visualizzazione} other {# visualizzazioni}}",
+    "notifyPartial": "Solo {sent} di {total} destinatari sono stati notificati",
+    "neverAccessed": "Mai acceduto",
+    "namePlaceholder": "Nome (opzionale)",
+    "downloaded": "Scaricato",
+    "pending": "In attesa",
+    "downloadedAt": "Scaricato il {date}",
+    "uploaded": "Caricato",
+    "uploadedAt": "Caricato il {date}",
+    "uploadApproximateHint": "Approssimativo: i mittenti possono inviare file senza fornire un'e-mail quando non è obbligatoria",
+    "remindNonDownloaders": "Sollecita ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Nessun destinatario in attesa, tutti hanno scaricato} one {Sollecita # destinatario che non ha ancora scaricato} other {Sollecita # destinatari che non hanno ancora scaricato}}",
+    "sendingReminders": "Invio solleciti in corso...",
+    "remindSuccess": "{count, plural, one {Sollecito inviato a # destinatario} other {Solleciti inviati a # destinatari}}",
+    "remindNoneSent": "Nessun sollecito inviato",
+    "remindError": "Invio solleciti non riuscito"
+  },
+  "register": {
+    "validation": {
+      "firstNameRequired": "Il nome è obbligatorio",
+      "lastNameRequired": "Il cognome è obbligatorio",
+      "usernameMinLength": "Il nome utente deve essere di almeno 3 caratteri",
+      "invalidEmail": "Indirizzo email non valido",
+      "passwordMinLength": "La parola d'accesso deve essere di almeno 12 caratteri",
+      "success": "Utente amministratore creato con successo!",
+      "error": "Errore durante la creazione dell'utente amministratore",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "labels": {
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "username": "Nome Utente",
+      "email": "Indirizzo email",
+      "password": "Parola d'accesso"
+    },
+    "buttons": {
+      "creating": "Creazione in corso...",
+      "createAdmin": "Crea Account Amministratore"
+    }
+  },
+  "resetPassword": {
+    "pageTitle": "Reimposta Parola d'accesso",
+    "header": {
+      "title": "Reimposta Parola d'accesso",
+      "description": "Inserisci la tua nuova parola d'accesso qui sotto"
+    },
+    "form": {
+      "newPassword": "Nuova Parola d'accesso",
+      "newPasswordPlaceholder": "Inserisci la tua nuova parola d'accesso",
+      "confirmPassword": "Conferma Nuova Parola d'accesso",
+      "confirmPasswordPlaceholder": "Conferma la tua nuova parola d'accesso",
+      "resetting": "Reimpostazione in corso...",
+      "submit": "Reimposta Parola d'accesso",
+      "backToLogin": "Torna all'Accesso"
+    },
+    "messages": {
+      "success": "Parola d'accesso reimpostata con successo"
+    },
+    "errors": {
+      "serverError": "Errore durante la reimpostazione della parola d'accesso. Riprova.",
+      "invalidToken": "Token di reimpostazione non valido o mancante"
+    }
+  },
+  "reverseShares": {
+    "pageTitle": "Ricevi File",
+    "search": {
+      "title": "Gestisci Link di Ricezione",
+      "createButton": "Crea Link",
+      "placeholder": "Cerca link di ricezione...",
+      "results": "Trovati {filtered} di {total} link di ricezione"
+    },
+    "labels": {
+      "files": "file",
+      "size": "dimensione",
+      "status": "stato",
+      "access": "accesso",
+      "description": "Descrizione",
+      "pageLayout": "Layout della Pagina",
+      "security": "Sicurezza & Stato",
+      "limits": "Limiti",
+      "maxFiles": "Massimo File",
+      "maxFileSize": "Dimensione Massima",
+      "allowedTypes": "Tipi Consentiti",
+      "filesReceived": "File Ricevuti",
+      "fileLimit": "Limite File",
+      "noLimit": "Nessun limite",
+      "noLinkCreated": "Nessun link creato",
+      "publicAccess": "Accesso Pubblico",
+      "protectedByPassword": "Protetto da Password",
+      "configureProtection": "Clicca per configurare la protezione",
+      "enterPassword": "Inserisci la password",
+      "thisLinkProtected": "Questo link sarà protetto da password",
+      "thisLinkPublic": "Questo link sarà disponibile pubblicamente",
+      "configureExpiration": "Configura Scadenza",
+      "configureLimits": "Configura Limiti File",
+      "protectWithPassword": "Proteggi con Password",
+      "layoutOptions": {
+        "default": "Predefinito",
+        "wetransfer": "WeTransfer"
+      },
+      "noFilesLimit": "Nessun limite di file",
+      "noSizeLimit": "Nessun limite di dimensione",
+      "allFileTypes": "Tutti i tipi di file",
+      "fileTypesHelp": "Inserisci le estensioni senza punto, separate da spazio, virgola, trattino o barra verticale",
+      "emailFieldRequired": "Campo e -mail",
+      "fieldOptions": {
+        "hidden": "Nascosto",
+        "optional": "Opzionale",
+        "required": "Obbligatorio"
+      },
+      "fieldRequirements": "Requisiti sul campo",
+      "nameFieldRequired": "Campo nome"
+    },
+    "card": {
+      "untitled": "Link senza titolo",
+      "noDescription": "Nessuna descrizione",
+      "addDescriptionPlaceholder": "Aggiungi descrizione...",
+      "files": "file",
+      "progress": "Progresso",
+      "created": "Creato",
+      "expired": "Scaduto",
+      "expires": "Scade",
+      "viewDetails": "Vedi dettagli",
+      "copyLink": "Copia Link",
+      "openInNewTab": "Apri in Nuova Scheda",
+      "editLink": "Modifica Link",
+      "createLink": "Crea Link",
+      "delete": "Elimina",
+      "copyLinkTitle": "Copia link",
+      "createLinkCTA": "Crea Link di Ricezione",
+      "viewQrCode": "Visualizza QR Code"
+    },
+    "status": {
+      "active": "Attivo",
+      "inactive": "Inattivo",
+      "expired": "Scaduto",
+      "protected": "Protetto",
+      "public": "Pubblico"
+    },
+    "actions": {
+      "copyLink": "Copia Link",
+      "editAlias": "Modifica Alias",
+      "createAlias": "Crea Alias",
+      "viewDetails": "Vedi Dettagli",
+      "edit": "Modifica",
+      "delete": "Elimina",
+      "viewFiles": "File Ricevuti",
+      "viewQrCode": "Visualizza QR Code"
+    },
+    "empty": {
+      "title": "Nessun link di ricezione creato",
+      "description": "Crea link personalizzati per permettere ad altri di inviarti file in modo sicuro e organizzato.",
+      "createButton": "Crea Primo Link"
+    },
+    "modals": {
+      "create": {
+        "title": "Crea Link di Ricezione",
+        "description": "Configura un link personalizzato per ricevere file da altre persone"
+      },
+      "edit": {
+        "title": "Modifica Link di Ricezione",
+        "description": "Aggiorna le impostazioni di questo link di ricezione",
+        "updating": "Aggiornamento in corso...",
+        "saveChanges": "Salva Modifiche"
+      },
+      "details": {
+        "title": "Dettagli del Link",
+        "description": "Visualizza e modifica le informazioni del tuo link di ricezione",
+        "pageLayout": "Layout della Pagina",
+        "linkSection": "Link di Ricezione",
+        "noLinkCreated": "Nessun link creato",
+        "limits": "Limiti",
+        "maxFiles": "Massimo File",
+        "maxFileSize": "Dimensione Massima",
+        "allowedTypes": "Tipi Consentiti",
+        "noLimit": "Nessun limite",
+        "security": "Sicurezza",
+        "status": "Stato",
+        "password": "Password",
+        "files": "File Ricevuti",
+        "noFiles": "Nessun file ricevuto ancora",
+        "copyLink": "Copia Link",
+        "openLink": "Apri Link",
+        "editAlias": "Modifica Alias",
+        "createAlias": "Crea Alias",
+        "editPassword": "Modifica Protezione Password",
+        "basicInfo": "Informazioni Base",
+        "securityAndStatus": "Sicurezza & Stato",
+        "protection": "Protezione",
+        "protectedByPassword": "Protetto da Password",
+        "publicAccess": "Accesso Pubblico",
+        "active": "Attivo",
+        "inactive": "Inattivo",
+        "deactivate": "Disattiva",
+        "activate": "Attiva",
+        "expiration": "Scadenza",
+        "dates": "Date",
+        "createdAt": "Creato il",
+        "updatedAt": "Aggiornato il",
+        "allTypes": "Tutti i tipi",
+        "placeholderTypes": ".pdf,.jpg,.png (separati da virgola)",
+        "downloadSuccess": "Download avviato",
+        "downloadError": "Errore durante il download del file",
+        "editSuccess": "File aggiornato con successo",
+        "editError": "Errore durante l'aggiornamento del file",
+        "previewNotAvailable": "Anteprima non disponibile",
+        "notAvailable": "Non disponibile",
+        "invalidDate": "Data non valida",
+        "downloading": "Download in corso..."
+      },
+      "alias": {
+        "editTitle": "Modifica Alias",
+        "createTitle": "Crea Alias",
+        "editDescription": "Aggiorna l'alias di questo link di ricezione",
+        "createDescription": "Crea un alias personalizzato per questo link di ricezione",
+        "aliasLabel": "Alias del Link",
+        "aliasPlaceholder": "il-mio-link",
+        "preview": "Anteprima:",
+        "currentLink": "Link Attuale:",
+        "copyCurrentLink": "Copia link attuale",
+        "randomTooltip": "Genera alias casuale",
+        "cancel": "Annulla",
+        "creating": "Creazione in corso...",
+        "updating": "Aggiornamento in corso...",
+        "create": "Crea Alias",
+        "update": "Aggiorna Alias",
+        "help": "8-30 caratteri. Gli spazi saranno convertiti automaticamente in trattini."
+      },
+      "password": {
+        "title": "Modifica Protezione Password",
+        "description": "Configura la protezione password per questo link",
+        "hasPassword": "Protetto da Password",
+        "password": "Password",
+        "cancel": "Annulla",
+        "save": "Salva",
+        "saving": "Salvataggio in corso..."
+      },
+      "receivedFiles": {
+        "title": "File Ricevuti",
+        "description": "Visualizza e gestisci i file inviati a questo link",
+        "noFiles": "Nessun file ricevuto ancora",
+        "noFilesDescription": "I file inviati attraverso questo link appariranno qui",
+        "fileCount": "{count, plural, =0 {Nessun file} =1 {1 file} other {# file}}",
+        "invalidDate": "Data non valida",
+        "totalSize": "Dimensione totale: {size}",
+        "columns": {
+          "file": "File",
+          "size": "Dimensione",
+          "sender": "Inviato da",
+          "date": "Data",
+          "actions": "Azioni"
+        },
+        "actions": {
+          "preview": "Anteprima",
+          "download": "Scarica",
+          "copyToMyFiles": "Copia sui miei file",
+          "copying": "Copia ..."
+        },
+        "uploadedBy": "Inviato da {name}",
+        "anonymous": "Anonimo",
+        "downloadSuccess": "Download avviato",
+        "downloadError": "Errore durante il download del file",
+        "editSuccess": "File aggiornato con successo",
+        "editError": "Errore durante l'aggiornamento del file",
+        "previewNotAvailable": "Anteprima non disponibile",
+        "copyError": "Errore di copia del file sui tuoi file",
+        "copySuccess": "File copiato sui tuoi file correttamente",
+        "bulkActions": {
+          "selected": "{count, plural, =1 {1 file selezionato} other {# file selezionati}}",
+          "actions": "Azioni",
+          "download": "Scarica Selezionati",
+          "copyToMyFiles": "Copia Selezionati sui Miei File",
+          "delete": "Elimina Selezionati"
+        },
+        "bulkCopyProgress": "Copia di {count, plural, =1 {1 file} other {# file}} sui tuoi file in corso...",
+        "bulkCopySuccess": "{count, plural, =1 {1 file copiato sui tuoi file con successo} other {# file copiati sui tuoi file con successo}}",
+        "bulkDeleteConfirmButton": "Elimina {count, plural, =1 {File} other {File}}",
+        "bulkDeleteConfirmMessage": "Sei sicuro di voler eliminare {count, plural, =1 {questo file} other {questi # file}}? Questa azione non può essere annullata.",
+        "bulkDeleteConfirmTitle": "Elimina File Selezionati",
+        "bulkDeleteProgress": "Eliminazione di {count, plural, =1 {1 file} other {# file}} in corso...",
+        "bulkDeleteSuccess": "{count, plural, =1 {1 file eliminato con successo} other {# file eliminati con successo}}",
+        "selectAll": "Seleziona tutto",
+        "selectFile": "Seleziona file {fileName}",
+        "deleteError": "Errore durante l'eliminazione del file",
+        "deleteSuccess": "File eliminato con successo",
+        "bulkDeleteError": "Errore nell'eliminazione dei file selezionati",
+        "copyErrors": {
+          "timeout": "Operazione di copia scaduta. Riprova con un file più piccolo o controlla la tua connessione.",
+          "failed": "Operazione di copia fallita. Per favore riprova.",
+          "aborted": "L'operazione di copia è stata annullata per timeout."
+        },
+        "downloading": "Download in corso..."
+      },
+      "delete": {
+        "linkLabel": "Link: /r/{alias}"
+      }
+    },
+    "form": {
+      "name": {
+        "label": "Nome del Link",
+        "placeholder": "Es: Documenti del Progetto, Foto di Famiglia..."
+      },
+      "description": {
+        "label": "Descrizione",
+        "placeholder": "Descrivi che tipo di file ti aspetti di ricevere...",
+        "description": "Opzionale. Aiuta le persone a capire cosa inviare."
+      },
+      "status": {
+        "label": "Stato del Link",
+        "description": "Attiva o disattiva questo link di ricezione"
+      },
+      "expiration": {
+        "label": "Data di Scadenza",
+        "description": "Opzionale. Il link sarà disattivato dopo questa data.",
+        "configure": "Configura Scadenza"
+      },
+      "fileLimits": {
+        "configure": "Configura Limiti File"
+      },
+      "maxFiles": {
+        "label": "Massimo File",
+        "placeholder": "Es: 10",
+        "description": "Opzionale. Limita il numero totale di file che possono essere inviati.",
+        "noLimit": "Nessun limite di file"
+      },
+      "maxFileSize": {
+        "label": "Dimensione Massima per File",
+        "placeholder": "Es: 100",
+        "description": "Opzionale. Limita la dimensione individuale di ogni file.",
+        "noLimit": "Nessun limite di dimensione"
+      },
+      "allowedFileTypes": {
+        "label": "Tipi di File Consentiti",
+        "placeholder": "Es: pdf, jpg, png, docx",
+        "description": "Inserisci le estensioni senza punto, separate da spazio, virgola, trattino o barra verticale",
+        "allTypes": "Tutti i tipi di file"
+      },
+      "pageLayout": {
+        "label": "Layout della Pagina",
+        "placeholder": "Scegli il layout",
+        "description": "Come apparirà la pagina di upload agli utenti.",
+        "options": {
+          "default": "Layout Predefinito",
+          "wetransfer": "Stile WeTransfer"
+        }
+      },
+      "backgroundImage": {
+        "title": "Immagine di sfondo",
+        "description": "Scegli un'immagine di sfondo per la pagina di caricamento",
+        "random": "Casuale",
+        "none": "Nessuna immagine di sfondo disponibile. Un amministratore può caricare immagini nelle Impostazioni."
+      },
+      "password": {
+        "label": "Password di Protezione",
+        "placeholder": "Opzionale. Aggiungi una password per proteggere il link",
+        "description": "Opzionale. Gli utenti dovranno inserire questa password per accedere al link.",
+        "configurePassword": "Configura Password",
+        "protectWithPassword": "Proteggi con Password",
+        "passwordHelp": "La password deve contenere almeno 4 caratteri",
+        "passwordPlaceholder": "Inserisci una password per proteggere il link"
+      },
+      "submit": "Crea Link di Ricezione",
+      "emailFieldRequired": {
+        "label": "Requisito del campo email",
+        "description": "Configurare se il campo email del caricatore deve essere visualizzato e se è richiesto"
+      },
+      "fieldRequirements": {
+        "title": "Requisiti sul campo",
+        "description": "Configurare quali campi sono mostrati nel modulo di caricamento",
+        "configurationTitle": "Configurazione dei campi:",
+        "hiddenDescription": "Nascosto: Il campo non apparirà nel modulo di caricamento",
+        "optionalDescription": "Opzionale: Il campo apparirà ma non è obbligatorio",
+        "requiredDescription": "Obbligatorio: Il campo deve essere compilato prima del caricamento"
+      },
+      "nameFieldRequired": {
+        "label": "Requisiti del campo Nome",
+        "description": "Configurare se il campo Nome del caricatore deve essere visualizzato e se è richiesto"
+      },
+      "notifyOnUpload": "Notificami ad ogni caricamento",
+      "notifyOnUploadHelp": "Se abilitato, riceverai notifiche via e-mail quando vengono caricati file su questo link di ricezione, indipendentemente dalle tue preferenze di notifica globali.",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
+    },
+    "messages": {
+      "created": "Link di ricezione creato con successo!",
+      "createSuccess": "Link di ricezione creato con successo!",
+      "updateSuccess": "Link di ricezione aggiornato con successo!",
+      "linkCopied": "Link copiato negli appunti!",
+      "deleteSuccess": "Link di ricezione eliminato con successo!",
+      "aliasCreated": "Alias creato con successo!",
+      "activateSuccess": "Link di ricezione attivato con successo!",
+      "deactivateSuccess": "Link di ricezione disattivato con successo!",
+      "passwordProtectionDisabled": "Protezione con password rimossa con successo!",
+      "passwordProtectionEnabled": "Protezione con password abilitata con successo!"
+    },
+    "errors": {
+      "loadFailed": "Impossibile caricare i link di ricezione",
+      "createFailed": "Impossibile creare il link di ricezione. Riprova.",
+      "updateFailed": "Impossibile aggiornare il link di ricezione. Riprova.",
+      "deleteFailed": "Impossibile eliminare il link di ricezione. Riprova.",
+      "aliasCreateFailed": "Impossibile creare l'alias. Riprova.",
+      "passwordUpdateFailed": "Impossibile aggiornare la protezione con password"
+    },
+    "delete": {
+      "title": "Elimina link di ricezione",
+      "description": "Questa azione non può essere annullata. Il link sarà eliminato permanentemente e non potrà più ricevere file.",
+      "confirmButton": "Elimina Link",
+      "cancelButton": "Annulla",
+      "deleting": "Eliminazione in corso..."
+    },
+    "upload": {
+      "metadata": {
+        "title": "Invia File - OUITRANSFER",
+        "description": "Invia file attraverso il link condiviso",
+        "descriptionWithLimit": "Carica file (max {limit} file)"
+      },
+      "layout": {
+        "defaultTitle": "Invia File",
+        "importantInfo": "Informazioni importanti:",
+        "maxFiles": "Massimo {count} file",
+        "maxFileSize": "Dimensione massima per file: {size}MB",
+        "allowedTypes": "Tipi consentiti: {types}",
+        "loading": "Caricamento in corso..."
+      },
+      "password": {
+        "title": "Link Protetto",
+        "description": "Questo link è protetto da password. Inserisci la password per continuare.",
+        "label": "Password",
+        "placeholder": "Inserisci la password",
+        "cancel": "Annulla",
+        "submit": "Continua",
+        "verifying": "Verifica in corso..."
+      },
+      "errors": {
+        "loadFailed": "Impossibile caricare le informazioni. Riprova.",
+        "passwordIncorrect": "Password errata. Riprova.",
+        "linkNotFound": "Link non trovato o scaduto.",
+        "linkInactive": "Questo link è inattivo.",
+        "linkExpired": "Questo link è scaduto.",
+        "uploadFailed": "Errore durante l'invio del file",
+        "retry": "Riprova",
+        "fileTooLarge": "File troppo grande. Dimensione massima: {maxSize}",
+        "fileTypeNotAllowed": "Tipo di file non consentito. Tipi accettati: {allowedTypes}",
+        "maxFilesExceeded": "Massimo {maxFiles} file consentiti",
+        "selectAtLeastOneFile": "Seleziona almeno un file",
+        "provideNameOrEmail": "Inserisci il tuo nome o email",
+        "provideEmailRequired": "È richiesta l'e -mail",
+        "provideNameRequired": "È richiesto il nome"
+      },
+      "fileDropzone": {
+        "dragActive": "Rilascia i file qui",
+        "dragInactive": "Trascina i file qui o clicca per selezionare",
+        "acceptedTypes": "Tipi accettati: {types}",
+        "maxFileSize": "Dimensione massima: {size}",
+        "maxFiles": "Massimo {count} file",
+        "remainingFiles": "Restano {remaining} di {max} file"
+      },
+      "fileList": {
+        "title": "File selezionati:",
+        "statusUploaded": "Inviato",
+        "statusError": "Errore",
+        "retry": "Riprova"
+      },
+      "form": {
+        "nameLabel": "Nome",
+        "namePlaceholder": "Il tuo nome",
+        "emailLabel": "Email",
+        "emailPlaceholder": "tua@email.com",
+        "descriptionLabel": "Descrizione (opzionale)",
+        "descriptionPlaceholder": "Aggiungi una descrizione ai file...",
+        "uploadButton": "Invia {count} file",
+        "uploading": "Invio in corso...",
+        "emailLabelOptional": "Email (opzionale)",
+        "nameLabelOptional": "Nome (opzionale)",
+        "privacyNotice": "Il tuo nome, la tua e-mail e i tuoi caricamenti potrebbero essere visibili al proprietario di questo link di ricezione."
+      },
+      "success": {
+        "title": "File inviati con successo! 🎉",
+        "description": "Puoi chiudere questa pagina.",
+        "countMessage": "{count} file inviati con successo!"
+      },
+      "maxFilesReached": {
+        "title": "Limite di file raggiunto",
+        "description": "Questo link ha già ricevuto il numero massimo di {maxFiles} file consentiti.",
+        "contactOwner": "Se c'è stato un errore o hai bisogno di inviare più file, contatta il proprietario del link."
+      },
+      "linkInactive": {
+        "title": "Link inattivo",
+        "description": "Questo link di ricezione è temporaneamente inattivo.",
+        "contactOwner": "Contatta il proprietario del link per maggiori informazioni."
+      },
+      "linkNotFound": {
+        "title": "Link non trovato",
+        "description": "Questo link potrebbe essere stato rimosso o non è mai esistito."
+      },
+      "linkExpired": {
+        "title": "Link scaduto",
+        "description": "Questo link di ricezione è scaduto e non accetta più file.",
+        "contactOwner": "Contatta il proprietario del link se hai bisogno di inviare file."
+      }
+    },
+    "components": {
+      "fileRow": {
+        "addDescription": "Aggiungi descrizione...",
+        "anonymous": "Anonimo"
+      },
+      "fileActions": {
+        "edit": "Modifica",
+        "preview": "Anteprima",
+        "download": "Scarica",
+        "delete": "Elimina",
+        "copyToMyFiles": "Copia sui miei file",
+        "copying": "Copia ..."
+      },
+      "editField": {
+        "saveChanges": "Salva modifiche",
+        "cancelEdit": "Annulla modifica"
+      }
+    },
+    "defaultLinkName": "File ricevuti"
+  },
+  "searchBar": {
+    "placeholder": "Cerca file...",
+    "results": "Trovati {filtered} di {total} file",
+    "placeholderFolders": "Cerca cartelle...",
+    "noResults": "Nessun risultato trovato per \"{query}\"",
+    "placeholderFiles": "Cerca file..."
+  },
+  "settings": {
+    "groups": {
+      "defaultDescription": "Opzioni di configurazione",
+      "general": {
+        "title": "Generale",
+        "description": "Impostazioni base dell'applicazione"
+      },
+      "email": {
+        "title": "Posta elettronica",
+        "description": "Configurazione server posta elettronica"
+      },
+      "security": {
+        "title": "Sicurezza",
+        "description": "Impostazioni di sicurezza e autenticazione"
+      },
+      "storage": {
+        "title": "Archiviazione",
+        "description": "Configurazione archiviazione file"
+      },
+      "oidc": {
+        "title": "OpenID Connect (SSO)",
+        "description": "Configurazione dell'autenticazione SSO tramite OpenID Connect"
+      },
+      "backgrounds": {
+        "title": "Immagini di Sfondo",
+        "description": "Gestisci le immagini di sfondo per le pagine di caricamento in stile WeTransfer"
+      },
+      "cleanup": {
+        "title": "Pulizia automatica",
+        "description": "Gestione del ciclo di vita per contenuti scaduti, account disattivati e file orfani. L'eliminazione automatica è disattivata per impostazione predefinita."
+      }
+    },
+    "fields": {
+      "noDescription": "Nessuna descrizione disponibile",
+      "appLogo": {
+        "title": "Logo Applicazione",
+        "description": "Immagine logo dell'applicazione"
+      },
+      "appName": {
+        "title": "Nome Applicazione",
+        "description": "Nome dell'applicazione mostrato agli utenti"
+      },
+      "appUrl": {
+        "title": "URL dell'applicazione",
+        "description": "URL pubblico dell'applicazione, utilizzato nei link delle email"
+      },
+      "appDescription": {
+        "title": "Descrizione Applicazione",
+        "description": "Breve descrizione dell'applicazione"
+      },
+      "showHomePage": {
+        "title": "Pagina di destinazione pubblica",
+        "description": "Mostra la pagina di destinazione pubblica ai visitatori. Se disabilitata, i visitatori verranno reindirizzati alla pagina di accesso."
+      },
+      "smtpEnabled": {
+        "title": "SMTP Abilitato",
+        "description": "Abilita o disabilita la funzionalità posta elettronica SMTP"
+      },
+      "smtpHost": {
+        "title": "Server SMTP",
+        "description": "Indirizzo del server SMTP"
+      },
+      "smtpPort": {
+        "title": "Porta SMTP",
+        "description": "Porta del server SMTP"
+      },
+      "smtpUser": {
+        "title": "Utente SMTP",
+        "description": "Nome utente per l'autenticazione SMTP"
+      },
+      "smtpPass": {
+        "title": "Parola d'accesso SMTP",
+        "description": "Parola d'accesso per l'autenticazione SMTP"
+      },
+      "smtpFromName": {
+        "title": "Nome Mittente",
+        "description": "Nome visualizzato per le email inviate"
+      },
+      "smtpFromEmail": {
+        "title": "Indirizzo email Mittente",
+        "description": "Indirizzo email del mittente"
+      },
+      "maxLoginAttempts": {
+        "title": "Tentativi Accesso Massimi",
+        "description": "Numero massimo di tentativi di accesso prima del blocco"
+      },
+      "loginBlockDuration": {
+        "title": "Durata Blocco",
+        "description": "Durata (in secondi) del blocco dopo il superamento dei tentativi"
+      },
+      "passwordMinLength": {
+        "title": "Lunghezza Minima Parola d'accesso",
+        "description": "Numero minimo di caratteri per le parole d'accesso"
+      },
+      "passwordResetTokenExpiration": {
+        "title": "Scadenza Token Reimpostazione",
+        "description": "Tempo di validità (in secondi) per il token di reimpostazione parola d'accesso"
+      },
+      "maxFileSize": {
+        "title": "Dimensione Massima File",
+        "description": "Dimensione massima consentita per i caricamenti dei file. Può essere sovrascritta per utente o per gruppo."
+      },
+      "maxTotalStoragePerUser": {
+        "title": "Archiviazione Massima per Utente",
+        "description": "Limite di archiviazione totale per utente. Può essere sovrascritto per utente o per gruppo."
+      },
+      "quotaWarningThresholds": {
+        "title": "Soglie di avviso quota (%)",
+        "description": "Percentuali separate da virgola, es. \"80,90\", a cui viene inviata un'email di avviso quota all'utente. Ogni valore deve essere un numero intero tra 1 e 99. Un avviso separato viene inviato quando lo spazio di archiviazione raggiunge il 100%."
+      },
+      "quotaGracePeriodDays": {
+        "title": "Periodo di tolleranza quota (giorni)",
+        "description": "Quanti giorni un utente può rimanere oltre la propria quota prima che l'eliminazione intelligente possa intervenire (solo quando l'eliminazione intelligente è abilitata di seguito). Minimo 0."
+      },
+      "quotaSmartDeletionEnabled": {
+        "title": "Eliminazione intelligente dei file oltre quota",
+        "description": "Disattivata per impostazione predefinita. Quando abilitata, dopo il periodo di tolleranza i file non sicuri più vecchi di un utente oltre quota vengono eliminati in ordine sicuro: prima i caricamenti non condivisi, poi i file nelle condivisioni inattive per il periodo indicato di seguito. I file nelle condivisioni attive non vengono mai eliminati, se nulla è sicuro da rimuovere, i nuovi caricamenti vengono semplicemente bloccati."
+      },
+      "quotaInactiveShareDays": {
+        "title": "Soglia di condivisione inattiva (giorni)",
+        "description": "I file di una condivisione sono idonei all'eliminazione intelligente una volta che la condivisione non ha avuto attività per questo numero di giorni. Minimo 1."
+      },
+      "reverseShareQuotaSoftEnforcement": {
+        "title": "Applicazione flessibile del link di ricezione",
+        "description": "Attivata per impostazione predefinita. Consente agli ospiti esterni di continuare a caricare su un link di ricezione anche se il proprietario supera leggermente la propria quota, in modo da non interrompere le raccolte. I caricamenti vengono comunque bloccati quando il proprietario supera la tolleranza impostata di seguito, e il proprietario viene avvisato di liberare spazio."
+      },
+      "reverseShareMaxOverageFactor": {
+        "title": "Fattore di eccedenza del link di ricezione",
+        "description": "L'applicazione flessibile consente caricamenti nel link di ricezione fino a quando l'utilizzo raggiunge questo multiplo della quota del proprietario (es. 3 = fino a tre volte il limite). Minimo 1."
+      },
+      "reverseShareAbsoluteMaxBytes": {
+        "title": "Limite assoluto del link di ricezione",
+        "description": "Limite massimo fisso per l'applicazione flessibile del link di ricezione, indipendentemente dal fattore sopra indicato. Impostare 0 per nessun limite assoluto."
+      },
+      "firstUserAccess": {
+        "description": "Impostazioni per il primo accesso di nuovi utenti",
+        "title": "Primo Accesso Utente"
+      },
+      "serverUrl": {
+        "title": "URL del Server",
+        "description": "URL base del server OUITRANSFER (es: https://OUITRANSFER.esempio.com)"
+      },
+      "testSmtp": {
+        "title": "Test Connessione SMTP",
+        "description": "Verifica se la configurazione SMTP è valida"
+      },
+      "smtpNoAuth": {
+        "title": "Nessuna Autenticazione",
+        "description": "Abilita questa opzione per i server interni che non richiedono nome utente/password (nasconde i campi di autenticazione)"
+      },
+      "smtpSecure": {
+        "title": "Sicurezza Connessione",
+        "description": "Metodo di sicurezza della connessione SMTP - Auto (raccomandato), SSL, STARTTLS o Nessuno (non sicuro)",
+        "options": {
+          "auto": "Auto (Raccomandato)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
+          "none": "Nessuno (Non sicuro)"
+        }
+      },
+      "smtpTrustSelfSigned": {
+        "title": "Accetta Certificati Auto-Firmati",
+        "description": "Abilita questa opzione per accettare certificati SSL/TLS auto-firmati (utile per ambienti di sviluppo)"
+      },
+      "passwordAuthEnabled": {
+        "title": "Autenticazione Password",
+        "description": "Abilita o disabilita l'autenticazione basata su password"
+      },
+      "hideVersion": {
+        "title": "Nascondi Versione",
+        "description": "Nascondi la versione di OUITRANSFER nel piè di pagina di tutte le pagine"
+      },
+      "footerEnabled": {
+        "title": "Mostra Piè di pagina",
+        "description": "Mostra la barra del piè di pagina in fondo a tutte le pagine"
+      },
+      "footerText": {
+        "title": "Testo Piè di pagina",
+        "description": "Nome dell'azienda o dell'organizzazione visualizzato nel piè di pagina"
+      },
+      "footerUrl": {
+        "title": "URL Piè di pagina",
+        "description": "URL del collegamento per il testo del piè di pagina"
+      },
+      "emailDigestHour": {
+        "title": "Ora di invio del riepilogo",
+        "description": "Ora del giorno (0-23) in cui vengono inviate le email di riepilogo"
+      },
+      "emailJobRetentionDays": {
+        "title": "Conservazione dei job email",
+        "description": "Numero di giorni per cui conservare i job email completati prima della pulizia"
+      },
+      "emailQueueIntervalSeconds": {
+        "title": "Intervallo di elaborazione della coda",
+        "description": "Secondi tra i cicli di elaborazione della coda email"
+      },
+      "emailQueueMaxRetries": {
+        "title": "Tentativi massimi per email",
+        "description": "Numero massimo di tentativi per le email fallite"
+      },
+      "auditRetentionDays": {
+        "title": "Conservazione Audit",
+        "description": "Numero di giorni per conservare i log di audit (0 = per sempre, minimo 7)"
+      },
+      "autoCleanupEnabled": {
+        "title": "Abilita pulizia automatica",
+        "description": "Interruttore principale per la pulizia pianificata dei link di condivisione scaduti, dei file di link di ricezione scaduti e degli orfani. Disattivato per impostazione predefinita, nulla viene eliminato automaticamente finché non lo si attiva."
+      },
+      "autoCleanupIntervalHours": {
+        "title": "Intervallo di pulizia (ore)",
+        "description": "Con quale frequenza viene eseguita l'attività di pulizia. Minimo 1 ora."
+      },
+      "autoCleanupGracePeriodDays": {
+        "title": "Periodo di tolleranza (giorni)",
+        "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
+      },
+      "autoCleanupNotifyDaysBefore": {
+        "title": "Avvisa prima dell'eliminazione (giorni)",
+        "description": "Invia al proprietario un'email di avviso \"eliminazione definitiva in sospeso\" questo numero di giorni prima che il contenuto venga eliminato. 0 disabilita l'avviso. Deve essere al massimo il periodo di tolleranza."
+      },
+      "accountDeactivationCleanupEnabled": {
+        "title": "Elimina i file degli account disattivati",
+        "description": "Quando attivo, i file appartenenti a un account disattivato vengono eliminati definitivamente dopo il ritardo indicato di seguito. Disattivato per impostazione predefinita, la sola disattivazione non elimina mai i file."
+      },
+      "accountDeactivationCleanupDays": {
+        "title": "Ritardo di pulizia dopo la disattivazione (giorni)",
+        "description": "Giorni dopo la disattivazione di un account prima che i suoi file vengano eliminati (solo quando l'opzione precedente è abilitata). Minimo 1."
+      },
+      "autoCleanupOrphansEnabled": {
+        "title": "Rimuovi file orfani",
+        "description": "Quando attivo, esegue una scansione bidirezionale che rimuove i record del database che puntano a oggetti di archiviazione mancanti e gli oggetti di archiviazione senza record nel database. Disattivato per impostazione predefinita."
+      },
+      "autoCleanupOrphanMinAgeHours": {
+        "title": "Età minima degli orfani (ore)",
+        "description": "Solo i file e gli oggetti più vecchi di questo valore vengono considerati durante la scansione degli orfani, proteggendo i caricamenti ancora in corso. Minimo 1."
+      }
+    },
+    "buttons": {
+      "save": "Salva {group}",
+      "testSmtp": "Prova Connessione",
+      "testing": "Verifica in corso..."
+    },
+    "errors": {
+      "loadFailed": "Errore durante il caricamento delle impostazioni",
+      "updateFailed": "Errore durante l'aggiornamento delle impostazioni",
+      "passwordAuthRequiresProvider": "Impossibile disabilitare l'autenticazione password senza avere almeno un provider di autenticazione attivo",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
+      "cleanupValueInvalid": "Il valore deve essere un numero intero di almeno {min}",
+      "notifyDaysExceedsGrace": "Il tempo di anticipo dell'avviso non deve superare il periodo di tolleranza, altrimenti nessun avviso viene inviato",
+      "quotaThresholdsInvalid": "Inserire percentuali separate da virgola tra 1 e 99, ad esempio \"80,90\""
+    },
+    "messages": {
+      "noChanges": "Nessuna modifica da salvare",
+      "updateSuccess": "Impostazioni {group} aggiornate con successo",
+      "smtpTestFailed": "Connessione SMTP fallita: {error}",
+      "smtpTestGenericError": "Impossibile testare la connessione SMTP. Controlla le impostazioni e riprova.",
+      "smtpTestSuccess": "Connessione SMTP riuscita! La configurazione email funziona correttamente.",
+      "smtpMissingAuth": "Inserisci Nome utente e Password SMTP, oppure abilita l'opzione 'Nessuna Autenticazione'.",
+      "smtpMissingHostPort": "Inserisci Host e Porta SMTP prima di effettuare il test.",
+      "smtpNotEnabled": "SMTP non è abilitato. Abilitalo prima di procedere."
+    },
+    "title": "Impostazioni",
+    "breadcrumb": "Impostazioni",
+    "pageTitle": "Impostazioni",
+    "tooltips": {
+      "testSmtp": "Verifica la connessione SMTP con i valori attualmente inseriti nel modulo. Per rendere permanenti le modifiche, ricordati di salvare le impostazioni dopo il test.",
+      "defaultPlaceholder": "Inserisci e premi Invio"
+    },
+    "redirectUri": {
+      "placeholder": "https://miosito.com",
+      "previewLabel": "URL completa che verrà salvata:"
+    },
+    "emailAdmin": {
+      "queueStatus": "Stato della coda email",
+      "pending": "In attesa",
+      "sentLast24h": "Inviati (24h)",
+      "failed": "Falliti",
+      "digestQueue": "Coda riassunto",
+      "sendTest": "Invia email di prova",
+      "testPlaceholder": "destinatario@esempio.com",
+      "testSending": "Invio in corso...",
+      "testSuccess": "Email di prova accodata con successo",
+      "testError": "Invio dell'email di prova non riuscito"
+    }
+  },
+  "share": {
+    "errors": {
+      "invalidPassword": "Parola d'accesso non valida. Riprova.",
+      "loadFailed": "Errore durante il caricamento della condivisione",
+      "downloadFailed": "Errore durante il download del file"
+    },
+    "messages": {
+      "downloadStarted": "Download iniziato"
+    },
+    "password": {
+      "title": "Condivisione Protetta da Parola d'accesso",
+      "protected": "Inserisci la password per accedere ai file condivisi.",
+      "incorrect": "Parola d'accesso errata. Riprova.",
+      "label": "Parola d'accesso",
+      "placeholder": "Inserisci parola d'accesso della condivisione",
+      "submit": "Invia"
+    },
+    "details": {
+      "untitled": "Condivisione Senza Titolo",
+      "created": "Creata: {date}",
+      "expires": "Scade: {date}"
+    },
+    "notFound": {
+      "title": "Condivisione Non Trovata",
+      "description": "Questa condivisione potrebbe essere stata eliminata o è scaduta."
+    },
+    "pageTitle": "Condivisione",
+    "downloadAll": "Scarica Tutto",
+    "metadata": {
+      "defaultDescription": "Condividi file in modo sicuro",
+      "filesShared": "{count, plural, =1 {1 file condiviso} other {# file condivisi}}"
+    },
+    "identification": {
+      "title": "Identificazione visitatore",
+      "subtitle": "Fornisci i tuoi dati per accedere a questa condivisione",
+      "nameLabel": "Nome",
+      "emailLabel": "E-mail",
+      "submit": "Continua",
+      "error": "Invio identificazione non riuscito. Riprova.",
+      "optional": "Opzionale",
+      "nameRequired": "Il nome è obbligatorio",
+      "emailRequired": "L'e-mail è obbligatoria",
+      "emailInvalid": "Inserisci un indirizzo e-mail valido",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "I tuoi accessi e download potrebbero essere visibili al mittente di questa condivisione."
+    }
+  },
+  "shareActions": {
+    "deleteTitle": "Elimina Condivisione",
+    "deleteConfirmation": "Sei sicuro di voler eliminare questa condivisione? Questa azione non può essere annullata.",
+    "addDescriptionPlaceholder": "Aggiungi descrizione...",
+    "editTitle": "Modifica Condivisione",
+    "newPasswordLabel": "Nuova Password (lasciare vuoto per mantenere quella attuale)",
+    "newPasswordPlaceholder": "Inserisci nuova password",
+    "manageFilesTitle": "Gestisci File",
+    "manageRecipientsTitle": "Gestisci Destinatari",
+    "editSuccess": "Condivisione aggiornata con successo",
+    "editError": "Errore nell'aggiornamento della condivisione",
+    "editErrorMetadata": "Impossibile aggiornare i dettagli della condivisione",
+    "editErrorPassword": "Impossibile aggiornare la password della condivisione",
+    "bulkDeleteConfirmation": "Sei sicuro di voler eliminare {count, plural, =1 {1 condivisione} other {# condivisioni}}? Questa azione non può essere annullata.",
+    "bulkDeleteTitle": "Elimina Condivisioni Selezionate",
+    "aliasLabel": "Alias collegamento",
+    "aliasPlaceholder": "Inserisci alias personalizzato",
+    "copyLink": "Copia collegamento",
+    "fileTitle": "Condividi file",
+    "folderTitle": "Condividi cartella",
+    "generateLink": "Genera collegamento",
+    "linkDescriptionFile": "Genera un collegamento personalizzato per condividere il file",
+    "linkDescriptionFolder": "Genera un collegamento personalizzato per condividere la cartella",
+    "linkReady": "Il tuo collegamento di condivisione è pronto:",
+    "linkTitle": "Genera collegamento",
+    "itemsSelected": "{count, plural, =0 {Nessun elemento selezionato} =1 {1 elemento selezionato} other {# elementi selezionati}}",
+    "manageFilesDescription": "Seleziona file e cartelle da includere in questa condivisione",
+    "keepCurrentPasswordHint": "Lascia vuoto per mantenere la password attuale",
+    "passwordRequired": "È necessaria una password per la nuova protezione con password"
+  },
+  "shareDetails": {
+    "title": "Dettagli Condivisione",
+    "subtitle": "Informazioni dettagliate su questa condivisione",
+    "basicInfo": "Informazioni Base",
+    "name": "Nome",
+    "description": "Descrizione",
+    "noDescription": "Nessuna descrizione fornita",
+    "untitled": "Senza titolo",
+    "shareLink": "Link di Condivisione",
+    "editLink": "Modifica Link",
+    "generateLink": "Genera Link",
+    "noLink": "Nessun link generato ancora",
+    "copyLink": "Copia link",
+    "openLink": "Apri in nuova scheda",
+    "views": "Visualizzazioni",
+    "dates": "Date",
+    "created": "Creato",
+    "expires": "Scade",
+    "never": "Mai",
+    "security": "Sicurezza",
+    "passwordProtected": "Protetto da Password",
+    "publicAccess": "Accesso Pubblico",
+    "maxViews": "Visualizzazioni Max:",
+    "files": "File",
+    "recipients": "Destinatari",
+    "notAvailable": "N/D",
+    "invalidDate": "Data non valida",
+    "loadError": "Errore nel caricamento dei dettagli della condivisione",
+    "editSecurity": "Modifica Sicurezza",
+    "editExpiration": "Modifica Scadenza",
+    "clickToEnlargeQrCode": "Clicca per ingrandire il QR Code",
+    "downloadQrCode": "Scarica QR Code",
+    "qrCode": "QR Code",
+    "activity": {
+      "title": "Attività",
+      "noActivity": "Nessuna attività registrata.",
+      "access": "Visualizzato",
+      "download": "Scaricato",
+      "anonymous": "Anonimo",
+      "loadMore": "Carica altro",
+      "showingCount": "Visualizzazione di {shown} su {total}",
+      "loadError": "Caricamento dati attività non riuscito.",
+      "filterAll": "Tutte le azioni",
+      "filterAccess": "Solo visualizzazioni",
+      "filterDownload": "Solo download",
+      "filterAllVisitors": "Tutti i visitatori",
+      "filterIdentified": "Identificati",
+      "filterAnonymous": "Anonimi",
+      "you": "Tu",
+      "source": {
+        "tracking_token": "Tramite link destinatario",
+        "cookie": "Auto-identificato",
+        "selfDeclaredHint": "Identità auto-dichiarata, non verificata",
+        "authenticated_user": "Utente registrato"
+      }
+    },
+    "lastDownloaded": "Ultimo download",
+    "privacySummary": "Privacy",
+    "privacyNameField": "Nome visitatore:",
+    "privacyEmailField": "Email visitatore:",
+    "privacyNotifyOnDownload": "Notifiche download attivate",
+    "privacyInactivityAlert": "Avviso di inattività dopo {days} giorni",
+    "fieldValue": {
+      "OPTIONAL": "Opzionale",
+      "REQUIRED": "Obbligatorio"
+    },
+    "recipientNotified": "Notificato",
+    "recipientAccess": "{count, plural, one {# accesso} other {# accessi}}",
+    "recipientAccessWithLast": "{count, plural, one {# accesso} other {# accessi}} · ultimo {lastAccess}"
+  },
+  "shareExpiration": {
+    "neverExpires": "Non Scade Mai",
+    "success": {
+      "expirationUpdated": "Data di scadenza aggiornata con successo",
+      "expirationRemoved": "Scadenza rimossa con successo - la condivisione è ora permanente",
+      "expirationSet": "Data di scadenza impostata con successo"
+    },
+    "info": {
+      "canBeChanged": "Puoi cambiare o rimuovere la data di scadenza in qualsiasi momento",
+      "willBeInaccessible": "La condivisione diventerà inaccessibile dopo questa data",
+      "noExpiration": "Questa condivisione non scadrà mai e rimarrà accessibile indefinitamente.",
+      "title": "Informazioni sulla scadenza:"
+    },
+    "enableExpiration": "Abilita Scadenza",
+    "title": "Impostazioni Scadenza Condivisione",
+    "subtitle": "Configura quando questa condivisione scadrà",
+    "validation": {
+      "dateMustBeFuture": "La data di scadenza deve essere nel futuro",
+      "dateRequired": "Seleziona una data di scadenza"
+    },
+    "currentStatus": "Stato Attuale",
+    "error": {
+      "updateFailed": "Impossibile aggiornare le impostazioni di scadenza"
+    },
+    "expires": "Scade:",
+    "expirationDate": "Data di Scadenza"
+  },
+  "shareManager": {
+    "deleteSuccess": "Condivisione eliminata con successo",
+    "deleteError": "Errore durante l'eliminazione della condivisione",
+    "updateSuccess": "Condivisione aggiornata con successo",
+    "updateError": "Errore durante l'aggiornamento della condivisione",
+    "filesUpdateSuccess": "File aggiornati con successo",
+    "filesUpdateError": "Errore durante l'aggiornamento dei file",
+    "recipientsUpdateSuccess": "Destinatari aggiornati con successo",
+    "recipientsUpdateError": "Errore durante l'aggiornamento dei destinatari",
+    "linkGenerateSuccess": "Link di condivisione generato con successo",
+    "linkGenerateError": "Errore durante la generazione del link di condivisione",
+    "notifyLoading": "Invio notifiche in corso...",
+    "notifySuccess": "Destinatari notificati con successo",
+    "notifyError": "Errore durante la notifica dei destinatari",
+    "bulkDeleteError": "Errore nell'eliminazione delle condivisioni",
+    "bulkDeleteLoading": "Eliminazione di {count, plural, =1 {1 condivisione} other {# condivisioni}}...",
+    "bulkDeleteSuccess": "{count, plural, =1 {1 condivisione eliminata con successo} other {# condivisioni eliminate con successo}}",
+    "securityUpdateError": "Impossibile aggiornare le impostazioni di sicurezza",
+    "expirationUpdateError": "Impossibile aggiornare le impostazioni di scadenza",
+    "securityUpdateSuccess": "Impostazioni di sicurezza aggiornate con successo",
+    "expirationUpdateSuccess": "Impostazioni di scadenza aggiornate con successo",
+    "creatingZip": "Creazione di file zip ...",
+    "defaultShareName": "Condividere",
+    "downloadError": "Impossibile scaricare i file di condivisione",
+    "downloadSuccess": "Download avviato con successo",
+    "multipleSharesZipName": "{Count} _Shares_files.zip",
+    "noFilesToDownload": "Nessun file disponibile per il download",
+    "singleShareZipName": "{Sharename} _files.zip",
+    "zipDownloadError": "Impossibile creare un file zip",
+    "zipDownloadSuccess": "File zip scaricato correttamente",
+    "errors": {
+      "multipleDownloadNotSupported": "Il download di più condivisioni non è ancora supportato - scarica le condivisioni singolarmente"
+    },
+    "pauseSuccess": "Condivisione sospesa",
+    "pauseError": "Sospensione condivisione non riuscita",
+    "resumeSuccess": "Condivisione ripresa",
+    "resumeError": "Ripresa condivisione non riuscita. Se è scaduta o ha raggiunto il limite di visualizzazioni, estendila."
+  },
+  "shareMultipleFiles": {
+    "title": "Condividi File Multipli",
+    "shareNameLabel": "Nome Condivisione",
+    "shareNamePlaceholder": "Inserisci nome condivisione",
+    "descriptionLabel": "Descrizione",
+    "descriptionPlaceholder": "Inserisci una descrizione (opzionale)",
+    "filesToShare": "File da condividere",
+    "files": "file",
+    "totalSize": "Dimensione totale: {size}",
+    "creating": "Creazione...",
+    "create": "Crea Condivisione",
+    "itemsToShare": "Elementi da condividere ({count} {count, plural, =1 {elemento} other {elementi}})",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
+  },
+  "shareSecurity": {
+    "subtitle": "Configura protezione password e opzioni di sicurezza per questa condivisione",
+    "info": {
+      "title": "Come funziona:",
+      "withoutPassword": "Chiunque abbia il link può accedere a questa condivisione senza password.",
+      "withPassword": "Gli utenti dovranno inserire la password per accedere a questa condivisione."
+    },
+    "existingPasswordMessage": "Questa condivisione ha già una password. Se vuoi aggiornarla, inserisci la nuova password nel campo sottostante e salva.",
+    "passwordProtection": "Protezione Password",
+    "error": {
+      "updateFailed": "Impossibile aggiornare le impostazioni di sicurezza"
+    },
+    "passwordRequirements": {
+      "title": "Requisiti password:",
+      "minLength": "Almeno 2 caratteri"
+    },
+    "newPassword": "Nuova Password",
+    "success": {
+      "passwordUpdated": "Password aggiornata con successo",
+      "passwordRemoved": "Protezione password rimossa con successo",
+      "passwordSet": "Protezione password abilitata con successo"
+    },
+    "password": "Password",
+    "validation": {
+      "passwordRequired": "La password è obbligatoria",
+      "passwordTooShort": "La password deve essere di almeno 2 caratteri"
+    },
+    "currentStatus": "Stato Attuale",
+    "passwordPlaceholder": "Inserisci una password sicura",
+    "title": "Impostazioni Sicurezza Condivisione"
+  },
+  "shares": {
+    "errors": {
+      "loadFailed": "Errore durante il caricamento delle condivisioni",
+      "notifyFailed": "Errore durante la notifica dei destinatari",
+      "smtpConfigFailed": "Errore durante il caricamento della configurazione SMTP"
+    },
+    "messages": {
+      "linkCopied": "Link copiato negli appunti",
+      "recipientsNotified": "Destinatari notificati con successo"
+    },
+    "empty": {
+      "message": "Nessuna condivisione creata ancora",
+      "createButton": "Crea Condivisione"
+    },
+    "header": {
+      "title": "Le Mie Condivisioni",
+      "myShares": "Le Mie Condivisioni"
+    },
+    "search": {
+      "title": "Tutte le Condivisioni",
+      "createButton": "Crea Condivisione",
+      "placeholder": "Cerca condivisioni...",
+      "results": "Trovate {filtered} di {total} condivisioni"
+    },
+    "pageTitle": "Condivisioni"
+  },
+  "sharesTable": {
+    "ariaLabel": "Tabella condivisioni",
+    "never": "Mai",
+    "columns": {
+      "name": "NOME",
+      "description": "DESCRIZIONE",
+      "createdAt": "CREATO IL",
+      "expiresAt": "SCADE IL",
+      "status": "STATO",
+      "security": "SICUREZZA",
+      "files": "FILE",
+      "recipients": "DESTINATARI",
+      "actions": "AZIONI"
+    },
+    "status": {
+      "neverExpires": "Non Scade Mai",
+      "active": "Attivo",
+      "expired": "Scaduto",
+      "paused": "Sospeso",
+      "maxViewsReached": "Limite visualizzazioni raggiunto",
+      "noLink": "Senza link",
+      "noLinkTooltip": "Questa condivisione non ha ancora un link e non è accessibile. Genera un link per condividerla."
+    },
+    "security": {
+      "protected": "Protetto",
+      "public": "Pubblico"
+    },
+    "filesCount": "file",
+    "recipientsCount": "destinatari",
+    "actions": {
+      "menu": "Menu azioni condivisione",
+      "edit": "Modifica",
+      "manageFiles": "Gestisci File",
+      "manageRecipients": "Gestisci Destinatari",
+      "viewDetails": "Visualizza Dettagli",
+      "generateLink": "Genera Link",
+      "editLink": "Modifica Link",
+      "copyLink": "Copia Link",
+      "notifyRecipients": "Notifica Destinatari",
+      "delete": "Elimina",
+      "downloadShareFiles": "Scarica tutti i file",
+      "viewQrCode": "Visualizza QR Code",
+      "pause": "Sospendi",
+      "resume": "Riprendi",
+      "renew": "Rinnova"
+    },
+    "bulkActions": {
+      "delete": "Elimina",
+      "selected": "{count, plural, =1 {1 condivisione selezionata} other {# condivisioni selezionate}}",
+      "actions": "Azioni",
+      "download": "Scarica selezionato"
+    },
+    "selectAll": "Seleziona tutto",
+    "selectShare": "Seleziona condivisione {shareName}",
+    "folderCount": "cartelle"
+  },
+  "theme": {
+    "toggle": "Cambia tema",
+    "light": "Chiaro",
+    "dark": "Scuro",
+    "system": "Sistema"
+  },
+  "twoFactor": {
+    "title": "Autenticazione a Due Fattori",
+    "description": "Aggiungi un ulteriore livello di sicurezza al tuo account",
+    "enabled": "Il tuo account è protetto con l'autenticazione a due fattori",
+    "disabled": "L'autenticazione a due fattori non è abilitata",
+    "setup": {
+      "title": "Abilita Autenticazione a Due Fattori",
+      "description": "Scansiona il codice QR con la tua app di autenticazione, quindi inserisci il codice di verifica.",
+      "qrCode": "Codice QR",
+      "manualEntryKey": "Chiave per Inserimento Manuale",
+      "verificationCode": "Codice di Verifica",
+      "verificationCodePlaceholder": "Inserisci il codice a 6 cifre",
+      "verificationCodeDescription": "Inserisci il codice a 6 cifre dalla tua app di autenticazione",
+      "verifyAndEnable": "Verifica e Abilita",
+      "cancel": "Annulla",
+      "qrCodeAlt": "QR Code 2FA"
+    },
+    "disable": {
+      "title": "Disabilita Autenticazione a Due Fattori",
+      "description": "Inserisci la tua password per confermare la disabilitazione dell'autenticazione a due fattori.",
+      "password": "Password",
+      "passwordPlaceholder": "Inserisci la tua password",
+      "totpLabel": "Codice di verifica",
+      "totpHint": "Inserisci il tuo codice autenticatore a 6 cifre o un codice di backup",
+      "confirm": "Conferma Disabilitazione",
+      "cancel": "Annulla",
+      "totpPlaceholder": "000 000"
+    },
+    "backupCodes": {
+      "title": "Codici di Backup",
+      "description": "Salva questi codici di backup in un luogo sicuro. Puoi usarli per accedere al tuo account se perdi il tuo dispositivo di autenticazione.",
+      "warning": "Importante:",
+      "warningText": "Ogni codice di backup può essere utilizzato una sola volta. Conservali in modo sicuro e non condividerli con nessuno.",
+      "generateNew": "Genera Nuovi Codici di Backup",
+      "download": "Scarica Codici di Backup",
+      "copyToClipboard": "Copia negli Appunti",
+      "savedMessage": "Ho Salvato i Miei Codici di Backup",
+      "available": "{count} codici di backup disponibili",
+      "instructions": [
+        "• Salva questi codici in un luogo sicuro",
+        "• Ogni codice di backup può essere utilizzato una sola volta",
+        "• Puoi generare nuovi codici in qualsiasi momento"
+      ]
+    },
+    "verification": {
+      "title": "Autenticazione a Due Fattori",
+      "description": "Inserisci il codice a 6 cifre dalla tua app di autenticazione",
+      "backupDescription": "Inserisci uno dei tuoi codici di backup per continuare",
+      "verificationCode": "Codice di Verifica",
+      "backupCode": "Codice di Backup",
+      "verificationCodePlaceholder": "000000",
+      "backupCodePlaceholder": "XXXX-XXXX",
+      "verify": "Verifica",
+      "verifying": "Verifica in corso...",
+      "useBackupCode": "Usa invece un codice di backup",
+      "useAuthenticatorCode": "Usa invece il codice dell'autenticatore",
+      "rememberDevice": "Ricorda questo dispositivo per 30 giorni",
+      "rememberDeviceDescription": "Non dovrai inserire codici 2FA su questo dispositivo per 30 giorni"
+    },
+    "messages": {
+      "enabledSuccess": "Autenticazione a due fattori abilitata con successo!",
+      "disabledSuccess": "Autenticazione a due fattori disabilitata con successo",
+      "backupCodesGenerated": "Nuovi codici di backup generati con successo",
+      "backupCodesCopied": "Codici di backup copiati negli appunti",
+      "setupFailed": "Impossibile generare la configurazione 2FA",
+      "verificationFailed": "Codice di verifica non valido",
+      "disableFailed": "Impossibile disabilitare 2FA. Verifica la tua password.",
+      "backupCodesFailed": "Impossibile generare i codici di backup",
+      "backupCodesCopyFailed": "Impossibile copiare i codici di backup",
+      "statusLoadFailed": "Impossibile caricare lo stato 2FA",
+      "enterVerificationCode": "Inserisci il codice di verifica",
+      "enterPassword": "Inserisci la tua password",
+      "deviceTrusted": "Questo dispositivo è stato contrassegnato come affidabile per 30 giorni"
+    },
+    "errors": {
+      "invalidVerificationCode": "Codice di verifica non valido",
+      "invalidTwoFactorCode": "Codice di autenticazione a due fattori non valido",
+      "twoFactorRequired": "Autenticazione a due fattori richiesta",
+      "twoFactorAlreadyEnabled": "L'autenticazione a due fattori è già abilitata",
+      "twoFactorNotEnabled": "L'autenticazione a due fattori non è abilitata",
+      "passwordVerificationRequired": "Verifica password richiesta",
+      "invalidPassword": "Password non valida",
+      "userNotFound": "Utente non trovato"
+    },
+    "buttons": {
+      "enable2FA": "Abilita 2FA",
+      "disable2FA": "Disabilita 2FA"
+    },
+    "deviceNames": {
+      "unknownDevice": "Dispositivo Sconosciuto",
+      "browsers": {
+        "chrome": "Chrome",
+        "firefox": "Firefox",
+        "safari": "Safari",
+        "edge": "Edge"
+      },
+      "platforms": {
+        "windows": " su Windows",
+        "macos": " su macOS",
+        "linux": " su Linux",
+        "iphone": " su iPhone",
+        "android": " su Android"
+      }
+    },
+    "status": {
+      "label": "Stato:",
+      "enabled": "Abilitato",
+      "disabled": "Disabilitato"
+    },
+    "trustedDevices": {
+      "title": "Dispositivi Affidabili - 2FA",
+      "description": "Dispositivi che non richiedono la verifica 2FA",
+      "noDevices": "Nessun dispositivo affidabile",
+      "deviceName": "Dispositivo",
+      "addedOn": "Aggiunto il",
+      "expiresOn": "Scade il",
+      "remove": "Rimuovi",
+      "removeAll": "Rimuovi Tutti",
+      "confirmRemove": "Sei sicuro di voler rimuovere questo dispositivo affidabile?",
+      "confirmRemoveAll": "Sei sicuro di voler rimuovere tutti i dispositivi affidabili?",
+      "deviceRemoved": "Dispositivo affidabile rimosso con successo",
+      "allDevicesRemoved": "Tutti i dispositivi affidabili rimossi con successo",
+      "loadFailed": "Impossibile caricare i dispositivi affidabili",
+      "removeFailed": "Impossibile rimuovere il dispositivo affidabile",
+      "removeAllFailed": "Impossibile rimuovere tutti i dispositivi affidabili",
+      "loading": "Caricamento dispositivi affidabili...",
+      "noDevicesDescription": "I dispositivi appariranno qui quando scegli di fidarti di loro durante la verifica 2FA",
+      "tableHeaders": {
+        "device": "Dispositivo",
+        "added": "Aggiunto",
+        "expires": "Scade",
+        "lastUsed": "Ultimo Utilizzo",
+        "ipAddress": "Indirizzo IP",
+        "actions": "Azioni"
+      },
+      "status": {
+        "never": "Mai",
+        "expired": "Scaduto"
+      },
+      "modals": {
+        "removeDevice": {
+          "title": "Rimuovi Dispositivo Affidabile",
+          "added": "Aggiunto:",
+          "ip": "IP:"
+        },
+        "removeAllDevices": {
+          "title": "Rimuovi Tutti i Dispositivi Affidabili",
+          "description": "Questo rimuoverà {count} dispositivo{count, plural, =1 {} other {i}} affidabile{count, plural, =1 {} other {i}}. Dovrai verificare 2FA su tutti i dispositivi nuovamente."
+        },
+        "buttons": {
+          "cancel": "Annulla",
+          "removing": "Rimozione in corso...",
+          "removeDevice": "Rimuovi Dispositivo",
+          "removeAllDevices": "Rimuovi Tutti i Dispositivi"
+        }
+      }
+    }
+  },
+  "uploadFile": {
+    "title": "Carica file",
+    "multipleTitle": "Carica Più File",
+    "selectFile": "Clicca per selezionare un file",
+    "selectMultipleFiles": "Clicca per selezionare uno o più file",
+    "dragAndDrop": "o trascina e rilascia i file qui",
+    "preview": "Anteprima",
+    "uploadProgress": "Progresso caricamento",
+    "upload": "Carica",
+    "startUploads": "Inizia Caricamenti",
+    "retry": "Riprova",
+    "finish": "Termina",
+    "success": "File caricato con successo",
+    "allSuccess": "{count, plural, =1 {File caricato con successo} other {# file caricati con successo}}",
+    "partialSuccess": "{success} file caricati con successo, {error} falliti",
+    "error": "Errore nel caricamento del file",
+    "fileSizeExceeded": "La dimensione del file supera il limite di {maxsizemb}MB.",
+    "insufficientStorage": "Spazio di archiviazione insufficiente. Hai {availablespace}MB disponibili.",
+    "storageFull": "Spazio di archiviazione insufficiente. Disponibile: {available} GB, richiesto: {required} GB.",
+    "unauthorized": "Non autorizzato: è richiesto un token valido per accedere a questa risorsa.",
+    "confirmCancel": {
+      "title": "Annulla Caricamenti",
+      "messageSingle": "C'è un caricamento in corso.",
+      "messageMultiple": "Ci sono {count} caricamenti in corso.",
+      "warning": "Se chiudi ora, i caricamenti saranno annullati e qualsiasi progresso sarà perso.",
+      "continue": "Continua Caricamenti",
+      "cancel": "Annulla Caricamenti"
+    },
+    "globalDrop": {
+      "title": "Rilascia i file per caricarli",
+      "description": "Rilascia per caricare i tuoi file"
+    },
+    "pasteSuccess": "{count, plural, =1 {Immagine incollata e caricata con successo} other {# immagini incollate e caricate con successo}}",
+    "filesQueued": "{count, plural, one {# file in coda per il caricamento} other {# files in coda per il caricamento}}",
+    "errors": {
+      "addFileFailed": "Impossibile aggiungere {name}: {error}",
+      "uploadFailed": "Caricamento non riuscito",
+      "networkError": "Impossibile raggiungere il server. Controlla la tua connessione.",
+      "storageUnavailable": "Il servizio di archiviazione non è disponibile. Riprova più tardi."
+    }
+  },
+  "groups": {
+    "header": {
+      "title": "Gruppi",
+      "management": "Gestione Gruppi",
+      "addGroup": "Crea Gruppo"
+    },
+    "table": {
+      "name": "Nome",
+      "description": "Descrizione",
+      "members": "Membri",
+      "maxFileSize": "Dim. Max File",
+      "maxStorage": "Archiviazione Max",
+      "storageUsed": "Archiviazione Usata",
+      "actions": "Azioni",
+      "inherited": "Ereditato",
+      "unlimited": "Illimitato",
+      "empty": "Nessun gruppo ancora. Creane uno per iniziare."
+    },
+    "form": {
+      "titleCreate": "Crea Gruppo",
+      "titleEdit": "Modifica Gruppo",
+      "name": "Nome",
+      "namePlaceholder": "Inserisci nome gruppo",
+      "description": "Descrizione",
+      "descriptionPlaceholder": "Descrizione opzionale",
+      "ldapDn": {
+        "label": "LDAP Group DN",
+        "placeholder": "ad es. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name del gruppo Active Directory da mappare. Lascia vuoto se non utilizzi LDAP."
+      },
+      "quota": {
+        "title": "Quote di archiviazione",
+        "maxFileSize": "Dim. Max File",
+        "maxTotalStorage": "Archiviazione Totale Max",
+        "inherit": "Eredita (predefinito globale)",
+        "unlimited": "Illimitato",
+        "custom": "Personalizzato"
+      },
+      "create": "Crea Gruppo",
+      "save": "Salva Modifiche"
+    },
+    "delete": {
+      "title": "Elimina Gruppo",
+      "confirmationWithMembers": "Questo gruppo ha {count} membro/i. Verranno de-assegnati e le loro quote torneranno ai valori predefiniti globali.",
+      "confirmation": "Sei sicuro di voler eliminare questo gruppo?",
+      "confirm": "Elimina Gruppo"
+    },
+    "detail": {
+      "title": "Dettagli Gruppo",
+      "members": "Membri",
+      "addMember": "Aggiungi Membro",
+      "searchUsers": "Cerca utenti...",
+      "noMembers": "Nessun membro in questo gruppo.",
+      "remove": "Rimuovi",
+      "moveWarning": "Questo utente è attualmente nel gruppo \"{groupName}\". Verrà spostato in questo gruppo.",
+      "storageUsed": "Archiviazione Usata",
+      "memberUser": "Utente",
+      "memberEmail": "Email",
+      "memberStorage": "Archiviazione",
+      "selectUser": "Seleziona un utente...",
+      "add": "Aggiungi",
+      "userInOtherGroup": "Questo utente è attualmente nel gruppo \"{groupName}\". Verrà spostato."
+    },
+    "validation": {
+      "nameRequired": "Il nome del gruppo è obbligatorio"
+    },
+    "messages": {
+      "createSuccess": "Gruppo creato con successo",
+      "updateSuccess": "Gruppo aggiornato con successo",
+      "deleteSuccess": "Gruppo eliminato con successo",
+      "memberAdded": "Membro aggiunto al gruppo",
+      "memberRemoved": "Membro rimosso dal gruppo"
+    },
+    "errors": {
+      "submitFailed": "Impossibile {mode} il gruppo",
+      "deleteFailed": "Impossibile eliminare il gruppo",
+      "memberAddFailed": "Impossibile aggiungere il membro",
+      "memberRemoveFailed": "Impossibile rimuovere il membro"
+    },
+    "actions": {
+      "viewDetails": "Visualizza Dettagli",
+      "edit": "Modifica",
+      "delete": "Elimina"
+    }
+  },
+  "users": {
+    "modes": {
+      "create": "crea",
+      "edit": "modifica"
+    },
+    "errors": {
+      "loadFailed": "Errore durante il caricamento degli utenti",
+      "submitFailed": "Errore durante la {mode} dell'utente",
+      "deleteFailed": "Errore durante l'eliminazione dell'utente",
+      "statusUpdateFailed": "Errore durante l'aggiornamento dello stato dell'utente"
+    },
+    "messages": {
+      "createSuccess": "Utente creato con successo",
+      "updateSuccess": "Utente aggiornato con successo",
+      "deleteSuccess": "Utente eliminato con successo",
+      "activateSuccess": "Utente attivato con successo",
+      "deactivateSuccess": "Utente disattivato con successo"
+    },
+    "actions": {
+      "edit": "Modifica",
+      "activate": "Attiva",
+      "deactivate": "Disattiva",
+      "delete": "Elimina"
+    },
+    "delete": {
+      "title": "Conferma Eliminazione Utente",
+      "confirmation": "Sei sicuro di voler eliminare l'utente {firstName} {lastName}? Questa azione non può essere annullata.",
+      "confirm": "Elimina Utente"
+    },
+    "form": {
+      "titleCreate": "Aggiungi Nuovo Utente",
+      "titleEdit": "Modifica Utente",
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "username": "Nome Utente",
+      "email": "Indirizzo email",
+      "password": "Parola d'accesso",
+      "newPassword": "Nuova Parola d'accesso (opzionale)",
+      "passwordPlaceholder": "Lascia vuoto per mantenere la parola d'accesso attuale",
+      "role": "Ruolo",
+      "roleUser": "Utente",
+      "roleAdmin": "Amministratore",
+      "group": "Gruppo",
+      "noGroup": "Nessun Gruppo",
+      "groupSaveError": "Impossibile aggiornare l'assegnazione del gruppo",
+      "create": "Crea",
+      "save": "Salva",
+      "quota": {
+        "title": "Quote di archiviazione",
+        "maxFileSize": "Dimensione massima del file",
+        "maxTotalStorage": "Archiviazione totale massima",
+        "inherit": "Usa valore predefinito",
+        "unlimited": "Illimitato",
+        "custom": "Personalizzato",
+        "saveSuccess": "Quota aggiornata con successo",
+        "saveError": "Impossibile aggiornare la quota",
+        "currentUsage": "Utilizzo attuale",
+        "effectiveMaxFileSize": "Dimensione massima del file effettiva",
+        "effectiveMaxStorage": "Archiviazione totale massima effettiva",
+        "usagePercent": "Utilizzo",
+        "sourceUser": "Sostituzione utente",
+        "sourceGroup": "Gruppo",
+        "sourceGlobal": "Predefinito globale",
+        "sourceAdminDefault": "Predefinito admin"
+      }
+    },
+    "status": {
+      "title": "Conferma Cambio Stato",
+      "confirmation": "Sei sicuro di voler {action} l'utente {firstName} {lastName}?",
+      "activate": "attivare",
+      "deactivate": "disattivare",
+      "user": "Utente"
+    },
+    "header": {
+      "title": "Gestione Utenti",
+      "addUser": "Aggiungi Utente",
+      "management": "Gestione Utenti"
+    },
+    "table": {
+      "user": "USER",
+      "userRole": "Utente",
+      "email": "INDIRIZZO EMAIL",
+      "status": "STATO",
+      "role": "RUOLO",
+      "actions": "AZIONI",
+      "active": "Attivo",
+      "inactive": "Inattivo",
+      "admin": "Amministratore",
+      "source": "Origine",
+      "ldap": "LDAP",
+      "local": "Locale"
+    },
+    "invite": {
+      "button": "Genera Link di Invito",
+      "title": "Genera Link di Invito Utente",
+      "description": "Genera un link di utilizzo una tantum che permette a qualcuno di creare il proprio account. Il link scade in 15 minuti.",
+      "generating": "Generazione in corso...",
+      "generate": "Genera Link",
+      "generated": "Link di invito generato con successo!",
+      "linkReady": "Link di invito pronto",
+      "linkReadyDescription": "Condividi questo link con la persona che vuoi invitare. Potranno creare il proprio account come utente regolare.",
+      "copyLink": "Copia Link",
+      "linkCopied": "Link di invito copiato negli appunti!",
+      "expiresIn": "Scade in 15 minuti",
+      "close": "Chiudi",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
+      "errors": {
+        "generateFailed": "Impossibile generare il link di invito",
+        "copyFailed": "Impossibile copiare il link",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
+      }
+    }
+  },
+  "validation": {
+    "firstNameRequired": "Il nome è obbligatorio",
+    "lastNameRequired": "Il cognome è obbligatorio",
+    "usernameLength": "Il nome utente deve essere di almeno 3 caratteri",
+    "usernameSpaces": "Il nome utente non può contenere spazi",
+    "invalidEmail": "Inserisci un indirizzo email valido",
+    "passwordLength": "La parola d'accesso deve essere di almeno 12 caratteri",
+    "passwordsMatch": "Le parole d'accesso devono corrispondere",
+    "emailRequired": "L'indirizzo email è obbligatorio",
+    "emailOrUsernameRequired": "L'indirizzo email o il nome utente è obbligatorio",
+    "passwordRequired": "La parola d'accesso è obbligatoria",
+    "passwordMinLength": "La password deve contenere almeno 6 caratteri",
+    "nameRequired": "Il nome è obbligatorio",
+    "required": "Questo campo è obbligatorio",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+  },
+  "contextMenu": {
+    "newFolder": "Nuova cartella",
+    "uploadFile": "Carica file"
+  },
+  "registerWithInvite": {
+    "title": "Crea il Tuo Account",
+    "description": "Compila le informazioni sottostanti per creare il tuo account",
+    "labels": {
+      "firstName": "Nome",
+      "firstNamePlaceholder": "Inserisci il tuo nome",
+      "lastName": "Cognome",
+      "lastNamePlaceholder": "Inserisci il tuo cognome",
+      "username": "Nome Utente",
+      "usernamePlaceholder": "Scegli un nome utente",
+      "email": "Email",
+      "emailPlaceholder": "Inserisci la tua email",
+      "password": "Password",
+      "passwordPlaceholder": "Scegli una password",
+      "confirmPassword": "Conferma Password",
+      "confirmPasswordPlaceholder": "Conferma la tua password"
+    },
+    "buttons": {
+      "creating": "Creazione account in corso...",
+      "createAccount": "Crea Account"
+    },
+    "validation": {
+      "firstNameRequired": "Il nome è obbligatorio",
+      "lastNameRequired": "Il cognome è obbligatorio",
+      "usernameMinLength": "Il nome utente deve essere di almeno 3 caratteri",
+      "invalidEmail": "Email non valida",
+      "passwordMinLength": "La password deve essere di almeno 12 caratteri",
+      "passwordsMatch": "Le password devono corrispondere",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "messages": {
+      "success": "Account creato con successo! Reindirizzamento al login...",
+      "redirecting": "Reindirizzamento al login..."
+    },
+    "errors": {
+      "invalidToken": "Errore con il link di invito",
+      "tokenUsed": "Questo link di invito è già stato utilizzato",
+      "tokenExpired": "Questo link di invito è scaduto",
+      "usernameExists": "Il nome utente esiste già",
+      "emailExists": "L'email esiste già",
+      "createFailed": "Impossibile creare l'account. Riprova."
+    },
+    "pageTitle": "Crea Account"
+  },
+  "filesTree": {
+    "noItems": "Nessun elemento da visualizzare"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Cambia lingua"
+  },
+  "ldap": {
+    "pageTitle": "LDAP / Active Directory",
+    "pageDescription": "Configura la sincronizzazione LDAP per importare utenti da Active Directory",
+    "config": {
+      "title": "Configurazione",
+      "description": "Impostazioni di connessione al server LDAP e mapping degli attributi",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
+      "connection": "Connessione",
+      "serverUrl": "URL Server",
+      "useTls": "Usa TLS (LDAPS)",
+      "tlsSkipVerify": "Salta Verifica TLS",
+      "tlsSkipVerifyWarning": "Avviso: Disabilitare la verifica del certificato consente attacchi man-in-the-middle",
+      "bindDn": "Bind DN",
+      "bindPassword": "Bind Password",
+      "bindPasswordPlaceholder": "Inserisci la password per testare o salvare una nuova password",
+      "search": "Impostazioni Ricerca",
+      "searchBase": "Base di Ricerca",
+      "syncGroupDn": "Sync Group DN",
+      "attributes": "Mapping Attributi",
+      "usernameAttr": "Attributo Nome Utente",
+      "emailAttr": "Attributo Email",
+      "displayNameAttr": "Attributo Nome Visualizzato",
+      "syncSettings": "Impostazioni Sincronizzazione",
+      "syncInterval": "Intervallo Sincronizzazione (minuti)",
+      "syncIntervalHelp": "Tra 15 minuti e 7 giorni (10080 minuti)",
+      "appUrl": "URL Applicazione",
+      "appUrlHelp": "Utilizzato nelle email di benvenuto inviate ai nuovi utenti LDAP",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
+      "appUrlRequired": "L'URL dell'applicazione è richiesto quando LDAP è abilitato",
+      "bindPasswordRequired": "La password bind è richiesta per una nuova configurazione",
+      "members": "membri",
+      "save": "Salva Configurazione",
+      "testConnection": "Testa Connessione",
+      "saveSuccess": "Configurazione LDAP salvata",
+      "saveError": "Impossibile salvare la configurazione LDAP",
+      "testSuccess": "Test di connessione riuscito",
+      "testError": "Test di connessione non riuscito"
+    },
+    "groupMapping": {
+      "title": "Mapping Gruppi",
+      "description": "Gruppi locali mappati ai gruppi di Active Directory per l'assegnazione delle quote",
+      "manageGroups": "Gestisci Gruppi",
+      "groupName": "Nome Gruppo",
+      "adGroupDn": "AD Group DN",
+      "noMapping": "Nessun mapping di gruppo configurato. Imposta i DN LDAP nella gestione dei gruppi per mappare i gruppi AD ai gruppi di quota locali."
+    },
+    "sync": {
+      "title": "Operazioni Sincronizzazione",
+      "description": "Sincronizzazione manuale e cronologia della sincronizzazione",
+      "syncNow": "Sincronizza Ora",
+      "triggered": "Sincronizzazione LDAP avviata",
+      "error": "Impossibile avviare la sincronizzazione LDAP",
+      "lastSync": "Ultima sincronizzazione",
+      "nextSync": "Prossima sincronizzazione",
+      "noHistory": "Nessuna cronologia di sincronizzazione ancora",
+      "date": "Data",
+      "trigger": "Trigger",
+      "duration": "Durata",
+      "created": "Creato",
+      "updated": "Aggiornato",
+      "deactivated": "Disattivato",
+      "reactivated": "Riattivato",
+      "skipped": "Saltato",
+      "status": "Stato",
+      "statusLabel": {
+        "success": "Completato",
+        "error": "Errore",
+        "partial": "Parziale",
+        "running": "In esecuzione"
+      }
+    },
+    "syncDetail": {
+      "title": "Dettagli Sincronizzazione",
+      "details": "Dettagli Salti ed Errori",
+      "type": "Tipo",
+      "username": "Nome Utente",
+      "email": "Email",
+      "message": "Messaggio",
+      "detailType": {
+        "skip": "Saltato",
+        "error": "Errore"
+      }
+    },
+    "banner": {
+      "active": "Sincronizzazione LDAP/AD attiva",
+      "disabled": "Sincronizzazione LDAP/AD disabilitata",
+      "configure": "Configura"
+    },
+    "warnings": {
+      "title": "Avvisi di Configurazione"
+    },
+    "time": {
+      "justNow": "proprio adesso",
+      "minutesAgo": "{minutes}m fa",
+      "hoursAgo": "{hours}h fa",
+      "daysAgo": "{days}g fa"
+    },
+    "browse": {
+      "retry": "Retry",
+      "error": "Something went wrong. Please try again.",
+      "directory": {
+        "title": "Browse Directory",
+        "description": "Pick a base DN from the live directory tree.",
+        "buttonLabel": "Browse directory",
+        "useDetectedBase": "Use detected base",
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "loading": "Loading directory…",
+        "noRoots": "No naming contexts found.",
+        "noSubContainers": "No sub-containers"
+      },
+      "groups": {
+        "title": "Find Group",
+        "description": "Search the directory for a group to sync.",
+        "buttonLabel": "Search groups",
+        "placeholder": "Type to search groups…",
+        "prompt": "Start typing to search for a group.",
+        "searching": "Searching…",
+        "empty": "No groups match your search.",
+        "truncated": "Too many results — refine your search.",
+        "resultCount": "{count, plural, =0 {No groups found} one {# group found} other {# groups found}}"
+      }
+    }
+  },
+  "backgroundImages": {
+    "empty": "Nessuna immagine di sfondo caricata. Carica le immagini per abilitare sfondi personalizzati per le condivisioni in stile WeTransfer.",
+    "add": "Aggiungi Immagine",
+    "uploading": "Caricamento...",
+    "uploadSuccess": "Immagine caricata con successo",
+    "uploadError": "Impossibile caricare l'immagine",
+    "deleteConfirm": "Sei sicuro di voler eliminare questa immagine di sfondo?",
+    "deleteSuccess": "Immagine eliminata con successo",
+    "deleteError": "Impossibile eliminare l'immagine",
+    "untitled": "Senza titolo",
+    "rename": "Clicca per rinominare",
+    "renameSuccess": "Immagine rinominata con successo",
+    "renameError": "Impossibile rinominare l'immagine",
+    "moveUp": "Sposta in su",
+    "moveDown": "Sposta in giù",
+    "reorderError": "Impossibile riordinare le immagini"
+  },
+  "quickShare": {
+    "dropzone": {
+      "title": "Condivisione Rapida",
+      "description": "Trascina i tuoi file qui per condividere rapidamente",
+      "browse": "o clicca per sfogliare",
+      "dragActive": "Trascina i file qui"
+    },
+    "upload": {
+      "title": "Condivisione Rapida",
+      "addMore": "Aggiungi altri file",
+      "dropToAdd": "Trascina i file per aggiungerli",
+      "namePlaceholder": "Nome condivisione",
+      "expiration": {
+        "label": "Scade in",
+        "1day": "1 giorno",
+        "7days": "7 giorni",
+        "30days": "30 giorni",
+        "never": "Mai"
+      },
+      "password": {
+        "label": "Protezione password",
+        "placeholder": "Inserisci password"
+      },
+      "recipients": {
+        "label": "Destinatari",
+        "placeholder": "Aggiungi indirizzi email",
+        "hint": "Premi Invio per aggiungere"
+      },
+      "share": "Condividi",
+      "sharing": "Condivisione in corso...",
+      "waitingUpload": "Caricamento... la condivisione sarà creata automaticamente",
+      "defaultName": "{count, plural, one {# file} other {# file}}",
+      "error": "Impossibile creare la condivisione",
+      "uploadError": "Impossibile caricare alcuni file",
+      "notifyError": "Condivisione creata ma impossibile notificare i destinatari",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
+      "invalidEmail": "Inserisci un indirizzo email valido"
+    },
+    "confirmation": {
+      "title": "Condiviso!",
+      "copyLink": "Copia link",
+      "copied": "Link copiato!",
+      "summary": {
+        "files": "{count, plural, one {# file} other {# file}}",
+        "expires": "scade in {duration}",
+        "noExpiry": "nessuna scadenza",
+        "password": "protetto da password",
+        "noPassword": "senza password"
+      },
+      "newShare": "Nuova condivisione",
+      "downloadQr": "Scarica QR code"
+    }
+  },
+  "notificationPreferences": {
+    "pageTitle": "Preferenze di notifica",
+    "description": "Scegliere quali notifiche email ricevere",
+    "type": "Tipo di notifica",
+    "category": "Categoria",
+    "frequency": "Frequenza",
+    "immediate": "Immediato",
+    "disabled": "Disabilitato",
+    "alwaysEnabled": "Sempre abilitato",
+    "save": "Salva preferenze",
+    "saveSuccess": "Preferenze di notifica salvate",
+    "saveError": "Impossibile salvare le preferenze",
+    "noChanges": "Nessuna modifica da salvare",
+    "types": {
+      "password_reset": "Reimpostazione password",
+      "welcome": "Email di benvenuto",
+      "account_deactivated": "Account disattivato",
+      "account_reactivated": "Account riattivato",
+      "share_invitation": "Invito alla condivisione",
+      "share_accessed": "Condivisione acceduta",
+      "share_downloaded": "File scaricato dalla condivisione",
+      "share_expiring": "Condivisione in scadenza",
+      "share_expired": "Condivisione scaduta",
+      "share_max_views_reached": "Visualizzazioni massime della condivisione raggiunte",
+      "share_no_activity": "Nessuna attività sulla condivisione",
+      "reverse_share_invitation": "Invito al link di ricezione",
+      "reverse_share_uploaded": "File caricati sul link di ricezione",
+      "reverse_share_expiring": "Link di ricezione in scadenza",
+      "reverse_share_expired": "Link di ricezione scaduto",
+      "quota_warning": "Avviso quota",
+      "quota_exceeded": "Quota superata",
+      "files_auto_deleted": "File eliminati automaticamente",
+      "share_auto_deleted": "Condivisione eliminata automaticamente",
+      "admin_user_registered": "Nuovo utente registrato (amministratore)",
+      "admin_quota_alert": "Avviso quota utente (amministratore)",
+      "test_email": "Email di test",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
+    },
+    "descriptions": {
+      "share_accessed": "Quando qualcuno apre un collegamento ai tuoi file condivisi",
+      "share_downloaded": "Quando qualcuno scarica file dalla tua condivisione",
+      "share_expiring": "Un promemoria prima della scadenza del tuo collegamento di condivisione",
+      "share_expired": "Quando il tuo collegamento di condivisione è scaduto e non è più accessibile",
+      "share_pending_deletion": "Quando la tua condivisione scaduta è programmata per l'eliminazione definitiva",
+      "share_max_views_reached": "Quando la tua condivisione raggiunge il numero massimo di visualizzazioni consentite",
+      "share_no_activity": "Quando la tua condivisione non ha avuto download per un po' di tempo",
+      "reverse_share_uploaded": "Quando qualcuno carica file tramite il tuo collegamento di condivisione inversa",
+      "reverse_share_expiring": "Un promemoria prima della scadenza del tuo collegamento di condivisione inversa",
+      "reverse_share_expired": "Quando il tuo collegamento di condivisione inversa è scaduto",
+      "reverse_share_pending_deletion": "Quando la tua condivisione inversa scaduta è programmata per l'eliminazione",
+      "reverse_share_auto_deleted": "Quando la tua condivisione inversa è stata eliminata automaticamente dopo la scadenza",
+      "quota_warning": "Quando l'utilizzo dello spazio di archiviazione si avvicina al limite della tua quota",
+      "quota_exceeded": "Quando l'utilizzo dello spazio di archiviazione ha superato il limite della tua quota",
+      "files_auto_deleted": "Quando i file sono stati eliminati automaticamente per liberare spazio quota",
+      "share_auto_deleted": "Quando una condivisione è stata eliminata automaticamente dal sistema di pulizia",
+      "admin_user_registered": "Quando un nuovo utente si registra sulla piattaforma (solo amministratori)",
+      "admin_quota_alert": "Quando l'utilizzo dello spazio di un utente supera la sua quota (solo amministratori)"
+    },
+    "categories": {
+      "account": "Account",
+      "shares": "Condivisioni",
+      "reverseShares": "Link di ricezione",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
+    },
+    "saving": "Salvataggio...",
+    "loadError": "Impossibile caricare le preferenze di notifica",
+    "retry": "Riprova",
+    "unsavedChanges": "{count, plural, one {# modifica non salvata} other {# modifiche non salvate}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP",
+      "label": "[TO_TRANSLATE] User management"
+    }
+  }
+}

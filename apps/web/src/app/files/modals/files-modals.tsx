@@ -1,0 +1,170 @@
+import { useTranslations } from "next-intl";
+
+import { FolderActionsModals } from "@/components/modals";
+import { BulkDownloadModal } from "@/components/modals/bulk-download-modal";
+import { DeleteConfirmationModal } from "@/components/modals/delete-confirmation-modal";
+import { FileActionsModals } from "@/components/modals/file-actions-modals";
+import { FilePreviewModal } from "@/components/modals/file-preview-modal";
+import { ShareCreationModal } from "@/components/modals/share-creation-modal";
+import { UploadFileModal } from "@/components/modals/upload-file-modal";
+import type { FilesModalsProps } from "../types";
+
+export function FilesModals({
+  fileManager,
+  modals,
+  onSuccess,
+  currentFolderId,
+}: FilesModalsProps & { currentFolderId?: string | null }) {
+  const t = useTranslations();
+
+  return (
+    <>
+      <UploadFileModal
+        isOpen={modals.isUploadModalOpen}
+        onClose={modals.onCloseUploadModal}
+        onSuccess={onSuccess}
+        currentFolderId={currentFolderId || undefined}
+      />
+
+      {/* Folder Modals */}
+      <FolderActionsModals
+        folderToCreate={fileManager.isCreateFolderModalOpen}
+        onCloseCreate={() => fileManager.setCreateFolderModalOpen(false)}
+        onCreateFolder={(name, description) =>
+          fileManager.handleCreateFolder({ name, description }, currentFolderId || undefined)
+        }
+        folderToEdit={fileManager.folderToRename}
+        onCloseEdit={() => fileManager.setFolderToRename(null)}
+        onEditFolder={fileManager.handleFolderRename}
+        folderToDelete={fileManager.folderToDelete}
+        onCloseDelete={() => fileManager.setFolderToDelete(null)}
+        onDeleteFolder={fileManager.handleFolderDelete}
+        folderInSharesWarning={fileManager.folderInSharesWarning}
+        onForceDeleteFolder={fileManager.handleFolderForceDelete}
+        onCloseSharesWarning={() => fileManager.setFolderInSharesWarning(null)}
+      />
+
+      <FilePreviewModal
+        file={fileManager.previewFile || { name: "", objectName: "" }}
+        isOpen={!!fileManager.previewFile}
+        onClose={() => fileManager.setPreviewFile(null)}
+      />
+
+      <ShareCreationModal
+        isOpen={!!(fileManager.fileToShare || fileManager.folderToShare)}
+        onClose={() => {
+          fileManager.setFileToShare(null);
+          fileManager.setFolderToShare(null);
+        }}
+        onSuccess={onSuccess}
+        preselected={{
+          files: fileManager.fileToShare
+            ? [{ id: fileManager.fileToShare.id, name: fileManager.fileToShare.name }]
+            : [],
+          folders: fileManager.folderToShare
+            ? [{ id: fileManager.folderToShare.id, name: fileManager.folderToShare.name }]
+            : [],
+        }}
+      />
+
+      <FileActionsModals
+        fileToDelete={fileManager.fileToDelete}
+        fileToRename={fileManager.fileToRename}
+        fileInSharesWarning={fileManager.fileInSharesWarning}
+        onCloseDelete={() => fileManager.setFileToDelete(null)}
+        onCloseRename={() => fileManager.setFileToRename(null)}
+        onCloseSharesWarning={() => fileManager.setFileInSharesWarning(null)}
+        onDelete={fileManager.handleDelete}
+        onRename={fileManager.handleRename}
+        onForceDelete={fileManager.handleForceDelete}
+      />
+
+      {/* Bulk Actions Modals */}
+      <BulkDownloadModal
+        isOpen={fileManager.isBulkDownloadModalOpen}
+        onClose={() => fileManager.setBulkDownloadModalOpen(false)}
+        onDownload={(zipName) => {
+          if (fileManager.filesToDownload) {
+            fileManager.handleBulkDownloadWithZip(fileManager.filesToDownload, zipName);
+          }
+        }}
+        items={[
+          ...(fileManager.filesToDownload?.map((file) => ({
+            id: file.id,
+            name: file.name,
+            size: file.size,
+            type: "file" as const,
+          })) || []),
+          ...(fileManager.foldersToDownload?.map((folder) => ({
+            id: folder.id,
+            name: folder.name,
+            size: folder.totalSize ? parseInt(folder.totalSize, 10) : undefined,
+            type: "folder" as const,
+          })) || []),
+        ]}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={!!(fileManager.filesToDelete || fileManager.foldersToDelete)}
+        onClose={() => {
+          fileManager.setFilesToDelete(null);
+          fileManager.setFoldersToDelete(null);
+        }}
+        onConfirm={fileManager.handleDeleteBulk}
+        title={t("files.bulkDeleteTitle")}
+        description={t("files.bulkDeleteConfirmation", {
+          count:
+            (fileManager.filesToDelete?.length || 0) + (fileManager.foldersToDelete?.length || 0),
+        })}
+        files={fileManager.filesToDelete?.map((f) => f.name) || []}
+        folders={fileManager.foldersToDelete?.map((f) => f.name) || []}
+        itemType={
+          (fileManager.filesToDelete?.length || 0) > 0 &&
+          (fileManager.foldersToDelete?.length || 0) > 0
+            ? "mixed"
+            : (fileManager.foldersToDelete?.length || 0) > 0
+              ? "files"
+              : "files"
+        }
+      />
+
+      <ShareCreationModal
+        isOpen={!!(fileManager.filesToShare || fileManager.foldersToShare)}
+        onClose={() => {
+          fileManager.setFilesToShare(null);
+          fileManager.setFoldersToShare(null);
+        }}
+        onSuccess={() => {
+          fileManager.handleShareBulkSuccess();
+          onSuccess();
+        }}
+        preselected={{
+          files: (fileManager.filesToShare || []).map((f) => ({ id: f.id, name: f.name })),
+          folders: (fileManager.foldersToShare || []).map((f) => ({ id: f.id, name: f.name })),
+        }}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={!!fileManager.filesInSharesWarning}
+        onClose={() => fileManager.setFilesInSharesWarning(null)}
+        onConfirm={fileManager.handleForceBulkDelete}
+        title={t("fileActions.bulkInSharesWarningTitle")}
+        description={t("fileActions.bulkInSharesWarningBody", {
+          count: fileManager.filesInSharesWarning?.length || 0,
+        })}
+        files={fileManager.filesInSharesWarning?.map((f) => f.name) || []}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={!!fileManager.foldersInSharesWarning}
+        onClose={() => fileManager.setFoldersInSharesWarning(null)}
+        onConfirm={fileManager.handleForceBulkFolderDelete}
+        title={t("folderActions.bulkInSharesWarningTitle")}
+        description={t("folderActions.bulkInSharesWarningBody", {
+          count: fileManager.foldersInSharesWarning?.length || 0,
+        })}
+        folders={fileManager.foldersInSharesWarning?.map((f) => f.name) || []}
+      />
+    </>
+  );
+}

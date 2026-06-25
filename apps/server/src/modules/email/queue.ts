@@ -1,0 +1,532 @@
+import { prisma } from "../../shared/prisma.js";
+import { getLogger } from "../../utils/logger.js";
+import { getConfigValue } from "../config/service.js";
+import { EMAIL_LOGO_CID, emailLogoAttachment } from "./assets/logo.js";
+import { validateAllI18nKeys } from "./catalog.js";
+import { emailQueueEvents } from "./events.js";
+import { smtpTransport } from "./transport.js";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+/**
+ * Valid status values for EmailJob records.
+ * Note: SQLite does not support native enums — this is a TypeScript-level type guard only.
+ */
+export type EmailJobStatus = "pending" | "processing" | "sent" | "failed" | "digest_pending";
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+/** Number of jobs to process per batch. */
+const BATCH_SIZE = 10;
+
+/**
+ * Maximum number of pending (+ digest_pending) jobs allowed in the queue (A6-06).
+ * Non-critical enqueues beyond this depth are dropped with a logged warning so a
+ * burst cannot grow the EmailJob table / disk without bound while the worker
+ * drains at ~BATCH_SIZE per interval. Critical (priority 1) mail bypasses this.
+ */
+export const MAX_PENDING_QUEUE_DEPTH = 10_000;
+
+/**
+ * Failed jobs older than this are pruned on the periodic cleanup schedule (A6-06).
+ * Failed rows are terminal (no further retry) and otherwise accumulate forever —
+ * `cleanupSentJobs` historically only pruned `status:"sent"`. Independent of the
+ * configurable `emailJobRetentionDays` (which governs successfully-sent mail);
+ * failed rows are diagnostic noise and are kept for a fixed, shorter window.
+ */
+const FAILED_JOB_RETENTION_DAYS = 7;
+
+/**
+ * Maximum backoff delay in seconds (1 hour).
+ * The actual delay is computed as `min(MAX_BACKOFF_SECONDS, 60 × 2^(attempt-1))`:
+ *   attempt 1 → 60s, attempt 2 → 120s, attempt 3 → 240s, …, capped at 3600s.
+ */
+const MAX_BACKOFF_SECONDS = 3600;
+
+/**
+ * Jobs in "processing" status for longer than this are considered stuck
+ * and will be reset to "pending" on boot.
+ */
+const STUCK_JOB_TIMEOUT_MS = 5 * 60_000; // 5 minutes
+
+/**
+ * Run cleanupSentJobs() every N ticks.
+ * At 30s intervals, 120 ticks ≈ 1 hour.
+ */
+const CLEANUP_EVERY_N_TICKS = 120;
+
+// ─── Module state ─────────────────────────────────────────────────────────────
+
+let currentTimeout: ReturnType<typeof setTimeout> | null = null;
+let tickCount = 0;
+let wakeListener: (() => void) | null = null;
+let isProcessing = false;
+let wakePending = false;
+
+// ─── Config helpers ───────────────────────────────────────────────────────────
+
+/** Read the poll interval from config. Re-read on every tick so live changes take effect. */
+async function getIntervalMs(): Promise<number> {
+  try {
+    const seconds = await getConfigValue("emailQueueIntervalSeconds");
+    const parsed = parseInt(seconds, 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed * 1000 : 30_000;
+  } catch {
+    return 30_000;
+  }
+}
+
+/**
+ * Returns the configured max retries. Value is captured per-job at enqueue time
+ * (EmailJob.maxAttempts), so config changes only affect newly enqueued jobs.
+ *
+ * A value of 0 is valid and means "fail-fast" — no retries on SMTP failure.
+ */
+export async function getMaxRetries(): Promise<number> {
+  try {
+    const value = await getConfigValue("emailQueueMaxRetries");
+    const parsed = parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : 3;
+  } catch {
+    return 3;
+  }
+}
+
+/**
+ * Run `recoverStuckJobs()` every N ticks (~5 min at 30s intervals).
+ */
+const RECOVER_STUCK_EVERY_N_TICKS = 10;
+
+/**
+ * Updates a job's status with a single retry after 100ms on failure.
+ * Prevents transient DB errors from leaving jobs stuck in "processing".
+ */
+async function updateJobStatusWithRetry(
+  jobId: string,
+  data: Record<string, unknown>,
+): Promise<void> {
+  try {
+    await prisma.emailJob.update({ where: { id: jobId }, data });
+  } catch (firstError) {
+    getLogger().warn({ jobId, err: firstError }, "Job status update failed, retrying in 100ms");
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    try {
+      await prisma.emailJob.update({ where: { id: jobId }, data });
+    } catch (retryError) {
+      getLogger().error(
+        { jobId, err: retryError },
+        "Job status update failed after retry — job may be stuck",
+      );
+    }
+  }
+}
+
+// ─── Core operations ──────────────────────────────────────────────────────────
+
+/**
+ * Recovers "processing" jobs stuck for longer than STUCK_JOB_TIMEOUT_MS.
+ * Treats recovery as a failed attempt: increments `attempts`, sets `lastError`,
+ * and applies exponential backoff. If `attempts >= maxAttempts`, marks as `failed`.
+ *
+ * Uses per-job logic (not a bulk updateMany) because each job may have different
+ * attempt counts and max retries. Acceptable overhead — stuck jobs are rare.
+ */
+async function recoverStuckJobs(): Promise<void> {
+  const cutoff = new Date(Date.now() - STUCK_JOB_TIMEOUT_MS);
+  const stuckJobs = await prisma.emailJob.findMany({
+    where: {
+      status: "processing",
+      lockedAt: { lte: cutoff },
+    },
+    select: { id: true, attempts: true, maxAttempts: true },
+  });
+
+  if (stuckJobs.length === 0) return;
+
+  for (const job of stuckJobs) {
+    const newAttempts = job.attempts + 1;
+    if (newAttempts >= job.maxAttempts) {
+      // Exhausted retries — mark as permanently failed
+      await prisma.emailJob.update({
+        where: { id: job.id },
+        data: {
+          status: "failed",
+          attempts: newAttempts,
+          lastError: "Recovered from stuck processing state (max attempts exhausted)",
+          lockedAt: null,
+        },
+      });
+    } else {
+      // Retry with exponential backoff: 60 × 2^(attempt-1), capped at MAX_BACKOFF_SECONDS
+      const backoffSeconds = Math.min(MAX_BACKOFF_SECONDS, 60 * 2 ** (newAttempts - 1));
+      const nextAttemptAt = new Date(Date.now() + backoffSeconds * 1000);
+      await prisma.emailJob.update({
+        where: { id: job.id },
+        data: {
+          status: "pending",
+          attempts: newAttempts,
+          lastError: "Recovered from stuck processing state",
+          nextAttemptAt,
+          lockedAt: null,
+        },
+      });
+    }
+  }
+
+  getLogger().info({ recoveredCount: stuckJobs.length }, "Recovered stuck email jobs");
+}
+
+/**
+ * Prunes terminal email jobs (A6-06):
+ *  - "sent" jobs older than the configurable `emailJobRetentionDays`, and
+ *  - "failed" jobs older than the fixed {@link FAILED_JOB_RETENTION_DAYS}.
+ *
+ * Both are terminal states that otherwise accumulate forever. Failed rows are
+ * keyed on `createdAt` (they may never have a `sentAt`). Called periodically
+ * (every CLEANUP_EVERY_N_TICKS ticks).
+ */
+async function cleanupTerminalJobs(): Promise<void> {
+  let retentionDays = 30;
+  try {
+    const value = await getConfigValue("emailJobRetentionDays");
+    const parsed = parseInt(value, 10);
+    if (Number.isFinite(parsed) && parsed > 0) {
+      retentionDays = parsed;
+    }
+  } catch {
+    // Use default
+  }
+
+  const sentOlderThan = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000);
+  const failedOlderThan = new Date(Date.now() - FAILED_JOB_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+
+  const [sentResult, failedResult] = await Promise.all([
+    prisma.emailJob.deleteMany({
+      where: { status: "sent", sentAt: { lte: sentOlderThan } },
+    }),
+    prisma.emailJob.deleteMany({
+      where: { status: "failed", createdAt: { lte: failedOlderThan } },
+    }),
+  ]);
+
+  if (sentResult.count > 0 || failedResult.count > 0) {
+    getLogger().info(
+      {
+        sentDeleted: sentResult.count,
+        failedDeleted: failedResult.count,
+        sentOlderThan: sentOlderThan.toISOString(),
+        failedOlderThan: failedOlderThan.toISOString(),
+      },
+      "Cleaned up terminal email jobs",
+    );
+  }
+}
+
+/**
+ * Picks up a batch of pending jobs (nextAttemptAt <= now), sends each one
+ * via SmtpTransport, and updates their status.
+ *
+ * Processing is sequential (not concurrent) — SQLite doesn't benefit from
+ * parallel writes and sequential processing avoids contention.
+ */
+async function processBatch(): Promise<void> {
+  if (isProcessing) return;
+  isProcessing = true;
+
+  try {
+    const now = new Date();
+
+    const jobs = await prisma.emailJob.findMany({
+      where: {
+        status: "pending",
+        nextAttemptAt: { lte: now },
+      },
+      orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
+      take: BATCH_SIZE,
+      select: {
+        id: true,
+        to: true,
+        subject: true,
+        htmlBody: true,
+        textBody: true,
+        listUnsubscribe: true,
+        attempts: true,
+        maxAttempts: true,
+      },
+    });
+
+    // NOTE: Sequential processing is intentional — SQLite has a single writer, and parallel
+    // SMTP sends would increase memory/connection pressure. Acceptable at current scale.
+    for (const job of jobs) {
+      // 1. Atomically lock the job — uses updateMany with a status guard so that
+      //    concurrent processes (if ever deployed) cannot both claim the same job.
+      //    If the job is no longer "pending" (already claimed or status changed), skip it.
+      try {
+        const lockResult = await prisma.emailJob.updateMany({
+          where: { id: job.id, status: "pending" },
+          data: {
+            status: "processing",
+            lockedAt: new Date(),
+          },
+        });
+        if (lockResult.count !== 1) {
+          // Job was already claimed or status changed — skip
+          continue;
+        }
+      } catch (lockError) {
+        getLogger().warn({ jobId: job.id, err: lockError }, "Failed to lock email job, skipping");
+        continue;
+      }
+
+      // 2. Attempt to send
+      try {
+        const html = job.htmlBody ?? "";
+        const sendOptions: {
+          to: string;
+          subject: string;
+          html: string;
+          text: string;
+          listUnsubscribeHeader?: string;
+          attachments?: ReturnType<typeof emailLogoAttachment>[];
+        } = {
+          to: job.to,
+          subject: job.subject,
+          html,
+          text: job.textBody ?? "",
+        };
+
+        // Attach the brand logo inline only when the rendered HTML references it
+        // (every layout header does). Guarding on the cid keeps an unreferenced
+        // attachment from surfacing as a paperclip in clients.
+        if (html.includes(`cid:${EMAIL_LOGO_CID}`)) {
+          sendOptions.attachments = [emailLogoAttachment()];
+        }
+
+        if (job.listUnsubscribe) {
+          sendOptions.listUnsubscribeHeader = job.listUnsubscribe;
+        }
+
+        await smtpTransport.sendMail(sendOptions);
+
+        // 3. Mark sent (with one retry on DB failure)
+        await updateJobStatusWithRetry(job.id, {
+          status: "sent",
+          sentAt: new Date(),
+          lockedAt: null,
+        });
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const newAttempts = job.attempts + 1;
+        const maxAttempts = job.maxAttempts;
+
+        getLogger().warn(
+          { jobId: job.id, to: job.to, attempts: newAttempts, error: errorMessage },
+          "Email send failed",
+        );
+
+        if (newAttempts >= maxAttempts) {
+          // Permanently failed — no more retries (with one retry on DB failure)
+          await updateJobStatusWithRetry(job.id, {
+            status: "failed",
+            attempts: newAttempts,
+            lastError: errorMessage,
+            lockedAt: null,
+          });
+        } else {
+          // Retry with exponential backoff: 60 × 2^(attempt-1), capped at MAX_BACKOFF_SECONDS
+          const backoffSeconds = Math.min(MAX_BACKOFF_SECONDS, 60 * 2 ** (newAttempts - 1));
+          const nextAttemptAt = new Date(Date.now() + backoffSeconds * 1000);
+
+          await updateJobStatusWithRetry(job.id, {
+            status: "pending",
+            attempts: newAttempts,
+            lastError: errorMessage,
+            nextAttemptAt,
+            lockedAt: null,
+          });
+        }
+      }
+    }
+  } finally {
+    isProcessing = false;
+
+    // If a wake event fired while we were processing, schedule an immediate re-tick
+    // so priority jobs are not delayed until the next polling interval.
+    if (wakePending) {
+      wakePending = false;
+      if (currentTimeout) {
+        clearTimeout(currentTimeout);
+        currentTimeout = null;
+      }
+      const handle = setTimeout(async () => {
+        if (currentTimeout !== handle) return;
+        try {
+          await processTick();
+        } catch (error) {
+          getLogger().error({ err: error }, "Email queue deferred wake tick failed");
+        }
+        if (currentTimeout === handle) {
+          void scheduleNext();
+        }
+      }, 0);
+      currentTimeout = handle;
+    }
+  }
+}
+
+/**
+ * One scheduler tick: process batch + periodic cleanup.
+ */
+async function processTick(): Promise<void> {
+  tickCount += 1;
+
+  try {
+    await processBatch();
+  } catch (error) {
+    getLogger().error({ err: error }, "Email queue processBatch failed");
+  }
+
+  // Run stuck job recovery every ~5 min (RECOVER_STUCK_EVERY_N_TICKS ticks)
+  if (tickCount % RECOVER_STUCK_EVERY_N_TICKS === 0) {
+    try {
+      await recoverStuckJobs();
+    } catch (error) {
+      getLogger().error({ err: error }, "Email queue periodic recoverStuckJobs failed");
+    }
+  }
+
+  // Run cleanup approximately once per hour (every CLEANUP_EVERY_N_TICKS ticks)
+  if (tickCount % CLEANUP_EVERY_N_TICKS === 0) {
+    try {
+      await cleanupTerminalJobs();
+    } catch (error) {
+      getLogger().error({ err: error }, "Email queue cleanupTerminalJobs failed");
+    }
+  }
+}
+
+// ─── Scheduler ────────────────────────────────────────────────────────────────
+
+/**
+ * Schedules the next tick using chained setTimeout.
+ * Re-reads the interval from config on every schedule so live config changes
+ * take effect without a server restart.
+ */
+async function scheduleNext(): Promise<void> {
+  const intervalMs = await getIntervalMs();
+
+  const handle = setTimeout(async () => {
+    if (currentTimeout !== handle) return; // Superseded — skip
+
+    try {
+      await processTick();
+    } catch (error) {
+      getLogger().error({ err: error }, "Email queue tick failed");
+    }
+
+    // Chain next run only if this timer is still active
+    if (currentTimeout === handle) {
+      void scheduleNext();
+    }
+  }, intervalMs);
+
+  currentTimeout = handle;
+}
+
+/**
+ * Handler for "wake" events. Clears the current timeout and schedules
+ * an immediate tick so priority jobs are processed without waiting for
+ * the full interval.
+ */
+function onWake(): void {
+  // If a batch is currently processing, defer the wake to the finally block
+  // of processBatch(). This is race-free because all flag/timer manipulation
+  // happens on the main thread between awaits.
+  if (isProcessing) {
+    wakePending = true;
+    return;
+  }
+
+  if (currentTimeout) {
+    clearTimeout(currentTimeout);
+    currentTimeout = null;
+  }
+
+  // Schedule an immediate tick, then resume normal interval
+  const handle = setTimeout(async () => {
+    if (currentTimeout !== handle) return;
+
+    try {
+      await processTick();
+    } catch (error) {
+      getLogger().error({ err: error }, "Email queue wake tick failed");
+    }
+
+    if (currentTimeout === handle) {
+      void scheduleNext();
+    }
+  }, 0);
+
+  currentTimeout = handle;
+}
+
+// ─── Public API ───────────────────────────────────────────────────────────────
+
+/**
+ * Start the email queue scheduler.
+ * Registers the "wake" listener and begins polling.
+ */
+export function startEmailQueueScheduler(): void {
+  stopEmailQueueScheduler();
+
+  // Register wake listener
+  wakeListener = onWake;
+  emailQueueEvents.on("wake", wakeListener);
+
+  void scheduleNext();
+  getLogger().info("Email queue scheduler started");
+}
+
+/**
+ * Stop the email queue scheduler.
+ * Clears the timeout and removes the wake listener.
+ */
+export function stopEmailQueueScheduler(): void {
+  if (currentTimeout) {
+    clearTimeout(currentTimeout);
+    currentTimeout = null;
+  }
+
+  wakePending = false;
+
+  if (wakeListener) {
+    emailQueueEvents.off("wake", wakeListener);
+    wakeListener = null;
+  }
+}
+
+/**
+ * Initialize the email queue on server boot.
+ * Validates i18n keys, recovers stuck jobs, then starts the scheduler.
+ *
+ * If i18n validation fails (e.g. message files not found), the email subsystem
+ * is disabled gracefully — the server continues without email capability.
+ * This prevents a missing translation file from crashing the entire application.
+ */
+export async function initEmailQueueOnBoot(): Promise<void> {
+  try {
+    await validateAllI18nKeys();
+  } catch (err) {
+    getLogger().fatal({ err }, "i18n validation failed — email subsystem disabled");
+    return;
+  }
+
+  try {
+    await recoverStuckJobs();
+  } catch (error) {
+    getLogger().error({ err: error }, "Failed to recover stuck email jobs on boot");
+    // Boot-time recovery failure is acceptable — recoverStuckJobs runs every ~5 minutes thereafter.
+  }
+
+  startEmailQueueScheduler();
+}

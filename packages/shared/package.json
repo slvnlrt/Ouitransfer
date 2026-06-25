@@ -1,0 +1,37 @@
+{
+  "name": "@ouitransfer/shared",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared utilities for the Ouitransfer monorepo",
+  "_exportGuide": "When adding utilities, use subpath exports (./foo, ./bar) — do NOT add a catch-all '.' barrel export. Subpath imports keep tree-shaking optimal.",
+  "type": "module",
+  "exports": {
+    "./mime-types": {
+      "types": "./src/mime-types.ts",
+      "default": "./dist/mime-types.js"
+    },
+    "./error-codes": {
+      "types": "./src/error-codes.ts",
+      "default": "./dist/error-codes.js"
+    },
+    "./notification-types": {
+      "types": "./src/notification-types.ts",
+      "default": "./dist/notification-types.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch --preserveWatchOutput",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

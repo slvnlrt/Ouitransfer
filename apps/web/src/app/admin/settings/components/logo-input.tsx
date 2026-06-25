@@ -1,0 +1,112 @@
+"use client";
+
+import { CloudUpload, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { useAppInfo } from "@/contexts/app-info-context";
+import { removeLogo, uploadLogo } from "@/http/endpoints";
+
+interface LogoInputProps {
+  value?: string;
+  onChange: (value: string) => void;
+  isDisabled?: boolean;
+}
+
+export function LogoInput({ value, onChange, isDisabled }: LogoInputProps) {
+  const t = useTranslations();
+  const [isUploading, setIsUploading] = useState(false);
+  const [currentLogo, setCurrentLogo] = useState(value);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { refreshAppInfo, appLogo } = useAppInfo();
+
+  useEffect(() => {
+    setCurrentLogo(appLogo);
+  }, [appLogo]);
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+      const response = await uploadLogo({ file: file });
+      const newLogoUrl = response.data.logo;
+
+      setCurrentLogo(newLogoUrl);
+      onChange(newLogoUrl);
+      await refreshAppInfo();
+      toast.success(t("logo.messages.uploadSuccess"));
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } } } | null;
+      toast.error(err?.response?.data?.error ?? t("logo.errors.uploadFailed"));
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleRemoveLogo = async () => {
+    try {
+      setIsUploading(true);
+      await removeLogo();
+      setCurrentLogo("");
+      onChange("");
+      await refreshAppInfo();
+      toast.success(t("logo.messages.removeSuccess"));
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } } } | null;
+      toast.error(err?.response?.data?.error ?? t("logo.errors.removeFailed"));
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <input
+        ref={fileInputRef}
+        accept="image/*"
+        className="hidden"
+        disabled={isDisabled}
+        type="file"
+        onChange={handleFileSelect}
+      />
+
+      {currentLogo ? (
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative max-w-[200px] max-h-[200px] flex">
+            <Image
+              alt={t("logo.labels.appLogo")}
+              className="rounded-lg"
+              src={currentLogo}
+              width={200}
+              height={200}
+              unoptimized
+            />
+          </div>
+          <Button variant="destructive" disabled={isDisabled} onClick={handleRemoveLogo}>
+            {!isUploading && <Trash2 className="h-4 w-4" />}
+            {t("logo.buttons.remove")}
+          </Button>
+        </div>
+      ) : (
+        <Button
+          className="w-full py-8"
+          variant="outline"
+          disabled={isDisabled}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          {!isUploading && <CloudUpload className="h-5 w-5" />}
+          {t("logo.buttons.upload")}
+        </Button>
+      )}
+    </div>
+  );
+}

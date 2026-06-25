@@ -1,0 +1,62 @@
+# ==============================================================================
+# CI / local-dev overlay — build images locally and inject test credentials.
+#
+# Usage:
+#   docker compose -f docker-compose.yaml -f docker-compose.ci.yml up -d --build
+#   docker compose -f docker-compose.yaml -f docker-compose.ci.yml down -v
+#
+# The main docker-compose.yaml has localhost defaults for all ${VAR:-default} values.
+# This overlay overrides credentials with CI-specific test values and adds
+# build targets so images are built locally instead of pulled.
+# Docker Compose merges environment maps — keys in the override file win.
+# ==============================================================================
+
+services:
+  storage:
+    environment:
+      RUSTFS_ACCESS_KEY: ci-test-access-key
+      RUSTFS_SECRET_KEY: ci-test-secret-key
+      RUSTFS_CORS_ALLOWED_ORIGINS: "http://localhost:5487"
+
+  server:
+    build:
+      context: .
+      target: server-runner
+    # Override depends_on for CI: start immediately, health polling is done
+    # by the workflow step "Wait for services" which has better diagnostics.
+    depends_on:
+      storage:
+        condition: service_started
+    environment:
+      S3_ACCESS_KEY: ci-test-access-key
+      S3_SECRET_KEY: ci-test-secret-key
+      STORAGE_URL: "http://localhost:9000"
+      JWT_SECRET: ci-e2e-jwt-secret-minimum-32-characters-long-ok
+      CSRF_SECRET: ci-e2e-csrf-secret-minimum-32-characters-long-ok
+      COOKIE_SECRET: ci-e2e-cookie-secret-minimum-32-characters-long-ok
+      # ENCRYPTION_SECRET is required (R3a). High-entropy, distinct test value so
+      # the production placeholder/entropy gate (A8-01) passes under NODE_ENV=production.
+      ENCRYPTION_SECRET: ci-e2e-encryption-secret-min-32-characters-long-ok
+      CORS_ORIGINS: "http://localhost:5487"
+
+  web:
+    build:
+      context: .
+      target: web-runner
+      args:
+        NEXT_PUBLIC_APP_VERSION: ${NEXT_PUBLIC_APP_VERSION:-dev}
+    # Override depends_on for CI: start immediately, health polling is done
+    # by the workflow step "Wait for services" which has better diagnostics.
+    depends_on:
+      server:
+        condition: service_started
+    environment:
+      JWT_SECRET: ci-e2e-jwt-secret-minimum-32-characters-long-ok
+      CSP_STORAGE_ORIGINS: "http://localhost:9000"
+
+  docs:
+    build:
+      context: .
+      target: docs-runner
+      args:
+        NEXT_PUBLIC_DOCS_BASE_PATH: ${NEXT_PUBLIC_DOCS_BASE_PATH:-/docs}

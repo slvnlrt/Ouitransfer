@@ -1,0 +1,333 @@
+---
+title: Configurer SMTP
+icon: Mail
+---
+
+Pour qu'OUITRANSFER fonctionne avec toutes ses fonctionnalités, vous devez configurer un serveur de messagerie. Pour faciliter cette démarche, un panneau de configuration est intégré dans les **Paramètres** d'OUITRANSFER. Cependant, seuls les utilisateurs dotés d'un profil **ADMIN** peuvent accéder à ces paramètres et les configurer.
+
+Ce guide vous accompagne tout au long du processus de configuration SMTP pour votre installation OUITRANSFER, afin que les fonctionnalités dépendantes des e-mails fonctionnent de manière transparente.
+
+## Pourquoi configurer SMTP ?
+
+La configuration SMTP est indispensable pour activer les principales fonctionnalités de messagerie qui améliorent l'expérience utilisateur et garantissent le bon fonctionnement du système.
+
+Les fonctionnalités qui dépendent de la configuration SMTP sont :
+
+- **Réinitialisation du mot de passe** : Les utilisateurs qui ont oublié leur mot de passe ont besoin de cette fonctionnalité pour retrouver l'accès à leur compte.
+- **Invitations de partage** : Les destinataires reçoivent des invitations par e-mail avec des liens personnalisés lorsqu'ils sont ajoutés à un [partage](/docs/v1-beta/shares) ou un [partage inversé](/docs/v1-beta/reverse-shares).
+- **Notifications par e-mail** : Le système de notification envoie des e-mails pour les accès aux partages, les téléchargements, les avertissements de quota, les alertes d'expiration, etc. Les utilisateurs contrôlent les notifications qu'ils reçoivent via les [Préférences de notification](/docs/v1-beta/notification-preferences).
+- **Désabonnement** : Chaque e-mail de notification non critique contient un lien de désabonnement dont le fonctionnement nécessite SMTP.
+
+Sans configuration SMTP appropriée, ces fonctionnalités ne fonctionneront pas. La réinitialisation du mot de passe, les invitations de partage et tous les e-mails de notification sont silencieusement ignorés lorsque SMTP est désactivé.
+
+Voici maintenant le processus étape par étape pour configurer le **serveur SMTP**.
+
+---
+
+## Accéder aux paramètres SMTP
+
+Pour configurer les paramètres SMTP, vous devez disposer d'un accès administrateur au panneau de paramètres d'OUITRANSFER.
+
+### Prérequis
+
+Avant de commencer la configuration :
+
+- Veillez à disposer des privilèges utilisateur **ADMIN** dans OUITRANSFER
+- Ayez vos identifiants de serveur SMTP à portée de main
+- Pour les utilisateurs de Gmail, préparez-vous à générer un mot de passe d'application
+
+### Accéder aux paramètres
+
+Pour accéder aux **Paramètres**, un utilisateur **ADMIN** doit cliquer sur sa photo de profil dans l'**en-tête** et sélectionner **Paramètres** dans le menu déroulant.
+
+Une fois dans le panneau **Paramètres**, cliquez sur la carte **E-mail** pour déplier les options de configuration SMTP.
+
+![Carte Paramètres fermée](/assets/v1/smtp/closed-card.png)
+
+Après avoir déplié la carte, les champs de configuration SMTP suivants apparaissent :
+
+![Carte Paramètres ouverte](/assets/v1/smtp/opened-card.png)
+
+---
+
+## Configurer le serveur SMTP
+
+La configuration SMTP consiste à activer le service puis à renseigner les informations de connexion nécessaires.
+
+### Activer SMTP
+
+La première étape consiste à **activer SMTP** en sélectionnant « Oui » dans le champ **SMTP activé**.
+
+![SMTP activé](/assets/v1/smtp/smtp-enabled.png)
+
+### Champs de configuration
+
+Une fois SMTP activé, vous pouvez configurer les champs suivants :
+
+#### Configuration SMTP de base
+
+**Serveur SMTP** : L'adresse du serveur SMTP fournie par votre service de messagerie. Pour Gmail, utilisez `smtp.gmail.com` (option recommandée, définie par défaut).
+
+**Port SMTP** : Le port du serveur utilisé pour les connexions. Pour Gmail, le port standard est **587** (chiffrement TLS).
+
+**Nom d'utilisateur SMTP** : Le nom d'utilisateur pour l'authentification auprès de votre serveur SMTP. Pour Gmail, saisissez votre adresse e-mail complète.
+
+**Mot de passe SMTP** : Le mot de passe pour l'authentification SMTP. Pour Gmail, vous devez utiliser un **mot de passe d'application** (et non votre mot de passe e-mail habituel).
+
+#### Configuration de l'expéditeur
+
+**Nom de l'expéditeur** : Ce nom apparaîtra comme nom d'expéditeur dans tous les e-mails sortants. Utilisez un nom reconnaissable tel que « OUITRANSFER » ou le nom de votre organisation.
+
+**E-mail de l'expéditeur** : L'adresse e-mail depuis laquelle les notifications seront envoyées. Utilisez une adresse professionnelle comme « noreply@votredomaine.com » ou « notifications@votredomaine.com ».
+
+#### Options de configuration avancées
+
+**Sécurité de connexion** : Choisissez la méthode de sécurité appropriée pour votre serveur SMTP :
+
+- **Auto (Recommandé)** : Sélectionne automatiquement la meilleure méthode de sécurité en fonction du port
+- **SSL (Port 465)** : Utilise le chiffrement SSL pour l'intégralité de la connexion
+- **STARTTLS (Port 587)** : Utilise STARTTLS pour mettre à niveau une connexion non chiffrée vers TLS
+- **Aucune (Non sécurisé)** : Utilise SMTP sans chiffrement (uniquement pour le développement et les tests)
+
+**Pas d'authentification** : Activez cette option pour les serveurs SMTP internes qui ne requièrent pas d'authentification par nom d'utilisateur/mot de passe. Lorsque cette option est activée, les champs nom d'utilisateur et mot de passe sont masqués.
+
+**Approuver les certificats auto-signés** : Activez cette option pour approuver les certificats SSL/TLS auto-signés. Cela est particulièrement utile pour les environnements de développement ou les serveurs SMTP internes dotés de certificats auto-signés.
+
+#### Comportement des champs et dépendances
+
+**Affichage conditionnel des champs** : La configuration SMTP utilise un affichage intelligent des champs :
+
+- **Tous les champs SMTP** sont masqués lorsque SMTP est désactivé
+- **Les champs Nom d'utilisateur et Mot de passe** sont automatiquement masqués lorsque « Pas d'authentification » est activé
+- **Le bouton Tester la connexion** n'apparaît que lorsque SMTP est activé
+
+**Validation des champs** : Le système effectue une validation en temps réel :
+
+- **Les champs obligatoires** sont vérifiés avant de tester les connexions
+- **Les champs d'authentification** sont validés sauf si « Pas d'authentification » est activé
+- **Le test de connexion** valide tous les paramètres avant l'enregistrement
+
+#### Tester la configuration
+
+**Tester la connexion SMTP** : Utilisez ce bouton pour tester votre configuration SMTP avant de l'enregistrer. Cela vérifie que tous les paramètres sont corrects et que la connexion fonctionne correctement.
+
+**Fonctionnalités du bouton de test** :
+
+- **Validation en temps réel** de tous les champs obligatoires
+- **Info-bulle explicative** sur le processus de test
+- **Indicateur de chargement** avec animation pendant le test de connexion
+- **Messages de succès/erreur** avec retour détaillé
+- **Utilise les valeurs du formulaire** (et non les paramètres enregistrés) pour les tests
+
+### Note de sécurité importante
+
+**Important :** Si vous utilisez **Gmail**, vous devez générer un **mot de passe d'application** plutôt que d'utiliser votre mot de passe e-mail standard. Cela offre une meilleure sécurité et est requis par les applications comme OUITRANSFER.
+
+Pour les autres services de messagerie, consultez la documentation officielle du fournisseur que vous utilisez. Nous recommandons Gmail pour sa simplicité, sa fiabilité et ses limites d'envoi d'e-mails raisonnables.
+
+---
+
+## Générer un mot de passe d'application Gmail
+
+Gmail exige des mots de passe d'application pour les applications tierces afin de garantir la sécurité du compte tout en maintenant les fonctionnalités.
+
+### Processus étape par étape
+
+Pour générer un mot de passe d'application Gmail :
+
+1. **Accédez à votre compte** : Rendez-vous sur [Google Mon Compte](https://myaccount.google.com/)
+2. **Accédez à la Sécurité** : Sélectionnez la section **Sécurité** dans le menu
+3. **Trouvez les mots de passe d'application** : Faites défiler pour localiser les **Mots de passe d'application** (vous devrez peut-être d'abord activer la validation en deux étapes)
+4. **Générez un mot de passe** : Créez un nouveau mot de passe spécifiquement pour OUITRANSFER
+5. **Conservez-le en sécurité** : Copiez et stockez le mot de passe généré en lieu sûr
+
+### Ressources complémentaires
+
+Pour un guide complet avec captures d'écran et instructions détaillées, consultez : **[How to set up SMTP credentials with Gmail](https://medium.com/rails-to-rescue/how-to-set-up-smtp-credentials-with-gmail-for-your-app-send-email-cf236d11087d)**.
+
+### Récapitulatif de la configuration Gmail
+
+Lors de l'utilisation de Gmail, vos paramètres finaux doivent être :
+
+- **Serveur SMTP** : `smtp.gmail.com`
+- **Port SMTP** : `587`
+- **Nom d'utilisateur SMTP** : Votre adresse Gmail
+- **Mot de passe SMTP** : Mot de passe d'application généré (16 caractères)
+- **Sécurité de connexion** : Auto (Recommandé) ou STARTTLS (Port 587)
+
+---
+
+## Configurations pour d'autres fournisseurs de messagerie
+
+Bien que Gmail soit recommandé pour sa simplicité, OUITRANSFER prend en charge divers fournisseurs de messagerie. Voici les configurations courantes :
+
+### Outlook/Hotmail
+
+- **Serveur SMTP** : `smtp-mail.outlook.com`
+- **Port SMTP** : `587`
+- **Sécurité de connexion** : STARTTLS (Port 587)
+- **Authentification** : Nom d'utilisateur et mot de passe requis
+
+### Yahoo Mail
+
+- **Serveur SMTP** : `smtp.mail.yahoo.com`
+- **Port SMTP** : `587` ou `465`
+- **Sécurité de connexion** : STARTTLS (Port 587) ou SSL (Port 465)
+- **Authentification** : Mot de passe spécifique à l'application requis
+
+### Serveur SMTP personnalisé
+
+- **Serveur SMTP** : Le nom d'hôte ou l'adresse IP de votre serveur
+- **Port SMTP** : Généralement `25`, `587` ou `465`
+- **Sécurité de connexion** : Choisissez en fonction des capacités de votre serveur
+- **Authentification** : Configurez selon les exigences de votre serveur
+- **Approuver les certificats auto-signés** : Activez si vous utilisez des certificats auto-signés
+
+---
+
+## Tester votre configuration
+
+Après avoir terminé la configuration, il est important de vérifier que tout fonctionne correctement.
+
+### Utiliser la fonctionnalité Tester la connexion
+
+OUITRANSFER propose un bouton intégré **Tester la connexion SMTP** qui vous permet de vérifier votre configuration avant de l'enregistrer :
+
+1. **Renseignez vos paramètres SMTP** : Complétez tous les champs obligatoires de la configuration SMTP
+2. **Cliquez sur « Tester la connexion »** : Une tentative de connexion à votre serveur SMTP avec les paramètres actuels sera effectuée
+3. **Consultez les résultats** : Un message de succès s'affiche si la connexion fonctionne, ou un message d'erreur détaillé en cas d'échec
+4. **Enregistrez vos paramètres** : Une fois le test réussi, enregistrez votre configuration pour la rendre permanente
+
+**Remarque :** Le test de connexion utilise les valeurs actuellement saisies dans le formulaire, et non les paramètres enregistrés. Veillez à enregistrer votre configuration après un test réussi.
+
+### Étapes de validation
+
+1. **Enregistrer les paramètres** : Appliquez votre configuration SMTP dans l'interface OUITRANSFER
+2. **Tester la réinitialisation du mot de passe** : Essayez la fonctionnalité de réinitialisation avec un compte de test pour vous assurer que les e-mails sont envoyés
+3. **Tester les notifications** : Créez un partage de test pour vérifier que les e-mails de notification sont bien délivrés
+4. **Vérifier la livraison des e-mails** : Confirmez que les e-mails arrivent dans la boîte de réception du destinataire (et non dans les spams)
+
+### Résolution des problèmes courants
+
+Si les e-mails ne sont pas envoyés :
+
+- **Vérifiez que tous les champs sont correctement renseignés** : Assurez-vous que tous les champs obligatoires contiennent des valeurs valides
+- **Pour Gmail, vérifiez que vous utilisez le mot de passe d'application** : Et non votre mot de passe e-mail habituel
+- **Vérifiez que votre fournisseur de messagerie autorise les connexions SMTP** : Certains fournisseurs requièrent des paramètres spécifiques
+- **Confirmez que le port 587 n'est pas bloqué par votre pare-feu** : Vérifiez les paramètres du pare-feu local et réseau
+- **Vérifiez l'adresse du serveur SMTP** : Contrôlez le nom d'hôte pour détecter d'éventuelles fautes de frappe
+- **Testez avec différents paramètres de sécurité** : Essayez différentes options de Sécurité de connexion si l'une d'elles échoue
+
+### Résolution des problèmes de certificats auto-signés
+
+Si vous utilisez un serveur SMTP avec des certificats auto-signés et rencontrez des erreurs de connexion :
+
+1. **Activez « Approuver les certificats auto-signés »** : Dans les paramètres SMTP, activez l'option correspondante
+2. **Utilisez la méthode de sécurité appropriée** : Choisissez la méthode correcte pour votre serveur :
+   - Pour les serveurs nécessitant TLS : Utilisez « STARTTLS (Port 587) » ou « SSL (Port 465) »
+   - Pour les serveurs de développement sans chiffrement : Utilisez « Aucune (Non sécurisé) »
+3. **Vérifiez la configuration du serveur** : Assurez-vous que votre serveur SMTP est correctement configuré pour accepter les connexions sur le port spécifié
+4. **Testez la connexion** : Utilisez le bouton « Tester la connexion » pour vérifier votre configuration avant de l'enregistrer
+
+**Remarque :** L'option « Aucune (Non sécurisé) » ne doit être utilisée que dans des environnements de développement ou avec des serveurs internes de confiance, car elle transmet les données sans chiffrement.
+
+### Résolution des problèmes d'authentification
+
+Si vous rencontrez des problèmes d'authentification :
+
+- **Vérifiez le nom d'utilisateur et le mot de passe** : Assurez-vous qu'ils sont corrects et conformes aux exigences de votre fournisseur de messagerie
+- **Pour les utilisateurs de Gmail** : Vérifiez que vous utilisez un mot de passe d'application et non votre mot de passe habituel
+- **Activez « Pas d'authentification » le cas échéant** : Pour les serveurs internes qui ne requièrent pas d'authentification
+- **Vérifiez les paramètres du compte** : Certains fournisseurs requièrent d'activer l'« Accès aux applications moins sécurisées » ou des paramètres similaires
+
+### Messages d'erreur courants et solutions
+
+Le système de configuration SMTP fournit des messages d'erreur spécifiques pour vous aider à résoudre les problèmes :
+
+**« SMTP is not enabled. Please enable SMTP first. »**
+
+- **Solution** : Activez le bouton « SMTP activé » avant de tester
+
+**« Please fill in SMTP Host and Port before testing. »**
+
+- **Solution** : Vérifiez que les champs Serveur SMTP et Port SMTP sont bien renseignés
+
+**« Please fill in SMTP Username and Password, or enable 'No Authentication' option. »**
+
+- **Solution** : Fournissez des identifiants d'authentification ou activez « Pas d'authentification »
+
+**« SMTP connection failed: [specific error] »**
+
+- **Solution** : Consultez le message d'erreur spécifique pour obtenir des détails sur le problème de connexion
+
+---
+
+## Finaliser la configuration SMTP
+
+Après avoir saisi les informations correctes et testé le fonctionnement, enregistrez les paramètres.
+
+Votre installation OUITRANSFER est maintenant prête à :
+
+- Envoyer des e-mails de réinitialisation de mot de passe aux utilisateurs ayant besoin de récupérer leur compte
+- Envoyer automatiquement des e-mails d'invitation de partage aux destinataires
+- Envoyer des e-mails de notification pour les accès aux partages, les téléchargements, les alertes de quota, etc.
+- Offrir une expérience utilisateur complète avec une communication par e-mail fiable
+
+Avec SMTP correctement configuré, les utilisateurs peuvent tirer pleinement parti des fonctionnalités d'OUITRANSFER dépendantes des e-mails, garantissant une expérience fluide et professionnelle lors du partage de fichiers et de la gestion de leurs comptes.
+
+---
+
+## Système de livraison des e-mails
+
+Ouitransfer utilise une **file d'attente d'e-mails asynchrone** adossée à la base de données. Lorsqu'une notification est déclenchée, l'e-mail n'est pas envoyé immédiatement. Il est plutôt ajouté à une file d'attente et traité en arrière-plan.
+
+### Fonctionnement de la file d'attente
+
+1. **Mise en file** : Lorsqu'un événement déclenche une notification (par exemple, un fichier est téléchargé), le système vérifie les [préférences de notification](/docs/v1-beta/notification-preferences) de l'utilisateur et les éventuelles substitutions par partage. Si la notification est activée, une tâche d'e-mail est ajoutée à la file avec le statut `pending`.
+2. **Traitement** : Un worker en arrière-plan récupère les tâches en attente et les envoie via SMTP. Les e-mails envoyés avec succès sont marqués comme `sent`.
+3. **Nouvelle tentative** : En cas d'échec d'envoi (délai d'attente SMTP, erreur temporaire du serveur), la tâche est relancée jusqu'à **3 fois** avec des délais croissants. Après épuisement de toutes les tentatives, la tâche est marquée comme `failed`.
+
+Cette architecture garantit que la livraison des e-mails ne bloque pas le traitement des requêtes ; l'API répond immédiatement tandis que les e-mails sont envoyés de manière asynchrone.
+
+### Périodes de temporisation
+
+Certains types de notification appliquent des périodes de temporisation pour éviter les envois excessifs. Par exemple, les notifications d'accès aux partages et de téléchargement ont une temporisation de 15 minutes par partage. Si le même type d'événement se produit à nouveau dans la fenêtre de temporisation, la notification est silencieusement ignorée. Consultez les [Préférences de notification](/docs/v1-beta/notification-preferences) pour le tableau complet des temporisations.
+
+---
+
+## Surveiller la livraison des e-mails
+
+Les administrateurs peuvent surveiller la file d'attente des e-mails depuis **Admin > File d'attente des e-mails**. Le tableau de bord affiche :
+
+| Compteur | Description |
+|---------|-------------|
+| **En attente** | E-mails en attente d'envoi |
+| **Envoyés** | E-mails délivrés avec succès |
+| **Échoués** | E-mails ayant échoué après toutes les tentatives |
+
+Cela fournit un contrôle rapide de l'état de la livraison des e-mails. Un nombre croissant d'e-mails « En attente » peut indiquer des problèmes de connectivité SMTP. Un nombre non nul d'e-mails « Échoués » mérite investigation. Consultez les journaux du serveur pour obtenir des messages d'erreur détaillés.
+
+### Barre Statut du système
+
+La barre **Statut du système** du tableau de bord expose également l'état de santé du sous-système e-mail/notifications. **Les administrateurs** voient l'état de configuration SMTP, les compteurs de la file d'attente et la dernière erreur d'envoi en un coup d'œil. **Les utilisateurs ordinaires** ne voient qu'un indicateur sommaire : une ligne « Notifications perturbées » lorsque le sous-système est dégradé, ou « Notifications hors ligne » lorsqu'il est indisponible. Rien n'est affiché lorsque le sous-système est sain ou désactivé. Les valeurs de statut possibles sont `ok`, `disabled`, `degraded` et `down` ; ces mêmes valeurs sont exposées via `/admin/email/stats` pour la supervision par API.
+
+### Envoyer un e-mail de test
+
+Le tableau de bord de la file d'attente des e-mails inclut un bouton **Envoyer un e-mail de test**. Celui-ci envoie un e-mail de test via le pipeline de livraison complet (file d'attente → SMTP → livraison) à l'adresse e-mail de l'administrateur. Utilisez-le pour vérifier que :
+
+- Les identifiants SMTP sont corrects
+- La file d'attente traite bien les tâches
+- Les e-mails arrivent dans la boîte de réception (et non dans les spams)
+
+<Callout type="info">
+  Le bouton **Envoyer un e-mail de test** envoie un vrai e-mail via la file d'attente ; il est différent du bouton **Tester la connexion** dans les paramètres SMTP, qui ne fait que vérifier la connexion SMTP sans envoyer d'e-mail.
+</Callout>
+
+### Points de terminaison API
+
+| Méthode | Chemin | Auth | Description |
+|--------|------|------|-------------|
+| `GET` | `/admin/email/stats` | Admin | Récupère les compteurs de la file d'attente (pending, sentLast24h, failed, digestPending) ainsi que le `status` du sous-système (`ok`/`disabled`/`degraded`/`down`), le booléen `smtpConfigured` et `lastError` (dernière erreur d'envoi, ou null) |
+| `POST` | `/admin/email/test` | Admin | Envoie un e-mail de test à l'adresse de l'administrateur connecté |
+
+Pour la référence complète de l'API, consultez la [documentation API](/docs/v1-beta/api).

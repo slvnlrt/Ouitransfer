@@ -1,0 +1,3004 @@
+{
+  "a11y": {
+    "skipToContent": "דלג לתוכן"
+  },
+  "auth": {
+    "successfullyAuthenticated": "אימות בוצע בהצלחה!",
+    "authenticationFailed": "האימות נכשל",
+    "errors": {
+      "account_inactive": "החשבון לא פעיל. אנא צור קשר עם המנהל.",
+      "registration_disabled": "הרשמה באמצעות SSO מושבתת.",
+      "token_expired": "פג תוקף הטוקן. אנא נסה שוב.",
+      "config_error": "שגיאת תצורה. אנא צור קשר עם התמיכה.",
+      "auth_failed": "האימות נכשל. אנא נסה שוב."
+    },
+    "sessionExpired": "הפגישה שלך פגה. אנא היכנס שוב.",
+    "callback": {
+      "errors": {
+        "oauth_error": "אימות OAuth נכשל",
+        "missing_parameters": "פרמטרי אימות חסרים",
+        "missing_code": "קוד הרשאה חסר",
+        "registration_disabled": "ההרשמה מושבתת עבור ספק זה",
+        "provider_disabled": "ספק אימות זה מושבת",
+        "state_expired": "פג תוקף הפגישה לאימות",
+        "account_inactive": "החשבון שלך אינו פעיל",
+        "no_email": "לא נמצאה כתובת דוא\"ל בחשבון שלך",
+        "token_exchange_failed": "האימות מול הספק נכשל",
+        "missing_user_info": "מידע משתמש חלקי מהספק"
+      }
+    }
+  },
+  "contextMenu": {
+    "newFolder": "תיקייה חדשה",
+    "uploadFile": "העלה קובץ"
+  },
+  "authProviders": {
+    "title": "ספקי אימות",
+    "description": "הגדר ספקי אימות חיצוניים ל-SSO",
+    "enabledCount": "{count} מופעלים",
+    "loadingProviders": "טוען ספקים...",
+    "providersConfigured": "{count} ספקים מוגדרים",
+    "enabledOfTotal": "{enabled} מופעלים מתוך {total} ספקים",
+    "hideDisabledProviders": "הסתר ספקים מושבתים",
+    "addProvider": "הוסף ספק",
+    "addProviderTitle": "הוסף ספק",
+    "editProvider": "ערוך ספק",
+    "deleteProvider": "מחק ספק",
+    "enabled": "מופעל",
+    "disabled": "מושבת",
+    "officialProvider": "ספק רשמי",
+    "dragToReorder": "גרור לסידור מחדש",
+    "dragDisabledMessage": "גרירה ושחרור מושבתים בעת סינון ספקים. הצג את כל הספקים כדי לסדר אותם מחדש.",
+    "dragEnabledMessage": "גרור ספקים כדי לסדר אותם מחדש. סדר זה יתבטא בעמוד הכניסה.",
+    "noProvidersEnabled": "אין ספקי אימות מופעלים",
+    "noProvidersConfigured": "אין ספקי אימות מוגדרים",
+    "form": {
+      "providerName": "שם ספק",
+      "providerNamePlaceholder": "למשל: mycompany",
+      "displayName": "שם תצוגה",
+      "displayNamePlaceholder": "למשל: My Company SSO",
+      "type": "סוג",
+      "typeOidc": "OIDC (OpenID Connect)",
+      "typeOauth2": "OAuth 2.0",
+      "icon": "אייקון",
+      "iconPlaceholder": "בחר אייקון",
+      "clientId": "Client ID",
+      "clientIdPlaceholder": "OAuth client ID שלך",
+      "clientSecret": "Client Secret",
+      "clientSecretPlaceholder": "OAuth client secret שלך",
+      "oauthScopes": "OAuth Scopes",
+      "scopesPlaceholder": "הזן scopes (למשל: openid, profile, email)",
+      "scopesHelpOidc": "Scopes מוצעים אוטומטית על סמך Provider URL. Scopes נפוצים ל-OIDC: openid, profile, email, groups",
+      "scopesHelpOauth2": "Scopes מוצעים אוטומטית על סמך Provider URL. Scopes נפוצים ל-OAuth2 תלויים בספק",
+      "providerUrl": "Provider URL",
+      "providerUrlPlaceholder": "https://auth.example.co.il",
+      "providerUrlAutoPlaceholder": "https://your-provider.com (endpoints יגלו אוטומטית)",
+      "providerUrlManualPlaceholder": "https://your-provider.com",
+      "autoDiscoveryHelp": "המערכת תגלה אוטומטית authorization, token ו-userinfo endpoints",
+      "manualConfigurationHelp": "כתובת URL בסיסית של הספק שלך (endpoints יהיו יחסיים לזה)",
+      "authorizationEndpoint": "Authorization Endpoint",
+      "authorizationEndpointPlaceholder": "https://auth.example.co.il/auth",
+      "tokenEndpoint": "Token Endpoint",
+      "tokenEndpointPlaceholder": "https://auth.example.co.il/token",
+      "userInfoEndpoint": "User Info Endpoint",
+      "userInfoEndpointPlaceholder": "https://auth.example.co.il/userinfo",
+      "configurationMethod": "שיטת הגדרה",
+      "autoDiscovery": "גילוי אוטומטי",
+      "autoDiscoveryDescription": "גלה אוטומטית endpoints מה-Provider URL",
+      "manualEndpoints": "Endpoints ידניים (מומלץ)",
+      "manualEndpointsDescription": "הגדר ידנית authorization, token ו-user info endpoints",
+      "callbackUrl": "Callback URL",
+      "callbackUrlDescription": "השתמש ב-URL זה בהגדרת ספק ה-OAuth שלך",
+      "copyCallbackUrl": "העתק Callback URL",
+      "callbackUrlCopied": "Callback URL הועתק ללוח!",
+      "adminEmailDomains": "דומיינים של דוא\"ל מנהל",
+      "adminEmailDomainsPlaceholder": "הזן דומיינים (למשל: admin.company.com)",
+      "adminEmailDomainsHelp": "משתמשים עם דוא\"ל מדומיינים אלה יקבלו הרשאות מנהל",
+      "autoRegister": "הירשם אוטומטית משתמשים חדשים",
+      "officialProviderUrlPlaceholder": "החלף placeholder ב-{displayName} URL שלך",
+      "officialProviderHelp": "זהו ספק רשמי. ה-endpoints מוגדרים מראש. אתה יכול לערוך רק את ה-URL הזה.",
+      "officialProviderIconHelp": "אתה יכול להתאים את האייקון לספק הרשמי הזה."
+    },
+    "buttons": {
+      "cancel": "ביטול",
+      "save": "שמור",
+      "saving": "שומר...",
+      "adding": "מוסיף...",
+      "updating": "מעדכן...",
+      "saveProvider": "שמור ספק",
+      "delete": "מחק",
+      "deleting": "מוחק...",
+      "edit": "ערוך",
+      "enable": "הפעל",
+      "disable": "השבת"
+    },
+    "messages": {
+      "providerAdded": "הספק נוסף בהצלחה",
+      "providerUpdated": "הספק עודכן בהצלחה",
+      "providerDeleted": "הספק נמחק בהצלחה",
+      "providerOrderUpdated": "סדר הספקים עודכן בהצלחה",
+      "fillRequiredFields": "אנא מלא את כל השדות הנדרשים (שם, שם תצוגה, client ID, client secret)",
+      "provideUrlOrEndpoints": "ספק או Provider URL לגילוי אוטומטי או את כל שלושת ה-custom endpoints",
+      "chooseDiscoveryOrManual": "בחר או גילוי אוטומטי (Provider URL) או endpoints ידניים, לא את שניהם",
+      "loadFailed": "נכשל בטעינת ספקים",
+      "addFailed": "נכשל בהוספת ספק",
+      "updateFailed": "נכשל בעדכון ספק",
+      "deleteFailed": "נכשל במחיקת ספק",
+      "orderUpdateFailed": "נכשל בעדכון סדר ספקים"
+    },
+    "info": {
+      "title": "מידע",
+      "officialProvidersRecommended": "לתפקוד טוב יותר, שקול שימוש בספקים רשמיים. אם יש לך בעיות עם ספק מותאם אישית, שקול לפתוח issue ב-",
+      "github": "GitHub",
+      "officialProvider": "ספק רשמי",
+      "officialProviderDescription": "הספק הזה מותאם על ידי OUITRANSFER. ניתן לערוך רק אישורי כניסה והגדרות.",
+      "manualConfigTitle": "הגדרה ידנית",
+      "manualConfigDescription": "אתה מספק את כל ה-endpoints ידנית. ודא שהם נכונים עבור הספק שלך."
+    },
+    "deleteModal": {
+      "title": "מחק ספק אימות",
+      "confirmMessage": "האם אתה בטוח שברצונך למחוק את הספק \"{displayName}\"? פעולה זו אינה ניתנת לביטול.",
+      "providerId": "מזהה ספק: {name}",
+      "cancel": "ביטול",
+      "delete": "מחק ספק",
+      "deleting": "מוחק..."
+    }
+  },
+  "bulkDownload": {
+    "title": "הורדה מרובת",
+    "zipNameLabel": "שם קובץ ZIP",
+    "zipNamePlaceholder": "הזן שם קובץ",
+    "description": "{count, plural, =1 {קובץ אחד יעבור דחיסה} other {# קבצים יעברו דחיסה}}",
+    "download": "הורד ZIP"
+  },
+  "common": {
+    "loading": "טוען, אנא המתן...",
+    "loadingSimple": "טוען...",
+    "cancel": "ביטול",
+    "save": "שמור",
+    "saving": "שומר...",
+    "update": "עדכן",
+    "updating": "מעדכן...",
+    "delete": "מחק",
+    "deleting": "מוחק...",
+    "close": "סגור",
+    "download": "הורד",
+    "unexpectedError": "אירעה שגיאה בלתי צפויה. אנא נסה שוב.",
+    "yes": "כן",
+    "no": "לא",
+    "dashboard": "לוח בקרה",
+    "back": "חזור",
+    "clickToActivate": "לחץ להפעלה",
+    "clickToDeactivate": "לחץ לביטול הפעלה",
+    "creating": "יוצר...",
+    "create": "צור",
+    "rename": "שנה שם",
+    "move": "העבר",
+    "share": "שתף",
+    "search": "חפש",
+    "copy": "העתק",
+    "copied": "הועתק",
+    "retry": "Retry",
+    "unavailable": "לא זמין",
+    "days": "ימים",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    },
+    "moving": "מעביר…"
+  },
+  "createShare": {
+    "title": "צור שיתוף",
+    "nameLabel": "שם השיתוף",
+    "namePlaceholder": "הזן שם לשיתוף שלך",
+    "descriptionLabel": "תיאור",
+    "descriptionPlaceholder": "הזן תיאור (אופציונלי)",
+    "expirationLabel": "תאריך תפוגה",
+    "expirationPlaceholder": "DD/MM/YYYY HH:MM",
+    "maxViewsLabel": "מספר צפיות מרבי",
+    "maxViewsPlaceholder": "השאר ריק ללא הגבלה",
+    "passwordProtection": "מוגן בסיסמה",
+    "passwordLabel": "סיסמה",
+    "passwordPlaceholder": "הזן סיסמה",
+    "create": "צור שיתוף",
+    "success": "השיתוף נוצר בהצלחה",
+    "error": "נכשל ביצירת שיתוף",
+    "errors": {
+      "nameRequired": "שם השיתוף נדרש"
+    },
+    "itemsSelected": "{count} פריטים נבחרו",
+    "tabs": {
+      "shareDetails": "פרטי שיתוף",
+      "selectFiles": "בחר קבצים",
+      "shareLink": "קישור שיתוף"
+    },
+    "nextSelectFiles": "הבא: בחר קבצים",
+    "searchLabel": "חיפוש",
+    "privacySection": "פרטיות והודעות",
+    "nameFieldRequired": "נדרש שם המבקר",
+    "emailFieldRequired": "דוא״ל של המבקר נדרש",
+    "notifyOnDownload": "הודע לי בכל הורדה",
+    "notifyOnDownloadHelp": "כאשר פעולה זו מופעלת, תקבל הודעות דוא״ל כאשר יש הורדות של קבצים משיתוף זה, ללא קשר להעדפות ההודעות הגלובליות שלך.",
+    "inactivityAlertDays": "הודע אם אין הורדות אחרי",
+    "inactivityAlertPlaceholder": "השאר ריק כדי להשבית",
+    "fieldHidden": "מוסתר",
+    "fieldOptional": "אופציונלי",
+    "fieldRequired": "נדרש",
+    "filesOptionalHint": "הוספת קבצים היא אופציונלית, אתה יכול ליצור שיתוף ריק עכשיו והוסף קבצים מאוחר יותר.",
+    "nextGenerateLink": "הבא: קישור",
+    "linkStepDescription": "צור קישור מותאם אישית כדי שאחרים יוכלו לגשת לשיתוף הזה, או דלג ותוסיף אחד מאוחר יותר.",
+    "nameFieldRequiredHelp": "קובע אם המבקרים יתבקשו להזין את שמם בעת פתיחת השיתוף.",
+    "emailFieldRequiredHelp": "קובע אם המבקרים יתבקשו להזין את כתובת הדואל שלהם בעת פתיחת השיתוף."
+  },
+  "customization": {
+    "breadcrumb": "התאמה אישית",
+    "colors": {
+      "title": "צבעי ערכת נושא",
+      "description": "בחר את צבע הנושא העיקרי המועדף עליך",
+      "presets": "צבעים זמינים",
+      "presetsDescription": "בחר מערכות נושא צבעוניות זמינות",
+      "reset": "אפס לברירת מחדל"
+    },
+    "fonts": {
+      "title": "טיפוגרפיה",
+      "description": "בחר את משפחת הגופנים המועדפת עליך",
+      "available": "גופנים זמינים",
+      "availableDescription": "בחר ממשפחות גופנים זמינות",
+      "reset": "אפס לברירת מחדל"
+    },
+    "radius": {
+      "title": "רדיוס פינות",
+      "description": "התאם אישית את עגלות רכיבי הממשק",
+      "available": "אפשרויות עגלות",
+      "availableDescription": "בחר כיצד הפינות המעוגלות אמורות להיראות",
+      "reset": "אפס לברירת מחדל"
+    },
+    "background": {
+      "title": "צבעי רקע",
+      "description": "התאם אישית צבעי רקע למצבי בהיר וכהה",
+      "lightMode": "מצב בהיר",
+      "darkMode": "מצב כהה",
+      "availableDescription": "בחר צבעי רקע גם לנושא בהיר וגם לנושא כהה",
+      "reset": "אפס לברירת מחדל"
+    },
+    "theme": {
+      "title": "מצב נושא",
+      "description": "בחר בין נושא בהיר, כהה או מערכת",
+      "selectTheme": "העדפת נושא",
+      "availableDescription": "בחר את מצב הנושא המועדף עליך",
+      "reset": "אפס למערכת"
+    },
+    "pageTitle": "התאמה אישית"
+  },
+  "dashboard": {
+    "loadError": "נכשל בטעינת נתוני לוח הבקרה",
+    "linkCopied": "הקישור הועתק ללוח",
+    "pageTitle": "לוח בקרה",
+    "breadcrumb": "לוח בקרה",
+    "recentFiles": {
+      "title": "קבצים אחרונים",
+      "description": "הקבצים שהועלו לאחרונה"
+    },
+    "systemStatus": {
+      "title": "מצב המערכת",
+      "refresh": "רענון",
+      "status": {
+        "healthy": "תקין",
+        "degraded": "מוגבל",
+        "unhealthy": "לא זמין"
+      },
+      "checks": {
+        "database": "מסד נתונים",
+        "storage": "אחסון",
+        "ok": "תקין",
+        "error": "שגיאה",
+        "notConfigured": "לא מוגדר"
+      },
+      "uptime": "זמן פעילות",
+      "diskSpace": {
+        "label": "שטח דיסק",
+        "ariaLabel": "סרגל התקדמות של שימוש בשטח דיסק"
+      },
+      "quota": {
+        "label": "מכסת אחסון",
+        "ariaLabel": "סרגל התקדמות מכסת האחסון",
+        "notConfigured": "מכסות לא מוגדרות",
+        "unlimited": "ללא הגבלה",
+        "used": "{used} מתוך {total} בשימוש",
+        "usedOnly": "{used} בשימוש",
+        "exceeded": {
+          "banner": "מכסת האחסון שלך חרגה. אינך יכול להעלות קבצים חדשים עד שתפנה מקום על ידי מחיקת קבצים או שיתופים קיימים."
+        },
+        "warning": {
+          "banner": "אתה משתמש ב-{percentage}% ממכסת האחסון שלך."
+        }
+      },
+      "metrics": {
+        "users": "משתמשים",
+        "files": "קבצים",
+        "shares": "שיתופים",
+        "reverseShares": "שיתופים הפוכים",
+        "myFiles": "הקבצים שלי",
+        "activeShares": "שיתופים פעילים"
+      },
+      "email": {
+        "label": "דוא\"ל / התראות",
+        "status": {
+          "ok": "פעיל",
+          "disabled": "לא מוגדר",
+          "degraded": "מושפל",
+          "down": "לא מקוון"
+        },
+        "queue": {
+          "pending": "ממתינות",
+          "failed": "נכשלו",
+          "sent24h": "נשלחו ב-24 שעות"
+        },
+        "lastError": "שגיאה אחרונה",
+        "userDisrupted": "ההתראות מופרעות",
+        "userOffline": "ההתראות לא מקוונות"
+      },
+      "errors": {
+        "title": "המצב אינו זמין",
+        "fetchFailed": "לא ניתן לאחזר את מצב המערכת. נסה שוב מאוחר יותר.",
+        "diskSpaceError": "לא ניתן לאחזר מידע על שטח הדיסק.",
+        "statsError": "לא ניתן לטעון סטטיסטיקות הפלטפורמה.",
+        "emailStatsError": "לא ניתן לטעון סטטיסטיקות של התראות דוא\"ל."
+      },
+      "collapse": "כווץ סטטוס מערכת",
+      "expand": "הרחב סטטוס מערכת"
+    }
+  },
+  "deleteConfirmation": {
+    "filesToDelete": "קבצים למחיקה",
+    "foldersToDelete": "תיקיות למחיקה",
+    "itemsToDelete": "פריטים למחיקה",
+    "sharesToDelete": "שיתופים למחיקה"
+  },
+  "downloadQueue": {
+    "downloadQueued": "הורדה בתור: {fileName}",
+    "queuedDescription": "ההורדה תתחיל אוטומטית כאשר יהיה מקום פנוי",
+    "queuePosition": "הורדה בתור במיקום {position}: {fileName}",
+    "estimatedWait": "זמן המתנה משוער: {time}",
+    "queueFull": "תור ההורדות מלא",
+    "queueFullDescription": "אנא נסה שוב בעוד מספר דקות כאשר יהיה מקום בתור",
+    "cancelSuccess": "ההורדה בוטלה בהצלחה",
+    "cancelError": "נכשל בביטול ההורדה: {error}",
+    "status": {
+      "pending": "מכין...",
+      "queued": "בתור",
+      "downloading": "מוריד",
+      "completed": "הושלם",
+      "failed": "נכשל"
+    },
+    "waitTime": {
+      "seconds": "{seconds}ש",
+      "minutes": "{minutes}ד",
+      "hoursMinutes": "{hours}ש {minutes}ד"
+    },
+    "indicator": {
+      "title": "הורדות",
+      "downloads": "תור הורדות",
+      "active": "פעיל",
+      "queued": "בתור",
+      "position": "מיקום {position}",
+      "estimatedWait": "המתנה: {time}",
+      "unknownFile": "קובץ לא ידוע",
+      "noDownloads": "אין הורדות בתהליך",
+      "refresh": "רענן תור"
+    }
+  },
+  "emptyState": {
+    "noFiles": "אין עדיין קבצים שהועלו",
+    "uploadFile": "העלה קובץ"
+  },
+  "errors": {
+    "invalidCredentials": "דוא\"ל או סיסמה לא חוקיים",
+    "networkError": "לא ניתן להגיע לשרת. בדוק את החיבור שלך.",
+    "userNotFound": "משתמש לא נמצא",
+    "accountLocked": "חשבונך ננעל זמנית עקב ניסיונות כניסה כושלים רבים מדי. אנא נסה שוב בעוד {minutes} דקות.",
+    "unexpectedError": "אירעה שגיאה בלתי צפויה. אנא נסה שוב",
+    "Invalid verification code": "קוד אימות לא חוקי",
+    "Two-factor authentication is already enabled": "אימות דו-שלבי כבר מופעל",
+    "Two-factor authentication is not enabled": "אימות דו-שלבי אינו מופעל",
+    "Invalid password": "סיסמה לא חוקית",
+    "Password verification required": "נדרש אימות סיסמה",
+    "Invalid two-factor authentication code": "קוד אימות דו-שלבי לא חוקי",
+    "Two-factor authentication required": "נדרש אימות דו-שלבי",
+    "noUserData": "אין נתוני משתמש",
+    "somethingWentWrong": "משהו השתבש",
+    "tryAgain": "נסה שוב",
+    "goHome": "חזור לעמוד הבית",
+    "pageNotFound": "עמוד לא נמצא",
+    "pageNotFoundMessage": "העמוד שאתה מחפש אינו קיים או הועבר.",
+    "shareUnavailable": "שיתוף לא זמין",
+    "shareErrorMessage": "שגיאה בטעינת השיתוף הזה.",
+    "uploadUnavailable": "העלאה לא זמינה",
+    "uploadErrorMessage": "שגיאה בטעינת דף ההעלאה.",
+    "accessDenied": "גישה נשללת",
+    "accessDeniedMessage": "אין לך הרשאות מנהל לגישה לעמוד זה.",
+    "errorLoadingSettings": "שגיאה בטעינת הגדרות",
+    "refreshPage": "רענן עמוד"
+  },
+  "fileActions": {
+    "editFile": "ערוך קובץ",
+    "nameLabel": "שם",
+    "namePlaceholder": "הזן שם חדש",
+    "extension": "סיומת",
+    "descriptionLabel": "תיאור",
+    "descriptionPlaceholder": "הזן תיאור קובץ",
+    "addDescriptionPlaceholder": "הוסף תיאור...",
+    "deleteFile": "מחק קובץ",
+    "deleteConfirmation": "האם אתה בטוח שברצונך למחוק קובץ זה?",
+    "deleteWarning": "פעולה זו אינה ניתנת לביטול.",
+    "inSharesWarningTitle": "קובץ זה כלול בשיתופים",
+    "inSharesWarningBody": "קובץ זה כלול ב-{count, plural, one {# שיתוף} other {# שיתופים}}. מחיקתו תסירו מכל השיתופים.",
+    "deleteAnyway": "מחק בכל זאת",
+    "bulkInSharesWarningTitle": "כמה קבצים כלולים בשיתופים",
+    "bulkInSharesWarningBody": "{count, plural, one {# קובץ כלול} other {# קבצים כלולים}} בשיתופים. מחיקה תסירם מכל השיתופים."
+  },
+  "fileManager": {
+    "downloadError": "נכשל בהורדת קובץ",
+    "updateSuccess": "הקובץ עודכן בהצלחה",
+    "updateError": "נכשל בעדכון קובץ",
+    "deleteSuccess": "הקובץ נמחק בהצלחה",
+    "deleteError": "נכשל במחיקת קובץ"
+  },
+  "filePreview": {
+    "title": "תצוגה מקדימה של קובץ",
+    "description": "תצוגה מקדימה והורדת קובץ",
+    "loading": "טוען...",
+    "notAvailable": "תצוגה מקדימה אינה זמינה עבור סוג קובץ זה",
+    "downloadToView": "השתמש בכפתור ההורדה כדי להציג קובץ זה",
+    "loadError": "שגיאה בטעינת תצוגה מקדימה של הקובץ",
+    "downloadSuccess": "Download started",
+    "downloadError": "שגיאה בהורדת הקובץ",
+    "audioNotSupported": "הדפדפן שלך אינו תומך בהשמעת אודיו",
+    "videoNotSupported": "הדפדפן שלך אינו תומך בהשמעת וידאו",
+    "pdfPreviewNotAvailable": "תצוגה מקדימה של PDF אינה זמינה. נסה תצוגה חלופית או הורד",
+    "tryAlternativeView": "נסה תצוגה חלופית",
+    "loadingAlternative": "טוען תצוגה חלופית...",
+    "loadingAudio": "טוען אודיו...",
+    "downloading": "מוריד..."
+  },
+  "fileSelector": {
+    "availableFiles": "קבצים זמינים ({count})",
+    "shareFiles": "קבצים משותפים ({count})",
+    "shareFilesDescription": "קבצים כרגע בשיתוף זה",
+    "availableFilesDescription": "בחר קבצים להוספה לשיתוף זה",
+    "searchPlaceholder": "חפש קבצים...",
+    "searchSelectedFiles": "חפש קבצים נבחרים...",
+    "noMatchingFiles": "לא נמצאו קבצים תואמים",
+    "noAvailableFiles": "אין קבצים זמינים",
+    "noFilesInShare": "אין קבצים בשיתוף זה",
+    "noFilesFound": "לא נמצאו קבצים",
+    "noFilesFoundWith": "לא נמצאו קבצים התואמים ל-\"{query}\"",
+    "addFilesFromList": "הוסף קבצים מהרשימה למטה",
+    "tryDifferentSearch": "נסה מונחי חיפוש שונים",
+    "allFilesInShare": "כל הקבצים כבר בשיתוף זה",
+    "uploadNewFiles": "העלה קבצים חדשים כדי להוסיף אותם",
+    "fileCount": "{count, plural, =1 {קובץ} other {קבצים}}",
+    "filesSelected": "{count, plural, =0 {לא נבחרו קבצים} =1 {קובץ אחד נבחר} other {# קבצים נבחרו}}",
+    "itemsSelected": "{count} פריטים נבחרו",
+    "editFile": "ערוך קובץ",
+    "editFolder": "ערוך תיקייה",
+    "previewFile": "תצוגה מקדימה של קובץ",
+    "addToShare": "הוסף לשיתוף",
+    "removeFromShare": "הסר משיתוף",
+    "saveChanges": "שמור שינויים"
+  },
+  "files": {
+    "title": "כל הקבצים",
+    "uploadFile": "העלה קובץ",
+    "loadError": "נכשל בטעינת קבצים",
+    "pageTitle": "הקבצים שלי",
+    "breadcrumb": "הקבצים שלי",
+    "downloadStart": "ההורדה החלה",
+    "downloadError": "נכשל בהורדת קובץ",
+    "updateSuccess": "הקובץ עודכן בהצלחה",
+    "updateError": "נכשל בעדכון קובץ",
+    "deleteSuccess": "הקובץ נמחק בהצלחה",
+    "deleteError": "נכשל במחיקת קובץ",
+    "bulkDownloadSuccess": "הורדת הקבצים החלה בהצלחה",
+    "bulkDownloadError": "שגיאה ביצירת קובץ ZIP",
+    "bulkDownloadFileError": "שגיאה בהורדת קובץ {fileName}",
+    "bulkDeleteSuccess": "{count, plural, =1 {פריט אחד נמחק בהצלחה} other {# פריטים נמחקו בהצלחה}}",
+    "bulkDeleteError": "שגיאה במחיקת פריטים נבחרים",
+    "bulkDeleteTitle": "מחק פריטים נבחרים",
+    "bulkDeleteConfirmation": "האם אתה בטוח שברצונך למחוק {count, plural, =1 {פריט אחד} other {# פריטים}}? פעולה זו אינה ניתנת לביטול.",
+    "totalFiles": "{count, plural, =0 {אין קבצים} =1 {קובץ אחד} other {# קבצים}}",
+    "openFolder": "פתח תיקייה",
+    "errors": {
+      "moveItemsFailed": "נכשל בהעברת פריטים. אנא נסה שוב.",
+      "cannotMoveHere": "לא ניתן להעביר פריטים למיקום זה"
+    },
+    "empty": {
+      "title": "אין עדיין קבצים או תיקיות",
+      "description": "העלה את הקובץ הראשון שלך או צור תיקייה כדי להתחיל"
+    },
+    "files": "קבצים",
+    "folders": "תיקיות",
+    "actions": {
+      "open": "פתח",
+      "rename": "שנה שם",
+      "delete": "מחק"
+    },
+    "viewMode": {
+      "table": "טבלה",
+      "grid": "רשת"
+    },
+    "drag": {
+      "folderMoved": "התיקייה \"{name}\" הועברה אל \"{target}\"",
+      "fileMoved": "הקובץ \"{name}\" הועבר אל \"{target}\"",
+      "itemsMoved": "{count} פריטים הועברו אל \"{target}\"",
+      "folderMovedToRoot": "התיקייה \"{name}\" הועברה לתיקיית השורש",
+      "fileMovedToRoot": "הקובץ \"{name}\" הועבר לתיקיית השורש",
+      "itemsMovedToRoot": "{count} פריטים הועברו לתיקיית השורש"
+    }
+  },
+  "filesTable": {
+    "ariaLabel": "טבלת קבצים",
+    "selectAll": "בחר הכל",
+    "selectFile": "בחר קובץ {fileName}",
+    "columns": {
+      "name": "שם",
+      "description": "תיאור",
+      "size": "גודל",
+      "createdAt": "נוצר ב",
+      "updatedAt": "עודכן ב",
+      "actions": "פעולות"
+    },
+    "actions": {
+      "menu": "תפריט פעולות קובץ",
+      "preview": "תצוגה מקדימה",
+      "edit": "ערוך",
+      "share": "שתף",
+      "download": "הורד",
+      "delete": "מחק"
+    },
+    "bulkActions": {
+      "selected": "{count, plural, =1 {קובץ אחד נבחר} other {# קבצים נבחרו}}",
+      "actions": "פעולות",
+      "download": "הורד נבחרים",
+      "share": "שתף נבחרים",
+      "delete": "מחק נבחרים"
+    }
+  },
+  "folderActions": {
+    "editFolder": "ערוך תיקייה",
+    "folderName": "שם תיקייה",
+    "folderNamePlaceholder": "הזן שם תיקייה",
+    "folderDescription": "תיאור",
+    "folderDescriptionPlaceholder": "הזן תיאור תיקייה (אופציונלי)",
+    "createFolder": "צור תיקייה",
+    "renameFolder": "שנה שם תיקייה",
+    "moveFolder": "העבר תיקייה",
+    "shareFolder": "שתף תיקייה",
+    "deleteFolder": "מחק תיקייה",
+    "moveTo": "העבר ל",
+    "selectDestination": "בחר תיקיית יעד",
+    "rootFolder": "שורש",
+    "folderCreated": "התיקייה נוצרה בהצלחה",
+    "folderRenamed": "התיקייה שונתה בהצלחה",
+    "folderMoved": "התיקייה הועברה בהצלחה",
+    "folderDeleted": "התיקייה נמחקה בהצלחה",
+    "folderShared": "התיקייה שותפה בהצלחה",
+    "createFolderError": "שגיאה ביצירת תיקייה",
+    "renameFolderError": "שגיאה בשינוי שם תיקייה",
+    "moveFolderError": "שגיאה בהעברת תיקייה",
+    "deleteFolderError": "שגיאה במחיקת תיקייה",
+    "shareFolderError": "שגיאה בשיתוף תיקייה",
+    "deleteConfirmation": "האם אתה בטוח שברצונך למחוק תיקייה זו?",
+    "deleteWarning": "פעולה זו אינה ניתנת לביטול.",
+    "inSharesWarningTitle": "תיקייה זו כלולה בשיתופים",
+    "inSharesWarningBody": "תיקייה זו (וההוראה שלה) כלולה ב-{count, plural, one {# שיתוף} other {# שיתופים}}. מחיקתה תסירה מכל השיתופים.",
+    "bulkInSharesWarningTitle": "כמה תיקיות כלולות בשיתופים",
+    "bulkInSharesWarningBody": "{count, plural, one {# תיקייה כלולה} other {# תיקיות כלולות}} בשיתופים. מחיקה תסירן מכל השיתופים.",
+    "deleteAnyway": "מחק בכל זאת"
+  },
+  "footer": {
+    "projectHomepage": "דף הבית של OUITRANSFER"
+  },
+  "forgotPassword": {
+    "emailLabel": "כתובת דוא\"ל",
+    "emailPlaceholder": "הזן את הדוא\"ל שלך",
+    "sending": "שולח...",
+    "submit": "שלח הוראות איפוס",
+    "backToLogin": "חזור לכניסה",
+    "title": "שכחתי סיסמה",
+    "description": "הזן את כתובת הדוא\"ל שלך ונשלח לך הוראות לאיפוס הסיסמה",
+    "resetInstructions": "הוראות איפוס נשלחו לדוא\"ל שלך",
+    "pageTitle": "שכחתי סיסמה",
+    "passwordAuthDisabled": "אימות סיסמה מושבת. אנא צור קשר עם המנהל או השתמש בספק אימות חיצוני."
+  },
+  "generateShareLink": {
+    "generateTitle": "צור קישור שיתוף",
+    "updateTitle": "עדכן קישור שיתוף",
+    "generateDescription": "צור קישור מותאם אישית לשיתוף זה. ניתן להתאים את כתובת ה-URL כדי שתהיה בלתי נשכחת יותר.",
+    "updateDescription": "עדכן את הקישור המותאם אישית לשיתוף זה. ניתן להתאים את כתובת ה-URL כדי שתהיה בלתי נשכחת יותר.",
+    "aliasPlaceholder": "מזהה מותאם אישית לקישור",
+    "linkReady": "קישור השיתוף שלך מוכן. ניתן להעתיק אותו כעת.",
+    "readyDescription": "קישור השיתוף שלך מוכן. ניתן לסרוק את קוד ה-QR ישירות, להוריד אותו לשימוש מאוחר יותר, או להעתיק את הקישור למטה.",
+    "generateButton": "צור קישור",
+    "updateButton": "עדכן קישור",
+    "copyButton": "העתק קישור",
+    "success": "הקישור נוצר בהצלחה",
+    "error": "נכשל ביצירת קישור",
+    "copied": "הקישור הועתק ללוח",
+    "tabs": {
+      "link": "קישור",
+      "qrcode": "קוד QR"
+    },
+    "later": "מאוחר יותר"
+  },
+  "home": {
+    "pageTitle": "בית",
+    "tagline": "העברת קבצים מאובטחת",
+    "subtitle": "שלח ושתף את הקבצים שלך בצורה מאובטחת.",
+    "login": "היכנס",
+    "partners": {
+      "title": "קיבלת קישור?",
+      "description": "השתמש בקישור שנתנו לך כדי לגשת לקבצים שלך. אם אתה לא מוצא אותו, צור קשר עם האדם ששלח אותו לך."
+    }
+  },
+  "iconPicker": {
+    "title": "בחר אייקון",
+    "placeholder": "בחר אייקון",
+    "searchPlaceholder": "חפש אייקונים...",
+    "loadingMore": "טוען עוד אייקונים...",
+    "allIconsLoaded": "כל {count} האייקונים נטענו",
+    "noIconsFound": "לא נמצאו אייקונים עבור \"{search}\"",
+    "tabs": {
+      "all": "כל האייקונים",
+      "popular": "פופולרי",
+      "auth": "ספקי אימות"
+    },
+    "stats": "{iconCount} אייקונים מ-{libraryCount} ספריות",
+    "categoryBadge": "{category} ({count} אייקונים)"
+  },
+  "imageEdit": {
+    "title": "ערוך תמונה",
+    "rotate": "סובב",
+    "zoom": "זום",
+    "cropInstructions": "גרור כדי למקם מחדש, שנה גודל פינות כדי להתאים אזור חיתוך",
+    "cropAlt": "תמונה לחיתוך"
+  },
+  "login": {
+    "welcome": "ברוכים הבאים ל",
+    "signInToContinue": "היכנס כדי להמשיך",
+    "emailOrUsernameLabel": "דוא\"ל או שם משתמש",
+    "emailOrUsernamePlaceholder": "הזן את הדוא\"ל או שם המשתמש שלך",
+    "emailLabel": "כתובת דוא\"ל",
+    "emailPlaceholder": "הזן את הדוא\"ל שלך",
+    "passwordLabel": "סיסמה",
+    "passwordPlaceholder": "הזן את הסיסמה שלך",
+    "signIn": "היכנס",
+    "signingIn": "נכנס...",
+    "forgotPassword": "שכחת סיסמה?",
+    "pageTitle": "כניסה",
+    "or": "או",
+    "continueWithSSO": "המשך עם SSO",
+    "processing": "מעבד אימות...",
+    "orContinueWith": "או המשך באמצעות",
+    "continueWith": "המשך באמצעות {name}",
+    "providerNotConfigured": "{name} אינו מוגדר כראוי"
+  },
+  "logo": {
+    "labels": {
+      "appLogo": "לוגו אפליקציה"
+    },
+    "buttons": {
+      "upload": "העלה לוגו",
+      "remove": "הסר לוגו"
+    },
+    "messages": {
+      "uploadSuccess": "הלוגו הועלה בהצלחה",
+      "removeSuccess": "הלוגו הוסר בהצלחה"
+    },
+    "errors": {
+      "uploadFailed": "נכשל בהעלאת לוגו",
+      "removeFailed": "נכשל בהסרת לוגו"
+    }
+  },
+  "moveItems": {
+    "itemsToMove": "פריטים להעברה:",
+    "movingToFolder": "עובר ל: {folder}",
+    "title": "העבר {count, plural, =1 {פריט} other {פריטים}}",
+    "description": "העבר {count, plural, =1 {פריט} other {פריטים}} למיקום חדש",
+    "success": "הועברו בהצלחה {count} {count, plural, =1 {פריט} other {פריטים}}",
+    "errors": {
+      "moveFailed": "נכשל בהעברת פריטים"
+    }
+  },
+  "audit": {
+    "pageTitle": "יומן פעילות",
+    "pageDescription": "צפה וחפש את כל פעילויות המערכת",
+    "table": {
+      "date": "תאריך",
+      "user": "משתמש",
+      "action": "פעולה",
+      "target": "יעד",
+      "ipAddress": "כתובת IP",
+      "details": "פרטים",
+      "noResults": "לא נמצאו יומני ביקורת",
+      "anonymous": "אנונימי",
+      "system": "מערכת",
+      "resultCount": "{count, plural, one {# תוצאה} other {# תוצאות}}"
+    },
+    "filters": {
+      "action": "פעולה",
+      "user": "משתמש",
+      "targetType": "סוג יעד",
+      "dateFrom": "מ",
+      "dateTo": "עד",
+      "search": "חפש",
+      "searchPlaceholder": "חפש לפי IP או פעולה...",
+      "clearAll": "נקה סינונים"
+    },
+    "export": {
+      "button": "ייצוא",
+      "csv": "CSV",
+      "json": "JSON",
+      "dateRangeRequired": "בחר טווח תאריכים לייצוא"
+    },
+    "actions": {
+      "LOGIN_SUCCESS": "כניסה בוצעה בהצלחה",
+      "LOGIN_FAILURE": "כניסה נכשלה",
+      "LOGOUT": "התנתקות",
+      "PASSWORD_CHANGE": "סיסמה שונתה",
+      "PASSWORD_RESET": "אפס סיסמה",
+      "PASSWORD_RESET_REQUEST": "בקשת איפוס סיסמה",
+      "ACCOUNT_LOCKED": "חשבון נעול",
+      "LOGIN_LOCKED": "כניסה נעולה",
+      "TRUSTED_DEVICE_REMOVE": "מכשיר מהימן הוסר",
+      "TRUSTED_DEVICE_REMOVE_ALL": "כל המכשירים המהימנים הוסרו",
+      "AUTH_PROVIDER_LOGIN": "כניסת SSO",
+      "TWO_FACTOR_ENABLE": "2FA מופעל",
+      "TWO_FACTOR_DISABLE": "2FA מושבת",
+      "TWO_FACTOR_BACKUP_REGENERATED": "קודי גיבוי 2FA עודכנו",
+      "USER_CREATE": "משתמש נוצר",
+      "USER_UPDATE": "משתמש עודכן",
+      "USER_DELETE": "משתמש נמחק",
+      "USER_ROLE_CHANGE": "תפקיד משתמש שונה",
+      "USER_QUOTA_CHANGE": "מכסת משתמש שונתה",
+      "USER_ACTIVATE": "משתמש הופעל",
+      "USER_DEACTIVATE": "משתמש הושבת",
+      "SHARE_CREATE": "שיתוף נוצר",
+      "SHARE_UPDATE": "שיתוף עודכן",
+      "SHARE_DELETE": "שיתוף נמחק",
+      "SHARE_ACCESS": "שיתוף נגיש",
+      "SHARE_PASSWORD_VERIFIED": "סיסמת שיתוף אומתה",
+      "SHARE_PASSWORD_FAILED": "סיסמת שיתוף נכשלה",
+      "SHARE_PASSWORD_UPDATE": "סיסמת שיתוף עודכנה",
+      "SHARE_RECIPIENT_ADD": "נמענים בשיתוף נוספו",
+      "SHARE_RECIPIENT_REMOVE": "נמענים בשיתוף הוסרו",
+      "SHARE_RECIPIENT_NOTIFY": "נמענים בשיתוף הודיעו",
+      "SHARE_RECIPIENT_REMIND": "נמענים של שיתוף קיבלו הזכרה",
+      "SHARE_ITEMS_ADD": "פריטי שיתוף נוספו",
+      "SHARE_ITEMS_REMOVE": "פריטי שיתוף הוסרו",
+      "FILE_UPLOAD": "קובץ הועלה",
+      "FILE_DOWNLOAD": "קובץ הורד",
+      "FILE_DELETE": "קובץ נמחק",
+      "FILE_MOVE": "קובץ הועבר",
+      "FILE_UPDATE": "קובץ עודכן",
+      "FOLDER_CREATE": "תיקייה נוצרה",
+      "FOLDER_UPDATE": "תיקייה עודכנה",
+      "FOLDER_MOVE": "תיקייה הועברה",
+      "FOLDER_DELETE": "תיקייה נמחקה",
+      "REVERSE_SHARE_CREATE": "שיתוף הפוך נוצר",
+      "REVERSE_SHARE_UPDATE": "שיתוף הפוך עודכן",
+      "REVERSE_SHARE_DELETE": "שיתוף הפוך נמחק",
+      "REVERSE_SHARE_ACCESS": "שיתוף הפוך נגיש",
+      "REVERSE_SHARE_PASSWORD_VERIFIED": "סיסמת שיתוף הפוך אומתה",
+      "REVERSE_SHARE_PASSWORD_FAILED": "סיסמת שיתוף הפוך נכשלה",
+      "REVERSE_SHARE_PASSWORD_UPDATE": "סיסמת שיתוף הפוך עודכנה",
+      "REVERSE_SHARE_UPLOAD": "קובץ הועלה לשיתוף הפוך",
+      "REVERSE_SHARE_FILE_DELETE": "קובץ שיתוף הפוך נמחק",
+      "REVERSE_SHARE_FILE_COPY": "קובץ שיתוף הפוך הועתק",
+      "REVERSE_SHARE_FILE_DOWNLOAD": "קובץ שיתוף הפוך הורד",
+      "GROUP_CREATE": "קבוצה נוצרה",
+      "GROUP_UPDATE": "קבוצה עודכנה",
+      "GROUP_DELETE": "קבוצה נמחקה",
+      "GROUP_MEMBER_ADD": "חבר קבוצה נוסף",
+      "GROUP_MEMBER_REMOVE": "חבר קבוצה הוסר",
+      "LDAP_CONFIG_UPDATE": "תצורת LDAP עודכנה",
+      "LDAP_SYNC_TRIGGERED": "סנכרון LDAP הופעל",
+      "LDAP_SYNC_COMPLETED": "סנכרון LDAP הושלם",
+      "LDAP_SYNC_ERROR": "שגיאת סנכרון LDAP",
+      "AUTH_PROVIDER_CREATE": "ספק אימות נוצר",
+      "AUTH_PROVIDER_UPDATE": "ספק אימות עודכן",
+      "AUTH_PROVIDER_DELETE": "ספק אימות נמחק",
+      "INVITE_TOKEN_CREATE": "טוקן הזמנה נוצר",
+      "INVITE_TOKEN_USED": "טוקן הזמנה שומש",
+      "ADMIN_CONFIG_CHANGE": "תצורה שונתה",
+      "LOGO_UPLOAD": "לוגו הועלה",
+      "LOGO_REMOVE": "לוגו הוסר",
+      "SMTP_TEST": "בדיקת SMTP בוצעה",
+      "BACKGROUND_IMAGE_UPLOAD": "תמונת רקע הועלתה",
+      "BACKGROUND_IMAGE_DELETE": "תמונת רקע נמחקה",
+      "AUDIT_RETENTION_CLEANUP": "ניקוי יומן ביקורת",
+      "SHARE_DEACTIVATED": "שיתוף הושבת",
+      "SHARE_REACTIVATED": "שיתוף הופעל מחדש",
+      "REVERSE_SHARE_DEACTIVATED": "קישור קבלה הושבת",
+      "REVERSE_SHARE_REACTIVATED": "קישור קבלה הופעל מחדש",
+      "SHARE_AUTO_DELETED": "שיתוף נמחק באופן אוטומטי",
+      "REVERSE_SHARE_AUTO_DELETED": "קישור קבלה נמחק באופן אוטומטי",
+      "ACCOUNT_FILES_CLEANED": "קבצי חשבון נוקו",
+      "ORPHAN_S3_DELETED": "אובייקט אחסון יתום נמחק",
+      "ORPHAN_DB_DELETED": "רשומת מסד נתונים יתומה נמחקה",
+      "ORPHAN_MULTIPART_ABORTED": "ההעלאה הרבחלקית הלא שלמה בוטלה",
+      "QUOTA_FILES_DELETED": "קבצים שחרגו ממכסה נמחקו"
+    },
+    "targetTypes": {
+      "user": "משתמש",
+      "share": "שיתוף",
+      "reverse_share": "שיתוף הפוך",
+      "file": "קובץ",
+      "folder": "תיקייה",
+      "group": "קבוצה",
+      "ldap_config": "תצורת LDAP",
+      "ldap_sync_log": "סנכרון LDAP",
+      "setting": "הגדרה",
+      "auth_provider": "ספק אימות",
+      "background_image": "תמונת רקע",
+      "invite_token": "טוקן הזמנה",
+      "trusted_device": "מכשיר מהימן",
+      "logo": "לוגו"
+    },
+    "actionCategories": {
+      "auth": "אימות",
+      "share": "שיתופים",
+      "file": "קבצים",
+      "folder": "תיקיות",
+      "reverseShare": "שיתופים הפוכים",
+      "user": "משתמש",
+      "group": "קבוצות",
+      "ldap": "LDAP",
+      "admin": "ניהול",
+      "system": "מערכת"
+    },
+    "metadata": {
+      "method": "שיטה",
+      "reason": "סיבה",
+      "email": "דוא\"ל",
+      "count": "ספירה",
+      "via": "נוצר דרך",
+      "fields": "שדות ששונו",
+      "oldRole": "תפקיד ישן",
+      "newRole": "תפקיד חדש",
+      "oldQuota": "מכסה ישנה",
+      "newQuota": "מכסה חדשה",
+      "name": "שם",
+      "fileName": "שם קובץ",
+      "fileSize": "גודל קובץ",
+      "fileCount": "ספירת קבצים",
+      "folderCount": "ספירת תיקיות",
+      "hasPassword": "מוגן בסיסמה",
+      "expiration": "תפוגה",
+      "shareId": "שיתוף",
+      "emails": "דוא\"לים",
+      "recipientCount": "ספירת נמענים",
+      "fromFolderId": "מתיקייה",
+      "toFolderId": "לתיקייה",
+      "maxFiles": "קבצים מקס",
+      "maxFileSize": "גודל קובץ מקס",
+      "uploaderEmail": "דוא\"ל המעלה",
+      "uploaderName": "שם המעלה",
+      "targetFileId": "קובץ יעד",
+      "providerType": "סוג ספק",
+      "providerName": "שם ספק",
+      "deletedCount": "רשומות שנמחקו",
+      "olderThan": "יותר ישן מ",
+      "syncLogId": "יומן סנכרון",
+      "error": "שגיאה",
+      "manual": "הפעלה ידנית",
+      "recipientEmail": "דוא\"ל נמען",
+      "fromParentId": "מהורה מהורה",
+      "toParentId": "להורה",
+      "oldMaxFileSize": "גודל קובץ מקס ישן",
+      "newMaxFileSize": "גודל קובץ מקס חדש",
+      "oldMaxTotalStorage": "אחסון כולל מקס ישן",
+      "newMaxTotalStorage": "אחסון כולל מקס חדש",
+      "changedFields": "שדות ששונו",
+      "unassignedCount": "חברים לא משויכים",
+      "previousGroupId": "קבוצה קודמת",
+      "memberId": "חבר",
+      "parentId": "תיקייה הורה",
+      "targetFolderId": "תיקייה יעד",
+      "extension": "סיומת",
+      "size": "גודל",
+      "enabled": "מופעל",
+      "passwordCleared": "סיסמה נוקתה",
+      "trigger": "הפעלה",
+      "status": "סטטוס",
+      "usersCreated": "משתמשים נוצרו",
+      "usersUpdated": "משתמשים עודכנו",
+      "usersDeactivated": "משתמשים הושבתו",
+      "usersReactivated": "משתמשים הופעלו מחדש",
+      "usersSkipped": "משתמשים שדולגו",
+      "createdUserId": "משתמש שנוצר",
+      "deletedUserId": "משתמש שנמחק",
+      "emailOrUsername": "דוא\"ל/שם משתמש",
+      "remainingMinutes": "דקות נותרות",
+      "keys": "מפתחות תצורה",
+      "type": "סוג",
+      "yes": "כן",
+      "no": "לא",
+      "key": "[TO_TRANSLATE] Setting",
+      "usingCustomConfig": "[TO_TRANSLATE] Custom config",
+      "smtpHost": "[TO_TRANSLATE] SMTP host",
+      "files": "[TO_TRANSLATE] Files",
+      "shares": "[TO_TRANSLATE] Shares",
+      "reverseShares": "[TO_TRANSLATE] Reverse shares",
+      "folders": "[TO_TRANSLATE] Folders",
+      "s3Errors": "[TO_TRANSLATE] Storage errors",
+      "recipientId": "[TO_TRANSLATE] Recipient",
+      "identificationSource": "[TO_TRANSLATE] Identification",
+      "expiresAt": "[TO_TRANSLATE] Expires at",
+      "userId": "[TO_TRANSLATE] User",
+      "shareName": "[TO_TRANSLATE] Share",
+      "reverseShareName": "[TO_TRANSLATE] Reverse share",
+      "filesDeleted": "[TO_TRANSLATE] Files deleted",
+      "bytesFreed": "[TO_TRANSLATE] Storage freed",
+      "objectName": "[TO_TRANSLATE] Object",
+      "fileId": "[TO_TRANSLATE] File"
+    }
+  },
+  "navbar": {
+    "logoAlt": "לוגו אפליקציה",
+    "profileMenu": "תפריט פרופיל",
+    "profile": "פרופיל",
+    "customization": "התאמה אישית",
+    "settings": "הגדרות",
+    "usersManagement": "ניהול משתמשים",
+    "groupsManagement": "קבוצות",
+    "ldap": "LDAP",
+    "activityLog": "יומן פעילות",
+    "logout": "התנתק",
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
+  },
+  "navigation": {
+    "dashboard": "לוח בקרה"
+  },
+  "notifications": {
+    "permissionGranted": "התראות הורדה מופעלות",
+    "permissionDenied": "התראות הורדה מושבתות",
+    "downloadComplete": {
+      "title": "ההורדה הושלמה",
+      "body": "{fileName} סיים להוריד"
+    },
+    "downloadFailed": {
+      "title": "ההורדה נכשלה",
+      "body": "נכשל בהורדת {fileName}: {error}",
+      "unknownError": "שגיאה לא ידועה"
+    },
+    "queueProcessing": {
+      "title": "ההורדה מתחילה",
+      "body": "{fileName} מוריד כעת{position}",
+      "position": " (היה #{position} בתור)"
+    }
+  },
+  "profile": {
+    "password": {
+      "title": "שנה סיסמה",
+      "newPassword": "סיסמה חדשה",
+      "confirmPassword": "אשר סיסמה חדשה",
+      "updateButton": "עדכן סיסמה"
+    },
+    "form": {
+      "title": "מידע פרופיל",
+      "firstName": "שם פרטי",
+      "lastName": "שם משפחה",
+      "username": "שם משתמש",
+      "email": "דוא\"ל",
+      "updateButton": "עדכן פרופיל"
+    },
+    "header": {
+      "title": "פרופיל",
+      "subtitle": "נהל את המידע האישי והסיסמה שלך"
+    },
+    "picture": {
+      "title": "תמונת פרופיל",
+      "description": "לחץ על אייקון המצלמה כדי לשנות את תמונת הפרופיל שלך",
+      "uploadPhoto": "העלה תמונה",
+      "removePhoto": "הסר תמונה"
+    },
+    "errors": {
+      "loadFailed": "נכשל בטעינת נתוני משתמש",
+      "updateFailed": "נכשל בעדכון פרופיל",
+      "passwordFailed": "נכשל בעדכון סיסמה",
+      "imageFailed": "נכשל בעדכון תמונת פרופיל",
+      "imageRemoveFailed": "נכשל בהסרת תמונת פרופיל"
+    },
+    "messages": {
+      "noChanges": "אין שינויים לשמור",
+      "updateSuccess": "הפרופיל עודכן בהצלחה",
+      "fillPasswords": "אנא מלא את שני שדות הסיסמה",
+      "passwordSuccess": "הסיסמה עודכנה בהצלחה",
+      "imageSuccess": "תמונת הפרופיל עודכנה בהצלחה",
+      "imageRemoved": "תמונת הפרופיל הוסרה בהצלחה"
+    },
+    "pageTitle": "פרופיל"
+  },
+  "qrCodeModal": {
+    "title": "קוד QR לשיתוף",
+    "description": "סרוק קוד QR זה כדי לגשת לקישור.",
+    "download": "הורד קוד QR"
+  },
+  "quickAccess": {
+    "files": {
+      "title": "הקבצים שלי",
+      "description": "גש ונהל את הקבצים שהעלית"
+    },
+    "shares": {
+      "title": "השיתופים שלי",
+      "description": "צפה ונהל את הקבצים המשותפים שלך"
+    },
+    "reverseShares": {
+      "title": "קבל קבצים",
+      "description": "צור קישורים לאחרים לשלוח לך קבצים"
+    }
+  },
+  "recentFiles": {
+    "title": "העלאות אחרונות",
+    "viewAll": "צפה בהכל",
+    "upload": "העלה",
+    "uploadFile": "העלה קובץ",
+    "noFiles": "אין עדיין קבצים שהועלו"
+  },
+  "recentShares": {
+    "title": "שיתופים אחרונים",
+    "viewAll": "צפה בהכל",
+    "createShare": "צור שיתוף",
+    "noShares": "אין עדיין שיתופים שנוצרו",
+    "createFirst": "צור את השיתוף הראשון שלך"
+  },
+  "recipientSelector": {
+    "emailPlaceholder": "הזן דוא\"ל נמען",
+    "add": "הוסף",
+    "recipients": "נמענים ({count})",
+    "notifyAll": "הודע לכולם",
+    "noRecipients": "אין עדיין נמענים שנוספו",
+    "addSuccess": "הנמען נוסף בהצלחה",
+    "addError": "נכשל בהוספת נמען",
+    "removeSuccess": "הנמען הוסר בהצלחה",
+    "removeError": "נכשל בהסרת נמען",
+    "sendingNotifications": "שולח התראות...",
+    "notifySuccess": "הנמענים קיבלו הודעה בהצלחה",
+    "notifyError": "נכשל בהודעה לנמענים",
+    "selectAll": "בחר הכל",
+    "selectedCount": "{count} נבחרו",
+    "selectRecipient": "בחר {email}",
+    "notifySelected": "הודע לנבחרים",
+    "removeSelected": "הסר נבחרים",
+    "notifySingle": "הודע לנמען זה",
+    "removeSingle": "הסר נמען זה",
+    "bulkRemoveSuccess": "{count} נמענים הוסרו בהצלחה",
+    "bulkRemoveError": "נכשל בהסרת נמענים נבחרים",
+    "bulkNotifySuccess": "התראות נשלחו ל-{count} נמענים",
+    "bulkNotifyError": "נכשל בהודעה לנמענים נבחרים",
+    "singleNotifySuccess": "התראה נשלחה ל-{email}",
+    "singleNotifyError": "נכשל בהודעה לנמען",
+    "modalDescription": "הוסף ונהל נמענים לשיתוף זה. ניתן להודיע לכולם או לנמענים ספציפיים כאשר SMTP מוגדר.",
+    "addRecipient": "הוסף נמען",
+    "invalidEmail": "אנא הזן כתובת דוא\"ל חוקית",
+    "duplicateEmail": "נמען זה כבר נוסף",
+    "noRecipientsDescription": "הוסף נמענים כדי לשתף תוכן זה באמצעות דוא\"ל",
+    "notified": "התראה נשלחה",
+    "views": "{count, plural, one {# הצגה} other {# הצגות}}",
+    "notifyPartial": "רק {sent} מתוך {total} המקבלים קיבלו התראה",
+    "neverAccessed": "לא נגיש מעולם",
+    "namePlaceholder": "שם (אופציונלי)",
+    "downloaded": "הורד",
+    "pending": "ממתין",
+    "downloadedAt": "הורד בתאריך {date}",
+    "uploaded": "הועלה",
+    "uploadedAt": "הועלה בתאריך {date}",
+    "uploadApproximateHint": "בערך: מעלים יכולים להגיש קבצים ללא סיום דוא״ל כאשר זה לא נדרש",
+    "remindNonDownloaders": "הזכר ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {אין מקבלים בהמתנה, כולם הורידו} one {הזכר # מקבל שעדיין לא הוריד} other {הזכר # מקבלים שעדיין לא הורידו}}",
+    "sendingReminders": "שליחת תזכורות...",
+    "remindSuccess": "{count, plural, one {תזכורת נשלחה ל # מקבל} other {תזכורות נשלחו ל # מקבלים}}",
+    "remindNoneSent": "לא נשלחו תזכורות",
+    "remindError": "אחזור בשליחת תזכורות"
+  },
+  "register": {
+    "validation": {
+      "firstNameRequired": "שם פרטי נדרש",
+      "lastNameRequired": "שם משפחה נדרש",
+      "usernameMinLength": "שם משתמש חייב להכיל לפחות 3 תווים",
+      "invalidEmail": "דוא\"ל לא חוקי",
+      "passwordMinLength": "סיסמה חייבת להכיל לפחות 12 תווים",
+      "success": "משתמש מנהל נוצר בהצלחה!",
+      "error": "שגיאה ביצירת משתמש מנהל",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "labels": {
+      "firstName": "שם פרטי",
+      "lastName": "שם משפחה",
+      "username": "שם משתמש",
+      "email": "דוא\"ל",
+      "password": "סיסמה"
+    },
+    "buttons": {
+      "creating": "יוצר...",
+      "createAdmin": "צור חשבון מנהל"
+    }
+  },
+  "resetPassword": {
+    "pageTitle": "אפס סיסמה",
+    "header": {
+      "title": "אפס סיסמה",
+      "description": "הזן את הסיסמה החדשה שלך למטה"
+    },
+    "form": {
+      "newPassword": "סיסמה חדשה",
+      "newPasswordPlaceholder": "הזן את הסיסמה החדשה שלך",
+      "confirmPassword": "אשר סיסמה חדשה",
+      "confirmPasswordPlaceholder": "אשר את הסיסמה החדשה שלך",
+      "resetting": "מאפס סיסמה...",
+      "submit": "אפס סיסמה",
+      "backToLogin": "חזור לכניסה"
+    },
+    "messages": {
+      "success": "הסיסמה אופסה בהצלחה"
+    },
+    "errors": {
+      "serverError": "נכשל באיפוס סיסמה. אנא נסה שוב.",
+      "invalidToken": "טוקן איפוס לא חוקי או חסר"
+    }
+  },
+  "reverseShares": {
+    "pageTitle": "קבל קבצים",
+    "search": {
+      "title": "נהל קישורי קבלה",
+      "createButton": "צור קישור",
+      "placeholder": "חפש קישורי קבלה...",
+      "results": "נמצאו {filtered} מתוך {total} קישורי קבלה"
+    },
+    "labels": {
+      "files": "קבצים",
+      "size": "גודל",
+      "status": "סטטוס",
+      "access": "גישה",
+      "description": "תיאור",
+      "pageLayout": "פריסת עמוד",
+      "security": "אבטחה וסטטוס",
+      "limits": "הגבלות",
+      "maxFiles": "מקסימום קבצים",
+      "maxFileSize": "גודל מרבי",
+      "allowedTypes": "סוגים מותרים",
+      "filesReceived": "קבצים שהתקבלו",
+      "fileLimit": "הגבלת קבצים",
+      "noLimit": "ללא הגבלה",
+      "noLinkCreated": "לא נוצר קישור",
+      "publicAccess": "גישה ציבורית",
+      "protectedByPassword": "מוגן בסיסמה",
+      "configureProtection": "לחץ להגדרת הגנה",
+      "enterPassword": "הזן סיסמה",
+      "thisLinkProtected": "קישור זה יוגן בסיסמה",
+      "thisLinkPublic": "קישור זה יהיה זמין לציבור",
+      "configureExpiration": "הגדר תפוגה",
+      "configureLimits": "הגדר הגבלות קבצים",
+      "protectWithPassword": "הגן בסיסמה",
+      "layoutOptions": {
+        "default": "ברירת מחדל",
+        "wetransfer": "WeTransfer"
+      },
+      "noFilesLimit": "ללא הגבלת קבצים",
+      "noSizeLimit": "ללא הגבלת גודל",
+      "allFileTypes": "כל סוגי הקבצים",
+      "fileTypesHelp": "הזן סיומות ללא נקודות, מופרדות ברווח, פסיק, מקף או קו אנכי",
+      "fieldRequirements": "דרישות שדות",
+      "nameFieldRequired": "שדה שם",
+      "emailFieldRequired": "שדה דוא\"ל",
+      "fieldOptions": {
+        "hidden": "מוסתר",
+        "optional": "אופציונלי",
+        "required": "נדרש"
+      }
+    },
+    "card": {
+      "untitled": "קישור ללא כותרת",
+      "noDescription": "אין תיאור",
+      "addDescriptionPlaceholder": "הוסף תיאור...",
+      "files": "קבצים",
+      "progress": "התקדמות",
+      "created": "נוצר",
+      "expired": "פג תוקף",
+      "expires": "תפוגה",
+      "viewDetails": "צפה בפרטים",
+      "viewQrCode": "צפה בקוד QR",
+      "copyLink": "העתק קישור",
+      "openInNewTab": "פתח בכרטיסייה חדשה",
+      "editLink": "ערוך קישור",
+      "createLink": "צור קישור",
+      "delete": "מחק",
+      "copyLinkTitle": "העתק קישור",
+      "createLinkCTA": "צור קישור קבלה"
+    },
+    "status": {
+      "active": "פעיל",
+      "inactive": "לא פעיל",
+      "expired": "פג תוקף",
+      "protected": "מוגן",
+      "public": "ציבורי"
+    },
+    "actions": {
+      "copyLink": "העתק קישור",
+      "editAlias": "ערוך כינוי",
+      "createAlias": "צור כינוי",
+      "viewDetails": "צפה בפרטים",
+      "edit": "ערוך",
+      "delete": "מחק",
+      "viewFiles": "קבצים שהתקבלו",
+      "viewQrCode": "צפה בקוד QR"
+    },
+    "empty": {
+      "title": "לא נוצרו קישורי קבלה",
+      "description": "צור קישורים מותאמים אישית לאחרים לשלוח קבצים ישירות אליך בצורה מאובטחת ומאורגנת.",
+      "createButton": "צור קישור ראשון"
+    },
+    "modals": {
+      "create": {
+        "title": "צור קישור קבלה",
+        "description": "הגדר קישור מותאם אישית לקבלת קבצים מאחרים"
+      },
+      "edit": {
+        "title": "ערוך קישור קבלה",
+        "description": "עדכן את ההגדרות לקישור קבלה זה",
+        "updating": "מעדכן...",
+        "saveChanges": "שמור שינויים"
+      },
+      "details": {
+        "title": "פרטי קישור",
+        "description": "צפה וערוך את מידע קישור הקבלה שלך",
+        "pageLayout": "פריסת עמוד",
+        "linkSection": "קישור קבלה",
+        "noLinkCreated": "לא נוצר קישור",
+        "limits": "הגבלות",
+        "maxFiles": "מקסימום קבצים",
+        "maxFileSize": "גודל מרבי",
+        "allowedTypes": "סוגים מותרים",
+        "noLimit": "ללא הגבלה",
+        "security": "אבטחה",
+        "status": "סטטוס",
+        "password": "סיסמה",
+        "files": "קבצים שהתקבלו",
+        "noFiles": "טרם התקבלו קבצים",
+        "copyLink": "העתק קישור",
+        "openLink": "פתח קישור",
+        "editAlias": "ערוך כינוי",
+        "createAlias": "צור כינוי",
+        "editPassword": "ערוך הגנת סיסמה",
+        "basicInfo": "מידע בסיסי",
+        "securityAndStatus": "אבטחה וסטטוס",
+        "protection": "הגנה",
+        "protectedByPassword": "מוגן בסיסמה",
+        "publicAccess": "גישה ציבורית",
+        "active": "פעיל",
+        "inactive": "לא פעיל",
+        "deactivate": "השבת",
+        "activate": "הפעל",
+        "expiration": "תפוגה",
+        "dates": "תאריכים",
+        "createdAt": "נוצר ב",
+        "updatedAt": "עודכן ב",
+        "allTypes": "כל הסוגים",
+        "placeholderTypes": ".pdf,.jpg,.png (מופרד בפסיקים)",
+        "downloadSuccess": "ההורדה החלה",
+        "downloadError": "שגיאה בהורדת קובץ",
+        "editSuccess": "הקובץ עודכן בהצלחה",
+        "editError": "שגיאה בעדכון קובץ",
+        "previewNotAvailable": "תצוגה מקדימה אינה זמינה",
+        "notAvailable": "לא זמין",
+        "invalidDate": "תאריך לא חוקי",
+        "downloading": "מוריד..."
+      },
+      "alias": {
+        "editTitle": "ערוך כינוי",
+        "createTitle": "צור כינוי",
+        "editDescription": "עדכן את הכינוי לקישור קבלה זה",
+        "createDescription": "צור כינוי מותאם אישית לקישור קבלה זה",
+        "aliasLabel": "כינוי קישור",
+        "aliasPlaceholder": "הקישור-שלי",
+        "preview": "תצוגה מקדימה:",
+        "currentLink": "קישור נוכחי:",
+        "copyCurrentLink": "העתק קישור נוכחי",
+        "randomTooltip": "צור כינוי אקראי",
+        "cancel": "ביטול",
+        "creating": "יוצר...",
+        "updating": "מעדכן...",
+        "create": "צור כינוי",
+        "update": "עדכן כינוי",
+        "help": "8-30 תווים. רווחים יומרו אוטומטית למקפים."
+      },
+      "password": {
+        "title": "ערוך הגנת סיסמה",
+        "description": "הגדר הגנת סיסמה לקישור זה",
+        "hasPassword": "מוגן בסיסמה",
+        "password": "סיסמה",
+        "cancel": "ביטול",
+        "save": "שמור",
+        "saving": "שומר..."
+      },
+      "receivedFiles": {
+        "title": "קבצים שהתקבלו",
+        "description": "צפה ונהל קבצים שנשלחו לקישור זה",
+        "noFiles": "טרם התקבלו קבצים",
+        "noFilesDescription": "קבצים שנשלחו דרך קישור זה יופיעו כאן",
+        "fileCount": "{count, plural, =0 {אין קבצים} =1 {קובץ אחד} other {# קבצים}}",
+        "invalidDate": "תאריך לא חוקי",
+        "totalSize": "גודל כולל: {size}",
+        "columns": {
+          "file": "קובץ",
+          "size": "גודל",
+          "sender": "נשלח על ידי",
+          "date": "תאריך",
+          "actions": "פעולות"
+        },
+        "actions": {
+          "preview": "תצוגה מקדימה",
+          "download": "הורד",
+          "copyToMyFiles": "העתק לקבצים שלי",
+          "copying": "מעתיק..."
+        },
+        "uploadedBy": "הועלה על ידי {name}",
+        "anonymous": "אנונימי",
+        "downloadSuccess": "ההורדה החלה",
+        "downloadError": "שגיאה בהורדת קובץ",
+        "editSuccess": "הקובץ עודכן בהצלחה",
+        "editError": "שגיאה בעדכון קובץ",
+        "previewNotAvailable": "תצוגה מקדימה אינה זמינה",
+        "copySuccess": "הקובץ הועתק לקבצים שלך בהצלחה",
+        "copyError": "שגיאה בהעתקת קובץ לקבצים שלך",
+        "deleteSuccess": "הקובץ נמחק בהצלחה",
+        "deleteError": "שגיאה במחיקת קובץ",
+        "bulkCopySuccess": "{count, plural, =1 {קובץ אחד הועתק לקבצים שלך בהצלחה} other {# קבצים הועתקו לקבצים שלך בהצלחה}}",
+        "bulkDeleteSuccess": "{count, plural, =1 {קובץ אחד נמחק בהצלחה} other {# קבצים נמחקו בהצלחה}}",
+        "bulkCopyProgress": "מעתיק {count, plural, =1 {קובץ אחד} other {# קבצים}} לקבצים שלך...",
+        "bulkDeleteProgress": "מוחק {count, plural, =1 {קובץ אחד} other {# קבצים}}...",
+        "bulkDeleteConfirmTitle": "מחק קבצים נבחרים",
+        "bulkDeleteConfirmMessage": "האם אתה בטוח שברצונך למחוק {count, plural, =1 {קובץ זה} other {# קבצים אלה}}? פעולה זו אינה ניתנת לביטול.",
+        "bulkDeleteConfirmButton": "מחק {count, plural, =1 {קובץ} other {קבצים}}",
+        "bulkActions": {
+          "selected": "{count, plural, =1 {קובץ אחד נבחר} other {# קבצים נבחרו}}",
+          "actions": "פעולות",
+          "download": "הורד נבחרים",
+          "copyToMyFiles": "העתק נבחרים לקבצים שלי",
+          "delete": "מחק נבחרים"
+        },
+        "selectAll": "בחר הכל",
+        "selectFile": "בחר קובץ {fileName}",
+        "bulkDeleteError": "שגיאה במחיקת פריטים נבחרים",
+        "copyErrors": {
+          "timeout": "פעולת העתקה פג זמנה. אנא נסה שוב עם קובץ קטן יותר או בדוק את החיבור שלך.",
+          "failed": "פעולת העתקה נכשלה. אנא נסה שוב.",
+          "aborted": "פעולת העתקה בוטלה עקב פג זמן."
+        },
+        "downloading": "מוריד..."
+      },
+      "delete": {
+        "linkLabel": "קישור: /r/{alias}"
+      }
+    },
+    "form": {
+      "name": {
+        "label": "שם קישור",
+        "placeholder": "למשל: מסמכי פרויקט, תמונות משפחה..."
+      },
+      "description": {
+        "label": "תיאור",
+        "placeholder": "תאר איזה סוג קבצים אתה מצפה לקבל...",
+        "description": "אופציונלי. עוזר לאנשים להבין מה לשלוח."
+      },
+      "status": {
+        "label": "סטטוס קישור",
+        "description": "הפעל או השבת קישור קבלה זה"
+      },
+      "expiration": {
+        "label": "תאריך תפוגה",
+        "description": "אופציונלי. הקישור יושבת לאחר תאריך זה.",
+        "configure": "הגדר תפוגה"
+      },
+      "fileLimits": {
+        "configure": "הגדר הגבלות קבצים"
+      },
+      "maxFiles": {
+        "label": "מקסימום קבצים",
+        "placeholder": "למשל: 10",
+        "description": "אופציונלי. הגבל את המספר הכולל של קבצים שניתן לשלוח.",
+        "noLimit": "ללא הגבלת קבצים"
+      },
+      "maxFileSize": {
+        "label": "גודל קובץ מרבי",
+        "placeholder": "למשל: 100",
+        "description": "אופציונלי. הגבל את הגודל האינדיבידואלי של כל קובץ.",
+        "noLimit": "ללא הגבלת גודל"
+      },
+      "allowedFileTypes": {
+        "label": "סוגי קבצים מותרים",
+        "placeholder": "למשל: pdf, jpg, png, docx",
+        "description": "הזן סיומות ללא נקודות, מופרדות ברווח, פסיק, מקף או קו אנכי",
+        "allTypes": "כל סוגי הקבצים"
+      },
+      "pageLayout": {
+        "label": "פריסת עמוד",
+        "placeholder": "בחר פריסה",
+        "description": "כיצד עמוד ההעלאה יופיע למשתמשים.",
+        "options": {
+          "default": "פריסת ברירת מחדל",
+          "wetransfer": "סגנון WeTransfer"
+        }
+      },
+      "backgroundImage": {
+        "title": "תמונת רקע",
+        "description": "בחר תמונת רקע לעמוד ההעלאה",
+        "random": "אקראי",
+        "none": "אין תמונות רקע זמינות. מנהל יכול להעלות תמונות בהגדרות."
+      },
+      "password": {
+        "label": "סיסמת הגנה",
+        "placeholder": "אופציונלי. הוסף סיסמה להגנה על הקישור",
+        "description": "אופציונלי. משתמשים יצטרכו סיסמה זו כדי לגשת לקישור.",
+        "configurePassword": "הגדר סיסמה",
+        "protectWithPassword": "הגן בסיסמה",
+        "passwordHelp": "סיסמה חייבת להכיל לפחות 4 תווים",
+        "passwordPlaceholder": "הזן סיסמה להגנה על הקישור"
+      },
+      "nameFieldRequired": {
+        "label": "דרישת שדה שם",
+        "description": "הגדר אם שדה שם המעלה צריך להיות מוצג ואם הוא נדרש"
+      },
+      "emailFieldRequired": {
+        "label": "דרישת שדה דוא\"ל",
+        "description": "הגדר אם שדה דוא\"ל המעלה צריך להיות מוצג ואם הוא נדרש"
+      },
+      "fieldRequirements": {
+        "title": "דרישות שדות",
+        "description": "הגדר אילו שדות מוצגים בטופס ההעלאה",
+        "configurationTitle": "הגדרת שדות:",
+        "hiddenDescription": "מוסתר: השדה לא יופיע בטופס ההעלאה",
+        "optionalDescription": "אופציונלי: השדה יוצג אך אינו חובה",
+        "requiredDescription": "חובה: יש למלא את השדה לפני ההעלאה"
+      },
+      "notifyOnUpload": "הודע לי בכל העלאה",
+      "notifyOnUploadHelp": "כשמופעל, תקבל הודעות דוא״ל כאשר קבצים מועלים לקישור זה, ללא קשר להעדפות ההתראות הגלובליות שלך.",
+      "submit": "צור קישור קבלה",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
+    },
+    "messages": {
+      "created": "קישור קבלה נוצר בהצלחה!",
+      "createSuccess": "קישור קבלה נוצר בהצלחה!",
+      "updateSuccess": "קישור קבלה עודכן בהצלחה!",
+      "linkCopied": "הקישור הועתק ללוח!",
+      "deleteSuccess": "קישור קבלה נמחק בהצלחה!",
+      "aliasCreated": "הכינוי נוצר בהצלחה!",
+      "activateSuccess": "קישור קבלה הופעל בהצלחה!",
+      "deactivateSuccess": "קישור קבלה הושבת בהצלחה!",
+      "passwordProtectionEnabled": "הגנת סיסמה הופעלה בהצלחה!",
+      "passwordProtectionDisabled": "הגנת סיסמה הוסרה בהצלחה!"
+    },
+    "defaultLinkName": "קבצים שהתקבלו",
+    "errors": {
+      "loadFailed": "נכשל בטעינת קישורי קבלה",
+      "createFailed": "נכשל ביצירת קישור קבלה. אנא נסה שוב.",
+      "updateFailed": "נכשל בעדכון קישור קבלה. אנא נסה שוב.",
+      "deleteFailed": "נכשל במחיקת קישור קבלה. אנא נסה שוב.",
+      "aliasCreateFailed": "נכשל ביצירת כינוי. אנא נסה שוב.",
+      "passwordUpdateFailed": "נכשל בעדכון הגנת סיסמה"
+    },
+    "delete": {
+      "title": "מחק קישור קבלה",
+      "description": "פעולה זו אינה ניתנת לביטול. הקישור יוסר לצמיתות ולא יוכל לקבל קבצים יותר.",
+      "confirmButton": "מחק קישור",
+      "cancelButton": "ביטול",
+      "deleting": "מוחק..."
+    },
+    "upload": {
+      "metadata": {
+        "title": "שלח קבצים - OUITRANSFER",
+        "description": "שלח קבצים דרך הקישור המשותף",
+        "descriptionWithLimit": "העלה קבצים (מקסימום {limit} קבצים)"
+      },
+      "layout": {
+        "defaultTitle": "שלח קבצים",
+        "importantInfo": "מידע חשוב:",
+        "maxFiles": "מקסימום {count} קבצים",
+        "maxFileSize": "גודל קובץ מרבי: {size}MB",
+        "allowedTypes": "סוגים מותרים: {types}",
+        "loading": "טוען..."
+      },
+      "password": {
+        "title": "קישור מוגן",
+        "description": "קישור זה מוגן בסיסמה. הזן את הסיסמה כדי להמשיך.",
+        "label": "סיסמה",
+        "placeholder": "הזן סיסמה",
+        "cancel": "ביטול",
+        "submit": "המשך",
+        "verifying": "מאמת..."
+      },
+      "errors": {
+        "loadFailed": "נכשל בטעינת מידע. אנא נסה שוב.",
+        "passwordIncorrect": "סיסמה שגויה. אנא נסה שוב.",
+        "linkNotFound": "קישור לא נמצא או פג תוקפו.",
+        "linkInactive": "קישור זה אינו פעיל.",
+        "linkExpired": "קישור זה פג תוקפו.",
+        "uploadFailed": "שגיאה בהעלאת קובץ",
+        "retry": "נסה שוב",
+        "fileTooLarge": "קובץ גדול מדי. גודל מרבי: {maxSize}",
+        "fileTypeNotAllowed": "סוג קובץ לא מותר. סוגים מקובלים: {allowedTypes}",
+        "maxFilesExceeded": "מותרים מקסימום {maxFiles} קבצים",
+        "selectAtLeastOneFile": "בחר לפחות קובץ אחד",
+        "provideNameOrEmail": "אנא ספק את שמך או דוא\"ל",
+        "provideNameRequired": "שם נדרש",
+        "provideEmailRequired": "דוא\"ל נדרש"
+      },
+      "fileDropzone": {
+        "dragActive": "שחרר קבצים כאן",
+        "dragInactive": "גרור קבצים לכאן או לחץ לבחירה",
+        "acceptedTypes": "סוגים מקובלים: {types}",
+        "maxFileSize": "גודל מרבי: {size}",
+        "maxFiles": "מקסימום {count} קבצים",
+        "remainingFiles": "{remaining} מתוך {max} קבצים נותרו"
+      },
+      "fileList": {
+        "title": "קבצים נבחרים:",
+        "statusUploaded": "הועלה",
+        "statusError": "שגיאה",
+        "retry": "נסה שוב"
+      },
+      "form": {
+        "nameLabel": "שם",
+        "nameLabelOptional": "שם (אופציונלי)",
+        "namePlaceholder": "השם שלך",
+        "emailLabel": "דוא\"ל",
+        "emailLabelOptional": "דוא\"ל (אופציונלי)",
+        "emailPlaceholder": "שלך@email.il",
+        "descriptionLabel": "תיאור (אופציונלי)",
+        "descriptionPlaceholder": "הוסף תיאור לקבצים...",
+        "uploadButton": "שלח {count} קבצים",
+        "uploading": "שולח...",
+        "privacyNotice": "השם, הדוא״ל וההעלאות שלך עלולים להיות גלויים לבעל קישור זה."
+      },
+      "success": {
+        "title": "קבצים נשלחו בהצלחה! 🎉",
+        "description": "ניתן לסגור דף זה.",
+        "countMessage": "{count} קבצים נשלחו בהצלחה!"
+      },
+      "maxFilesReached": {
+        "title": "הגעת למקסימום הקבצים",
+        "description": "קישור זה כבר קיבל את מספר הקבצים המרבי של {maxFiles} הקבצים המותרים.",
+        "contactOwner": "אם הייתה שגיאה או שאתה צריך לשלוח עוד קבצים, צור קשר עם בעל הקישור."
+      },
+      "linkInactive": {
+        "title": "קישור לא פעיל",
+        "description": "קישור קבלה זה אינו פעיל זמנית.",
+        "contactOwner": "צור קשר עם בעל הקישור למידע נוסף."
+      },
+      "linkNotFound": {
+        "title": "קישור לא נמצא",
+        "description": "קישור זה אולי הוסר או מעולם לא היה קיים."
+      },
+      "linkExpired": {
+        "title": "קישור פג תוקף",
+        "description": "קישור קבלה זה פג תוקפו ואינו מקבל קבצים יותר.",
+        "contactOwner": "צור קשר עם בעל הקישור אם אתה צריך לשלוח קבצים."
+      }
+    },
+    "components": {
+      "fileRow": {
+        "addDescription": "הוסף תיאור...",
+        "anonymous": "אנונימי"
+      },
+      "fileActions": {
+        "edit": "ערוך",
+        "preview": "תצוגה מקדימה",
+        "download": "הורד",
+        "delete": "מחק",
+        "copyToMyFiles": "העתק לקבצים שלי",
+        "copying": "מעתיק..."
+      },
+      "editField": {
+        "saveChanges": "שמור שינויים",
+        "cancelEdit": "ביטול עריכה"
+      }
+    }
+  },
+  "searchBar": {
+    "placeholder": "חפש קבצים ותיקיות...",
+    "placeholderFiles": "חפש קבצים...",
+    "placeholderFolders": "חפש תיקיות...",
+    "results": "מציג {filtered} מתוך {total} פריטים",
+    "noResults": "לא נמצאו תוצאות עבור \"{query}\""
+  },
+  "settings": {
+    "groups": {
+      "defaultDescription": "אפשרויות תצורה",
+      "general": {
+        "title": "כללי",
+        "description": "הגדרות אפליקציה בסיסיות"
+      },
+      "email": {
+        "title": "דוא\"ל",
+        "description": "תצורת שרת דוא\"ל"
+      },
+      "security": {
+        "title": "אבטחה",
+        "description": "הגדרות אבטחה ואימות"
+      },
+      "storage": {
+        "title": "אחסון",
+        "description": "תצורת אחסון קבצים"
+      },
+      "oidc": {
+        "title": "OpenID Connect (SSO)",
+        "description": "הגדר אימות SSO באמצעות OpenID Connect"
+      },
+      "backgrounds": {
+        "title": "תמונות רקע",
+        "description": "ניהול תמונות רקע לעמודי העלאה בסגנון WeTransfer"
+      },
+      "cleanup": {
+        "title": "ניקיון אוטומטי",
+        "description": "ניהול מחזור חיים עבור תוכן שפג תוקפו, חשבונות מושבתים וקבצים יתומים. מחיקה אוטומטית כבויה כברירת מחדל."
+      }
+    },
+    "fields": {
+      "noDescription": "אין תיאור זמין",
+      "appLogo": {
+        "title": "לוגו אפליקציה",
+        "description": "תמונת לוגו האפליקציה"
+      },
+      "appName": {
+        "title": "שם אפליקציה",
+        "description": "שם האפליקציה המוצג למשתמשים"
+      },
+      "appUrl": {
+        "title": "כתובת ה-URL של היישום",
+        "description": "כתובת ה-URL הציבורית של היישום, המשמשת בקישורי דוא\"ל"
+      },
+      "appDescription": {
+        "title": "תיאור אפליקציה",
+        "description": "תיאור קצר של האפליקציה"
+      },
+      "showHomePage": {
+        "title": "עמוד נחיתה ציבורי",
+        "description": "הצג את עמוד הנחיתה הציבורי למבקרים. כשמושבת, מבקרים מוחזרים לעמוד כניסה."
+      },
+      "hideVersion": {
+        "title": "הסתר גרסה",
+        "description": "הסתר את גרסת OUITRANSFER מהכותרת התחתונה בכל העמודים"
+      },
+      "footerEnabled": {
+        "title": "הצג כותרת תחתונה",
+        "description": "הצג את שורת הכותרת התחתונה בתחתית כל העמודים"
+      },
+      "footerText": {
+        "title": "טקסט כותרת תחתונה",
+        "description": "שם חברה או ארגון המוצג בכותרת התחתונה"
+      },
+      "footerUrl": {
+        "title": "כתובת URL של כותרת תחתונה",
+        "description": "כתובת URL הקישור לטקסט הכותרת התחתונה"
+      },
+      "smtpEnabled": {
+        "title": "SMTP מופעל",
+        "description": "הפעל או השבת פונקציונליות דוא\"ל SMTP"
+      },
+      "smtpHost": {
+        "title": "שרת SMTP",
+        "description": "כתובת שרת SMTP"
+      },
+      "smtpPort": {
+        "title": "פורט SMTP",
+        "description": "פורט שרת SMTP"
+      },
+      "smtpUser": {
+        "title": "שם משתמש SMTP",
+        "description": "שם משתמש לאימות SMTP"
+      },
+      "smtpPass": {
+        "title": "סיסמת SMTP",
+        "description": "סיסמה לאימות SMTP"
+      },
+      "smtpFromName": {
+        "title": "שם שולח",
+        "description": "שם תצוגה לדוא\"ל נשלח"
+      },
+      "smtpFromEmail": {
+        "title": "דוא\"ל שולח",
+        "description": "כתובת דוא\"ל שולח"
+      },
+      "smtpSecure": {
+        "title": "אבטחת חיבור",
+        "description": "שיטת אבטחת חיבור SMTP - אוטומטי (מומלץ), SSL, STARTTLS, או ללא (לא מאובטח)",
+        "options": {
+          "auto": "אוטומטי (מומלץ)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
+          "none": "ללא (לא מאובטח)"
+        }
+      },
+      "smtpNoAuth": {
+        "title": "ללא אימות",
+        "description": "הפעל זאת עבור שרתים פנימיים שאינם דורשים שם משתמש/סיסמה (מסתיר שדות אימות)"
+      },
+      "smtpTrustSelfSigned": {
+        "title": "אמון בתעודות חתומות עצמית",
+        "description": "הפעל זאת כדי לסמוך על תעודות SSL/TLS חתומות עצמית (שימושי לסביבות פיתוח)"
+      },
+      "testSmtp": {
+        "title": "בדוק חיבור SMTP",
+        "description": "בדוק אם תצורת ה-SMTP תקינה"
+      },
+      "maxLoginAttempts": {
+        "title": "ניסיונות התחברות מקסימליים",
+        "description": "מספר ניסיונות התחברות מרביים לפני חסימה"
+      },
+      "loginBlockDuration": {
+        "title": "משך חסימה",
+        "description": "משך (בשניות) לחסימה לאחר חריגה מניסיונות"
+      },
+      "passwordMinLength": {
+        "title": "אורך סיסמה מינימלי",
+        "description": "מספר תווים מינימלי לסיסמאות"
+      },
+      "passwordResetTokenExpiration": {
+        "title": "תפוגת טוקן איפוס",
+        "description": "זמן תוקף (בשניות) לטוקן איפוס סיסמה"
+      },
+      "maxFileSize": {
+        "title": "גודל קובץ מרבי",
+        "description": "גודל קובץ מרבי המותר להעלאות. ניתן לעקוף לכל משתמש או קבוצה."
+      },
+      "maxTotalStoragePerUser": {
+        "title": "אחסון מרבי למשתמש",
+        "description": "מגבלת אחסון כוללת למשתמש. ניתן לעקוף לכל משתמש או קבוצה."
+      },
+      "quotaWarningThresholds": {
+        "title": "סף התראה של הקוטה (%)",
+        "description": "אחוזים מופרדים בפסיקים, לדוגמה \"80,90\", שבהם משתמש מקבל אזהרת קוטה. כל ערך חייב להיות מספר שלם בין 1 ל-99. התראה נפרדת נשלחת כאשר האחסון מגיע ל-100%."
+      },
+      "quotaGracePeriodDays": {
+        "title": "תקופת חסימה של הקוטה (ימים)",
+        "description": "כמה ימים משתמש יכול להישאר מעל הקוטה שלו לפני שמחיקה חכמה עשויה להפעל (רק כאשר מחיקה חכמה מופעלת למטה). מינימום 0."
+      },
+      "quotaSmartDeletionEnabled": {
+        "title": "מחיקה חכמה של קבצים העולים על הקוטה",
+        "description": "כבויה כברירת מחדל. כאשר מופעל, לאחר תקופת החסימה, הקבצים הלא-בטוחים העתיקים ביותר של משתמש השופך קוטה נמחקים בסדר בטוח: תחילה קבצים שלא שודרו, אחר כך קבצים בשיתופים לא פעילים לתקופה למטה. קבצים בשיתופים פעילים לעולם לא נמחקים, אם אין קבצים בטוחים להסרה, העלאות חדשות פשוט חסומות במקום."
+      },
+      "quotaInactiveShareDays": {
+        "title": "סף חוסר פעילות בשיתוף (ימים)",
+        "description": "קבצי שיתוף מתאימים למחיקה חכמה ברגע שלשיתוף אין פעילות למספר ימים זה. מינימום 1."
+      },
+      "reverseShareQuotaSoftEnforcement": {
+        "title": "כיסוי רך של הקוטה של שיתוף הפוך",
+        "description": "מופעל כברירת מחדל. מאפשר לאורחים חיצוניים להמשיך להעלות לשיתוף הפוך גם אם הבעלים חוצה קצת את הקוטה, כדי שאוספים לא יופסקו. העלאות עדיין חסומות ברגע שהבעלים חוצה את הסבולת שנקבעה למטה, והבעלים מתבהר להשחרר מקום."
+      },
+      "reverseShareMaxOverageFactor": {
+        "title": "גורם עודף שיתוף הפוך",
+        "description": "כיסוי רך מאפשר העלאות לשיתוף הפוך עד שהשימוש יגיע לכפול זה של הקוטה של הבעלים (לדוגמה 3 = עד שלוש פעמים את הגבול). מינימום 1."
+      },
+      "reverseShareAbsoluteMaxBytes": {
+        "title": "כובע מוחלט של שיתוף הפוך",
+        "description": "תקרה קשה לכיסוי רך של שיתוף הפוך ללא קשר לגורם לעיל. הגדר ל-0 ללא כובע מוחלט."
+      },
+      "firstUserAccess": {
+        "title": "גישת משתמש ראשון",
+        "description": "הגדרות לגישה ראשונה של משתמשים חדשים"
+      },
+      "serverUrl": {
+        "title": "כתובת URL של שרת",
+        "description": "כתובת URL בסיסית של שרת OUITRANSFER (למשל: https://OUITRANSFER.example.com)"
+      },
+      "passwordAuthEnabled": {
+        "title": "אימות סיסמה",
+        "description": "הפעל או השבת אימות מבוסס סיסמה"
+      },
+      "emailDigestHour": {
+        "title": "שעת דוא\"ל סיכום",
+        "description": "שעה של היום (0-23) כאשר משודרות הודעות דוא\"ל סיכום"
+      },
+      "emailJobRetentionDays": {
+        "title": "שמירה על עבודות דוא\"ל",
+        "description": "מספר הימים לשמירה על עבודות דוא\"ל שהושלמו לפני ניקיון"
+      },
+      "emailQueueIntervalSeconds": {
+        "title": "הקבוצה מרווח עיבוד",
+        "description": "שניות בין מחזורי עיבוד תור דוא\"ל"
+      },
+      "emailQueueMaxRetries": {
+        "title": "מקסימום ניסיונות דוא\"ל",
+        "description": "מספר מקסימום של ניסיונות חוזרים עבור הודעות דוא\"ל שנכשלו"
+      },
+      "auditRetentionDays": {
+        "title": "שמירת ביקורת",
+        "description": "מספר הימים לשמירת יומני ביקורת (0 = לעולם, מינימום 7)"
+      },
+      "autoCleanupEnabled": {
+        "title": "הפעל ניקיון אוטומטי",
+        "description": "החזקת המתגים הראשית לניקיון מתוזמן של קישורי שיתוף שפגו, קבצי שיתוף הפוך שפגו ויתומים. כבויה כברירת מחדל, שום דבר לא נמחק באופן אוטומטי עד שתפעיל זאת."
+      },
+      "autoCleanupIntervalHours": {
+        "title": "רווח ניקיון (שעות)",
+        "description": "כמה פעמים משימת הניקיון פועלת. מינימום שעה אחת."
+      },
+      "autoCleanupGracePeriodDays": {
+        "title": "תקופת חסימה (ימים)",
+        "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
+      },
+      "autoCleanupNotifyDaysBefore": {
+        "title": "הזהר לפני מחיקה (ימים)",
+        "description": "שלח לבעלים דוא\"ל התראה \"מחיקה קבועה ממתינה\" זה מספר ימים לפני מחיקת התוכן. 0 משביתה את ההתראה. לא צריך להיות יותר מתקופת החסימה."
+      },
+      "accountDeactivationCleanupEnabled": {
+        "title": "מחק קבצים של חשבונות משובתים",
+        "description": "כשמופעל, קבצים השייכים לחשבון משובת נמחקים קבוע לאחר ההשהיה למטה. כבויה כברירת מחדל, השבתה לבדה לעולם לא מוחקת קבצים."
+      },
+      "accountDeactivationCleanupDays": {
+        "title": "השהיית ניקיון השבתה (ימים)",
+        "description": "ימים לאחר השבתת חשבון לפני מחיקת קבציו (רק כאשר האפשרות לעיל מופעלת). מינימום 1."
+      },
+      "autoCleanupOrphansEnabled": {
+        "title": "לסחוף קבצים יתומים",
+        "description": "כשמופעל, מפעיל טאטא דו-כיווני שמסיר רשומות מסד נתונים המצביעות על אובייקטי אחסון חסרים ואובייקטי אחסון ללא רשומה. כבויה כברירת מחדל."
+      },
+      "autoCleanupOrphanMinAgeHours": {
+        "title": "גיל מינימום יתום (שעות)",
+        "description": "רק קבצים ואובייקטים הישנים יותר מזה נחשבים במהלך הטאטא היתום, המגנה על העלאות שעדיין בתהליך. מינימום 1."
+      }
+    },
+    "buttons": {
+      "save": "שמור {group}",
+      "testSmtp": "בדוק חיבור",
+      "testing": "בודק..."
+    },
+    "errors": {
+      "loadFailed": "נכשל בטעינת הגדרות",
+      "updateFailed": "נכשל בעדכון הגדרות",
+      "passwordAuthRequiresProvider": "לא ניתן להשבית אימות סיסמה ללא ספק אימות פעיל אחד לפחות",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
+      "cleanupValueInvalid": "הערך חייב להיות מספר שלם של לפחות {min}",
+      "notifyDaysExceedsGrace": "זמן ההתראה לא צריך לחרוג מתקופת החסימה, אחרת לא תישלח התראה",
+      "quotaThresholdsInvalid": "הזן אחוזים מופרדים בפסיקים בין 1 ל-99, לדוגמה \"80,90\""
+    },
+    "messages": {
+      "noChanges": "אין שינויים לשמור",
+      "updateSuccess": "הגדרות {group} עודכנו בהצלחה",
+      "smtpTestSuccess": "חיבור SMTP הצליח! תצורת הדוא\"ל שלך פועלת כראוי.",
+      "smtpTestFailed": "חיבור SMTP נכשל: {error}",
+      "smtpTestGenericError": "נכשל בבדיקת חיבור SMTP. אנא בדוק את ההגדרות ונסה שוב.",
+      "smtpNotEnabled": "SMTP אינו מופעל. אנא הפעל SMTP תחילה.",
+      "smtpMissingHostPort": "אנא מלא את שרת SMTP ופורט לפני הבדיקה.",
+      "smtpMissingAuth": "אנא מלא שם משתמש וסיסמת SMTP, או הפעל אפשרות 'ללא אימות'."
+    },
+    "title": "הגדרות",
+    "breadcrumb": "הגדרות",
+    "pageTitle": "הגדרות",
+    "tooltips": {
+      "testSmtp": "בודק את חיבור ה-SMTP עם הערכים שהוזנו כעת בטופס. כדי להפוך שינויים לקבועים, זכור לשמור את ההגדרות לאחר הבדיקה.",
+      "defaultPlaceholder": "הזן ולחץ Enter"
+    },
+    "redirectUri": {
+      "placeholder": "https://mysite.co.il",
+      "previewLabel": "כתובת URL מלאה שתישמר:"
+    },
+    "emailAdmin": {
+      "queueStatus": "מצב תור דוא\"ל",
+      "pending": "ממתין",
+      "sentLast24h": "שלח (24 שעות)",
+      "failed": "נכשל",
+      "digestQueue": "תור תקצירים",
+      "sendTest": "שלח דוא\"ל בדיקה",
+      "testPlaceholder": "נמען@example.co.il",
+      "testSending": "שליחה בתהליך...",
+      "testSuccess": "דוא\"ל הבדיקה הוצע בהצלחה בתור",
+      "testError": "השליחה של דוא\"ל בדיקה נכשלה"
+    }
+  },
+  "share": {
+    "errors": {
+      "invalidPassword": "סיסמה לא חוקית. אנא נסה שוב.",
+      "loadFailed": "נכשל בטעינת שיתוף",
+      "downloadFailed": "נכשל בהורדת קובץ"
+    },
+    "messages": {
+      "downloadStarted": "ההורדה החלה"
+    },
+    "password": {
+      "title": "שיתוף מוגן בסיסמה",
+      "protected": "הזן את הסיסמה כדי לגשת לקבצים המשותפים.",
+      "incorrect": "סיסמה שגויה. אנא נסה שוב.",
+      "label": "סיסמה",
+      "placeholder": "הזן סיסמת שיתוף",
+      "submit": "שלח"
+    },
+    "details": {
+      "untitled": "שיתוף ללא כותרת",
+      "created": "נוצר: {date}",
+      "expires": "תפוגה: {date}"
+    },
+    "downloadAll": "הורד הכל",
+    "notFound": {
+      "title": "שיתוף לא נמצא",
+      "description": "שיתוף זה אולי נמחק או פג תוקפו."
+    },
+    "pageTitle": "שיתוף",
+    "metadata": {
+      "defaultDescription": "שתף קבצים בצורה מאובטחת",
+      "filesShared": "{count, plural, =1 {קובץ אחד משותף} other {# קבצים משותפים}}"
+    },
+    "identification": {
+      "title": "זיהוי מבקר",
+      "subtitle": "אנא ספק את המידע שלך כדי לגשת לשיתוף זה",
+      "nameLabel": "שם",
+      "emailLabel": "דוא״ל",
+      "submit": "המשך",
+      "error": "אחזור בהגשת זיהוי. נא נסה שוב.",
+      "optional": "אופציונלי",
+      "nameRequired": "שם הוא חובה",
+      "emailRequired": "דוא״ל הוא חובה",
+      "emailInvalid": "אנא הזן כתובת דוא״ל תקנית",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "הגישה וההורדות שלך עלולות להיות גלויות לשולח של שיתוף זה."
+    }
+  },
+  "shareActions": {
+    "fileTitle": "שתף קובץ",
+    "folderTitle": "שתף תיקייה",
+    "linkTitle": "צור קישור",
+    "linkDescriptionFile": "צור קישור מותאם אישית לשיתוף הקובץ",
+    "linkDescriptionFolder": "צור קישור מותאם אישית לשיתוף התיקייה",
+    "aliasLabel": "כינוי קישור",
+    "aliasPlaceholder": "הזן כינוי מותאם אישית",
+    "linkReady": "קישור השיתוף שלך מוכן:",
+    "generateLink": "צור קישור",
+    "copyLink": "העתק קישור",
+    "deleteTitle": "מחק שיתוף",
+    "deleteConfirmation": "האם אתה בטוח שברצונך למחוק שיתוף זה? פעולה זו אינה ניתנת לביטול.",
+    "addDescriptionPlaceholder": "הוסף תיאור...",
+    "editTitle": "ערוך שיתוף",
+    "newPasswordLabel": "סיסמה חדשה (השאר ריק לשמירת הנוכחית)",
+    "newPasswordPlaceholder": "הזן סיסמה חדשה",
+    "manageFilesTitle": "נהל קבצים",
+    "manageFilesDescription": "בחר קבצים ותיקיות לכלול בשיתוף זה",
+    "manageRecipientsTitle": "נהל נמענים",
+    "itemsSelected": "{count} פריטים נבחרו",
+    "editSuccess": "השיתוף עודכן בהצלחה",
+    "editError": "נכשל בעדכון שיתוף",
+    "editErrorMetadata": "עדכון פרטי השיתוף נכשל",
+    "editErrorPassword": "עדכון סיסמת השיתוף נכשל",
+    "bulkDeleteConfirmation": "האם אתה בטוח שברצונך למחוק {count, plural, =1 {שיתוף אחד} other {# שיתופים}}? פעולה זו אינה ניתנת לביטול.",
+    "bulkDeleteTitle": "מחק שיתופים נבחרים",
+    "keepCurrentPasswordHint": "השאר ריק כדי לשמור על הסיסמה הנוכחית",
+    "passwordRequired": "סיסמה נדרשת להגנת סיסמה חדשה"
+  },
+  "shareDetails": {
+    "title": "פרטי שיתוף",
+    "subtitle": "צפה ונהל פרטים לשיתוף זה",
+    "basicInfo": "מידע בסיסי",
+    "name": "שם",
+    "description": "תיאור",
+    "shareLink": "קישור שיתוף",
+    "dates": "תאריכים",
+    "security": "אבטחה",
+    "files": "קבצים",
+    "recipients": "נמענים",
+    "views": "צפיות",
+    "created": "נוצר",
+    "expires": "תפוגה",
+    "never": "אף פעם",
+    "untitled": "שיתוף ללא כותרת",
+    "noDescription": "אין תיאור",
+    "notAvailable": "לא זמין",
+    "invalidDate": "תאריך לא חוקי",
+    "passwordProtected": "מוגן בסיסמה",
+    "publicAccess": "גישה ציבורית",
+    "maxViews": "צפיות מקסימליות:",
+    "noLink": "לא נוצר קישור",
+    "generateLink": "צור קישור",
+    "editLink": "ערוך קישור",
+    "copyLink": "העתק קישור",
+    "openLink": "פתח קישור",
+    "editSecurity": "ערוך אבטחה",
+    "editExpiration": "ערוך תפוגה",
+    "qrCode": "קוד QR",
+    "downloadQrCode": "הורד קוד QR",
+    "clickToEnlargeQrCode": "לחץ להגדלת קוד QR",
+    "loadError": "נכשל בטעינת פרטי שיתוף",
+    "activity": {
+      "title": "פעילות",
+      "noActivity": "לא נרשמה פעילות עדיין.",
+      "access": "צוהל",
+      "download": "הורד",
+      "anonymous": "אנונימי",
+      "loadMore": "טען עוד",
+      "showingCount": "הצגה {shown} מ {total}",
+      "loadError": "אחזור בטעינת נתוני פעילות.",
+      "filterAll": "כל הפעולות",
+      "filterAccess": "הצגות בלבד",
+      "filterDownload": "הורדות בלבד",
+      "filterAllVisitors": "כל המבקרים",
+      "filterIdentified": "מזוהה",
+      "filterAnonymous": "אנונימי",
+      "you": "אתה/את",
+      "source": {
+        "tracking_token": "דרך קישור המקבל",
+        "cookie": "מזוהה-עצמי",
+        "selfDeclaredHint": "זהות מוצהרת עצמית, לא מאומת",
+        "authenticated_user": "משתמש רשום"
+      }
+    },
+    "lastDownloaded": "הורדה אחרונה",
+    "privacySummary": "פרטיות",
+    "privacyNameField": "שם מבקר:",
+    "privacyEmailField": "אימייל מבקר:",
+    "privacyNotifyOnDownload": "התראות הורדה מופעלות",
+    "privacyInactivityAlert": "התראת חוסר פעילות לאחר {days} ימים",
+    "fieldValue": {
+      "OPTIONAL": "אופציונלי",
+      "REQUIRED": "חובה"
+    },
+    "recipientNotified": "התראה נשלחה",
+    "recipientAccess": "{count, plural, one {# גישה} other {# גישות}}",
+    "recipientAccessWithLast": "{count, plural, one {# גישה} other {# גישות}} · אחרונה {lastAccess}"
+  },
+  "shareExpiration": {
+    "title": "הגדרות תפוגת שיתוף",
+    "subtitle": "הגדר מתי השיתוף הזה יפוג",
+    "currentStatus": "סטטוס נוכחי",
+    "expires": "תפוגה:",
+    "neverExpires": "לא פג תוקף",
+    "enableExpiration": "הפעל תפוגה",
+    "expirationDate": "תאריך תפוגה",
+    "validation": {
+      "dateRequired": "אנא בחר תאריך תפוגה",
+      "dateMustBeFuture": "תאריך תפוגה חייב להיות בעתיד"
+    },
+    "success": {
+      "expirationSet": "תאריך תפוגה הוגדר בהצלחה",
+      "expirationUpdated": "תאריך תפוגה עודכן בהצלחה",
+      "expirationRemoved": "תפוגה הוסרה בהצלחה - השיתוף כעת קבוע"
+    },
+    "error": {
+      "updateFailed": "נכשל בעדכון הגדרות תפוגה"
+    },
+    "info": {
+      "title": "אודות תפוגה:",
+      "willBeInaccessible": "השיתוף יהיה בלתי נגיש לאחר תאריך זה",
+      "canBeChanged": "אתה יכול לשנות או להסיר את תאריך התפוגה בכל עת",
+      "noExpiration": "השיתוף הזה לעולם לא יפוג וישאר נגיש לצמיתות."
+    }
+  },
+  "shareManager": {
+    "deleteSuccess": "השיתוף נמחק בהצלחה",
+    "deleteError": "נכשל במחיקת שיתוף",
+    "updateSuccess": "השיתוף עודכן בהצלחה",
+    "updateError": "נכשל בעדכון שיתוף",
+    "securityUpdateSuccess": "הגדרות אבטחה עודכנו בהצלחה",
+    "securityUpdateError": "נכשל בעדכון הגדרות אבטחה",
+    "expirationUpdateSuccess": "הגדרות תפוגה עודכנו בהצלחה",
+    "expirationUpdateError": "נכשל בעדכון הגדרות תפוגה",
+    "filesUpdateSuccess": "קבצים עודכנו בהצלחה",
+    "filesUpdateError": "נכשל בעדכון קבצים",
+    "recipientsUpdateSuccess": "נמענים עודכנו בהצלחה",
+    "recipientsUpdateError": "נכשל בעדכון נמענים",
+    "linkGenerateSuccess": "קישור שיתוף נוצר בהצלחה",
+    "linkGenerateError": "נכשל ביצירת קישור שיתוף",
+    "notifyLoading": "שולח התראות...",
+    "notifySuccess": "נמענים קיבלו הודעה בהצלחה",
+    "notifyError": "נכשל בהודעה לנמענים",
+    "bulkDeleteError": "נכשל במחיקת שיתופים",
+    "bulkDeleteLoading": "מוחק {count, plural, =1 {שיתוף אחד} other {# שיתופים}}...",
+    "bulkDeleteSuccess": "{count, plural, =1 {שיתוף אחד נמחק בהצלחה} other {# שיתופים נמחקו בהצלחה}}",
+    "downloadSuccess": "ההורדה החלה בהצלחה",
+    "downloadError": "נכשל בהורדת קבצי שיתוף",
+    "noFilesToDownload": "אין קבצים זמינים להורדה",
+    "creatingZip": "יוצר קובץ ZIP...",
+    "zipDownloadSuccess": "קובץ ZIP הורד בהצלחה",
+    "zipDownloadError": "נכשל ביצירת קובץ ZIP",
+    "errors": {
+      "multipleDownloadNotSupported": "הורדה מרובת של שיתופים עדיין לא נתמכת - אנא הורד שיתופים בנפרד"
+    },
+    "singleShareZipName": "{shareName}_files.zip",
+    "multipleSharesZipName": "{count}_shares_files.zip",
+    "defaultShareName": "שיתוף",
+    "pauseSuccess": "השיתוף הושהה",
+    "pauseError": "אחזור בהשהיית השיתוף",
+    "resumeSuccess": "השיתוף חודש",
+    "resumeError": "אחזור בחידוש השיתוף. אם הוא פג תוקף או הגיע לגבול הצפיות, הרחב אותו במקום."
+  },
+  "shareMultipleFiles": {
+    "title": "שתף מספר קבצים",
+    "shareNameLabel": "שם שיתוף",
+    "shareNamePlaceholder": "הזן שם שיתוף",
+    "descriptionLabel": "תיאור",
+    "descriptionPlaceholder": "הזן תיאור (אופציונלי)",
+    "filesToShare": "קבצים לשיתוף",
+    "files": "קבצים",
+    "totalSize": "גודל כולל: {size}",
+    "creating": "יוצר שיתוף...",
+    "create": "צור שיתוף",
+    "itemsToShare": "פריטים לשיתוף ({count} {count, plural, =1 {פריט} other {פריטים}})",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
+  },
+  "shareSecurity": {
+    "title": "הגדרות אבטחת שיתוף",
+    "subtitle": "הגדר הגנת סיסמה ואפשרויות אבטחה לשיתוף זה",
+    "currentStatus": "סטטוס נוכחי",
+    "passwordProtection": "הגנת סיסמה",
+    "password": "סיסמה",
+    "newPassword": "סיסמה חדשה",
+    "passwordPlaceholder": "הזן סיסמה מאובטחת",
+    "existingPasswordMessage": "לשיתוף הזה כבר יש סיסמה. אם אתה רוצה לעדכן אותה, הזן את הסיסמה החדשה בשדה למטה ושמור.",
+    "passwordRequirements": {
+      "title": "דרישות סיסמה:",
+      "minLength": "לפחות 2 תווים"
+    },
+    "info": {
+      "title": "איך זה עובד:",
+      "withPassword": "משתמשים יצטרכו להזין את הסיסמה כדי לגשת לשיתוף הזה.",
+      "withoutPassword": "כל מי שיש לו את הקישור יכול לגשת לשיתוף הזה ללא סיסמה."
+    },
+    "validation": {
+      "passwordRequired": "סיסמה נדרשת",
+      "passwordTooShort": "סיסמה חייבת להכיל לפחות 2 תווים"
+    },
+    "success": {
+      "passwordSet": "הגנת סיסמה הופעלה בהצלחה",
+      "passwordUpdated": "סיסמה עודכנה בהצלחה",
+      "passwordRemoved": "הגנת סיסמה הוסרה בהצלחה"
+    },
+    "error": {
+      "updateFailed": "נכשל בעדכון הגדרות אבטחה"
+    }
+  },
+  "shares": {
+    "errors": {
+      "loadFailed": "נכשל בטעינת שיתופים",
+      "notifyFailed": "נכשל בהודעה לנמענים",
+      "smtpConfigFailed": "נכשל בטעינת תצורת SMTP"
+    },
+    "messages": {
+      "linkCopied": "הקישור הועתק ללוח",
+      "recipientsNotified": "נמענים קיבלו הודעה בהצלחה"
+    },
+    "empty": {
+      "message": "עדיין לא נוצרו שיתופים",
+      "createButton": "צור שיתוף"
+    },
+    "header": {
+      "title": "השיתופים שלי",
+      "myShares": "השיתופים שלי"
+    },
+    "search": {
+      "title": "כל השיתופים",
+      "createButton": "צור שיתוף",
+      "placeholder": "חפש שיתופים...",
+      "results": "נמצאו {filtered} מתוך {total} שיתופים"
+    },
+    "pageTitle": "שיתופים"
+  },
+  "sharesTable": {
+    "ariaLabel": "טבלת שיתופים",
+    "never": "אף פעם",
+    "columns": {
+      "name": "שם",
+      "description": "תיאור",
+      "createdAt": "נוצר ב",
+      "expiresAt": "תפוגה ב",
+      "status": "סטטוס",
+      "security": "אבטחה",
+      "files": "קבצים",
+      "recipients": "נמענים",
+      "actions": "פעולות"
+    },
+    "status": {
+      "neverExpires": "לא פג תוקף",
+      "active": "פעיל",
+      "expired": "פג תוקף",
+      "paused": "הושהה",
+      "maxViewsReached": "גבול הצפיות הגיע",
+      "noLink": "ללא קישור",
+      "noLinkTooltip": "לשיתוף הזה אין עדיין קישור והוא אינו נגיש. צור קישור כדי לשתף אותו."
+    },
+    "security": {
+      "protected": "מוגן",
+      "public": "ציבורי"
+    },
+    "filesCount": "קבצים",
+    "folderCount": "תיקיות",
+    "recipientsCount": "נמענים",
+    "actions": {
+      "menu": "תפריט פעולות שיתוף",
+      "edit": "ערוך",
+      "manageFiles": "נהל קבצים",
+      "manageRecipients": "נהל נמענים",
+      "viewDetails": "צפה בפרטים",
+      "generateLink": "צור קישור",
+      "editLink": "ערוך קישור",
+      "copyLink": "העתק קישור",
+      "viewQrCode": "צפה בקוד QR",
+      "notifyRecipients": "הודע לנמענים",
+      "downloadShareFiles": "הורד כל הקבצים",
+      "delete": "מחק",
+      "pause": "השהיה",
+      "resume": "חידוש",
+      "renew": "חידוש"
+    },
+    "bulkActions": {
+      "actions": "פעולות",
+      "download": "הורד נבחרים",
+      "delete": "מחק",
+      "selected": "{count, plural, =1 {שיתוף אחד נבחר} other {# שיתופים נבחרו}}"
+    },
+    "selectAll": "בחר הכל",
+    "selectShare": "בחר שיתוף {shareName}"
+  },
+  "theme": {
+    "toggle": "החלף נושא",
+    "light": "בהיר",
+    "dark": "כהה",
+    "system": "מערכת"
+  },
+  "twoFactor": {
+    "title": "אימות דו-שלבי",
+    "description": "הוסף שכבת אבטחה נוספת לחשבון שלך",
+    "enabled": "החשבון שלך מוגן באימות דו-שלבי",
+    "disabled": "אימות דו-שלבי אינו מופעל",
+    "status": {
+      "label": "סטטוס:",
+      "enabled": "מופעל",
+      "disabled": "מושבת"
+    },
+    "buttons": {
+      "enable2FA": "הפעל 2FA",
+      "disable2FA": "השבת 2FA"
+    },
+    "setup": {
+      "title": "הפעל אימות דו-שלבי",
+      "description": "סרוק את קוד ה-QR עם אפליקציית האימות שלך, ואז הזן את קוד האימות.",
+      "qrCode": "קוד QR",
+      "manualEntryKey": "מפתח הזנה ידני",
+      "verificationCode": "קוד אימות",
+      "verificationCodePlaceholder": "הזן קוד בן 6 ספרות",
+      "verificationCodeDescription": "הזן את קוד האימות בן 6 הספרות מאפליקציית האימות שלך",
+      "verifyAndEnable": "אמת והפעל",
+      "cancel": "ביטול",
+      "qrCodeAlt": "קוד QR לאימות דו-שלבי"
+    },
+    "disable": {
+      "title": "השבת אימות דו-שלבי",
+      "description": "הזן את הסיסמה שלך כדי לאשר השבתת אימות דו-שלבי.",
+      "password": "סיסמה",
+      "passwordPlaceholder": "הזן את הסיסמה שלך",
+      "totpLabel": "קוד אימות",
+      "totpHint": "הזן קוד אימות בן 6 ספרות או קוד גיבוי",
+      "confirm": "אשר השבתה",
+      "cancel": "ביטול",
+      "totpPlaceholder": "000 000"
+    },
+    "backupCodes": {
+      "title": "קודי גיבוי",
+      "description": "שמור את קודי הגיבוי האלה במקום בטוח. אתה יכול להשתמש בהם כדי לגשת לחשבון שלך אם תאבד את מכשיר האימות שלך.",
+      "warning": "חשוב:",
+      "warningText": "כל קוד גיבוי יכול לשמש רק פעם אחת. שמור עליהם מאובטחים ואל תשתף אותם עם אף אחד.",
+      "generateNew": "צור קודי גיבוי חדשים",
+      "download": "הורד קודי גיבוי",
+      "copyToClipboard": "העתק ללוח",
+      "savedMessage": "שמרתי את קודי הגיבוי שלי",
+      "available": "{count} קודי גיבוי זמינים",
+      "instructions": [
+        "• שמור את הקודים האלה במיקום מאובטח",
+        "• כל קוד גיבוי יכול לשמש רק פעם אחת",
+        "• אתה יכול ליצור קודים חדשים בכל עת"
+      ]
+    },
+    "verification": {
+      "title": "אימות דו-שלבי",
+      "description": "הזן את קוד האימות בן 6 הספרות מאפליקציית האימות שלך",
+      "backupDescription": "הזן אחד מקודי הגיבוי שלך כדי להמשיך",
+      "verificationCode": "קוד אימות",
+      "backupCode": "קוד גיבוי",
+      "verificationCodePlaceholder": "000000",
+      "backupCodePlaceholder": "XXXX-XXXX",
+      "verify": "אמת",
+      "verifying": "מאמת...",
+      "useBackupCode": "השתמש בקוד גיבוי במקום",
+      "useAuthenticatorCode": "השתמש בקוד אימות במקום",
+      "rememberDevice": "זכור מכשיר זה למשך 30 יום",
+      "rememberDeviceDescription": "לא תצטרך להזין קודי 2FA במכשיר זה למשך 30 יום"
+    },
+    "trustedDevices": {
+      "title": "מכשירים מהימנים - 2FA",
+      "description": "מכשירים שאינם דורשים אימות 2FA",
+      "noDevices": "אין מכשירים מהימנים",
+      "deviceName": "מכשיר",
+      "addedOn": "נוסף ב",
+      "expiresOn": "תפוגה ב",
+      "remove": "הסר",
+      "removeAll": "הסר הכל",
+      "confirmRemove": "האם אתה בטוח שברצונך להסיר את המכשיר המהימן הזה?",
+      "confirmRemoveAll": "האם אתה בטוח שברצונך להסיר את כל המכשירים המהימנים?",
+      "deviceRemoved": "המכשיר המהימן הוסר בהצלחה",
+      "allDevicesRemoved": "כל המכשירים המהימנים הוסרו בהצלחה",
+      "loadFailed": "נכשל בטעינת מכשירים מהימנים",
+      "removeFailed": "נכשל בהסרת מכשיר מהימן",
+      "removeAllFailed": "נכשל בהסרת כל המכשירים המהימנים",
+      "loading": "טוען מכשירים מהימנים...",
+      "noDevicesDescription": "מכשירים יופיעו כאן כשתבחר לאשר אותם במהלך אימות 2FA",
+      "tableHeaders": {
+        "device": "מכשיר",
+        "added": "נוסף",
+        "expires": "תפוגה",
+        "lastUsed": "שימוש אחרון",
+        "ipAddress": "כתובת IP",
+        "actions": "פעולות"
+      },
+      "status": {
+        "never": "אף פעם",
+        "expired": "פג תוקף"
+      },
+      "modals": {
+        "removeDevice": {
+          "title": "הסר מכשיר מהימן",
+          "added": "נוסף:",
+          "ip": "IP:"
+        },
+        "removeAllDevices": {
+          "title": "הסר את כל המכשירים המהימנים",
+          "description": "זה יסיר {count} מכשיר{count, plural, =1 {} other {ים}} מהימן{count, plural, =1 {} other {ים}}. תצטרך לאמת 2FA בכל המכשירים שוב."
+        },
+        "buttons": {
+          "cancel": "ביטול",
+          "removing": "מסיר...",
+          "removeDevice": "הסר מכשיר",
+          "removeAllDevices": "הסר את כל המכשירים"
+        }
+      }
+    },
+    "messages": {
+      "enabledSuccess": "אימות דו-שלבי הופעל בהצלחה!",
+      "disabledSuccess": "אימות דו-שלבי הושבת בהצלחה",
+      "backupCodesGenerated": "קודי גיבוי חדשים נוצרו בהצלחה",
+      "backupCodesCopied": "קודי גיבוי הועתקו ללוח",
+      "setupFailed": "נכשל ביצירת הגדרת 2FA",
+      "verificationFailed": "קוד אימות לא חוקי",
+      "disableFailed": "נכשל בהשבתת 2FA. אנא בדוק את הסיסמה שלך.",
+      "backupCodesFailed": "נכשל ביצירת קודי גיבוי",
+      "backupCodesCopyFailed": "נכשל בהעתקת קודי גיבוי",
+      "statusLoadFailed": "נכשל בטעינת סטטוס 2FA",
+      "enterVerificationCode": "אנא הזן את קוד האימות",
+      "enterPassword": "אנא הזן את הסיסמה שלך",
+      "deviceTrusted": "המכשיר הזה סומן כמאמון למשך 30 יום"
+    },
+    "errors": {
+      "invalidVerificationCode": "קוד אימות לא חוקי",
+      "invalidTwoFactorCode": "קוד אימות דו-שלבי לא חוקי",
+      "twoFactorRequired": "נדרש אימות דו-שלבי",
+      "twoFactorAlreadyEnabled": "אימות דו-שלבי כבר מופעל",
+      "twoFactorNotEnabled": "אימות דו-שלבי אינו מופעל",
+      "passwordVerificationRequired": "נדרש אימות סיסמה",
+      "invalidPassword": "סיסמה לא חוקית",
+      "userNotFound": "משתמש לא נמצא"
+    },
+    "deviceNames": {
+      "unknownDevice": "מכשיר לא ידוע",
+      "browsers": {
+        "chrome": "Chrome",
+        "firefox": "Firefox",
+        "safari": "Safari",
+        "edge": "Edge"
+      },
+      "platforms": {
+        "windows": " ב-Windows",
+        "macos": " ב-macOS",
+        "linux": " ב-Linux",
+        "iphone": " ב-iPhone",
+        "android": " ב-Android"
+      }
+    }
+  },
+  "uploadFile": {
+    "title": "העלה קובץ",
+    "multipleTitle": "העלה קבצים",
+    "selectFile": "לחץ כדי לבחור קובץ",
+    "selectMultipleFiles": "לחץ כדי לבחור קובץ אחד או מספר קבצים",
+    "dragAndDrop": "או גרור ושחרר קבצים כאן",
+    "filesQueued": "{count, plural, one {# קובץ בתור להעלאה} other {# קבצים בתור להעלאה}}",
+    "preview": "תצוגה מקדימה",
+    "uploadProgress": "התקדמות העלאה",
+    "upload": "העלה",
+    "startUploads": "התחל העלאות",
+    "retry": "נסה שוב",
+    "finish": "סיים",
+    "success": "הקובץ הועלה בהצלחה",
+    "allSuccess": "{count, plural, =1 {הקובץ הועלה בהצלחה} other {# קבצים הועלו בהצלחה}}",
+    "partialSuccess": "{success} קבצים הועלו בהצלחה, {error} נכשלו",
+    "error": "נכשל בהעלאת קובץ",
+    "fileSizeExceeded": "גודל הקובץ חורג מהגבול של {maxsizemb}MB.",
+    "insufficientStorage": "אין מספיק שטח אחסון. יש לך {availablespace}MB זמינים.",
+    "storageFull": "אין מספיק שטח אחסון. זמין: {available} ג'יגה-בייט, נדרש: {required} ג'יגה-בייט.",
+    "unauthorized": "לא מורשה: נדרש טוקן חוקי כדי לגשת למשאב הזה.",
+    "globalDrop": {
+      "title": "שחרר קבצים להעלאה",
+      "description": "שחרר כדי להעלות את הקבצים שלך"
+    },
+    "confirmCancel": {
+      "title": "בטל העלאות",
+      "messageSingle": "יש העלאה אחת בתהליך.",
+      "messageMultiple": "יש {count} העלאות בתהליך.",
+      "warning": "אם תסגור עכשיו, ההעלאות יבוטלו וכל ההתקדמות תאבד.",
+      "continue": "המשך העלאות",
+      "cancel": "בטל העלאות"
+    },
+    "pasteSuccess": "{count, plural, =1 {תמונה הודבקה והועלתה בהצלחה} other {# תמונות הודבקו והועלו בהצלחה}}",
+    "errors": {
+      "addFileFailed": "הוספת {name} נכשלה: {error}",
+      "uploadFailed": "ההעלאה נכשלה",
+      "networkError": "לא ניתן להגיע לשרת. בדוק את החיבור שלך.",
+      "storageUnavailable": "שירות האחסון אינו זמין. נסה שוב מאוחר יותר."
+    }
+  },
+  "groups": {
+    "header": {
+      "title": "קבוצות",
+      "management": "ניהול קבוצות",
+      "addGroup": "יצירת קבוצה"
+    },
+    "table": {
+      "name": "שם",
+      "description": "תיאור",
+      "members": "חברים",
+      "maxFileSize": "גודל קובץ מקסימלי",
+      "maxStorage": "אחסון מקסימלי",
+      "storageUsed": "אחסון בשימוש",
+      "actions": "פעולות",
+      "inherited": "מורש",
+      "unlimited": "ללא הגבלה",
+      "empty": "אין קבוצות עדיין. צור אחת כדי להתחיל."
+    },
+    "form": {
+      "titleCreate": "יצירת קבוצה",
+      "titleEdit": "עריכת קבוצה",
+      "name": "שם",
+      "namePlaceholder": "הזן שם קבוצה",
+      "description": "תיאור",
+      "descriptionPlaceholder": "תיאור אופציונלי",
+      "ldapDn": {
+        "label": "LDAP Group DN",
+        "placeholder": "למשל: CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name של קבוצת Active Directory למיפוי. השאר ריק אם לא משתמש ב-LDAP."
+      },
+      "quota": {
+        "title": "מכסות אחסון",
+        "maxFileSize": "גודל קובץ מקסימלי",
+        "maxTotalStorage": "אחסון כולל מקסימלי",
+        "inherit": "ירושה (ברירת מחדל גלובלית)",
+        "unlimited": "ללא הגבלה",
+        "custom": "מותאם אישית"
+      },
+      "create": "יצירת קבוצה",
+      "save": "שמור שינויים"
+    },
+    "delete": {
+      "title": "מחיקת קבוצה",
+      "confirmationWithMembers": "לקבוצה זו יש {count} חבר/חברים. הם יבוטלו ומכסותיהם יחזרו לברירות המחדל הגלובליות.",
+      "confirmation": "האם אתה בטוח שברצונך למחוק קבוצה זו?",
+      "confirm": "מחיקת קבוצה"
+    },
+    "detail": {
+      "title": "פרטי קבוצה",
+      "members": "חברים",
+      "addMember": "הוסף חבר",
+      "searchUsers": "חפש משתמשים...",
+      "noMembers": "אין חברים בקבוצה זו.",
+      "remove": "הסר",
+      "moveWarning": "משתמש זה נמצא כעת בקבוצה \"{groupName}\". הוא יועבר לקבוצה זו.",
+      "storageUsed": "אחסון בשימוש",
+      "memberUser": "משתמש",
+      "memberEmail": "אימייל",
+      "memberStorage": "אחסון",
+      "selectUser": "בחר משתמש...",
+      "add": "הוסף",
+      "userInOtherGroup": "משתמש זה נמצא כעת בקבוצה \"{groupName}\". הוא יועבר."
+    },
+    "validation": {
+      "nameRequired": "שם הקבוצה נדרש"
+    },
+    "messages": {
+      "createSuccess": "הקבוצה נוצרה בהצלחה",
+      "updateSuccess": "הקבוצה עודכנה בהצלחה",
+      "deleteSuccess": "הקבוצה נמחקה בהצלחה",
+      "memberAdded": "החבר נוסף לקבוצה",
+      "memberRemoved": "החבר הוסר מהקבוצה"
+    },
+    "errors": {
+      "submitFailed": "נכשל ב-{mode} קבוצה",
+      "deleteFailed": "נכשל במחיקת הקבוצה",
+      "memberAddFailed": "נכשל בהוספת החבר",
+      "memberRemoveFailed": "נכשל בהסרת החבר"
+    },
+    "actions": {
+      "viewDetails": "הצג פרטים",
+      "edit": "ערוך",
+      "delete": "מחק"
+    }
+  },
+  "users": {
+    "modes": {
+      "create": "יצירה",
+      "edit": "עריכה"
+    },
+    "errors": {
+      "loadFailed": "נכשל בטעינת משתמשים",
+      "submitFailed": "נכשל ב-{mode} משתמש",
+      "deleteFailed": "נכשל במחיקת משתמש",
+      "statusUpdateFailed": "נכשל בעדכון סטטוס משתמש"
+    },
+    "messages": {
+      "createSuccess": "משתמש נוצר בהצלחה",
+      "updateSuccess": "משתמש עודכן בהצלחה",
+      "deleteSuccess": "משתמש נמחק בהצלחה",
+      "activateSuccess": "משתמש הופעל בהצלחה",
+      "deactivateSuccess": "משתמש הושבת בהצלחה"
+    },
+    "actions": {
+      "edit": "ערוך",
+      "activate": "הפעל",
+      "deactivate": "השבת",
+      "delete": "מחק"
+    },
+    "delete": {
+      "title": "אשר מחיקת משתמש",
+      "confirmation": "האם אתה בטוח שברצונך למחוק משתמש {firstName} {lastName}? פעולה זו אינה ניתנת לביטול.",
+      "confirm": "מחק משתמש"
+    },
+    "form": {
+      "titleCreate": "הוסף משתמש חדש",
+      "titleEdit": "ערוך משתמש",
+      "firstName": "שם פרטי",
+      "lastName": "שם משפחה",
+      "username": "שם משתמש",
+      "email": "דוא\"ל",
+      "password": "סיסמה",
+      "newPassword": "סיסמה חדשה (אופציונלי)",
+      "passwordPlaceholder": "השאר ריק כדי לשמור על הסיסמה הנוכחית",
+      "role": "תפקיד",
+      "roleUser": "משתמש",
+      "roleAdmin": "מנהל",
+      "group": "קבוצה",
+      "noGroup": "ללא קבוצה",
+      "groupSaveError": "שגיאה בעדכון הקצאת הקבוצה",
+      "create": "צור",
+      "save": "שמור",
+      "quota": {
+        "title": "מכסות אחסון",
+        "maxFileSize": "גודל קובץ מקסימלי",
+        "maxTotalStorage": "אחסון כולל מקסימלי",
+        "inherit": "השתמש בברירת המחדל",
+        "unlimited": "ללא הגבלה",
+        "custom": "מותאם אישית",
+        "saveSuccess": "המכסה עודכנה בהצלחה",
+        "saveError": "עדכון המכסה נכשל",
+        "currentUsage": "שימוש נוכחי",
+        "effectiveMaxFileSize": "גודל קובץ מקסימלי בפועל",
+        "effectiveMaxStorage": "אחסון כולל מקסימלי בפועל",
+        "usagePercent": "שימוש",
+        "sourceUser": "עקיפת משתמש",
+        "sourceGroup": "קבוצה",
+        "sourceGlobal": "ברירת מחדל גלובלית",
+        "sourceAdminDefault": "ברירת מחדל מנהל"
+      }
+    },
+    "status": {
+      "title": "אשר שינוי סטטוס",
+      "confirmation": "האם אתה בטוח שברצונך ל-{action} משתמש {firstName} {lastName}?",
+      "activate": "להפעיל",
+      "deactivate": "להשבת",
+      "user": "משתמש"
+    },
+    "header": {
+      "title": "ניהול משתמשים",
+      "addUser": "הוסף משתמש",
+      "management": "ניהול משתמשים"
+    },
+    "table": {
+      "user": "משתמש",
+      "userRole": "משתמש",
+      "email": "דוא\"ל",
+      "status": "סטטוס",
+      "role": "תפקיד",
+      "actions": "פעולות",
+      "active": "פעיל",
+      "inactive": "לא פעיל",
+      "admin": "מנהל",
+      "source": "מקור",
+      "ldap": "LDAP",
+      "local": "מקומי"
+    },
+    "invite": {
+      "button": "צור קישור הזמנה",
+      "title": "צור קישור הזמנת משתמש",
+      "description": "צור קישור חד-פעמי המאפשר למישהו ליצור חשבון משלו. הקישור פג תוקף בעוד 15 דקות.",
+      "generating": "יוצר...",
+      "generate": "צור קישור",
+      "generated": "קישור ההזמנה נוצר בהצלחה!",
+      "linkReady": "קישור ההזמנה מוכן",
+      "linkReadyDescription": "שתף קישור זה עם האדם שאתה רוצה להזמין. הם יוכלו ליצור חשבון משלהם כמשתמש רגיל.",
+      "copyLink": "העתק קישור",
+      "linkCopied": "קישור ההזמנה הועתק ללוח!",
+      "expiresIn": "פג תוקף בעוד 15 דקות",
+      "close": "סגור",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
+      "errors": {
+        "generateFailed": "נכשל ביצירת קישור הזמנה",
+        "copyFailed": "העתקת הקישור נכשלה",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
+      }
+    }
+  },
+  "validation": {
+    "firstNameRequired": "שם פרטי נדרש",
+    "lastNameRequired": "שם משפחה נדרש",
+    "usernameLength": "שם משתמש חייב להכיל לפחות 3 תווים",
+    "usernameSpaces": "שם משתמש אינו יכול להכיל רווחים",
+    "invalidEmail": "אנא הזן כתובת דוא\"ל חוקית",
+    "passwordLength": "סיסמה חייבת להכיל לפחות 12 תווים",
+    "passwordsMatch": "סיסמאות חייבות להתאים",
+    "emailRequired": "דוא\"ל נדרש",
+    "emailOrUsernameRequired": "דוא\"ל או שם משתמש נדרש",
+    "passwordRequired": "סיסמה נדרשת",
+    "passwordMinLength": "סיסמה חייבת להכיל לפחות 6 תווים",
+    "nameRequired": "שם נדרש",
+    "required": "שדה זה נדרש",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+  },
+  "registerWithInvite": {
+    "title": "צור את החשבון שלך",
+    "description": "מלא את הפרטים למטה כדי ליצור את החשבון שלך",
+    "labels": {
+      "firstName": "שם פרטי",
+      "firstNamePlaceholder": "הזן את השם הפרטי שלך",
+      "lastName": "שם משפחה",
+      "lastNamePlaceholder": "הזן את השם המשפחה שלך",
+      "username": "שם משתמש",
+      "usernamePlaceholder": "בחר שם משתמש",
+      "email": "דוא\"ל",
+      "emailPlaceholder": "הזן את הדוא\"ל שלך",
+      "password": "סיסמה",
+      "passwordPlaceholder": "בחר סיסמה",
+      "confirmPassword": "אשר סיסמה",
+      "confirmPasswordPlaceholder": "אשר את הסיסמה שלך"
+    },
+    "buttons": {
+      "creating": "יוצר חשבון...",
+      "createAccount": "צור חשבון"
+    },
+    "validation": {
+      "firstNameRequired": "שם פרטי נדרש",
+      "lastNameRequired": "שם משפחה נדרש",
+      "usernameMinLength": "שם משתמש חייב להכיל לפחות 3 תווים",
+      "invalidEmail": "דוא\"ל לא חוקי",
+      "passwordMinLength": "סיסמה חייבת להכיל לפחות 12 תווים",
+      "passwordsMatch": "סיסמאות חייבות להתאים",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "messages": {
+      "success": "החשבון נוצר בהצלחה! מעביר לכניסה...",
+      "redirecting": "מעביר לכניסה..."
+    },
+    "errors": {
+      "invalidToken": "שגיאה בקישור ההזמנה",
+      "tokenUsed": "קישור ההזמנה הזה כבר נוצל",
+      "tokenExpired": "קישור ההזמנה הזה פג תוקפו",
+      "usernameExists": "שם המשתמש כבר קיים",
+      "emailExists": "הדוא\"ל כבר קיים",
+      "createFailed": "נכשל ביצירת חשבון. אנא נסה שוב."
+    },
+    "pageTitle": "צור חשבון"
+  },
+  "filesTree": {
+    "noItems": "אין פריטים להצגה"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "שנה שפה"
+  },
+  "ldap": {
+    "pageTitle": "LDAP / Active Directory",
+    "pageDescription": "הגדר סנכרון LDAP כדי לייבא משתמשים מ-Active Directory",
+    "config": {
+      "title": "תצורה",
+      "description": "הגדרות חיבור שרת LDAP ומיפוי תכונות",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
+      "connection": "חיבור",
+      "serverUrl": "כתובת URL של שרת",
+      "useTls": "השתמש ב-TLS (LDAPS)",
+      "tlsSkipVerify": "דלג על אימות TLS",
+      "tlsSkipVerifyWarning": "אזהרה: השבתת אימות תעודה מאפשרת התקפות מישהו באמצע",
+      "bindDn": "Bind DN",
+      "bindPassword": "סיסמת Bind",
+      "bindPasswordPlaceholder": "הזן סיסמה לבדיקה או שמור סיסמה חדשה",
+      "search": "הגדרות חיפוש",
+      "searchBase": "בסיס חיפוש",
+      "syncGroupDn": "סנכרון קבוצה DN",
+      "attributes": "מיפוי תכונות",
+      "usernameAttr": "תכונת שם משתמש",
+      "emailAttr": "תכונת דוא\"ל",
+      "displayNameAttr": "תכונת שם תצוגה",
+      "syncSettings": "הגדרות סנכרון",
+      "syncInterval": "מרווח סנכרון (דקות)",
+      "syncIntervalHelp": "בין 15 דקות ל-7 ימים (10080 דקות)",
+      "appUrl": "כתובת URL של אפליקציה",
+      "appUrlHelp": "בשימוש בדוא\"לי ברוכים הבאים ששלחו למשתמשי LDAP חדשים",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
+      "appUrlRequired": "כתובת URL של אפליקציה נדרשת כאשר LDAP מופעל",
+      "bindPasswordRequired": "סיסמת Bind נדרשת לתצורה חדשה",
+      "members": "חברים",
+      "save": "שמור תצורה",
+      "testConnection": "בדוק חיבור",
+      "saveSuccess": "תצורת LDAP נשמרה",
+      "saveError": "נכשל בשמירת תצורת LDAP",
+      "testSuccess": "בדיקת חיבור הצליחה",
+      "testError": "בדיקת חיבור נכשלה"
+    },
+    "groupMapping": {
+      "title": "מיפוי קבוצה",
+      "description": "קבוצות מקומיות ממופות לקבוצות Active Directory להקצאת מכסות",
+      "manageGroups": "נהל קבוצות",
+      "groupName": "שם קבוצה",
+      "adGroupDn": "AD קבוצה DN",
+      "noMapping": "אין מיפוי קבוצה מוגדר. הגדר DNs של LDAP בניהול קבוצות כדי למפות קבוצות AD לקבוצות מכסות מקומיות."
+    },
+    "sync": {
+      "title": "פעולות סנכרון",
+      "description": "סנכרון ידני והיסטוריית סנכרון",
+      "syncNow": "סנכרן עכשיו",
+      "triggered": "סנכרון LDAP התחיל",
+      "error": "נכשל בהתחלת סנכרון LDAP",
+      "lastSync": "סנכרון אחרון",
+      "nextSync": "סנכרון הבא",
+      "noHistory": "אין היסטוריית סנכרון עדיין",
+      "date": "תאריך",
+      "trigger": "הפעלה",
+      "duration": "משך זמן",
+      "created": "נוצר",
+      "updated": "עודכן",
+      "deactivated": "הושבת",
+      "reactivated": "הופעל מחדש",
+      "skipped": "דולג",
+      "status": "סטטוס",
+      "statusLabel": {
+        "success": "הצליח",
+        "error": "שגיאה",
+        "partial": "חלקי",
+        "running": "פועל"
+      }
+    },
+    "syncDetail": {
+      "title": "פרטי סנכרון",
+      "details": "פרטי דלג וטעויות",
+      "type": "סוג",
+      "username": "שם משתמש",
+      "email": "דוא\"ל",
+      "message": "הודעה",
+      "detailType": {
+        "skip": "דולג",
+        "error": "שגיאה"
+      }
+    },
+    "banner": {
+      "active": "סנכרון LDAP/AD פעיל",
+      "disabled": "סנכרון LDAP/AD מושבת",
+      "configure": "הגדר"
+    },
+    "warnings": {
+      "title": "אזהרות תצורה"
+    },
+    "time": {
+      "justNow": "זה עתה",
+      "minutesAgo": "לפני {minutes} דקות",
+      "hoursAgo": "לפני {hours} שעות",
+      "daysAgo": "לפני {days} ימים"
+    },
+    "browse": {
+      "retry": "Retry",
+      "error": "Something went wrong. Please try again.",
+      "directory": {
+        "title": "Browse Directory",
+        "description": "Pick a base DN from the live directory tree.",
+        "buttonLabel": "Browse directory",
+        "useDetectedBase": "Use detected base",
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "loading": "Loading directory…",
+        "noRoots": "No naming contexts found.",
+        "noSubContainers": "No sub-containers"
+      },
+      "groups": {
+        "title": "Find Group",
+        "description": "Search the directory for a group to sync.",
+        "buttonLabel": "Search groups",
+        "placeholder": "Type to search groups…",
+        "prompt": "Start typing to search for a group.",
+        "searching": "Searching…",
+        "empty": "No groups match your search.",
+        "truncated": "Too many results — refine your search.",
+        "resultCount": "{count, plural, =0 {No groups found} one {# group found} other {# groups found}}"
+      }
+    }
+  },
+  "backgroundImages": {
+    "empty": "אין תמונות רקע מועלות. העלה תמונות כדי להפעיל רקעים מותאמים עבור שיתופים בסגנון WeTransfer.",
+    "add": "הוסף תמונה",
+    "uploading": "מעלה...",
+    "uploadSuccess": "תמונה הועלתה בהצלחה",
+    "uploadError": "נכשל בהעלאת תמונה",
+    "deleteConfirm": "האם אתה בטוח שברצונך למחוק תמונת רקע זו?",
+    "deleteSuccess": "תמונה נמחקה בהצלחה",
+    "deleteError": "נכשל במחיקת תמונה",
+    "untitled": "ללא כותרת",
+    "rename": "לחץ לשינוי שם",
+    "renameSuccess": "תמונה שונתה בהצלחה",
+    "renameError": "נכשל בשינוי שם תמונה",
+    "moveUp": "העלה למעלה",
+    "moveDown": "הורד למטה",
+    "reorderError": "נכשל בשינוי סדר תמונות"
+  },
+  "quickShare": {
+    "dropzone": {
+      "title": "שיתוף מהיר",
+      "description": "שחרר את הקבצים שלך כאן כדי לשתף במהירות",
+      "browse": "או לחץ להפעלה",
+      "dragActive": "שחרר קבצים כאן"
+    },
+    "upload": {
+      "title": "שיתוף מהיר",
+      "addMore": "הוסף עוד קבצים",
+      "dropToAdd": "שחרר קבצים כדי להוסיף",
+      "namePlaceholder": "שם שיתוף",
+      "expiration": {
+        "label": "תפוגה ב",
+        "1day": "יום אחד",
+        "7days": "7 ימים",
+        "30days": "30 ימים",
+        "never": "לעולם"
+      },
+      "password": {
+        "label": "הגנת סיסמה",
+        "placeholder": "הזן סיסמה"
+      },
+      "recipients": {
+        "label": "נמענים",
+        "placeholder": "הוסף כתובות דוא\"ל",
+        "hint": "הקש Enter כדי להוסיף"
+      },
+      "share": "שתף",
+      "sharing": "משתף...",
+      "waitingUpload": "מעלה... השיתוף ייווצר באופן אוטומטי",
+      "defaultName": "{count, plural, one {# קובץ} other {# קבצים}}",
+      "error": "נכשל ביצירת שיתוף",
+      "uploadError": "כמה קבצים נכשלו בהעלאה",
+      "notifyError": "השיתוף נוצר אך נכשל בהודעה לנמענים",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
+      "invalidEmail": "אנא הזן כתובת דוא\"ל חוקית"
+    },
+    "confirmation": {
+      "title": "שותף!",
+      "copyLink": "העתק קישור",
+      "copied": "קישור הועתק!",
+      "summary": {
+        "files": "{count, plural, one {# קובץ} other {# קבצים}}",
+        "expires": "תפוגה בעוד {duration}",
+        "noExpiry": "ללא תפוגה",
+        "password": "מוגן בסיסמה",
+        "noPassword": "ללא סיסמה"
+      },
+      "newShare": "שיתוף חדש",
+      "downloadQr": "הורד קוד QR"
+    }
+  },
+  "notificationPreferences": {
+    "pageTitle": "העדפות הודעות",
+    "description": "בחר אילו הודעות דוא״ל אתה מקבל",
+    "type": "סוג הודעה",
+    "category": "קטגוריה",
+    "frequency": "תדירות",
+    "immediate": "מיידי",
+    "disabled": "מושבת",
+    "alwaysEnabled": "תמיד מופעל",
+    "save": "שמור העדפות",
+    "saveSuccess": "העדפות הודעות נשמרו",
+    "saveError": "כישלון בשמירת העדפות",
+    "noChanges": "אין שינויים לשמירה",
+    "types": {
+      "password_reset": "איפוס סיסמה",
+      "welcome": "הודעת ברוכים הבאים",
+      "account_deactivated": "חשבון הושבת",
+      "account_reactivated": "חשבון הופעל מחדש",
+      "share_invitation": "הזמנת שיתוף",
+      "share_accessed": "הגישה לשיתוף",
+      "share_downloaded": "קובץ הוריד משיתוף",
+      "share_expiring": "שיתוף יפוג בקרוב",
+      "share_expired": "שיתוף פג תוקף",
+      "share_max_views_reached": "הגיע למראות מרביות של שיתוף",
+      "share_no_activity": "אין פעילות בשיתוף",
+      "reverse_share_invitation": "הזמנת קישור קבלה",
+      "reverse_share_uploaded": "קבצים הועלו לקישור קבלה",
+      "reverse_share_expiring": "קישור קבלה יפוג בקרוב",
+      "reverse_share_expired": "קישור קבלה פג תוקף",
+      "quota_warning": "אזהרת מכסה",
+      "quota_exceeded": "מכסה חרגה",
+      "files_auto_deleted": "קבצים נמחקו באופן אוטומטי",
+      "share_auto_deleted": "שיתוף נמחק באופן אוטומטי",
+      "admin_user_registered": "משתמש חדש נרשם (למנהלי מערכת בלבד)",
+      "admin_quota_alert": "התראת מכסה משתמש (למנהלי מערכת בלבד)",
+      "test_email": "הודעת בדיקה",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
+    },
+    "descriptions": {
+      "share_accessed": "כאשר מישהו פותח קישור לקבצים המשותפים שלך",
+      "share_downloaded": "כאשר מישהו מוריד קבצים מהשיתוף שלך",
+      "share_expiring": "תזכורת לפני שפג תוקף קישור השיתוף שלך",
+      "share_expired": "כאשר קישור השיתוף שלך פג תוקפו ואינו נגיש עוד",
+      "share_pending_deletion": "כאשר השיתוף הפג תוקפו מתוזמן למחיקה קבועה",
+      "share_max_views_reached": "כאשר השיתוף שלך הגיע למספר הצפיות המרבי המותר",
+      "share_no_activity": "כאשר לא היו הורדות בשיתוף שלך לפרק זמן",
+      "reverse_share_uploaded": "כאשר מישהו מעלה קבצים דרך קישור קבלת הקבצים שלך",
+      "reverse_share_expiring": "תזכורת לפני שפג תוקף קישור קבלת הקבצים שלך",
+      "reverse_share_expired": "כאשר קישור קבלת הקבצים שלך פג תוקפו",
+      "reverse_share_pending_deletion": "כאשר קישור קבלת הקבצים הפג תוקפו מתוזמן למחיקה",
+      "reverse_share_auto_deleted": "כאשר קישור קבלת הקבצים שלך נמחק אוטומטית לאחר פקיעת תוקפו",
+      "quota_warning": "כאשר השימוש שלך באחסון מתקרב למגבלת המכסה שלך",
+      "quota_exceeded": "כאשר השימוש שלך באחסון עלה על מגבלת המכסה שלך",
+      "files_auto_deleted": "כאשר קבצים נמחקו אוטומטית כדי לפנות מקום במכסה",
+      "share_auto_deleted": "כאשר שיתוף נמחק אוטומטית על ידי מערכת הניקוי",
+      "admin_user_registered": "כאשר משתמש חדש נרשם לפלטפורמה (למנהלי מערכת בלבד)",
+      "admin_quota_alert": "כאשר השימוש באחסון של משתמש עולה על המכסה שלו (למנהלי מערכת בלבד)"
+    },
+    "categories": {
+      "account": "חשבון",
+      "shares": "שיתופים",
+      "reverseShares": "קישורי קבלה",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
+    },
+    "saving": "שומר...",
+    "loadError": "כישלון בטעינת העדפות הודעות",
+    "retry": "נסה שוב",
+    "unsavedChanges": "{count, plural, one {# שינוי לא שמור} other {# שינויים לא שמורים}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP",
+      "label": "[TO_TRANSLATE] User management"
+    }
+  }
+}

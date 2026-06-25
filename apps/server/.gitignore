@@ -1,0 +1,9 @@
+node_modules
+.env
+dist/*
+uploads/*
+temp-uploads/*
+*.db
+prisma/*.db
+tsconfig.tsbuildinfo
+src/generated/

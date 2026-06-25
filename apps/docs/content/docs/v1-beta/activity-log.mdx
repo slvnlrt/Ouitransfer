@@ -1,0 +1,335 @@
+---
+title: Activity Log
+icon: ScrollText
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+The Activity Log is an admin-only audit trail that records a defined set of actions performed in Ouitransfer: including authenticated actions, public share access, file uploads and downloads, configuration changes, and system events. It provides a searchable, filterable, and exportable history of what happened, who did it, and when.
+
+## Overview
+
+The Activity Log is accessible at **Admin → Activity Log**. Only administrators can view the log. Regular users have no activity view.
+
+In the API and code, the feature is referred to as the **audit log**; the UI calls it the Activity Log. The two terms refer to the same data.
+
+Each log entry records:
+
+- **Timestamp**: when the event occurred (UTC)
+- **Actor**: the authenticated user who performed the action, or "System" for scheduled tasks, or "Anonymous" for public/unauthenticated access
+- **Action**: a typed action code (e.g., `SHARE_CREATE`, `FILE_DOWNLOAD`, `LOGIN_FAILURE`)
+- **Target**: the entity the action was performed on (e.g., a specific share, file, or user), with its type and ID
+- **IP address**: the originating IP address (proxy-aware)
+- **Metadata**: action-specific context (e.g., file name, old and new role, recipient email)
+
+<Callout type="info">
+  Passwords, tokens, and other secrets are **never stored** in log metadata. A runtime denylist strips sensitive keys (`password`, `token`, `secret`, `bindPassword`, `clientSecret`, and others) before any event is persisted.
+</Callout>
+
+---
+
+## Reading the log
+
+The log table displays the most recent events first. Each row shows:
+
+| Column | Description |
+|--------|-------------|
+| **Date** | Timestamp of the event |
+| **User** | Avatar and name of the authenticated actor, "System" for schedulers, or "Anonymous" for public actions |
+| **Action** | Colored badge with the action type, grouped by category |
+| **Target** | Type icon and entity ID (e.g., the share or file the action affected) |
+| **IP address** | The originating IP address |
+| **Details** | Expandable panel showing action-specific metadata |
+
+### Details panel
+
+Clicking a row expands the metadata details. Common examples:
+
+- `USER_QUOTA_CHANGE` → displays "10 GB → 50 GB" (not raw byte values)
+- `USER_ROLE_CHANGE` → displays old and new role
+- `SHARE_RECIPIENT_ADD` → displays the list of recipient emails
+- `LDAP_SYNC_COMPLETED` → links to the sync log entry with full statistics
+
+<Callout type="info">
+  Metadata is viewable in the detail panel but is not full-text searchable. The search field covers IP address and action name only.
+</Callout>
+
+---
+
+## Filtering
+
+The filter bar above the table lets you narrow down events:
+
+| Filter | Description |
+|--------|-------------|
+| **Action type** | Multi-select dropdown, grouped by category (Auth, Share, File, Folder, Reverse Share, Group, LDAP, Admin, User, System) |
+| **Target type** | Dropdown: filter by entity type (user, share, file, folder, group, etc.) |
+| **Date range** | Two date pickers for "From" and "To" (both inclusive) |
+| **Search** | Text input: searches IP address and action name (partial match) |
+
+Use **Clear all filters** to reset the filter bar and return to the full log.
+
+### Date filter semantics
+
+- `dateFrom` is inclusive: events on that day from 00:00:00 UTC are included.
+- `dateTo` is inclusive: events on that day up to 23:59:59 UTC are included.
+
+The admin UI date pickers automatically convert selected dates to UTC day boundaries before submitting: "From" becomes `YYYY-MM-DDT00:00:00.000Z` and "To" becomes `YYYY-MM-DDT23:59:59.999Z`. API callers must supply full ISO 8601 datetimes with timezone (e.g., `2026-01-01T00:00:00.000Z`); date-only strings are not accepted.
+
+---
+
+## Exporting
+
+Click the **Export** button to download the log as a file. You must set a date range before exporting: the button is disabled until both "From" and "To" dates are selected.
+
+| Option | Description |
+|--------|-------------|
+| **CSV** | Comma-separated values, UTF-8 with BOM for Excel compatibility |
+| **JSON** | Array of log objects with parsed metadata |
+
+The export applies all active filters (action, target type, search, date range).
+
+**Hard ceiling:** exports are capped at **100,000 rows**. If your date range yields more rows, the export is truncated at 100k. Truncation behavior differs by format:
+
+- **CSV:** a warning comment (`# Export truncated at 100000 rows...`) is appended at the end of the file.
+- **JSON:** the file is silently truncated to 100,000 entries (no inline warning).
+
+To get complete data, narrow the date range and export in multiple batches.
+
+The export streams directly to the browser as a file download; no temporary file is stored on the server.
+
+**Export filename format:** `audit-logs-{dateFrom}-{dateTo}.csv` / `.json`
+
+---
+
+## Retention
+
+The **Audit Retention** setting controls how long log entries are kept before automatic deletion.
+
+Navigate to **Admin → Settings** (Security section) to configure:
+
+| Setting | Description |
+|---------|-------------|
+| **Audit Retention Days** | Number of days to keep audit logs. Default: `365`. Recommended minimum: `7`. Set to `0` to keep logs forever. |
+
+The retention scheduler runs daily and deletes entries older than the configured threshold in batches of 1,000 rows at a time to avoid locking the database. When a cleanup run completes, an `AUDIT_RETENTION_CLEANUP` event is written to the log with the count of deleted rows.
+
+<Callout type="warn">
+  The recommended minimum retention period is **7 days**. The setting accepts any non-negative integer; values below 7 are not rejected by the server. Set to `0` to keep logs forever (no automatic deletion).
+</Callout>
+
+---
+
+## What gets logged
+
+Ouitransfer logs approximately 77 distinct action types across all application modules. The table below lists the categories and representative examples (this is not an exhaustive list). Note that the groupings below are for documentation purposes; in the UI dropdown, 2FA actions appear inside the **Auth** category.
+
+### Auth
+
+| Action | Description |
+|--------|-------------|
+| `LOGIN_SUCCESS` | Successful login (password or 2FA) |
+| `LOGIN_FAILURE` | Failed login attempt |
+| `LOGOUT` | User logged out |
+| `PASSWORD_CHANGE` | User changed their password |
+| `PASSWORD_RESET` | Password reset completed |
+| `PASSWORD_RESET_REQUEST` | Forgot-password request submitted |
+| `ACCOUNT_LOCKED` | Account locked after too many failed attempts |
+| `TRUSTED_DEVICE_REMOVE` | A remembered device was removed |
+| `AUTH_PROVIDER_LOGIN` | Login via SSO / OAuth provider |
+
+### Two-Factor Authentication
+
+| Action | Description |
+|--------|-------------|
+| `TWO_FACTOR_ENABLE` | 2FA enabled on account |
+| `TWO_FACTOR_DISABLE` | 2FA disabled on account |
+| `TWO_FACTOR_BACKUP_REGENERATED` | Recovery codes regenerated (invalidates previous codes) |
+
+### Users
+
+| Action | Description |
+|--------|-------------|
+| `USER_CREATE` | User account created (includes creation method: admin, invite, registration, ldap) |
+| `USER_UPDATE` | Profile fields updated |
+| `USER_DELETE` | User account deleted |
+| `USER_ROLE_CHANGE` | Admin flag toggled (includes old and new role) |
+| `USER_QUOTA_CHANGE` | Storage quota override changed |
+| `USER_ACTIVATE` | Account reactivated |
+| `USER_DEACTIVATE` | Account deactivated (soft-delete) |
+
+### Shares
+
+| Action | Description |
+|--------|-------------|
+| `SHARE_CREATE` | Share created |
+| `SHARE_DELETE` | Share deleted |
+| `SHARE_ACCESS` | Share page loaded by a non-creator (anonymous or authenticated) |
+| `SHARE_PASSWORD_VERIFIED` | Password entered correctly on a protected share |
+| `SHARE_PASSWORD_FAILED` | Incorrect password attempt on a protected share |
+| `SHARE_RECIPIENT_ADD` | Email recipients added to a share |
+| `SHARE_RECIPIENT_NOTIFY` | Notification emails sent to share recipients |
+| `SHARE_DEACTIVATED` | Share deactivated: manually paused, or automatically when it expires or hits its view limit (reason recorded) |
+| `SHARE_REACTIVATED` | Share reactivated: resumed manually, or by extending its expiration / raising its view limit |
+
+### Files
+
+| Action | Description |
+|--------|-------------|
+| `FILE_UPLOAD` | File uploaded |
+| `FILE_DOWNLOAD` | File download requested |
+| `FILE_DELETE` | File deleted |
+| `FILE_MOVE` | File moved to a different folder |
+| `FILE_EMBED_ACCESS` | Embedded media player accessed (range request) |
+
+### Folders
+
+| Action | Description |
+|--------|-------------|
+| `FOLDER_CREATE` | Folder created |
+| `FOLDER_DELETE` | Folder deleted |
+| `FOLDER_MOVE` | Folder moved |
+
+### Reverse Shares
+
+| Action | Description |
+|--------|-------------|
+| `REVERSE_SHARE_CREATE` | Upload link created |
+| `REVERSE_SHARE_ACCESS` | Upload page visited (anonymous) |
+| `REVERSE_SHARE_UPLOAD` | File uploaded through an upload link (includes uploader email/name if provided) |
+| `REVERSE_SHARE_FILE_DOWNLOAD` | File downloaded from an upload link |
+| `REVERSE_SHARE_DEACTIVATED` | Upload link deactivated: manually paused, or automatically when it expires (reason recorded) |
+| `REVERSE_SHARE_REACTIVATED` | Upload link reactivated: resumed manually, or by extending its expiration |
+
+### Groups
+
+| Action | Description |
+|--------|-------------|
+| `GROUP_CREATE` | Group created |
+| `GROUP_DELETE` | Group deleted |
+| `GROUP_MEMBER_ADD` | User added to a group |
+| `GROUP_MEMBER_REMOVE` | User removed from a group |
+
+### LDAP
+
+| Action | Description |
+|--------|-------------|
+| `LDAP_CONFIG_UPDATE` | LDAP configuration changed |
+| `LDAP_SYNC_TRIGGERED` | Sync triggered (manually or by scheduler) |
+| `LDAP_SYNC_COMPLETED` | Sync completed: `targetId` points to the sync log entry |
+| `LDAP_SYNC_ERROR` | Sync failed: `targetId` points to the sync log entry |
+
+### App Settings
+
+| Action | Description |
+|--------|-------------|
+| `ADMIN_CONFIG_CHANGE` | Admin setting changed (key and group recorded, never the value) |
+| `LOGO_UPLOAD` / `LOGO_REMOVE` | Application logo changed |
+| `SMTP_TEST` | SMTP test email sent |
+| `AUTH_PROVIDER_CREATE` / `AUTH_PROVIDER_UPDATE` / `AUTH_PROVIDER_DELETE` | SSO provider configured |
+| `INVITE_TOKEN_CREATE` / `INVITE_TOKEN_USED` | Invite link created or redeemed |
+
+### System
+
+| Action | Description |
+|--------|-------------|
+| `AUDIT_RETENTION_CLEANUP` | Scheduled cleanup run: records how many old entries were deleted |
+| `SHARE_AUTO_DELETED` | Deactivated share link permanently deleted by [Automatic Cleanup](/docs/v1-beta/automatic-cleanup) after the grace period |
+| `REVERSE_SHARE_AUTO_DELETED` | Expired reverse share and its uploaded files permanently deleted by Automatic Cleanup |
+| `ACCOUNT_FILES_CLEANED` | Deactivated account's files deleted by Automatic Cleanup |
+| `ORPHAN_S3_DELETED` / `ORPHAN_DB_DELETED` | Orphan sweep removed a storage object with no database record, or a record pointing to a missing object |
+
+---
+
+## Privacy and security notes
+
+- **Sensitive data is never logged.** The service layer applies a runtime denylist before writing any event. Keys such as `password`, `token`, `secret`, `bindPassword`, `clientSecret`, `smtpPass`, `twoFactorSecret`, and `twoFactorBackupCodes` are stripped from metadata automatically, even if inadvertently passed to `logAuditEvent()`.
+
+- **User IDs are retained after account deletion.** Audit log entries keep the `userId` field even if the referenced account is later deleted. This is intentional: forensic and security integrity requires a complete audit trail. If the display name is no longer available, the log shows the raw user ID.
+
+- **Visitor identity is limited.** For anonymous share access (`SHARE_ACCESS`), only the IP address and user agent are recorded; no visitor name or email. Visitor identity fields (`uploaderEmail`, `uploaderName`) are populated only for `REVERSE_SHARE_UPLOAD` events, where the visitor actively provided their identity.
+
+- **Audit writes are fire-and-forget.** Audit events are observability records, not enforcement mechanisms. They do not block request processing. View count enforcement and access limits use atomic database counters that are separate from the audit log.
+
+---
+
+## API reference
+
+All audit log endpoints require an active **admin session**. Unauthenticated requests return `401`. Non-admin requests return `403`.
+
+<Callout type="info">
+  The `userId` filter is available as an **API-only** parameter. The admin UI does not expose a user dropdown; filtering by user must be done via direct API calls.
+</Callout>
+
+### `GET /admin/audit-logs`
+
+Returns a paginated list of audit log entries.
+
+**Query parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `userId` | string | No | Filter by actor user ID |
+| `action` | string (enum) | No | Filter by action type (must be a valid action code) |
+| `targetType` | string (enum) | No | Filter by target type (`user`, `share`, `file`, `folder`, `group`, `reverse_share`, `ldap_config`, `ldap_sync_log`, `setting`, `auth_provider`, `background_image`, `invite_token`, `trusted_device`, `logo`) |
+| `targetId` | string | No | Filter by target entity ID |
+| `dateFrom` | ISO 8601 datetime | No | Start of date range (inclusive) |
+| `dateTo` | ISO 8601 datetime | No | End of date range (inclusive) |
+| `search` | string | No | Partial match against IP address and action name |
+| `limit` | integer (1-100) | No | Page size. Default: `50` |
+| `offset` | integer | No | Pagination offset. Default: `0` |
+
+**Response (200):**
+
+```json
+{
+  "logs": [
+    {
+      "id": "cm9abc123",
+      "userId": "cm9user456",
+      "action": "FILE_DOWNLOAD",
+      "ipAddress": "192.168.1.1",
+      "userAgent": "Mozilla/5.0 ...",
+      "metadata": { "fileName": "report.pdf", "shareId": "cm9share789" },
+      "targetType": "file",
+      "targetId": "cm9file012",
+      "createdAt": "2026-05-20T14:32:00.000Z"
+    }
+  ],
+  "total": 1248
+}
+```
+
+`userId` is `null` for anonymous or system events. `metadata` is `null` when no additional context was captured. `targetType` and `targetId` are `null` for events with no specific target (e.g., `PASSWORD_RESET_REQUEST`, `SMTP_TEST`).
+
+---
+
+### `GET /admin/audit-logs/export`
+
+Streams an audit log export file to the browser.
+
+**Query parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `format` | `csv` \| `json` | **Yes** | Output format |
+| `dateFrom` | ISO 8601 datetime | **Yes** | Start of export range |
+| `dateTo` | ISO 8601 datetime | **Yes** | End of export range |
+| `userId` | string | No | Same as list endpoint |
+| `action` | string (enum) | No | Same as list endpoint |
+| `targetType` | string (enum) | No | Same as list endpoint |
+| `targetId` | string | No | Same as list endpoint |
+| `search` | string | No | Same as list endpoint |
+
+**Response headers:**
+
+```
+Content-Type: text/csv; charset=utf-8
+Content-Disposition: attachment; filename="audit-logs-2026-01-01-2026-01-31.csv"
+```
+
+The response body is a streaming file download. For JSON format, the body is a JSON array (`[...]`). For CSV format, the first row is a header row and the file starts with a UTF-8 BOM for Excel compatibility.
+
+**CSV columns:** `id`, `userId`, `action`, `ipAddress`, `userAgent`, `targetType`, `targetId`, `metadata`, `createdAt`
+
+If the result set exceeds 100,000 rows, the export is truncated and a warning comment (`# Export truncated at 100000 rows...`) is appended at the end of the CSV file. For JSON, the server logs a warning but the file is silently truncated to 100,000 entries; narrow the date range to retrieve complete data.

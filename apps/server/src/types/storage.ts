@@ -1,0 +1,48 @@
+import type { Readable } from "node:stream";
+
+export interface StorageProvider {
+  getPresignedPutUrl(objectName: string, expires: number): Promise<string>;
+  getPresignedGetUrl(objectName: string, expires: number, fileName?: string): Promise<string>;
+  deleteObject(objectName: string): Promise<void>;
+  fileExists(objectName: string): Promise<boolean>;
+  getObjectStream(objectName: string): Promise<Readable>;
+  getObjectHead(objectName: string, bytes?: number): Promise<Buffer>;
+  /** Return the actual stored byte size of an object via HeadObject. */
+  getObjectSize(objectName: string): Promise<bigint>;
+
+  // Multipart upload methods
+  createMultipartUpload(objectName: string): Promise<string>;
+  getPresignedPartUrl(
+    objectName: string,
+    uploadId: string,
+    partNumber: number,
+    expires: number,
+  ): Promise<string>;
+  completeMultipartUpload(
+    objectName: string,
+    uploadId: string,
+    parts: Array<{ PartNumber: number; ETag: string }>,
+  ): Promise<void>;
+  abortMultipartUpload(objectName: string, uploadId: string): Promise<void>;
+  listParts(
+    objectName: string,
+    uploadId: string,
+  ): Promise<Array<{ PartNumber: number; Size: number; ETag: string }>>;
+
+  // Bucket enumeration (orphan sweep)
+  listObjects(prefix?: string): Promise<Array<{ key: string; size: number; lastModified: Date }>>;
+  listMultipartUploads(
+    prefix?: string,
+  ): Promise<Array<{ key: string; uploadId: string; initiated: Date }>>;
+}
+
+export interface StorageConfig {
+  endpoint: string;
+  port?: number;
+  useSSL: boolean;
+  accessKey: string;
+  secretKey: string;
+  region: string;
+  bucketName: string;
+  forcePathStyle?: boolean;
+}

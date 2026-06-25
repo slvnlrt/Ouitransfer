@@ -1,0 +1,255 @@
+"use client";
+
+import { Copy, Dices, Link } from "lucide-react";
+import { useTranslations } from "next-intl";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Loader } from "@/components/ui/loader";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { logger } from "@/lib/logger";
+import { customNanoid } from "@/lib/utils";
+import { ALIAS_MAX_LENGTH, ALIAS_MIN_LENGTH, getAliasValidationError } from "@/utils/alias";
+import type { ReverseShare } from "../hooks/use-reverse-shares";
+
+interface GenerateAliasFormData {
+  alias: string;
+}
+
+interface GenerateAliasModalProps {
+  reverseShare: ReverseShare | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onCreateAlias: (reverseShareId: string, alias: string) => Promise<void>;
+  onCopyLink: (reverseShare: ReverseShare) => void;
+}
+
+const generateDefaultAlias = () =>
+  customNanoid(10, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
+export function GenerateAliasModal({
+  reverseShare,
+  isOpen,
+  onClose,
+  onCreateAlias,
+  onCopyLink,
+}: GenerateAliasModalProps) {
+  const t = useTranslations();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [origin, setOrigin] = useState("");
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
+
+  const form = useForm<GenerateAliasFormData>({
+    mode: "onChange",
+    defaultValues: {
+      alias: "",
+    },
+  });
+
+  React.useEffect(() => {
+    if (reverseShare) {
+      if (reverseShare.alias?.alias) {
+        form.setValue("alias", reverseShare.alias.alias);
+      } else {
+        form.setValue("alias", generateDefaultAlias());
+      }
+    }
+  }, [reverseShare, form]);
+
+  const onSubmit = async (data: GenerateAliasFormData) => {
+    if (!reverseShare) return;
+
+    setIsSubmitting(true);
+    try {
+      await onCreateAlias(reverseShare.id, data.alias);
+      onClose();
+    } catch (error) {
+      logger.error("Failed to create/update alias:", {
+        err: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCopyLink = () => {
+    if (reverseShare) {
+      onCopyLink(reverseShare);
+    }
+  };
+
+  const hasExistingAlias = reverseShare?.alias?.alias;
+  const currentLink = hasExistingAlias ? `${origin}/r/${hasExistingAlias}` : null;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-lg max-w-[95vw] overflow-hidden">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Link className="size-5" />
+            {hasExistingAlias
+              ? t("reverseShares.modals.alias.editTitle")
+              : t("reverseShares.modals.alias.createTitle")}
+          </DialogTitle>
+          <DialogDescription>
+            {hasExistingAlias
+              ? t("reverseShares.modals.alias.editDescription")
+              : t("reverseShares.modals.alias.createDescription")}
+          </DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="alias"
+              rules={{
+                validate: (value: string) => {
+                  const error = getAliasValidationError(value);
+                  return error
+                    ? t(`common.aliasValidation.${error}`, {
+                        min: ALIAS_MIN_LENGTH,
+                        max: ALIAS_MAX_LENGTH,
+                      })
+                    : true;
+                },
+              }}
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>{t("reverseShares.modals.alias.aliasLabel")}</FormLabel>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+                          onClick={() => {
+                            const randomAlias = generateDefaultAlias();
+                            field.onChange(randomAlias);
+                          }}
+                        >
+                          <Dices className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {t("reverseShares.modals.alias.randomTooltip")}
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <FormControl>
+                    <Input
+                      placeholder={t("reverseShares.modals.alias.aliasPlaceholder")}
+                      maxLength={50}
+                      className="max-w-full"
+                      {...field}
+                      onChange={(e) => {
+                        const value = e.target.value
+                          .replace(/\s+/g, "-")
+                          .replace(/[^a-zA-Z0-9-_]/g, "")
+                          .toLowerCase();
+                        field.onChange(value);
+                      }}
+                    />
+                  </FormControl>
+
+                  {field.value && field.value.length >= 3 && (
+                    <div className="mt-2 p-2 bg-primary/5 border border-primary/20 rounded-md overflow-hidden">
+                      <span className="text-xs text-muted-foreground block mb-1">
+                        {t("reverseShares.modals.alias.preview")}
+                      </span>
+                      <code className="block text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded w-full truncate">
+                        {origin}/r/{field.value}
+                      </code>
+                    </div>
+                  )}
+
+                  <p className="text-xs text-muted-foreground">
+                    {t("reverseShares.modals.alias.help")}
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {currentLink && (
+              <div className="space-y-2">
+                <span className="text-sm font-medium">
+                  {t("reverseShares.modals.alias.currentLink")}
+                </span>
+                <div className="flex items-center gap-2 p-3 bg-muted rounded-md min-w-0 max-w-full overflow-hidden">
+                  <div className="flex-1 min-w-0 max-w-full overflow-hidden">
+                    <code className="block text-sm font-mono bg-background px-2 py-1 rounded border w-full truncate">
+                      {currentLink}
+                    </code>
+                  </div>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCopyLink}
+                        className="shrink-0"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {t("reverseShares.modals.alias.copyCurrentLink")}
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              </div>
+            )}
+
+            <DialogFooter className="gap-2">
+              <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
+                {t("reverseShares.modals.alias.cancel")}
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting || getAliasValidationError(form.watch("alias")) !== null}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader size="sm" />
+                    {hasExistingAlias
+                      ? t("reverseShares.modals.alias.updating")
+                      : t("reverseShares.modals.alias.creating")}
+                  </>
+                ) : hasExistingAlias ? (
+                  t("reverseShares.modals.alias.update")
+                ) : (
+                  t("reverseShares.modals.alias.create")
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}

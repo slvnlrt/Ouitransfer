@@ -1,0 +1,87 @@
+---
+title: Introduction
+icon: IdCard
+---
+
+import { ZoomableImage } from "@/components/ui/zoomable-image";
+
+OUITRANSFER prend en charge l'authentification OpenID Connect (OIDC), permettant aux utilisateurs de se connecter via des fournisseurs d'identité externes tels que Google, Zitadel, Auth0 et tout autre service conforme à OIDC. Cette fonctionnalité offre des capacités d'authentification unique (SSO) transparentes et une gestion centralisée des utilisateurs.
+
+L'authentification OIDC dans OUITRANSFER est construite sur le protocole standard OpenID Connect. L'implémentation prend en charge le provisionnement automatique des utilisateurs et des options de configuration flexibles.
+
+## Pourquoi utiliser l'authentification OIDC ?
+
+L'authentification OIDC présente plusieurs avantages pour les organisations et les utilisateurs :
+
+**Authentification centralisée** : Les utilisateurs peuvent s'authentifier avec leurs identifiants organisationnels existants sans créer de comptes distincts pour OUITRANSFER
+
+**Sécurité renforcée** : OIDC offre des fonctionnalités de sécurité robustes, notamment l'authentification par jeton, le flux PKCE et des protocoles standardisés.
+
+**Authentification unique** : Les utilisateurs peuvent accéder à OUITRANSFER de manière transparente s'ils sont déjà authentifiés auprès de leur fournisseur d'identité.
+
+**Gestion des utilisateurs** : Les administrateurs peuvent gérer les accès de manière centralisée via leur fournisseur d'identité existant.
+
+**Conformité** : OIDC aide à satisfaire aux exigences de sécurité et de conformité organisationnelles en s'appuyant sur l'infrastructure d'identité existante.
+
+---
+
+## Prérequis
+
+Avant de configurer l'authentification OIDC, assurez-vous de disposer des éléments suivants :
+
+- **Accès administrateur** : Privilèges ADMIN dans OUITRANSFER pour configurer les paramètres OIDC
+- **Fournisseur d'identité** : Un fournisseur d'identité conforme à OIDC (Google, Zitadel, Auth0, etc.)
+- **Enregistrement de l'application** : Votre application OUITRANSFER enregistrée auprès de votre fournisseur d'identité
+- **Identifiants OIDC** : Client ID, Client Secret et URL d'émetteur fournis par votre fournisseur d'identité
+
+### Fournisseurs d'identité pris en charge
+
+L'implémentation OIDC d'OUITRANSFER est compatible avec tout fournisseur conforme à OpenID Connect, dont les fournisseurs officiels suivants :
+
+- **[Google](/docs/v1-beta/oidc-authentication/google)**
+- **[Discord](/docs/v1-beta/oidc-authentication/discord)**
+- **[Github](/docs/v1-beta/oidc-authentication/github)**
+- **[Zitadel](/docs/v1-beta/oidc-authentication/zitadel)**
+- **[Auth0](/docs/v1-beta/oidc-authentication/auth0)**
+- **[Authentik](/docs/v1-beta/oidc-authentication/authentik)**
+- **[Frontegg](/docs/v1-beta/oidc-authentication/frontegg)**
+- **[Kinde Auth](/docs/v1-beta/oidc-authentication/kinde-auth)**
+- **[Pocket ID](/docs/v1-beta/oidc-authentication/pocket-id)**
+
+Bien que ce soient les fournisseurs officiels (testés en interne avec 100 % de succès), vous pouvez connecter n'importe quel fournisseur OIDC en fournissant vos identifiants et votre URL de connexion. Nous avons développé une approche pratique pour intégrer pratiquement tous les fournisseurs OIDC disponibles sur le marché. Dans cette documentation, vous pouvez consulter la procédure de configuration de chacun des fournisseurs officiels, ainsi qu'intégrer d'autres fournisseurs non listés comme officiels. Juste en dessous, vous trouverez les instructions pour accéder à la configuration des fournisseurs OIDC. Pour les détails spécifiques à la configuration de chaque fournisseur, sélectionnez l'option souhaitée dans la barre latérale, dans la section "OIDC Authentication".
+
+<ZoomableImage
+  src="/assets/v1/oidc/all-providers.png"
+  alt="Tous les fournisseurs OIDC"
+  legend="Vous pouvez utiliser autant de fournisseurs que vous le souhaitez, mais nous recommandons d'en utiliser au moins 2 pour garantir la meilleure expérience utilisateur."
+/>
+
+---
+
+## Configurer les paramètres OIDC
+
+La configuration OIDC est gérée via le panneau de paramètres administratifs d'OUITRANSFER, accessible uniquement aux utilisateurs disposant des privilèges ADMIN.
+
+### Accéder à la configuration OIDC
+
+Pour configurer l'authentification OIDC :
+
+1. **Accéder aux paramètres** : Cliquez sur votre photo de profil dans l'en-tête et sélectionnez **Paramètres**
+2. **Accéder à l'authentification** : Trouvez la section de configuration **Authentication Providers**
+3. **Activer OIDC** : Activez l'option d'authentification OIDC
+
+> **Remarque :** Consultez la documentation de chaque fournisseur pour le configurer.
+
+<ZoomableImage
+  src="/assets/v1/oidc/auth-providers.png"
+  alt="Paramètres OIDC"
+  legend="Consultez la documentation de chaque fournisseur pour le configurer."
+/>
+
+---
+
+## Prochaines étapes
+
+Sélectionnez l'une des cartes ci-dessous pour continuer la configuration de votre fournisseur d'authentification.
+
+<OIDCProviderCards />

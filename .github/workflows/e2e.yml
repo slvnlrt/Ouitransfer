@@ -1,0 +1,174 @@
+name: Release Validation
+
+on:
+  # Runs on version tags (pre-release) and manual trigger.
+  # Builds Docker images, runs E2E + Lighthouse, then pushes images to GHCR.
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-publish:
+    name: E2E, Lighthouse & Publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+      actions: write
+    # Test-only secrets/credentials. The base docker-compose.yaml now requires
+    # these via `${VAR:?...}` (A8-01), and Compose interpolates the BASE file even
+    # when the CI overlay overrides the same keys — so they must exist in the env.
+    # The docker-compose.ci.yml overlay still sets the authoritative runtime values
+    # for the containers; these just satisfy the required-variable interpolation.
+    # High-entropy + distinct so the production placeholder/entropy gate passes.
+    env:
+      S3_ACCESS_KEY: ci-e2e-s3-access-key-7fa3c91e
+      S3_SECRET_KEY: ci-e2e-s3-secret-key-2bd84f60
+      JWT_SECRET: ci-e2e-jwt-secret-minimum-32-characters-long-ok
+      CSRF_SECRET: ci-e2e-csrf-secret-minimum-32-characters-long-ok
+      COOKIE_SECRET: ci-e2e-cookie-secret-minimum-32-characters-long-ok
+      ENCRYPTION_SECRET: ci-e2e-encryption-secret-min-32-characters-long-ok
+      FRONTEND_ORIGIN: http://localhost:5487
+      STORAGE_PUBLIC_URL: http://localhost:9000
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: ".node-version"
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      # --only-shell: skip the full headed Chromium build (~170 MiB) and install
+      # only the headless shell binary, which is all CI needs for headless E2E tests.
+      - run: pnpm exec playwright install --with-deps --only-shell chromium
+
+      # ── Build ──────────────────────────────────────────────────────────
+      # docker compose build tags images using the `image:` field from the
+      # compose file (ghcr.io/slvnlrt/ouitransfer-{server,web}:latest).
+      # These same images are reused for testing AND publishing — no double build.
+      - name: Build Docker images
+        run: |
+          if [[ "$GITHUB_REF_NAME" == v* ]]; then
+            export NEXT_PUBLIC_APP_VERSION="${GITHUB_REF_NAME#v}"
+          else
+            export NEXT_PUBLIC_APP_VERSION="dev"
+          fi
+          docker compose -f docker-compose.yaml -f docker-compose.ci.yml build
+
+      - name: Start Docker stack
+        run: docker compose -f docker-compose.yaml -f docker-compose.ci.yml up -d
+
+      - name: Wait for services to be healthy
+        run: |
+          echo "Waiting for server health (up to 120s)..."
+          timeout 120 bash -c '
+            while true; do
+              status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3333/health 2>/dev/null || echo "000")
+              if [ "$status" = "200" ]; then break; fi
+              # Show container state for progress tracking
+              state=$(docker inspect --format="{{.State.Status}}" ouitransfer-server 2>/dev/null || echo "unknown")
+              echo "  server: container=$state, http=$status"
+              sleep 3
+            done
+          '
+          echo "Server healthy!"
+          echo "Waiting for web (up to 120s)..."
+          timeout 120 bash -c '
+            while true; do
+              status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5487 2>/dev/null || echo "000")
+              if [ "$status" = "200" ]; then break; fi
+              state=$(docker inspect --format="{{.State.Status}}" ouitransfer-web 2>/dev/null || echo "unknown")
+              echo "  web: container=$state, http=$status"
+              sleep 3
+            done
+          '
+          echo "Web healthy!"
+          echo "Waiting for docs (up to 120s)..."
+          timeout 120 bash -c '
+            while true; do
+              status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5488/docs 2>/dev/null || echo "000")
+              if [ "$status" = "200" ]; then break; fi
+              state=$(docker inspect --format="{{.State.Status}}" ouitransfer-docs 2>/dev/null || echo "unknown")
+              echo "  docs: container=$state, http=$status"
+              sleep 3
+            done
+          '
+          echo "All services healthy!"
+
+      - name: Dump Docker logs on failure
+        if: failure()
+        run: |
+          echo "::group::docker compose ps"
+          docker compose -f docker-compose.yaml -f docker-compose.ci.yml ps -a
+          echo "::endgroup::"
+          for svc in storage server web docs; do
+            echo "::group::logs — $svc"
+            docker compose -f docker-compose.yaml -f docker-compose.ci.yml logs --tail=200 "$svc" 2>&1 || true
+            echo "::endgroup::"
+          done
+
+      # ── Test ───────────────────────────────────────────────────────────
+      - name: Lighthouse CI
+        run: pnpm lighthouse
+        continue-on-error: true
+
+      - name: Run E2E tests
+        run: pnpm e2e
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Stop services
+        if: always()
+        run: docker compose -f docker-compose.yaml -f docker-compose.ci.yml down -v
+
+      # ── Publish (tag pushes only) ──────────────────────────────────────
+      # Reuses the images already built above — just tag and push.
+      # workflow_dispatch runs tests without publishing.
+      - name: Login to GitHub Container Registry
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag and push images
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          for IMAGE in server web docs; do
+            FULL="ghcr.io/${{ github.repository_owner }}/ouitransfer-${IMAGE}"
+
+            # Semver tags (1.2.3 and 1.2)
+            docker tag "${FULL}:latest" "${FULL}:${VERSION}"
+            MINOR="${VERSION%.*}"
+            docker tag "${FULL}:latest" "${FULL}:${MINOR}"
+
+            docker push "${FULL}:latest"
+            docker push "${FULL}:${VERSION}"
+            docker push "${FULL}:${MINOR}"
+          done
+
+      - name: Cleanup stale caches
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Cleaning unused and stale caches..."
+          cutoff=$(date -u -d '2 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+          gh cache list --limit 100 --json id,createdAt,lastAccessedAt \
+            --jq ".[] | select(.createdAt == .lastAccessedAt or .createdAt < \"$cutoff\") | .id" \
+            | xargs -r -I{} gh cache delete {} 2>/dev/null || true
+          echo "Done."

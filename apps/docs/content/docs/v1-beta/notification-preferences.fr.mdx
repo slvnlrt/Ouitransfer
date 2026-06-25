@@ -1,0 +1,132 @@
+---
+title: Préférences de notification
+icon: BellRing
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Ouitransfer peut envoyer des notifications par e-mail pour différents événements: accès à un partage, téléchargements de fichiers, alertes de quota, et bien d'autres. La page des préférences de notification vous permet de contrôler les notifications que vous recevez.
+
+<Callout type="info">
+  Les notifications par e-mail nécessitent que [SMTP soit configuré](/docs/v1-beta/configuring-smtp) par un administrateur. Si SMTP n'est pas activé, aucune notification n'est envoyée, quelles que soient vos préférences.
+</Callout>
+
+---
+
+## Accéder aux préférences
+
+Accédez aux **Paramètres** (cliquez sur votre photo de profil dans l'en-tête), puis sélectionnez **Préférences de notification**. La page regroupe les types de notifications par catégorie, chacun avec un menu déroulant de fréquence.
+
+---
+
+## Notifications configurables
+
+Les types de notifications suivants peuvent être activés ou désactivés individuellement. Les options de fréquence sont **Immédiat** (envoyé dès que l'événement se produit) et **Désactivé** (jamais envoyé).
+
+### Partages
+
+| Notification | Défaut | Description |
+|---|---|---|
+| **Notifications d'accès au partage** | Désactivé | Quelqu'un a consulté votre page de partage |
+| **Notifications de téléchargement de partage** | Désactivé | Quelqu'un a téléchargé un fichier depuis votre partage |
+| **Partage bientôt expiré** | Immédiat | Votre partage approche de sa date d'expiration |
+| **Partage expiré** | Immédiat | Votre partage a expiré |
+| **Nombre max. de vues atteint** | Immédiat | Votre partage a atteint son nombre maximum de vues |
+| **Alerte d'inactivité du partage** | Immédiat | Aucun téléchargement sur un partage pendant la période d'inactivité configurée |
+
+### Partages inversés
+
+| Notification | Défaut | Description |
+|---|---|---|
+| **Notifications de téléversement sur partage inversé** | Désactivé | Quelqu'un a téléversé un fichier sur votre partage inversé |
+| **Partage inversé bientôt expiré** | Immédiat | Votre partage inversé approche de sa date d'expiration |
+| **Partage inversé expiré** | Immédiat | Votre partage inversé a expiré |
+
+### Quota
+
+| Notification | Défaut | Description |
+|---|---|---|
+| **Avertissement de quota de stockage** | Immédiat | Votre utilisation du stockage approche de la limite |
+| **Quota de stockage dépassé** | Immédiat | Votre utilisation du stockage a dépassé la limite |
+| **Fichiers supprimés automatiquement** | Immédiat | Des fichiers ont été supprimés automatiquement (ex. : nettoyage d'un partage expiré) |
+| **Partage supprimé automatiquement** | Immédiat | Un partage a été supprimé automatiquement |
+
+### Admin
+
+Ces notifications ne concernent que les comptes administrateurs.
+
+| Notification | Défaut | Description |
+|---|---|---|
+| **Nouvelle inscription d'utilisateur** | Immédiat | Un nouveau compte utilisateur a été créé sur la plateforme |
+| **Alerte de quota utilisateur** | Immédiat | Le quota de stockage d'un utilisateur a atteint un seuil d'avertissement ou critique |
+
+<Callout type="info">
+  Les notifications d'**accès au partage** et de **téléchargement de partage** sont désactivées par défaut car elles peuvent générer un volume élevé d'e-mails sur les partages populaires. Activez-les de manière sélective si vous avez besoin de suivre les accès sur des partages spécifiques, ou utilisez les remplacements de notifications par partage décrits ci-dessous.
+</Callout>
+
+---
+
+## Notifications non configurables
+
+Certaines notifications sont essentielles au fonctionnement du compte et sont toujours envoyées. Elles n'apparaissent pas sur la page des préférences et ne peuvent pas être désactivées :
+
+| Notification | Description |
+|---|---|
+| **Bienvenue** | Envoyée lors de la création de votre compte |
+| **Réinitialisation du mot de passe** | Envoyée lorsque vous demandez une réinitialisation de mot de passe |
+| **Compte désactivé** | Envoyée lorsque votre compte est désactivé par un administrateur |
+| **Compte réactivé** | Envoyée lorsque votre compte est réactivé |
+| **Invitations à un partage** | Envoyée aux destinataires lorsqu'ils sont invités à un partage |
+| **Invitations à un partage inversé** | Envoyée aux destinataires d'une invitation à un partage inversé |
+| **E-mail de test** | Envoyé par les administrateurs pour vérifier la configuration SMTP |
+
+---
+
+## Remplacements par partage
+
+Les partages et partages inversés individuels peuvent remplacer vos préférences globales :
+
+- Sur un [partage](/docs/v1-beta/shares), le bouton bascule **Notifier à chaque téléchargement** active les notifications de téléchargement pour ce partage spécifique, même si votre préférence globale **Notifications de téléchargement de partage** est désactivée.
+- Sur un [partage](/docs/v1-beta/shares), le paramètre **Alerte d'inactivité** déclenche une notification après un nombre de jours configuré sans téléchargement, en utilisant le type **Alerte d'inactivité du partage**.
+- Sur un [partage inversé](/docs/v1-beta/reverse-shares), le bouton bascule **Notifier lors d'un téléversement** active les notifications de téléversement pour ce partage inversé spécifique, même si votre préférence globale **Notifications de téléversement sur partage inversé** est désactivée.
+
+<Callout type="warn">
+  Si un type de notification est **Désactivé** dans vos préférences globales, les remplacements par partage peuvent toujours déclencher des notifications pour ce type. Les paramètres par partage constituent des abonnements explicites pour les partages individuels.
+</Callout>
+
+---
+
+## Périodes de limitation
+
+Pour éviter un volume excessif d'e-mails sur les partages actifs, certains types de notifications appliquent une limitation :
+
+| Notification | Limitation |
+|---|---|
+| Notifications d'accès au partage | 15 minutes par partage |
+| Notifications de téléchargement de partage | 15 minutes par partage |
+| Notifications de téléversement sur partage inversé | 5 minutes par partage inversé |
+
+Pendant la fenêtre de limitation, les événements supplémentaires du même type sur le même partage sont ignorés silencieusement ; ils ne sont ni mis en file d'attente ni regroupés pour une livraison ultérieure.
+
+---
+
+## Se désabonner
+
+Chaque e-mail de notification non critique inclut un lien **Se désabonner** en bas. En cliquant dessus, une page de confirmation s'ouvre où vous pouvez désactiver ce type de notification en un seul clic.
+
+Cela équivaut à définir la notification sur **Désactivé** dans votre page de préférences. Vous pouvez la réactiver à tout moment depuis les Paramètres.
+
+---
+
+## Référence API
+
+| Méthode | Chemin | Auth | Description |
+|---|---|---|---|
+| `GET` | `/notifications/preferences` | Utilisateur | Récupérer toutes les préférences de notification (fusionnées avec les valeurs par défaut du catalogue) |
+| `PUT` | `/notifications/preferences` | Utilisateur | Mettre à jour les préférences de notification (par lot) |
+| `GET` | `/notifications/unsubscribe?token=...` | Public | Valider le jeton de désabonnement et retourner le type de notification |
+| `POST` | `/notifications/unsubscribe` | Public | Confirmer le désabonnement (définit la fréquence sur `disabled`) |
+
+Le point de terminaison `GET /notifications/preferences` retourne les 22 types de notifications avec leur fréquence actuelle, en indiquant s'ils sont configurables et s'ils sont critiques. Le point de terminaison `PUT` accepte un tableau d'objets `{ type, frequency }` ; seuls les types configurables et non critiques peuvent être mis à jour.
+
+Pour la référence API complète, consultez la [documentation API](/docs/v1-beta/api).

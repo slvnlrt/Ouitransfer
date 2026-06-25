@@ -1,0 +1,113 @@
+import type { AxiosRequestConfig } from "axios";
+
+import apiInstance from "@/config/api";
+import type {
+  CheckHealthResult,
+  CheckUploadAllowedParams,
+  CheckUploadAllowedResult,
+  GetAppInfoResult,
+  GetDiskSpaceResult,
+  HealthStatusResult,
+  RemoveLogoResult,
+  UploadLogoBody,
+  UploadLogoResult,
+} from "./types";
+
+/**
+ * Get application base information
+ * @summary Get application base information
+ */
+export const getAppInfo = (options?: AxiosRequestConfig): Promise<GetAppInfoResult> => {
+  return apiInstance.get(`/api/app/info`, options);
+};
+
+/**
+ * Upload a new app logo (admin only)
+ * @summary Upload app logo
+ */
+export const uploadLogo = (
+  uploadLogoBody: UploadLogoBody,
+  options?: AxiosRequestConfig,
+): Promise<UploadLogoResult> => {
+  const formData = new FormData();
+
+  if (uploadLogoBody.file !== undefined) {
+    formData.append("file", uploadLogoBody.file as Blob);
+  }
+
+  return apiInstance.post(`/api/app/logo`, formData, {
+    ...options,
+    headers: {
+      ...options?.headers,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+/**
+ * Remove the current app logo (admin only)
+ * @summary Remove app logo
+ */
+export const removeLogo = (options?: AxiosRequestConfig): Promise<RemoveLogoResult> => {
+  return apiInstance.delete(`/api/app/logo`, options);
+};
+
+/**
+ * Public liveness probe — coarse aggregate only (no per-subsystem breakdown).
+ * @summary Check API liveness
+ */
+export const checkHealth = (options?: AxiosRequestConfig): Promise<CheckHealthResult> => {
+  return apiInstance.get(`/api/health`, options);
+};
+
+/**
+ * Detailed per-subsystem health (database/storage/email). ADMIN ONLY (A8-11).
+ * @summary Get detailed system health status (admin)
+ */
+export const getHealthStatus = (options?: AxiosRequestConfig): Promise<HealthStatusResult> => {
+  return apiInstance.get(`/api/health/status`, options);
+};
+
+/**
+ * Get server disk space information
+ * @summary Get server disk space information
+ */
+export const getDiskSpace = (options?: AxiosRequestConfig): Promise<GetDiskSpaceResult> => {
+  return apiInstance.get(`/api/storage/disk-space`, options);
+};
+
+/**
+ * Check if file upload is allowed based on available space (fileSize in bytes)
+ * @summary Check if file upload is allowed
+ */
+export const checkUploadAllowed = (
+  params: CheckUploadAllowedParams,
+  options?: AxiosRequestConfig,
+): Promise<CheckUploadAllowedResult> => {
+  return apiInstance.get(`/api/storage/check-upload`, {
+    ...options,
+    params: { ...params, ...options?.params },
+  });
+};
+
+export type TestSmtpConnectionResult = { success: boolean; message: string };
+
+export interface TestSmtpConnectionBody {
+  smtpConfig?: {
+    smtpEnabled: string;
+    smtpHost: string;
+    smtpPort: string;
+    smtpUser: string;
+    smtpPass: string;
+    smtpSecure: string;
+    smtpNoAuth: string;
+    smtpTrustSelfSigned: string;
+  };
+}
+
+export const testSmtpConnection = (
+  body?: TestSmtpConnectionBody,
+  options?: AxiosRequestConfig,
+): Promise<{ data: TestSmtpConnectionResult }> => {
+  return apiInstance.post(`/api/app/test-smtp`, body || {}, options);
+};

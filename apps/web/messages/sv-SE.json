@@ -1,0 +1,3004 @@
+{
+  "a11y": {
+    "skipToContent": "Hoppa till innehåll"
+  },
+  "auth": {
+    "successfullyAuthenticated": "Autentiserats framgångsrikt!",
+    "authenticationFailed": "Autentiseringen misslyckades",
+    "errors": {
+      "account_inactive": "Kontot är inaktivt. Kontakta administratören.",
+      "registration_disabled": "SSO-registrering är inaktiverad.",
+      "token_expired": "Token har löpt ut. Försök igen.",
+      "config_error": "Konfigurationsfel. Kontakta supporten.",
+      "auth_failed": "Autentiseringen misslyckades. Försök igen."
+    },
+    "sessionExpired": "Din session har löpt ut. Vänligen logga in igen.",
+    "callback": {
+      "errors": {
+        "oauth_error": "OAuth-autentisering misslyckades",
+        "missing_parameters": "Autentiseringsparametrar saknas",
+        "missing_code": "Auktoriseringskod saknas",
+        "registration_disabled": "Registrering är inaktiverad för denna leverantör",
+        "provider_disabled": "Denna autentiseringsleverantör är inaktiverad",
+        "state_expired": "Autentiseringssessionen har löpt ut",
+        "account_inactive": "Ditt konto är inaktivt",
+        "no_email": "Ingen e-postadress hittades i ditt konto",
+        "token_exchange_failed": "Autentisering hos leverantören misslyckades",
+        "missing_user_info": "Ofullständig användarinformation från leverantören"
+      }
+    }
+  },
+  "contextMenu": {
+    "newFolder": "Ny mapp",
+    "uploadFile": "Ladda upp fil"
+  },
+  "authProviders": {
+    "title": "Autentiseringsleverantörer",
+    "description": "Konfigurera externa autentiseringsleverantörer för SSO",
+    "enabledCount": "{count} aktiverade",
+    "loadingProviders": "Laddar leverantörer...",
+    "providersConfigured": "{count} leverantörer konfigurerade",
+    "enabledOfTotal": "{enabled} aktiverade av {total} leverantörer",
+    "hideDisabledProviders": "Dölj funktionshindrade leverantörer",
+    "addProvider": "Lägg till leverantör",
+    "addProviderTitle": "Lägg till leverantör",
+    "editProvider": "Redigera leverantör",
+    "deleteProvider": "Ta bort leverantör",
+    "enabled": "Aktiverad",
+    "disabled": "Inaktiverad",
+    "officialProvider": "Officiell leverantör",
+    "dragToReorder": "Dra för att ändra ordning",
+    "dragDisabledMessage": "Dra och släpp är inaktiverat när du filtrerar leverantörer. Visa alla leverantörer för att ändra ordning på dem.",
+    "dragEnabledMessage": "Dra leverantörer för att ordna om dem. Denna beställning kommer att återspeglas på inloggningssidan.",
+    "noProvidersEnabled": "Inga aktiverade autentiseringsleverantörer",
+    "noProvidersConfigured": "Inga autentiseringsleverantörer har konfigurerats",
+    "form": {
+      "providerName": "Leverantörens namn",
+      "providerNamePlaceholder": "t.ex. mitt företag",
+      "displayName": "Visningsnamn",
+      "displayNamePlaceholder": "t.ex. Mitt företag SSO",
+      "type": "Typ",
+      "typeOidc": "OIDC (OpenID Connect)",
+      "typeOauth2": "OAuth 2.0",
+      "icon": "Ikon",
+      "iconPlaceholder": "Välj en ikon",
+      "clientId": "Klient-ID",
+      "clientIdPlaceholder": "Ditt OAuth-klient-ID",
+      "clientSecret": "Klienthemlighet",
+      "clientSecretPlaceholder": "Din OAuth-klienthemlighet",
+      "oauthScopes": "OAuth omfattningar",
+      "scopesPlaceholder": "Ange omfång (t.ex. openid, profil, e-post)",
+      "scopesHelpOidc": "Omfattningar automatiskt föreslagna baserat på leverantörens URL. Vanliga OIDC-omfång: openid, profil, e-post, grupper",
+      "scopesHelpOauth2": "Omfattningar automatiskt föreslagna baserat på leverantörens URL. Vanliga OAuth2-omfång beror på leverantören",
+      "providerUrl": "Leverantörs URL",
+      "providerUrlPlaceholder": "https://auth.exempel.com",
+      "providerUrlAutoPlaceholder": "https://din-leverantör.com (slutpunkter kommer att upptäckas automatiskt)",
+      "providerUrlManualPlaceholder": "https://din-leverantor.com",
+      "autoDiscoveryHelp": "Systemet kommer automatiskt att upptäcka auktoriserings-, token- och användarinfoslutpunkter",
+      "manualConfigurationHelp": "Bas-URL för din leverantör (slutpunkter kommer att vara relativa till detta)",
+      "authorizationEndpoint": "Auktoriseringsslutpunkt",
+      "authorizationEndpointPlaceholder": "https://auth.exempel.com/auth",
+      "tokenEndpoint": "Token Endpoint",
+      "tokenEndpointPlaceholder": "https://auth.exempel.com/token",
+      "userInfoEndpoint": "Användarinfo Endpoint",
+      "userInfoEndpointPlaceholder": "https://auth.exempel.com/userinfo",
+      "configurationMethod": "Konfigurationsmetod",
+      "autoDiscovery": "Automatisk upptäckt",
+      "autoDiscoveryDescription": "Upptäck automatiskt slutpunkter från leverantörens URL",
+      "manualEndpoints": "Manuella slutpunkter (rekommenderas)",
+      "manualEndpointsDescription": "Konfigurera auktoriserings-, token- och användarinformationsslutpunkter manuellt",
+      "callbackUrl": "Callback URL",
+      "callbackUrlDescription": "Använd den här webbadressen i din OAuth-leverantörskonfiguration",
+      "copyCallbackUrl": "Kopiera Callback URL",
+      "callbackUrlCopied": "Återuppringnings-URL kopierad till urklipp!",
+      "adminEmailDomains": "Admin e-postdomäner",
+      "adminEmailDomainsPlaceholder": "Ange domäner (t.ex. admin.company.com)",
+      "adminEmailDomainsHelp": "Användare med e-postmeddelanden från dessa domäner kommer att tilldelas administratörsbehörighet",
+      "autoRegister": "Registrera nya användare automatiskt",
+      "officialProviderUrlPlaceholder": "Ersätt platshållare med din {displayName} URL",
+      "officialProviderHelp": "Detta är en officiell leverantör. Slutpunkter är förkonfigurerade. Du kan bara redigera denna URL.",
+      "officialProviderIconHelp": "Du kan anpassa ikonen för denna officiella leverantör."
+    },
+    "buttons": {
+      "cancel": "Avboka",
+      "save": "Spara",
+      "saving": "Sparande...",
+      "adding": "Lägger till...",
+      "updating": "Uppdaterar...",
+      "saveProvider": "Spara leverantör",
+      "delete": "Radera",
+      "deleting": "Tar bort...",
+      "edit": "Redigera",
+      "enable": "Aktivera",
+      "disable": "Inaktivera"
+    },
+    "messages": {
+      "providerAdded": "Leverantören har lagts till",
+      "providerUpdated": "Leverantören har uppdaterats",
+      "providerDeleted": "Provider har tagits bort",
+      "providerOrderUpdated": "Leverantörens beställning har uppdaterats",
+      "fillRequiredFields": "Vänligen fyll i alla obligatoriska fält (namn, visningsnamn, klient-ID, klienthemlighet)",
+      "provideUrlOrEndpoints": "Ange antingen en leverantörs-URL för automatisk upptäckt ELLER alla tre anpassade slutpunkter",
+      "chooseDiscoveryOrManual": "Välj antingen automatisk upptäckt (Provider URL) ELLER manuella slutpunkter, inte båda",
+      "loadFailed": "Det gick inte att läsa in leverantörer",
+      "addFailed": "Det gick inte att lägga till leverantör",
+      "updateFailed": "Det gick inte att uppdatera leverantören",
+      "deleteFailed": "Det gick inte att ta bort leverantören",
+      "orderUpdateFailed": "Det gick inte att uppdatera leverantörsbeställningen"
+    },
+    "info": {
+      "title": "Information",
+      "officialProvidersRecommended": "För bättre funktionalitet, överväg att använda officiella leverantörer. Om du har problem med en anpassad leverantör, överväg att öppna ett problem på",
+      "github": "GitHub",
+      "officialProvider": "Officiell leverantör",
+      "officialProviderDescription": "Denna leverantör är optimerad av OUITRANSFER. Endast inloggningsuppgifter och konfiguration kan ändras.",
+      "manualConfigTitle": "Manuell konfiguration",
+      "manualConfigDescription": "Du tillhandahåller alla slutpunkter manuellt. Se till att de är korrekta för din leverantör."
+    },
+    "deleteModal": {
+      "title": "Ta bort autentiseringsleverantör",
+      "confirmMessage": "Är du säker på att du vill ta bort leverantören \"{displayName}\"? Denna åtgärd kan inte ångras.",
+      "providerId": "Leverantörs-ID: {name}",
+      "cancel": "Avboka",
+      "delete": "Ta bort leverantör",
+      "deleting": "Tar bort..."
+    }
+  },
+  "bulkDownload": {
+    "title": "Massnedladdning",
+    "zipNameLabel": "ZIP-filnamn",
+    "zipNamePlaceholder": "Ange filnamn",
+    "description": "{count, plural, =1 {1 fil kommer att komprimeras} other {# filer kommer att komprimeras}}",
+    "download": "Ladda ner ZIP"
+  },
+  "common": {
+    "loading": "Laddar, vänta...",
+    "loadingSimple": "Belastning...",
+    "cancel": "Avboka",
+    "save": "Spara",
+    "saving": "Sparande...",
+    "update": "Uppdatera",
+    "updating": "Uppdaterar...",
+    "delete": "Radera",
+    "deleting": "Tar bort...",
+    "close": "Nära",
+    "download": "Ladda ner",
+    "unexpectedError": "Ett oväntat fel inträffade. Försök igen.",
+    "yes": "Ja",
+    "no": "Inga",
+    "dashboard": "Instrumentbräda",
+    "back": "Tillbaka",
+    "clickToActivate": "Klicka för att aktivera",
+    "clickToDeactivate": "Klicka för att inaktivera",
+    "creating": "Skapande...",
+    "create": "Skapa",
+    "rename": "Döpa om",
+    "move": "Flytta",
+    "share": "Dela",
+    "search": "Söka",
+    "copy": "Kopiera",
+    "copied": "Kopierade",
+    "retry": "Retry",
+    "unavailable": "ej tillgänglig",
+    "days": "dagar",
+    "aliasValidation": {
+      "required": "[TO_TRANSLATE] Alias is required",
+      "minLength": "[TO_TRANSLATE] Alias must be at least {min} characters",
+      "maxLength": "[TO_TRANSLATE] Alias must be at most {max} characters",
+      "pattern": "[TO_TRANSLATE] Alias may contain only letters, numbers, and single internal hyphens"
+    },
+    "moving": "Flyttar…"
+  },
+  "createShare": {
+    "title": "Skapa Share",
+    "nameLabel": "Dela namn",
+    "namePlaceholder": "Ange ett namn för din del",
+    "descriptionLabel": "Beskrivning",
+    "descriptionPlaceholder": "Ange en beskrivning (valfritt)",
+    "expirationLabel": "Utgångsdatum",
+    "expirationPlaceholder": "ÅÅÅÅ-MM-DD TT:MM",
+    "maxViewsLabel": "Max visningar",
+    "maxViewsPlaceholder": "Lämna tomt för obegränsat",
+    "passwordProtection": "Lösenordsskyddad",
+    "passwordLabel": "Lösenord",
+    "passwordPlaceholder": "Ange lösenord",
+    "create": "Skapa Share",
+    "success": "Delningen har skapats",
+    "error": "Det gick inte att skapa delning",
+    "errors": {
+      "nameRequired": "Delningsnamn krävs"
+    },
+    "itemsSelected": "{count} objekt valda",
+    "tabs": {
+      "shareDetails": "Delningsdetaljer",
+      "selectFiles": "Välj Filer",
+      "shareLink": "Delningslänk"
+    },
+    "nextSelectFiles": "Nästa: Välj Filer",
+    "searchLabel": "Söka",
+    "privacySection": "Integritet och aviseringar",
+    "nameFieldRequired": "Kräv besökarens namn",
+    "emailFieldRequired": "Kräv besökarens e-post",
+    "notifyOnDownload": "Meddela mig vid varje nedladdning",
+    "notifyOnDownloadHelp": "När aktiverat får du e-postaviseringar när filer laddas ned från denna delning, oavsett dina globala aviseringsinställningar.",
+    "inactivityAlertDays": "Varna om inga nedladdningar efter",
+    "inactivityAlertPlaceholder": "Lämna tomt för att inaktivera",
+    "fieldHidden": "Dold",
+    "fieldOptional": "Valfritt",
+    "fieldRequired": "Obligatoriskt",
+    "filesOptionalHint": "Att lägga till filer är valfritt, du kan skapa en tom delning nu och lägga till filer senare.",
+    "nextGenerateLink": "Nästa: länk",
+    "linkStepDescription": "Skapa en anpassad länk så att andra kan komma åt den här delningen, eller hoppa över och lägg till en senare.",
+    "nameFieldRequiredHelp": "Anger om besökare ombeds ange sitt namn när de öppnar delningen.",
+    "emailFieldRequiredHelp": "Anger om besökare ombeds ange sin e-postadress när de öppnar delningen."
+  },
+  "customization": {
+    "breadcrumb": "Anpassning",
+    "colors": {
+      "title": "Tema färger",
+      "description": "Välj ditt föredragna primära färgtema",
+      "presets": "Tillgängliga färger",
+      "presetsDescription": "Välj bland tillgängliga färgteman",
+      "reset": "Återställ till standard"
+    },
+    "fonts": {
+      "title": "Typografi",
+      "description": "Välj önskad typsnittsfamilj",
+      "available": "Tillgängliga teckensnitt",
+      "availableDescription": "Välj bland tillgängliga teckensnittsfamiljer",
+      "reset": "Återställ till standard"
+    },
+    "radius": {
+      "title": "Gränsradie",
+      "description": "Anpassa rundheten hos gränssnittselement",
+      "available": "Avrundningsalternativ",
+      "availableDescription": "Välj hur rundade hörn ska se ut",
+      "reset": "Återställ till standard"
+    },
+    "background": {
+      "title": "Bakgrundsfärger",
+      "description": "Anpassa bakgrundsfärger för ljusa och mörka lägen",
+      "lightMode": "Ljusläge",
+      "darkMode": "Mörkt läge",
+      "availableDescription": "Välj bakgrundsfärger för både ljusa och mörka teman",
+      "reset": "Återställ till standard"
+    },
+    "theme": {
+      "title": "Temaläge",
+      "description": "Välj mellan ljust, mörkt eller systemtema",
+      "selectTheme": "Temapreferens",
+      "availableDescription": "Välj ditt föredragna temaläge",
+      "reset": "Återställ till system"
+    },
+    "pageTitle": "Anpassning"
+  },
+  "dashboard": {
+    "loadError": "Det gick inte att läsa in instrumentpanelsdata",
+    "linkCopied": "Länken har kopierats till urklipp",
+    "pageTitle": "Instrumentbräda",
+    "breadcrumb": "Instrumentbräda",
+    "recentFiles": {
+      "title": "Senaste filer",
+      "description": "Dina senast uppladdade filer"
+    },
+    "systemStatus": {
+      "title": "Systemstatus",
+      "refresh": "Uppdatera",
+      "status": {
+        "healthy": "Fungerar",
+        "degraded": "Begränsad",
+        "unhealthy": "Ej tillgänglig"
+      },
+      "checks": {
+        "database": "Databas",
+        "storage": "Lagring",
+        "ok": "OK",
+        "error": "Fel",
+        "notConfigured": "Ej konfigurerad"
+      },
+      "uptime": "Drifttid",
+      "diskSpace": {
+        "label": "Diskutrymme",
+        "ariaLabel": "Förloppsindikator för diskutrymmesanvändning"
+      },
+      "quota": {
+        "label": "Lagringskvot",
+        "ariaLabel": "Förloppsindikator för lagringskvot",
+        "notConfigured": "Kvoter inte konfigurerade",
+        "unlimited": "Obegränsat",
+        "used": "{used} av {total} används",
+        "usedOnly": "{used} används",
+        "exceeded": {
+          "banner": "Din lagringskvot har överskridits. Du kan inte ladda upp nya filer förrän du frigör utrymme genom att ta bort befintliga filer eller delningar."
+        },
+        "warning": {
+          "banner": "Du använder {percentage}% av din lagringskvot."
+        }
+      },
+      "metrics": {
+        "users": "Användare",
+        "files": "Filer",
+        "shares": "Delningar",
+        "reverseShares": "Omvända delningar",
+        "myFiles": "Mina filer",
+        "activeShares": "Aktiva delningar"
+      },
+      "email": {
+        "label": "E-post / Aviseringar",
+        "status": {
+          "ok": "Fungerar",
+          "disabled": "Inte konfigurerat",
+          "degraded": "Försämrat",
+          "down": "Offline"
+        },
+        "queue": {
+          "pending": "Väntande",
+          "failed": "Misslyckade",
+          "sent24h": "Skickade 24h"
+        },
+        "lastError": "Senaste fel",
+        "userDisrupted": "Aviseringar störda",
+        "userOffline": "Aviseringar offline"
+      },
+      "errors": {
+        "title": "Status ej tillgänglig",
+        "fetchFailed": "Det gick inte att hämta systemstatus. Försök igen senare.",
+        "diskSpaceError": "Det gick inte att hämta information om diskutrymme.",
+        "statsError": "Det gick inte att ladda plattformsstatistik.",
+        "emailStatsError": "Det gick inte att ladda statistik för e-postaviseringar."
+      },
+      "collapse": "Dölj systemstatus",
+      "expand": "Visa systemstatus"
+    }
+  },
+  "deleteConfirmation": {
+    "filesToDelete": "Filer som ska raderas",
+    "foldersToDelete": "Mappar som ska raderas",
+    "itemsToDelete": "Objekt som ska raderas",
+    "sharesToDelete": "Aktier som ska raderas"
+  },
+  "downloadQueue": {
+    "downloadQueued": "Nedladdning köad: {fileName}",
+    "queuedDescription": "Din nedladdning startar automatiskt när en slot blir tillgänglig",
+    "queuePosition": "Nedladdning köad på position {position}: {fileName}",
+    "estimatedWait": "Uppskattad väntetid: {time}",
+    "queueFull": "Nedladdningskön är full",
+    "queueFullDescription": "Försök igen om några minuter när kön har plats",
+    "cancelSuccess": "Nedladdningen avbröts",
+    "cancelError": "Misslyckades att avbryta nedladdning: {error}",
+    "status": {
+      "pending": "Förbereder...",
+      "queued": "I kö",
+      "downloading": "Laddar ner",
+      "completed": "Avslutad",
+      "failed": "Misslyckades"
+    },
+    "waitTime": {
+      "seconds": "{seconds}s",
+      "minutes": "{minutes}m",
+      "hoursMinutes": "{hours}h {minutes}m"
+    },
+    "indicator": {
+      "title": "Nedladdningar",
+      "downloads": "Ladda ner kö",
+      "active": "Aktiv",
+      "queued": "I kö",
+      "position": "Position {position}",
+      "estimatedWait": "Väntetid: {time}",
+      "unknownFile": "Okänd fil",
+      "noDownloads": "Inga nedladdningar pågår",
+      "refresh": "Uppdatera kö"
+    }
+  },
+  "emptyState": {
+    "noFiles": "Inga filer har laddats upp ännu",
+    "uploadFile": "Ladda upp fil"
+  },
+  "errors": {
+    "invalidCredentials": "Ogiltig e-postadress eller lösenord",
+    "networkError": "Kan inte nå servern. Kontrollera din anslutning.",
+    "userNotFound": "Användaren hittades inte",
+    "accountLocked": "Ditt konto har tillfälligt låsts på grund av för många misslyckade inloggningsförsök. Försök igen om {minutes} minuter.",
+    "unexpectedError": "Ett oväntat fel inträffade. Försök igen",
+    "Invalid verification code": "Ogiltig verifieringskod",
+    "Two-factor authentication is already enabled": "Tvåfaktorsautentisering är redan aktiverad",
+    "Two-factor authentication is not enabled": "Tvåfaktorsautentisering är inte aktiverad",
+    "Invalid password": "Ogiltigt lösenord",
+    "Password verification required": "Lösenordsverifiering krävs",
+    "Invalid two-factor authentication code": "Ogiltig tvåfaktorsautentiseringskod",
+    "Two-factor authentication required": "Tvåfaktorsautentisering krävs",
+    "noUserData": "Inga användardata",
+    "somethingWentWrong": "Något gick fel",
+    "tryAgain": "Försök igen",
+    "goHome": "Gå till startsidan",
+    "pageNotFound": "Sidan hittades inte",
+    "pageNotFoundMessage": "Sidan du letar efter finns inte eller har flyttats.",
+    "shareUnavailable": "Delning inte tillgänglig",
+    "shareErrorMessage": "Ett fel uppstod vid laddning av denna delning.",
+    "uploadUnavailable": "Uppladdning inte tillgänglig",
+    "uploadErrorMessage": "Ett fel uppstod vid laddning av denna uppladdningssida.",
+    "accessDenied": "Åtkomst nekad",
+    "accessDeniedMessage": "Du har inte administratörsbehörighet för att komma åt denna sida.",
+    "errorLoadingSettings": "Fel vid laddning av inställningar",
+    "refreshPage": "Uppdatera sidan"
+  },
+  "fileActions": {
+    "editFile": "Redigera fil",
+    "nameLabel": "Namn",
+    "namePlaceholder": "Ange nytt namn",
+    "extension": "Förlängning",
+    "descriptionLabel": "Beskrivning",
+    "descriptionPlaceholder": "Ange filbeskrivning",
+    "addDescriptionPlaceholder": "Lägg till beskrivning...",
+    "deleteFile": "Ta bort fil",
+    "deleteConfirmation": "Är du säker på att du vill ta bort den här filen?",
+    "deleteWarning": "Denna åtgärd kan inte ångras.",
+    "inSharesWarningTitle": "Denna fil ingår i delningar",
+    "inSharesWarningBody": "Denna fil ingår i {count, plural, one {# delning} other {# delningar}}. Om du tar bort den tas den bort från alla delningar.",
+    "deleteAnyway": "Ta bort ändå",
+    "bulkInSharesWarningTitle": "Några filer ingår i delningar",
+    "bulkInSharesWarningBody": "{count, plural, one {# fil ingår} other {# filer ingår}} i delningar. Om du tar bort kommer {count, plural, one {den} other {dem}} tas bort från alla delningar."
+  },
+  "fileManager": {
+    "downloadError": "Det gick inte att ladda ned filen",
+    "updateSuccess": "Filen har uppdaterats",
+    "updateError": "Det gick inte att uppdatera filen",
+    "deleteSuccess": "Filen har raderats",
+    "deleteError": "Det gick inte att ta bort filen"
+  },
+  "filePreview": {
+    "title": "Förhandsgranska fil",
+    "description": "Förhandsgranska och ladda ner fil",
+    "loading": "Belastning...",
+    "notAvailable": "Förhandsgranskning är inte tillgänglig för den här filtypen",
+    "downloadToView": "Använd nedladdningsknappen för att se den här filen",
+    "loadError": "Det gick inte att läsa in förhandsgranskningen av filen",
+    "downloadSuccess": "Download started",
+    "downloadError": "Fel vid nedladdning av filen",
+    "audioNotSupported": "Din webbläsare stöder inte ljuduppspelning",
+    "videoNotSupported": "Din webbläsare stöder inte videouppspelning",
+    "pdfPreviewNotAvailable": "PDF-förhandsgranskning är inte tillgänglig. Prova alternativ vy eller ladda ner",
+    "tryAlternativeView": "Prova Alternativ vy",
+    "loadingAlternative": "Laddar alternativ vy...",
+    "loadingAudio": "Laddar ljud...",
+    "downloading": "Laddar ner..."
+  },
+  "fileSelector": {
+    "availableFiles": "Tillgängliga filer ({count})",
+    "shareFiles": "Delade filer ({count})",
+    "shareFilesDescription": "Filer för närvarande i denna del",
+    "availableFilesDescription": "Välj filer att lägga till i den här resursen",
+    "searchPlaceholder": "Sök efter filer...",
+    "searchSelectedFiles": "Sök efter valda filer...",
+    "noMatchingFiles": "Inga matchande filer hittades",
+    "noAvailableFiles": "Inga filer tillgängliga",
+    "noFilesInShare": "Inga filer i den här resursen",
+    "noFilesFound": "Inga filer hittades",
+    "noFilesFoundWith": "Inga filer hittades som matchar \"{query}\"",
+    "addFilesFromList": "Lägg till filer från listan nedan",
+    "tryDifferentSearch": "Prova olika söktermer",
+    "allFilesInShare": "Alla filer finns redan i den här resursen",
+    "uploadNewFiles": "Ladda upp nya filer för att lägga till dem",
+    "fileCount": "{count, plural, =1 {fil} other {filer}}",
+    "filesSelected": "{count, plural, =0 {Inga filer valda} =1 {1 fil vald} other {# filer valda}}",
+    "itemsSelected": "{count} objekt valda",
+    "editFile": "Redigera fil",
+    "editFolder": "Redigera mapp",
+    "previewFile": "Förhandsgranska filen",
+    "addToShare": "Lägg till för att dela",
+    "removeFromShare": "Ta bort från delningen",
+    "saveChanges": "Spara ändringar"
+  },
+  "files": {
+    "title": "Alla filer",
+    "uploadFile": "Ladda upp fil",
+    "loadError": "Det gick inte att ladda filer",
+    "pageTitle": "Mina filer",
+    "breadcrumb": "Mina filer",
+    "downloadStart": "Nedladdningen startade",
+    "downloadError": "Det gick inte att ladda ned filen",
+    "updateSuccess": "Filen har uppdaterats",
+    "updateError": "Det gick inte att uppdatera filen",
+    "deleteSuccess": "Filen har raderats",
+    "deleteError": "Det gick inte att ta bort filen",
+    "bulkDownloadSuccess": "Filnedladdningen startade",
+    "bulkDownloadError": "Det gick inte att skapa ZIP-fil",
+    "bulkDownloadFileError": "Fel vid nedladdning av fil {fileName}",
+    "bulkDeleteSuccess": "{count, plural, =1 {1 objekt borttaget framgångsrikt} other {# objekt borttagna framgångsrikt}}",
+    "bulkDeleteError": "Det gick inte att ta bort markerade objekt",
+    "bulkDeleteTitle": "Ta bort markerade objekt",
+    "bulkDeleteConfirmation": "Är du säker på att du vill ta bort {count, plural, =1 {1 objekt} other {# objekt}}? Denna åtgärd kan inte ångras.",
+    "totalFiles": "{count, plural, =0 {Inga filer} =1 {1 fil} other {# filer}}",
+    "openFolder": "Öppna mappen",
+    "errors": {
+      "moveItemsFailed": "Det gick inte att flytta objekt. Försök igen.",
+      "cannotMoveHere": "Det går inte att flytta objekt till den här platsen"
+    },
+    "empty": {
+      "title": "Inga filer eller mappar ännu",
+      "description": "Ladda upp din första fil eller skapa en mapp för att komma igång"
+    },
+    "files": "filer",
+    "folders": "mappar",
+    "actions": {
+      "open": "Öppna",
+      "rename": "Döpa om",
+      "delete": "Radera"
+    },
+    "viewMode": {
+      "table": "Tabell",
+      "grid": "Rutnät"
+    },
+    "drag": {
+      "folderMoved": "Mappen \"{name}\" flyttades till \"{target}\"",
+      "fileMoved": "Filen \"{name}\" flyttades till \"{target}\"",
+      "itemsMoved": "{count} objekt flyttades till \"{target}\"",
+      "folderMovedToRoot": "Mappen \"{name}\" flyttades till rotmappen",
+      "fileMovedToRoot": "Filen \"{name}\" flyttades till rotmappen",
+      "itemsMovedToRoot": "{count} objekt flyttades till rotmappen"
+    }
+  },
+  "filesTable": {
+    "ariaLabel": "Filer tabell",
+    "selectAll": "Välj alla",
+    "selectFile": "Välj fil {fileName}",
+    "columns": {
+      "name": "NAMN",
+      "description": "BESKRIVNING",
+      "size": "STORLEK",
+      "createdAt": "SKAPAD KL",
+      "updatedAt": "UPPDATERAD KL",
+      "actions": "ÅTGÄRDER"
+    },
+    "actions": {
+      "menu": "Menyn Arkivåtgärder",
+      "preview": "Förhandsvisning",
+      "edit": "Redigera",
+      "share": "Dela",
+      "download": "Ladda ner",
+      "delete": "Radera"
+    },
+    "bulkActions": {
+      "selected": "{count, plural, =1 {1 fil vald} other {# filer valda}}",
+      "actions": "Åtgärder",
+      "download": "Ladda ner valt",
+      "share": "Dela valt",
+      "delete": "Ta bort markerade"
+    }
+  },
+  "folderActions": {
+    "editFolder": "Redigera mapp",
+    "folderName": "Mappnamn",
+    "folderNamePlaceholder": "Ange mappnamn",
+    "folderDescription": "Beskrivning",
+    "folderDescriptionPlaceholder": "Ange mappbeskrivning (valfritt)",
+    "createFolder": "Skapa mapp",
+    "renameFolder": "Byt namn på mapp",
+    "moveFolder": "Flytta mapp",
+    "shareFolder": "Dela mapp",
+    "deleteFolder": "Ta bort mapp",
+    "moveTo": "Flytta till",
+    "selectDestination": "Välj målmapp",
+    "rootFolder": "Rot",
+    "folderCreated": "Mappen har skapats",
+    "folderRenamed": "Mappen har bytt namn",
+    "folderMoved": "Mappen har flyttats",
+    "folderDeleted": "Mappen har raderats",
+    "folderShared": "Mappen har delats",
+    "createFolderError": "Det gick inte att skapa mapp",
+    "renameFolderError": "Det gick inte att byta namn på mappen",
+    "moveFolderError": "Det gick inte att flytta mappen",
+    "deleteFolderError": "Det gick inte att ta bort mappen",
+    "shareFolderError": "Fel vid delning av mapp",
+    "deleteConfirmation": "Är du säker på att du vill ta bort den här mappen?",
+    "deleteWarning": "Denna åtgärd kan inte ångras.",
+    "inSharesWarningTitle": "Denna mapp ingår i delningar",
+    "inSharesWarningBody": "Denna mapp (och dess innehål) ingår i {count, plural, one {# delning} other {# delningar}}. Om du tar bort den tas den bort från alla delningar.",
+    "bulkInSharesWarningTitle": "Några mappar ingår i delningar",
+    "bulkInSharesWarningBody": "{count, plural, one {# mapp ingår} other {# mappar ingår}} i delningar. Om du tar bort kommer {count, plural, one {den} other {dem}} tas bort från alla delningar.",
+    "deleteAnyway": "Ta bort ändå"
+  },
+  "footer": {
+    "projectHomepage": "OUITRANSFER webbplats"
+  },
+  "forgotPassword": {
+    "emailLabel": "E-postadress",
+    "emailPlaceholder": "Ange din e-postadress",
+    "sending": "Sändning...",
+    "submit": "Skicka återställningsinstruktioner",
+    "backToLogin": "Tillbaka till inloggning",
+    "title": "Glömt lösenord",
+    "description": "Ange din e-postadress så skickar vi instruktioner för att återställa ditt lösenord",
+    "resetInstructions": "Återställ instruktioner som skickats till din e-post",
+    "pageTitle": "Glömt lösenord",
+    "passwordAuthDisabled": "Lösenordsautentisering är inaktiverad. Kontakta din administratör eller använd en extern autentiseringsleverantör."
+  },
+  "generateShareLink": {
+    "generateTitle": "Skapa delningslänk",
+    "updateTitle": "Uppdatera delningslänk",
+    "generateDescription": "Skapa en anpassad länk för den här andelen. Du kan anpassa webbadressen för att göra den mer minnesvärd.",
+    "updateDescription": "Uppdatera den anpassade länken för denna del. Du kan anpassa webbadressen för att göra den mer minnesvärd.",
+    "aliasPlaceholder": "Anpassat ID för länk",
+    "linkReady": "Din delningslänk är klar. Du kan kopiera det nu.",
+    "readyDescription": "Din delningslänk är klar. Du kan skanna QR-koden direkt, ladda ner den för senare användning eller kopiera länken nedan.",
+    "generateButton": "Skapa länk",
+    "updateButton": "Uppdatera länk",
+    "copyButton": "Kopiera länk",
+    "success": "Länken har skapats",
+    "error": "Det gick inte att skapa länk",
+    "copied": "Länken har kopierats till urklipp",
+    "tabs": {
+      "link": "Länk",
+      "qrcode": "QR-kod"
+    },
+    "later": "Senare"
+  },
+  "home": {
+    "pageTitle": "Hem",
+    "tagline": "Säker filöverföring",
+    "subtitle": "Skicka och dela dina filer säkert.",
+    "login": "Logga in",
+    "partners": {
+      "title": "Fick du en länk?",
+      "description": "Använd den länk som du fick för att komma åt dina filer. Om du inte kan hitta den kontaktar du personen som skickade den till dig."
+    }
+  },
+  "iconPicker": {
+    "title": "Välj ikon",
+    "placeholder": "Välj en ikon",
+    "searchPlaceholder": "Sökikoner...",
+    "loadingMore": "Läser in fler ikoner...",
+    "allIconsLoaded": "Alla {count} ikoner laddade",
+    "noIconsFound": "Inga ikoner hittades för \"{search}\"",
+    "tabs": {
+      "all": "Alla ikoner",
+      "popular": "Populär",
+      "auth": "Auth-leverantörer"
+    },
+    "stats": "{iconCount} ikoner från {libraryCount} bibliotek",
+    "categoryBadge": "{category} ({count} ikoner)"
+  },
+  "imageEdit": {
+    "title": "Redigera bild",
+    "rotate": "Rotera",
+    "zoom": "Zoom",
+    "cropInstructions": "Dra för att flytta om, ändra storlek på hörn för att justera beskärningsområdet",
+    "cropAlt": "Bild att beskära"
+  },
+  "login": {
+    "welcome": "Välkommen till",
+    "signInToContinue": "Logga in för att fortsätta",
+    "emailOrUsernameLabel": "E-post eller användarnamn",
+    "emailOrUsernamePlaceholder": "Ange din e-postadress eller ditt användarnamn",
+    "emailLabel": "E-postadress",
+    "emailPlaceholder": "Ange din e-postadress",
+    "passwordLabel": "Lösenord",
+    "passwordPlaceholder": "Ange ditt lösenord",
+    "signIn": "Logga in",
+    "signingIn": "Loggar in...",
+    "forgotPassword": "Glömt lösenordet?",
+    "pageTitle": "Inloggning",
+    "or": "eller",
+    "continueWithSSO": "Fortsätt med SSO",
+    "processing": "Bearbetar autentisering...",
+    "orContinueWith": "Eller fortsätt med",
+    "continueWith": "Fortsätt med {name}",
+    "providerNotConfigured": "{name} är inte korrekt konfigurerad"
+  },
+  "logo": {
+    "labels": {
+      "appLogo": "Applogotyp"
+    },
+    "buttons": {
+      "upload": "Ladda upp logotyp",
+      "remove": "Ta bort logotyp"
+    },
+    "messages": {
+      "uploadSuccess": "Logotypen har laddats upp",
+      "removeSuccess": "Logotypen har tagits bort"
+    },
+    "errors": {
+      "uploadFailed": "Det gick inte att ladda upp logotypen",
+      "removeFailed": "Det gick inte att ta bort logotypen"
+    }
+  },
+  "moveItems": {
+    "itemsToMove": "Föremål att flytta:",
+    "movingToFolder": "Flyttar till: {folder}",
+    "title": "Flytta {count, plural, =1 {objekt} other {objekt}}",
+    "description": "Flytta {count, plural, =1 {objekt} other {objekt}} till en ny plats",
+    "success": "Flyttade {count} {count, plural, =1 {objekt} other {objekt}} framgångsrikt",
+    "errors": {
+      "moveFailed": "Det gick inte att flytta objekt"
+    }
+  },
+  "audit": {
+    "pageTitle": "Aktivitetslogg",
+    "pageDescription": "Visa och sök i all systemaktivitet",
+    "table": {
+      "date": "Datum",
+      "user": "Användare",
+      "action": "Åtgärd",
+      "target": "Mål",
+      "ipAddress": "IP-adress",
+      "details": "Detaljer",
+      "noResults": "Inga granskningsloggar hittades",
+      "anonymous": "Anonym",
+      "system": "System",
+      "resultCount": "{count, plural, one {# resultat} other {# resultat}}"
+    },
+    "filters": {
+      "action": "Åtgärd",
+      "user": "Användare",
+      "targetType": "Måltyp",
+      "dateFrom": "Från",
+      "dateTo": "Till",
+      "search": "Sök",
+      "searchPlaceholder": "Sök efter IP eller åtgärd...",
+      "clearAll": "Rensa filter"
+    },
+    "export": {
+      "button": "Exportera",
+      "csv": "CSV",
+      "json": "JSON",
+      "dateRangeRequired": "Välj ett datumintervall för export"
+    },
+    "actions": {
+      "LOGIN_SUCCESS": "Inloggning lyckad",
+      "LOGIN_FAILURE": "Inloggning misslyckad",
+      "LOGOUT": "Utloggning",
+      "PASSWORD_CHANGE": "Lösenord ändrat",
+      "PASSWORD_RESET": "Lösenord återställt",
+      "PASSWORD_RESET_REQUEST": "Begäran om återställning av lösenord",
+      "ACCOUNT_LOCKED": "Konto låst",
+      "LOGIN_LOCKED": "Inloggning låst",
+      "TRUSTED_DEVICE_REMOVE": "Betrott enheten borttagen",
+      "TRUSTED_DEVICE_REMOVE_ALL": "Alla betrodda enheter borttagna",
+      "AUTH_PROVIDER_LOGIN": "SSO-inloggning",
+      "TWO_FACTOR_ENABLE": "2FA aktiverad",
+      "TWO_FACTOR_DISABLE": "2FA inaktiverad",
+      "TWO_FACTOR_BACKUP_REGENERATED": "2FA-säkerhetskoder återskapade",
+      "USER_CREATE": "Användare skapad",
+      "USER_UPDATE": "Användare uppdaterad",
+      "USER_DELETE": "Användare borttagen",
+      "USER_ROLE_CHANGE": "Användarroll ändrad",
+      "USER_QUOTA_CHANGE": "Användarkvot ändrad",
+      "USER_ACTIVATE": "Användare aktiverad",
+      "USER_DEACTIVATE": "Användare inaktiverad",
+      "SHARE_CREATE": "Delning skapad",
+      "SHARE_UPDATE": "Delning uppdaterad",
+      "SHARE_DELETE": "Delning borttagen",
+      "SHARE_ACCESS": "Delning använd",
+      "SHARE_PASSWORD_VERIFIED": "Delningslösenord verifierat",
+      "SHARE_PASSWORD_FAILED": "Delningslösenord misslyckad",
+      "SHARE_PASSWORD_UPDATE": "Delningslösenord uppdaterat",
+      "SHARE_RECIPIENT_ADD": "Mottagare tillagda i delning",
+      "SHARE_RECIPIENT_REMOVE": "Mottagare borttagna från delning",
+      "SHARE_RECIPIENT_NOTIFY": "Mottagare notifierade",
+      "SHARE_RECIPIENT_REMIND": "Mottagare utan nedladdning påminda",
+      "SHARE_ITEMS_ADD": "Objekt tillagda i delning",
+      "SHARE_ITEMS_REMOVE": "Objekt borttagna från delning",
+      "FILE_UPLOAD": "Fil uppladdad",
+      "FILE_DOWNLOAD": "Fil nedladdad",
+      "FILE_DELETE": "Fil borttagen",
+      "FILE_MOVE": "Fil flyttad",
+      "FILE_UPDATE": "Fil uppdaterad",
+      "FOLDER_CREATE": "Mapp skapad",
+      "FOLDER_UPDATE": "Mapp uppdaterad",
+      "FOLDER_MOVE": "Mapp flyttad",
+      "FOLDER_DELETE": "Mapp borttagen",
+      "REVERSE_SHARE_CREATE": "Omvänd delning skapad",
+      "REVERSE_SHARE_UPDATE": "Omvänd delning uppdaterad",
+      "REVERSE_SHARE_DELETE": "Omvänd delning borttagen",
+      "REVERSE_SHARE_ACCESS": "Omvänd delning använd",
+      "REVERSE_SHARE_PASSWORD_VERIFIED": "Lösenord för omvänd delning verifierat",
+      "REVERSE_SHARE_PASSWORD_FAILED": "Lösenord för omvänd delning misslyckad",
+      "REVERSE_SHARE_PASSWORD_UPDATE": "Lösenord för omvänd delning uppdaterat",
+      "REVERSE_SHARE_UPLOAD": "Fil uppladdad till omvänd delning",
+      "REVERSE_SHARE_FILE_DELETE": "Fil från omvänd delning borttagen",
+      "REVERSE_SHARE_FILE_COPY": "Fil från omvänd delning kopierad",
+      "REVERSE_SHARE_FILE_DOWNLOAD": "Fil från omvänd delning nedladdad",
+      "GROUP_CREATE": "Grupp skapad",
+      "GROUP_UPDATE": "Grupp uppdaterad",
+      "GROUP_DELETE": "Grupp borttagen",
+      "GROUP_MEMBER_ADD": "Gruppmedlem tillagd",
+      "GROUP_MEMBER_REMOVE": "Gruppmedlem borttagen",
+      "LDAP_CONFIG_UPDATE": "LDAP-konfiguration uppdaterad",
+      "LDAP_SYNC_TRIGGERED": "LDAP-synkronisering utlöst",
+      "LDAP_SYNC_COMPLETED": "LDAP-synkronisering slutförd",
+      "LDAP_SYNC_ERROR": "LDAP-synkroniseringsfel",
+      "AUTH_PROVIDER_CREATE": "Autentiseringsleverantör skapad",
+      "AUTH_PROVIDER_UPDATE": "Autentiseringsleverantör uppdaterad",
+      "AUTH_PROVIDER_DELETE": "Autentiseringsleverantör borttagen",
+      "INVITE_TOKEN_CREATE": "Inbjudningstoken skapad",
+      "INVITE_TOKEN_USED": "Inbjudningstoken använd",
+      "ADMIN_CONFIG_CHANGE": "Konfiguration ändrad",
+      "LOGO_UPLOAD": "Logotyp uppladdad",
+      "LOGO_REMOVE": "Logotyp borttagen",
+      "SMTP_TEST": "SMTP-test genomfört",
+      "BACKGROUND_IMAGE_UPLOAD": "Bakgrundsbild uppladdad",
+      "BACKGROUND_IMAGE_DELETE": "Bakgrundsbild borttagen",
+      "AUDIT_RETENTION_CLEANUP": "Rengöring av granskningslogg",
+      "SHARE_DEACTIVATED": "Delning inaktiverad",
+      "SHARE_REACTIVATED": "Delning återaktiverad",
+      "REVERSE_SHARE_DEACTIVATED": "Mottagningslänk inaktiverad",
+      "REVERSE_SHARE_REACTIVATED": "Mottagningslänk återaktiverad",
+      "SHARE_AUTO_DELETED": "Delning automatiskt borttagen",
+      "REVERSE_SHARE_AUTO_DELETED": "Mottagningslänk automatiskt borttagen",
+      "ACCOUNT_FILES_CLEANED": "Kontofiler rensade",
+      "ORPHAN_S3_DELETED": "Föräldralöst lagringsobjekt borttaget",
+      "ORPHAN_DB_DELETED": "Föräldralöst databaspost borttagen",
+      "ORPHAN_MULTIPART_ABORTED": "Ofullständig multipart-uppladdning avbruten",
+      "QUOTA_FILES_DELETED": "Filer över kvot borttagna"
+    },
+    "targetTypes": {
+      "user": "Användare",
+      "share": "Delning",
+      "reverse_share": "Omvänd delning",
+      "file": "Fil",
+      "folder": "Mapp",
+      "group": "Grupp",
+      "ldap_config": "LDAP-konfiguration",
+      "ldap_sync_log": "LDAP-synkronisering",
+      "setting": "Inställning",
+      "auth_provider": "Autentiseringsleverantör",
+      "background_image": "Bakgrundsbild",
+      "invite_token": "Inbjudningstoken",
+      "trusted_device": "Betrodd enhet",
+      "logo": "Logotyp"
+    },
+    "actionCategories": {
+      "auth": "Autentisering",
+      "share": "Delningar",
+      "file": "Filer",
+      "folder": "Mappar",
+      "reverseShare": "Omvända delningar",
+      "user": "Användare",
+      "group": "Grupper",
+      "ldap": "LDAP",
+      "admin": "Administration",
+      "system": "System"
+    },
+    "metadata": {
+      "method": "Metod",
+      "reason": "Anledning",
+      "email": "E-post",
+      "count": "Antal",
+      "via": "Skapad via",
+      "fields": "Ändrade fält",
+      "oldRole": "Gammal roll",
+      "newRole": "Ny roll",
+      "oldQuota": "Gammal kvot",
+      "newQuota": "Ny kvot",
+      "name": "Namn",
+      "fileName": "Filnamn",
+      "fileSize": "Filstorlek",
+      "fileCount": "Antal filer",
+      "folderCount": "Antal mappar",
+      "hasPassword": "Lösenordsskyddad",
+      "expiration": "Utgångsdatum",
+      "shareId": "Delning",
+      "emails": "E-post",
+      "recipientCount": "Antal mottagare",
+      "fromFolderId": "Från mapp",
+      "toFolderId": "Till mapp",
+      "maxFiles": "Max filer",
+      "maxFileSize": "Max filstorlek",
+      "uploaderEmail": "E-post för uppladden",
+      "uploaderName": "Namn på uppladden",
+      "targetFileId": "Målfil",
+      "providerType": "Leverantörtyp",
+      "providerName": "Leverantörnamn",
+      "deletedCount": "Borttagna poster",
+      "olderThan": "Äldre än",
+      "syncLogId": "Synkroniseringslogg",
+      "error": "Fel",
+      "manual": "Manuell utlösning",
+      "recipientEmail": "E-post för mottagare",
+      "fromParentId": "Från överordnad",
+      "toParentId": "Till överordnad",
+      "oldMaxFileSize": "Gammal max filstorlek",
+      "newMaxFileSize": "Ny max filstorlek",
+      "oldMaxTotalStorage": "Gammal max totalt lagringsutrymme",
+      "newMaxTotalStorage": "Nytt max totalt lagringsutrymme",
+      "changedFields": "Ändrade fält",
+      "unassignedCount": "Otilldelade medlemmar",
+      "previousGroupId": "Tidigare grupp",
+      "memberId": "Medlem",
+      "parentId": "Överordnad mapp",
+      "targetFolderId": "Målmapp",
+      "extension": "Förlängning",
+      "size": "Storlek",
+      "enabled": "Aktiverad",
+      "passwordCleared": "Lösenord rensad",
+      "trigger": "Utlösare",
+      "status": "Status",
+      "usersCreated": "Användare skapade",
+      "usersUpdated": "Användare uppdaterade",
+      "usersDeactivated": "Användare inaktiverade",
+      "usersReactivated": "Användare återaktiverade",
+      "usersSkipped": "Användare överhoppade",
+      "createdUserId": "Skapad användare",
+      "deletedUserId": "Borttagen användare",
+      "emailOrUsername": "E-post/användarnamn",
+      "remainingMinutes": "Återstående minuter",
+      "keys": "Konfigurationsnycklar",
+      "type": "Typ",
+      "yes": "Ja",
+      "no": "Nej",
+      "key": "[TO_TRANSLATE] Setting",
+      "usingCustomConfig": "[TO_TRANSLATE] Custom config",
+      "smtpHost": "[TO_TRANSLATE] SMTP host",
+      "files": "[TO_TRANSLATE] Files",
+      "shares": "[TO_TRANSLATE] Shares",
+      "reverseShares": "[TO_TRANSLATE] Reverse shares",
+      "folders": "[TO_TRANSLATE] Folders",
+      "s3Errors": "[TO_TRANSLATE] Storage errors",
+      "recipientId": "[TO_TRANSLATE] Recipient",
+      "identificationSource": "[TO_TRANSLATE] Identification",
+      "expiresAt": "[TO_TRANSLATE] Expires at",
+      "userId": "[TO_TRANSLATE] User",
+      "shareName": "[TO_TRANSLATE] Share",
+      "reverseShareName": "[TO_TRANSLATE] Reverse share",
+      "filesDeleted": "[TO_TRANSLATE] Files deleted",
+      "bytesFreed": "[TO_TRANSLATE] Storage freed",
+      "objectName": "[TO_TRANSLATE] Object",
+      "fileId": "[TO_TRANSLATE] File"
+    }
+  },
+  "navbar": {
+    "logoAlt": "Applogotyp",
+    "profileMenu": "Profilmeny",
+    "profile": "Profil",
+    "customization": "Anpassning",
+    "settings": "Inställningar",
+    "usersManagement": "Användarhantering",
+    "groupsManagement": "Grupper",
+    "ldap": "LDAP",
+    "activityLog": "Aktivitetslogg",
+    "logout": "Logga ut",
+    "notifications": "Notifications",
+    "administration": "[TO_TRANSLATE] Administration"
+  },
+  "navigation": {
+    "dashboard": "Instrumentbräda"
+  },
+  "notifications": {
+    "permissionGranted": "Nedladdningsaviseringar aktiverade",
+    "permissionDenied": "Nedladdningsaviseringar inaktiverade",
+    "downloadComplete": {
+      "title": "Nedladdningen är klar",
+      "body": "{fileName} har slutfört nedladdningen"
+    },
+    "downloadFailed": {
+      "title": "Nedladdningen misslyckades",
+      "body": "Misslyckades att ladda ner {fileName}: {error}",
+      "unknownError": "Okänt fel"
+    },
+    "queueProcessing": {
+      "title": "Ladda ner startar",
+      "body": "{fileName} laddas nu ner{position}",
+      "position": " (var #{position} i kön)"
+    }
+  },
+  "profile": {
+    "password": {
+      "title": "Ändra lösenord",
+      "newPassword": "Nytt lösenord",
+      "confirmPassword": "Bekräfta nytt lösenord",
+      "updateButton": "Uppdatera lösenord"
+    },
+    "form": {
+      "title": "Profilinformation",
+      "firstName": "Förnamn",
+      "lastName": "Efternamn",
+      "username": "Användarnamn",
+      "email": "E-post",
+      "updateButton": "Uppdatera profil"
+    },
+    "header": {
+      "title": "Profil",
+      "subtitle": "Hantera din personliga information och lösenord"
+    },
+    "picture": {
+      "title": "Profilbild",
+      "description": "Klicka på kameraikonen för att ändra din profilbild",
+      "uploadPhoto": "Ladda upp foto",
+      "removePhoto": "Ta bort foto"
+    },
+    "errors": {
+      "loadFailed": "Det gick inte att läsa in användardata",
+      "updateFailed": "Det gick inte att uppdatera profilen",
+      "passwordFailed": "Det gick inte att uppdatera lösenordet",
+      "imageFailed": "Det gick inte att uppdatera profilbilden",
+      "imageRemoveFailed": "Det gick inte att ta bort profilbilden"
+    },
+    "messages": {
+      "noChanges": "Inga ändringar att spara",
+      "updateSuccess": "Profilen har uppdaterats",
+      "fillPasswords": "Vänligen fyll i båda lösenordsfälten",
+      "passwordSuccess": "Lösenordet har uppdaterats",
+      "imageSuccess": "Profilbilden har uppdaterats",
+      "imageRemoved": "Profilbilden har tagits bort"
+    },
+    "pageTitle": "Profil"
+  },
+  "qrCodeModal": {
+    "title": "Dela QR-kod",
+    "description": "Skanna den här QR-koden för att komma åt länken.",
+    "download": "Ladda ner QR-kod"
+  },
+  "quickAccess": {
+    "files": {
+      "title": "Mina filer",
+      "description": "Få åtkomst till och hantera dina uppladdade filer"
+    },
+    "shares": {
+      "title": "Mina aktier",
+      "description": "Visa och hantera dina delade filer"
+    },
+    "reverseShares": {
+      "title": "Ta emot filer",
+      "description": "Skapa länkar så att andra kan skicka filer till dig"
+    }
+  },
+  "recentFiles": {
+    "title": "Senaste uppladdningar",
+    "viewAll": "Visa alla",
+    "upload": "Ladda upp",
+    "uploadFile": "Ladda upp fil",
+    "noFiles": "Inga filer har laddats upp ännu"
+  },
+  "recentShares": {
+    "title": "Senaste aktier",
+    "viewAll": "Visa alla",
+    "createShare": "Skapa Share",
+    "noShares": "Inga delningar har skapats ännu",
+    "createFirst": "Skapa din första delning"
+  },
+  "recipientSelector": {
+    "emailPlaceholder": "Ange mottagarens e-postadress",
+    "add": "Tillägga",
+    "recipients": "Mottagare ({count})",
+    "notifyAll": "Meddela alla",
+    "noRecipients": "Inga mottagare har lagts till ännu",
+    "addSuccess": "Mottagare har lagts till",
+    "addError": "Det gick inte att lägga till mottagare",
+    "removeSuccess": "Mottagaren har tagits bort",
+    "removeError": "Det gick inte att ta bort mottagaren",
+    "sendingNotifications": "Skickar aviseringar...",
+    "notifySuccess": "Mottagarna har meddelats",
+    "notifyError": "Det gick inte att meddela mottagarna",
+    "selectAll": "Välj alla",
+    "selectedCount": "{count} valda",
+    "selectRecipient": "Välj {email}",
+    "notifySelected": "Meddela valda",
+    "removeSelected": "Ta bort markerade",
+    "notifySingle": "Meddela denna mottagare",
+    "removeSingle": "Ta bort den här mottagaren",
+    "bulkRemoveSuccess": "{count} mottagare borttagna framgångsrikt",
+    "bulkRemoveError": "Det gick inte att ta bort valda mottagare",
+    "bulkNotifySuccess": "Aviseringar skickade till {count} mottagare",
+    "bulkNotifyError": "Det gick inte att meddela valda mottagare",
+    "singleNotifySuccess": "Avisering skickad till {email}",
+    "singleNotifyError": "Det gick inte att meddela mottagaren",
+    "modalDescription": "Lägg till och hantera mottagare för den här andelen. Du kan meddela alla eller specifika mottagare när SMTP är konfigurerat.",
+    "addRecipient": "Lägg till mottagare",
+    "invalidEmail": "Vänligen ange en giltig e-postadress",
+    "duplicateEmail": "Den här mottagaren har redan lagts till",
+    "noRecipientsDescription": "Lägg till mottagare för att dela detta innehåll via e-post",
+    "notified": "Meddelad",
+    "views": "{count, plural, one {# visning} other {# visningar}}",
+    "notifyPartial": "Endast {sent} av {total} mottagare meddelades",
+    "neverAccessed": "Aldrig öppnad",
+    "namePlaceholder": "Namn (valfritt)",
+    "downloaded": "Nedladdat",
+    "pending": "Väntar",
+    "downloadedAt": "Nedladdat den {date}",
+    "uploaded": "Uppladdat",
+    "uploadedAt": "Uppladdat den {date}",
+    "uploadApproximateHint": "Ungefärligt: avsändare kan skicka filer utan att ange e-post när det inte är obligatoriskt",
+    "remindNonDownloaders": "Påminn ({count})",
+    "remindNonDownloadersHint": "{count, plural, =0 {Inga väntande mottagare, alla har laddat ned} one {Påminn # mottagare som inte har laddat ned än} other {Påminn # mottagare som inte har laddat ned än}}",
+    "sendingReminders": "Skickar påminnelser...",
+    "remindSuccess": "{count, plural, one {Påminnelse skickad till # mottagare} other {Påminnelser skickade till # mottagare}}",
+    "remindNoneSent": "Inga påminnelser skickades",
+    "remindError": "Det gick inte att skicka påminnelser"
+  },
+  "register": {
+    "validation": {
+      "firstNameRequired": "Förnamn krävs",
+      "lastNameRequired": "Efternamn krävs",
+      "usernameMinLength": "Användarnamnet måste bestå av minst 3 tecken",
+      "invalidEmail": "Ogiltig e-postadress",
+      "passwordMinLength": "Lösenordet måste vara minst 12 tecken",
+      "success": "Administratörsanvändare skapades framgångsrikt!",
+      "error": "Det gick inte att skapa administratörsanvändare",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "labels": {
+      "firstName": "Förnamn",
+      "lastName": "Efternamn",
+      "username": "Användarnamn",
+      "email": "E-post",
+      "password": "Lösenord"
+    },
+    "buttons": {
+      "creating": "Skapande...",
+      "createAdmin": "Skapa ett administratörskonto"
+    }
+  },
+  "resetPassword": {
+    "pageTitle": "Återställ lösenord",
+    "header": {
+      "title": "Återställ lösenord",
+      "description": "Ange ditt nya lösenord nedan"
+    },
+    "form": {
+      "newPassword": "Nytt lösenord",
+      "newPasswordPlaceholder": "Ange ditt nya lösenord",
+      "confirmPassword": "Bekräfta nytt lösenord",
+      "confirmPasswordPlaceholder": "Bekräfta ditt nya lösenord",
+      "resetting": "Återställer lösenord...",
+      "submit": "Återställ lösenord",
+      "backToLogin": "Tillbaka till inloggning"
+    },
+    "messages": {
+      "success": "Lösenordsåterställning lyckades"
+    },
+    "errors": {
+      "serverError": "Det gick inte att återställa lösenordet. Försök igen.",
+      "invalidToken": "Ogiltig eller saknad återställningstoken"
+    }
+  },
+  "reverseShares": {
+    "pageTitle": "Ta emot filer",
+    "search": {
+      "title": "Hantera mottagningslänkar",
+      "createButton": "Skapa länk",
+      "placeholder": "Sök ta emot länkar...",
+      "results": "Hittade {filtered} av {total} mottagningslänkar"
+    },
+    "labels": {
+      "files": "filer",
+      "size": "storlek",
+      "status": "status",
+      "access": "tillträde",
+      "description": "Beskrivning",
+      "pageLayout": "Sidlayout",
+      "security": "Säkerhet och status",
+      "limits": "Gränser",
+      "maxFiles": "Maximalt antal filer",
+      "maxFileSize": "Maximal storlek",
+      "allowedTypes": "Tillåtna typer",
+      "filesReceived": "Filer mottagna",
+      "fileLimit": "Filgräns",
+      "noLimit": "Ingen gräns",
+      "noLinkCreated": "Ingen länk skapad",
+      "publicAccess": "Allmän tillgång",
+      "protectedByPassword": "Lösenordsskyddad",
+      "configureProtection": "Klicka för att konfigurera skydd",
+      "enterPassword": "Ange lösenord",
+      "thisLinkProtected": "Denna länk kommer att vara lösenordsskyddad",
+      "thisLinkPublic": "Denna länk kommer att vara allmänt tillgänglig",
+      "configureExpiration": "Konfigurera utgångsdatum",
+      "configureLimits": "Konfigurera filgränser",
+      "protectWithPassword": "Skydda med lösenord",
+      "layoutOptions": {
+        "default": "Standard",
+        "wetransfer": "WeTransfer"
+      },
+      "noFilesLimit": "Ingen filgräns",
+      "noSizeLimit": "Ingen storleksbegränsning",
+      "allFileTypes": "Alla filtyper",
+      "fileTypesHelp": "Ange tillägg utan prickar, åtskilda av mellanslag, komma, streck eller rör",
+      "fieldRequirements": "Fältkrav",
+      "nameFieldRequired": "Namnfält",
+      "emailFieldRequired": "E-postfält",
+      "fieldOptions": {
+        "hidden": "Dold",
+        "optional": "Frivillig",
+        "required": "Nödvändig"
+      }
+    },
+    "card": {
+      "untitled": "Namnlös länk",
+      "noDescription": "Ingen beskrivning",
+      "addDescriptionPlaceholder": "Lägg till beskrivning...",
+      "files": "filer",
+      "progress": "Framsteg",
+      "created": "Skapad",
+      "expired": "Utgått",
+      "expires": "Upphör att gälla",
+      "viewDetails": "Visa detaljer",
+      "viewQrCode": "Se QR-koden",
+      "copyLink": "Kopiera länk",
+      "openInNewTab": "Öppna i Ny flik",
+      "editLink": "Redigera länk",
+      "createLink": "Skapa länk",
+      "delete": "Radera",
+      "copyLinkTitle": "Kopiera länk",
+      "createLinkCTA": "Skapa mottagningslänk"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "expired": "Utgått",
+      "protected": "Skyddad",
+      "public": "Offentlig"
+    },
+    "actions": {
+      "copyLink": "Kopiera länk",
+      "editAlias": "Redigera Alias",
+      "createAlias": "Skapa Alias",
+      "viewDetails": "Visa detaljer",
+      "edit": "Redigera",
+      "delete": "Radera",
+      "viewFiles": "Mottagna filer",
+      "viewQrCode": "Se QR-koden"
+    },
+    "empty": {
+      "title": "Inga mottagningslänkar skapade",
+      "description": "Skapa anpassade länkar så att andra kan skicka filer direkt till dig säkert och organiserat.",
+      "createButton": "Skapa första länken"
+    },
+    "modals": {
+      "create": {
+        "title": "Skapa mottagningslänk",
+        "description": "Konfigurera en anpassad länk för att ta emot filer från andra"
+      },
+      "edit": {
+        "title": "Redigera ta emot länk",
+        "description": "Uppdatera inställningarna för denna mottagningslänk",
+        "updating": "Uppdaterar...",
+        "saveChanges": "Spara ändringar"
+      },
+      "details": {
+        "title": "Länkdetaljer",
+        "description": "Visa och redigera din mottagna länkinformation",
+        "pageLayout": "Sidlayout",
+        "linkSection": "Ta emot länk",
+        "noLinkCreated": "Ingen länk skapad",
+        "limits": "Gränser",
+        "maxFiles": "Maximalt antal filer",
+        "maxFileSize": "Maximal storlek",
+        "allowedTypes": "Tillåtna typer",
+        "noLimit": "Ingen gräns",
+        "security": "Säkerhet",
+        "status": "Status",
+        "password": "Lösenord",
+        "files": "Mottagna filer",
+        "noFiles": "Inga filer har tagits emot ännu",
+        "copyLink": "Kopiera länk",
+        "openLink": "Öppna länken",
+        "editAlias": "Redigera Alias",
+        "createAlias": "Skapa Alias",
+        "editPassword": "Redigera lösenordsskydd",
+        "basicInfo": "Grundläggande information",
+        "securityAndStatus": "Säkerhet och status",
+        "protection": "Skydd",
+        "protectedByPassword": "Lösenordsskyddad",
+        "publicAccess": "Allmän tillgång",
+        "active": "Aktiv",
+        "inactive": "Inaktiv",
+        "deactivate": "Avaktivera",
+        "activate": "Aktivera",
+        "expiration": "Utgång",
+        "dates": "Datum",
+        "createdAt": "Skapad på",
+        "updatedAt": "Uppdaterad kl",
+        "allTypes": "Alla typer",
+        "placeholderTypes": ".pdf,.jpg,.png (kommaseparerad)",
+        "downloadSuccess": "Nedladdningen startade",
+        "downloadError": "Fel vid nedladdning av filen",
+        "editSuccess": "Filen har uppdaterats",
+        "editError": "Fel vid uppdatering av filen",
+        "previewNotAvailable": "Förhandsgranskning inte tillgänglig",
+        "notAvailable": "Ej tillgängligt",
+        "invalidDate": "Ogiltigt datum",
+        "downloading": "Laddar ner..."
+      },
+      "alias": {
+        "editTitle": "Redigera Alias",
+        "createTitle": "Skapa Alias",
+        "editDescription": "Uppdatera aliaset för denna mottagningslänk",
+        "createDescription": "Skapa ett anpassat alias för denna mottagningslänk",
+        "aliasLabel": "Länkalias",
+        "aliasPlaceholder": "min-egen-lank",
+        "preview": "Förhandsvisning:",
+        "currentLink": "Aktuell länk:",
+        "copyCurrentLink": "Kopiera aktuell länk",
+        "randomTooltip": "Generera slumpmässigt alias",
+        "cancel": "Avboka",
+        "creating": "Skapande...",
+        "updating": "Uppdaterar...",
+        "create": "Skapa Alias",
+        "update": "Uppdatera Alias",
+        "help": "8-30 tecken. Mellanslag konverteras automatiskt till bindestreck."
+      },
+      "password": {
+        "title": "Redigera lösenordsskydd",
+        "description": "Konfigurera lösenordsskydd för denna länk",
+        "hasPassword": "Lösenordsskyddad",
+        "password": "Lösenord",
+        "cancel": "Avboka",
+        "save": "Spara",
+        "saving": "Sparande..."
+      },
+      "receivedFiles": {
+        "title": "Mottagna filer",
+        "description": "Visa och hantera filer som skickas till den här länken",
+        "noFiles": "Inga filer har tagits emot ännu",
+        "noFilesDescription": "Filer som skickas via denna länk kommer att visas här",
+        "fileCount": "{count, plural, =0 {Inga filer} =1 {1 fil} other {# filer}}",
+        "invalidDate": "Ogiltigt datum",
+        "totalSize": "Total storlek: {size}",
+        "columns": {
+          "file": "Fil",
+          "size": "Storlek",
+          "sender": "Skickat av",
+          "date": "Datum",
+          "actions": "Åtgärder"
+        },
+        "actions": {
+          "preview": "Förhandsvisning",
+          "download": "Ladda ner",
+          "copyToMyFiles": "Kopiera till mina filer",
+          "copying": "Kopierar..."
+        },
+        "uploadedBy": "Uppladdad av {name}",
+        "anonymous": "Anonym",
+        "downloadSuccess": "Nedladdningen startade",
+        "downloadError": "Fel vid nedladdning av filen",
+        "editSuccess": "Filen har uppdaterats",
+        "editError": "Fel vid uppdatering av filen",
+        "previewNotAvailable": "Förhandsgranskning inte tillgänglig",
+        "copySuccess": "Filen har kopierats till dina filer",
+        "copyError": "Det gick inte att kopiera filen till dina filer",
+        "deleteSuccess": "Filen har raderats",
+        "deleteError": "Det gick inte att ta bort filen",
+        "bulkCopySuccess": "{count, plural, =1 {1 fil kopierad till dina filer framgångsrikt} other {# filer kopierade till dina filer framgångsrikt}}",
+        "bulkDeleteSuccess": "{count, plural, =1 {1 fil raderad framgångsrikt} other {# filer raderade framgångsrikt}}",
+        "bulkCopyProgress": "Kopierar {count, plural, =1 {1 fil} other {# filer}} till dina filer...",
+        "bulkDeleteProgress": "Raderar {count, plural, =1 {1 fil} other {# filer}}...",
+        "bulkDeleteConfirmTitle": "Ta bort valda filer",
+        "bulkDeleteConfirmMessage": "Är du säker på att du vill ta bort {count, plural, =1 {denna fil} other {dessa # filer}}? Denna åtgärd kan inte ångras.",
+        "bulkDeleteConfirmButton": "Ta bort {count, plural, =1 {fil} other {filer}}",
+        "bulkActions": {
+          "selected": "{count, plural, =1 {1 fil vald} other {# filer valda}}",
+          "actions": "Åtgärder",
+          "download": "Ladda ner valt",
+          "copyToMyFiles": "Kopiera valda till Mina filer",
+          "delete": "Ta bort markerade"
+        },
+        "selectAll": "Välj alla",
+        "selectFile": "Välj fil {fileName}",
+        "bulkDeleteError": "Det gick inte att ta bort markerade objekt",
+        "copyErrors": {
+          "timeout": "Kopieringsåtgärden tog timeout. Försök igen med en mindre fil eller kontrollera din anslutning.",
+          "failed": "Kopieringsåtgärden misslyckades. Försök igen.",
+          "aborted": "Kopieringsåtgärden avbröts på grund av timeout."
+        },
+        "downloading": "Laddar ner..."
+      },
+      "delete": {
+        "linkLabel": "Länk: /r/{alias}"
+      }
+    },
+    "form": {
+      "name": {
+        "label": "Länknamn",
+        "placeholder": "t.ex.: projektdokument, familjefoton..."
+      },
+      "description": {
+        "label": "Beskrivning",
+        "placeholder": "Beskriv vilken typ av filer du förväntar dig att få...",
+        "description": "Frivillig. Hjälper människor att förstå vad de ska skicka."
+      },
+      "status": {
+        "label": "Länkstatus",
+        "description": "Aktivera eller avaktivera denna mottagningslänk"
+      },
+      "expiration": {
+        "label": "Utgångsdatum",
+        "description": "Frivillig. Länken kommer att avaktiveras efter detta datum.",
+        "configure": "Konfigurera utgångsdatum"
+      },
+      "fileLimits": {
+        "configure": "Konfigurera filgränser"
+      },
+      "maxFiles": {
+        "label": "Maximalt antal filer",
+        "placeholder": "t.ex.: 10",
+        "description": "Frivillig. Begränsa det totala antalet filer som kan skickas.",
+        "noLimit": "Ingen filgräns"
+      },
+      "maxFileSize": {
+        "label": "Maximal filstorlek",
+        "placeholder": "t.ex.: 100",
+        "description": "Frivillig. Begränsa den individuella storleken på varje fil.",
+        "noLimit": "Ingen storleksbegränsning"
+      },
+      "allowedFileTypes": {
+        "label": "Tillåtna filtyper",
+        "placeholder": "t.ex.: pdf, jpg, png, docx",
+        "description": "Ange tillägg utan prickar, åtskilda av mellanslag, komma, streck eller rör",
+        "allTypes": "Alla filtyper"
+      },
+      "pageLayout": {
+        "label": "Sidlayout",
+        "placeholder": "Välj layout",
+        "description": "Hur uppladdningssidan kommer att se ut för användarna.",
+        "options": {
+          "default": "Standardlayout",
+          "wetransfer": "WeTransfer-stil"
+        }
+      },
+      "backgroundImage": {
+        "title": "Bakgrundsbild",
+        "description": "Välj en bakgrundsbild för uppladdningssidan",
+        "random": "Slumpmässig",
+        "none": "Inga bakgrundsbilder tillgängliga. En administratör kan ladda upp bilder i Inställningar."
+      },
+      "password": {
+        "label": "Skyddslösenord",
+        "placeholder": "Frivillig. Lägg till ett lösenord för att skydda länken",
+        "description": "Frivillig. Användare kommer att behöva detta lösenord för att komma åt länken.",
+        "configurePassword": "Konfigurera lösenord",
+        "protectWithPassword": "Skydda med lösenord",
+        "passwordHelp": "Lösenordet måste bestå av minst 4 tecken",
+        "passwordPlaceholder": "Ange ett lösenord för att skydda länken"
+      },
+      "nameFieldRequired": {
+        "label": "Namnfältskrav",
+        "description": "Konfigurera om fältet för uppladdarens namn ska visas och om det krävs"
+      },
+      "emailFieldRequired": {
+        "label": "E-postfältskrav",
+        "description": "Konfigurera om uppladdarens e-postfält ska visas och om det krävs"
+      },
+      "fieldRequirements": {
+        "title": "Fältkrav",
+        "description": "Konfigurera vilka fält som ska visas i uppladdningsformuläret",
+        "configurationTitle": "Fältkonfiguration:",
+        "hiddenDescription": "Dolt: Fältet visas inte i uppladdningsformuläret",
+        "optionalDescription": "Valfritt: Fältet visas men är inte obligatoriskt",
+        "requiredDescription": "Obligatoriskt: Fältet måste fyllas i före uppladdning"
+      },
+      "notifyOnUpload": "Meddela mig vid varje uppladdning",
+      "notifyOnUploadHelp": "När aktiverat får du e-postmeddelanden när filer laddas upp till denna mottagningslänk, oavsett dina globala aviseringsinställningar.",
+      "submit": "Skapa mottagningslänk",
+      "bypassUploadCooldown": "[TO_TRANSLATE] Notify on every upload session",
+      "bypassUploadCooldownHelp": "[TO_TRANSLATE] By default, upload notifications are grouped within a short cooldown window to avoid spam. Enable this to receive a separate notification for every upload session."
+    },
+    "messages": {
+      "created": "Ta emot länk skapad framgångsrikt!",
+      "createSuccess": "Ta emot länk skapad framgångsrikt!",
+      "updateSuccess": "Mottagningslänken har uppdaterats framgångsrikt!",
+      "linkCopied": "Länken har kopierats till urklipp!",
+      "deleteSuccess": "Mottagningslänken har raderats!",
+      "aliasCreated": "Alias ​​skapades framgångsrikt!",
+      "activateSuccess": "Mottagningslänken har aktiverats!",
+      "deactivateSuccess": "Mottagningslänken har avaktiverats!",
+      "passwordProtectionEnabled": "Lösenordsskydd har aktiverats!",
+      "passwordProtectionDisabled": "Lösenordsskyddet har tagits bort!"
+    },
+    "defaultLinkName": "Mottagna filer",
+    "errors": {
+      "loadFailed": "Det gick inte att läsa in mottagarlänkar",
+      "createFailed": "Det gick inte att skapa mottagningslänk. Försök igen.",
+      "updateFailed": "Det gick inte att uppdatera mottagningslänken. Försök igen.",
+      "deleteFailed": "Det gick inte att ta bort mottagningslänken. Försök igen.",
+      "aliasCreateFailed": "Det gick inte att skapa alias. Försök igen.",
+      "passwordUpdateFailed": "Det gick inte att uppdatera lösenordsskyddet"
+    },
+    "delete": {
+      "title": "Ta bort mottagningslänk",
+      "description": "Denna åtgärd kan inte ångras. Länken kommer att tas bort permanent och kommer inte längre att kunna ta emot filer.",
+      "confirmButton": "Ta bort länk",
+      "cancelButton": "Avboka",
+      "deleting": "Tar bort..."
+    },
+    "upload": {
+      "metadata": {
+        "title": "Skicka filer - OUITRANSFER",
+        "description": "Skicka filer via den delade länken",
+        "descriptionWithLimit": "Ladda upp filer (max {limit} filer)"
+      },
+      "layout": {
+        "defaultTitle": "Skicka filer",
+        "importantInfo": "Viktig information:",
+        "maxFiles": "Maximalt {count} fil(er)",
+        "maxFileSize": "Maximal filstorlek: {size}MB",
+        "allowedTypes": "Tillåtna typer: {types}",
+        "loading": "Laddar..."
+      },
+      "password": {
+        "title": "Skyddad länk",
+        "description": "Denna länk är lösenordsskyddad. Ange lösenordet för att fortsätta.",
+        "label": "Lösenord",
+        "placeholder": "Ange lösenord",
+        "cancel": "Avboka",
+        "submit": "Fortsätta",
+        "verifying": "Verifierar..."
+      },
+      "errors": {
+        "loadFailed": "Det gick inte att läsa in information. Försök igen.",
+        "passwordIncorrect": "Felaktigt lösenord. Försök igen.",
+        "linkNotFound": "Länken hittades inte eller har löpt ut.",
+        "linkInactive": "Denna länk är inaktiv.",
+        "linkExpired": "Denna länk har upphört att gälla.",
+        "uploadFailed": "Det gick inte att ladda upp filen",
+        "retry": "Försöka igen",
+        "fileTooLarge": "Filen är för stor. Maximal storlek: {maxSize}",
+        "fileTypeNotAllowed": "Filtypen är inte tillåten. Godkända typer: {allowedTypes}",
+        "maxFilesExceeded": "Maximalt {maxFiles} filer tillåtna",
+        "selectAtLeastOneFile": "Välj minst en fil",
+        "provideNameOrEmail": "Ange ditt namn eller din e-postadress",
+        "provideNameRequired": "Namn krävs",
+        "provideEmailRequired": "E-post krävs"
+      },
+      "fileDropzone": {
+        "dragActive": "Släpp filer här",
+        "dragInactive": "Dra filerna hit eller klicka för att välja",
+        "acceptedTypes": "Godkända typer: {types}",
+        "maxFileSize": "Maximal storlek: {size}",
+        "maxFiles": "Maximalt {count} filer",
+        "remainingFiles": "{remaining} av {max} filer kvar"
+      },
+      "fileList": {
+        "title": "Valda filer:",
+        "statusUploaded": "Uppladdad",
+        "statusError": "Fel",
+        "retry": "Försöka igen"
+      },
+      "form": {
+        "nameLabel": "Namn",
+        "nameLabelOptional": "Namn (valfritt)",
+        "namePlaceholder": "Ditt namn",
+        "emailLabel": "E-post",
+        "emailLabelOptional": "E-post (valfritt)",
+        "emailPlaceholder": "din@epost.se",
+        "descriptionLabel": "Beskrivning (valfritt)",
+        "descriptionPlaceholder": "Lägg till en beskrivning till filerna...",
+        "uploadButton": "Skicka {count} fil(er)",
+        "uploading": "Sändning...",
+        "privacyNotice": "Ditt namn, din e-post och dina uppladdningar kan vara synliga för ägaren av denna mottagningslänk."
+      },
+      "success": {
+        "title": "Filer har skickats! 🎉",
+        "description": "Du kan stänga den här sidan.",
+        "countMessage": "{count, plural, =1 {Fil skickad framgångsrikt!} other {# filer skickade framgångsrikt!}}"
+      },
+      "maxFilesReached": {
+        "title": "Filgränsen har nåtts",
+        "description": "Denna länk har redan tagit emot det maximala antalet {maxFiles, plural, =1 {fil} other {filer}} som är tillåtna.",
+        "contactOwner": "Om det uppstod ett fel eller om du behöver skicka fler filer, kontakta länkägaren."
+      },
+      "linkInactive": {
+        "title": "Länk inaktiv",
+        "description": "Denna mottagningslänk är tillfälligt inaktiv.",
+        "contactOwner": "Kontakta länkägaren för mer information."
+      },
+      "linkNotFound": {
+        "title": "Länken hittades inte",
+        "description": "Denna länk kan ha tagits bort eller aldrig funnits."
+      },
+      "linkExpired": {
+        "title": "Länken har löpt ut",
+        "description": "Denna mottagningslänk har upphört att gälla och accepterar inte längre filer.",
+        "contactOwner": "Kontakta länkägaren om du behöver skicka filer."
+      }
+    },
+    "components": {
+      "fileRow": {
+        "addDescription": "Lägg till beskrivning...",
+        "anonymous": "Anonym"
+      },
+      "fileActions": {
+        "edit": "Redigera",
+        "preview": "Förhandsvisning",
+        "download": "Ladda ner",
+        "delete": "Radera",
+        "copyToMyFiles": "Kopiera till mina filer",
+        "copying": "Kopierar..."
+      },
+      "editField": {
+        "saveChanges": "Spara ändringar",
+        "cancelEdit": "Avbryt redigering"
+      }
+    }
+  },
+  "searchBar": {
+    "placeholder": "Sök efter filer och mappar...",
+    "placeholderFiles": "Sök efter filer...",
+    "placeholderFolders": "Sök i mappar...",
+    "results": "Visar {filtered} av {total} objekt",
+    "noResults": "Inga resultat hittades för \"{query}\""
+  },
+  "settings": {
+    "groups": {
+      "defaultDescription": "Konfigurationsalternativ",
+      "general": {
+        "title": "Allmän",
+        "description": "Grundläggande programinställningar"
+      },
+      "email": {
+        "title": "E-post",
+        "description": "E-postserverkonfiguration"
+      },
+      "security": {
+        "title": "Säkerhet",
+        "description": "Säkerhets- och autentiseringsinställningar"
+      },
+      "storage": {
+        "title": "Lagring",
+        "description": "Lagringskonfiguration för filer"
+      },
+      "oidc": {
+        "title": "OpenID Connect (SSO)",
+        "description": "Konfigurera SSO-autentisering via OpenID Connect"
+      },
+      "backgrounds": {
+        "title": "Bakgrundsbilder",
+        "description": "Hantera bakgrundsbilder för WeTransfer-stilade uppladdningssidor"
+      },
+      "cleanup": {
+        "title": "Automatisk rensning",
+        "description": "Livscykelhantering för utgånget innehåll, inaktiverade konton och föräldralösa filer. Automatisk radering är avstängd som standard."
+      }
+    },
+    "fields": {
+      "noDescription": "Ingen beskrivning tillgänglig",
+      "appLogo": {
+        "title": "Applikationslogotyp",
+        "description": "Bild för applikationslogotyp"
+      },
+      "appName": {
+        "title": "Applikationsnamn",
+        "description": "Applikationsnamnet visas för användarna"
+      },
+      "appUrl": {
+        "title": "Applikations-URL",
+        "description": "Applikationens offentliga URL, används i e-postlänkar"
+      },
+      "appDescription": {
+        "title": "Applikationsbeskrivning",
+        "description": "Kort beskrivning av ansökan"
+      },
+      "showHomePage": {
+        "title": "Offentlig startsida",
+        "description": "Visa den offentliga startsidan för besökare. Om detta är inaktiverat omdirigeras besökare till inloggningssidan."
+      },
+      "hideVersion": {
+        "title": "Dölj version",
+        "description": "Dölj OUITRANSFER-versionen från sidfoten på alla sidor"
+      },
+      "footerEnabled": {
+        "title": "Visa sidfot",
+        "description": "Visa sidfötsbaren längst ner på alla sidor"
+      },
+      "footerText": {
+        "title": "Sidfots text",
+        "description": "Företags- eller organisationsnamn som visas i sidfoten"
+      },
+      "footerUrl": {
+        "title": "Sidfots URL",
+        "description": "Länk-URL för sidfottexten"
+      },
+      "smtpEnabled": {
+        "title": "SMTP aktiverad",
+        "description": "Aktivera eller inaktivera SMTP-e-postfunktioner"
+      },
+      "smtpHost": {
+        "title": "SMTP-server",
+        "description": "SMTP-serveradress"
+      },
+      "smtpPort": {
+        "title": "SMTP-port",
+        "description": "SMTP-serverport"
+      },
+      "smtpUser": {
+        "title": "SMTP-användarnamn",
+        "description": "Användarnamn för SMTP-autentisering"
+      },
+      "smtpPass": {
+        "title": "SMTP-lösenord",
+        "description": "Lösenord för SMTP-autentisering"
+      },
+      "smtpFromName": {
+        "title": "Avsändarens namn",
+        "description": "Visningsnamn för skickade e-postmeddelanden"
+      },
+      "smtpFromEmail": {
+        "title": "Avsändarens e-post",
+        "description": "Avsändarens e-postadress"
+      },
+      "smtpSecure": {
+        "title": "Anslutningssäkerhet",
+        "description": "Säkerhetsmetod för SMTP-anslutning - Auto (rekommenderas), SSL, STARTTLS eller Ingen (osäker)",
+        "options": {
+          "auto": "Auto (rekommenderas)",
+          "ssl": "SSL (Port 465)",
+          "tls": "STARTTLS (Port 587)",
+          "none": "Ingen (osäker)"
+        }
+      },
+      "smtpNoAuth": {
+        "title": "Ingen autentisering",
+        "description": "Aktivera detta för interna servrar som inte kräver användarnamn/lösenord (döljer auth-fält)"
+      },
+      "smtpTrustSelfSigned": {
+        "title": "Lita på självsignerade certifikat",
+        "description": "Aktivera detta för att lita på självsignerade SSL/TLS-certifikat (användbart för utvecklingsmiljöer)"
+      },
+      "testSmtp": {
+        "title": "Testa SMTP-anslutning",
+        "description": "Testa om SMTP-konfigurationen är giltig"
+      },
+      "maxLoginAttempts": {
+        "title": "Maximalt antal inloggningsförsök",
+        "description": "Maximalt antal inloggningsförsök före blockering"
+      },
+      "loginBlockDuration": {
+        "title": "Blockeringstid",
+        "description": "Varaktighet (i sekunder) att blockera efter fler försök"
+      },
+      "passwordMinLength": {
+        "title": "Minsta lösenordslängd",
+        "description": "Minsta antal tecken för lösenord"
+      },
+      "passwordResetTokenExpiration": {
+        "title": "Återställ tokens utgång",
+        "description": "Giltighetstid (i sekunder) för lösenordsåterställningstoken"
+      },
+      "maxFileSize": {
+        "title": "Maximal filstorlek",
+        "description": "Maximal filstorlek tillåten för uppladdningar. Kan åsidosättas per användare eller grupp."
+      },
+      "maxTotalStoragePerUser": {
+        "title": "Maximalt lagringsutrymme per användare",
+        "description": "Total lagringsgräns per användare. Kan åsidosättas per användare eller grupp."
+      },
+      "quotaWarningThresholds": {
+        "title": "Tröskelvärden för kvotvarningar (%)",
+        "description": "Kommaseparerade procenttal, t.ex. \"80,90\", vid vilka en kvotvarning skickas till användaren per e-post. Varje värde måste vara ett heltal mellan 1 och 99. En separat avisering skickas när lagringen når 100 %."
+      },
+      "quotaGracePeriodDays": {
+        "title": "Kvotens respitperiod (dagar)",
+        "description": "Hur många dagar en användare får överstiga sin kvot innan smart radering kan agera (endast när smart radering är aktiverat nedan). Minimum 0."
+      },
+      "quotaSmartDeletionEnabled": {
+        "title": "Smart radering av filer över kvot",
+        "description": "Avstängd som standard. När aktiverad raderas de äldsta osäkra filerna hos en användare som överskridit kvoten i säker ordning efter respitperioden: först icke-delade uppladdningar, sedan filer i delningar som varit inaktiva under perioden nedan. Filer i aktiva delningar raderas aldrig, om inget är säkert att ta bort blockeras nya uppladdningar istället."
+      },
+      "quotaInactiveShareDays": {
+        "title": "Tröskel för inaktiv delning (dagar)",
+        "description": "En delnings filer är berättigade till smart radering när delningen inte haft någon aktivitet under detta antal dagar. Minimum 1."
+      },
+      "reverseShareQuotaSoftEnforcement": {
+        "title": "Mjuk tillämpning för mottagningslänk",
+        "description": "Aktiverad som standard. Låter externa gäster fortsätta ladda upp till en mottagningslänk även om ägaren är något över kvoten, så att samlingar inte avbryts. Uppladdningar blockeras ändå när ägaren överstiger toleransen som anges nedan, och ägaren aviseras om att frigöra utrymme."
+      },
+      "reverseShareMaxOverageFactor": {
+        "title": "Överskridningsfaktor för mottagningslänk",
+        "description": "Mjuk tillämpning tillåter uppladdningar till mottagningslänk tills användningen når denna multipel av ägarens kvot (t.ex. 3 = upp till tre gånger gränsen). Minimum 1."
+      },
+      "reverseShareAbsoluteMaxBytes": {
+        "title": "Absolut maxgräns för mottagningslänk",
+        "description": "Fast övre gräns för mjuk tillämpning av mottagningslänk, oavsett faktorn ovan. Ange 0 för ingen absolut gräns."
+      },
+      "firstUserAccess": {
+        "title": "Första användaråtkomst",
+        "description": "Inställningar för första åtkomst för nya användare"
+      },
+      "serverUrl": {
+        "title": "Server URL",
+        "description": "Bas-URL för OUITRANSFER-servern (t.ex.: https://OUITRANSFER.example.com)"
+      },
+      "passwordAuthEnabled": {
+        "title": "Lösenordsautentisering",
+        "description": "Aktivera eller inaktivera lösenordsbaserad autentisering"
+      },
+      "emailDigestHour": {
+        "title": "Timme för sammanfattningsutskick",
+        "description": "Timme på dagen (0-23) då sammanfattningsmejl skickas"
+      },
+      "emailJobRetentionDays": {
+        "title": "Bevarandetid för e-postjobb",
+        "description": "Antal dagar som slutförda e-postjobb sparas innan rensning"
+      },
+      "emailQueueIntervalSeconds": {
+        "title": "Köbearbetningsintervall",
+        "description": "Sekunder mellan bearbetningscykler för e-postkön"
+      },
+      "emailQueueMaxRetries": {
+        "title": "Maximalt antal e-postförsök",
+        "description": "Maximalt antal återförsök för misslyckade e-postmeddelanden"
+      },
+      "auditRetentionDays": {
+        "title": "Lagringsperiod för granskningslogg",
+        "description": "Antal dagar att behålla granskningsloggar (0 = för alltid, minimum 7)"
+      },
+      "autoCleanupEnabled": {
+        "title": "Aktivera automatisk rensning",
+        "description": "Huvudbrytare för schemalagd rensning av utgångna delningslänkar, utgångna mottagningslänkfiler och föräldralösa filer. Avstängd som standard, inget raderas automatiskt förrän du aktiverar detta."
+      },
+      "autoCleanupIntervalHours": {
+        "title": "Rensningsintervall (timmar)",
+        "description": "Hur ofta rensningsuppgiften körs. Minimum 1 timme."
+      },
+      "autoCleanupGracePeriodDays": {
+        "title": "Respitperiod (dagar)",
+        "description": "Extra days kept after a share or reverse share expires before it is permanently deleted. 0 means delete as soon as it expires."
+      },
+      "autoCleanupNotifyDaysBefore": {
+        "title": "Varna före radering (dagar)",
+        "description": "Skickar ägaren ett varningsmail om \"väntande permanent radering\" detta antal dagar innan innehållet raderas. 0 inaktiverar varningen. Bör vara högst lika med respitperioden."
+      },
+      "accountDeactivationCleanupEnabled": {
+        "title": "Radera inaktiverade kontons filer",
+        "description": "När aktiverat raderas filer tillhörande ett inaktiverat konto permanent efter fördröjningen nedan. Avstängd som standard, inaktivering ensam raderar aldrig filer."
+      },
+      "accountDeactivationCleanupDays": {
+        "title": "Rensningsfördröjning efter inaktivering (dagar)",
+        "description": "Dagar efter att ett konto inaktiverats innan dess filer raderas (endast när alternativet ovan är aktiverat). Minimum 1."
+      },
+      "autoCleanupOrphansEnabled": {
+        "title": "Rensa föräldralösa filer",
+        "description": "När aktiverat körs en dubbelriktad genomsökning som tar bort databasposter som pekar på saknade lagringsobjekt och lagringsobjekt utan databaspost. Avstängd som standard."
+      },
+      "autoCleanupOrphanMinAgeHours": {
+        "title": "Minsta ålder för föräldralösa filer (timmar)",
+        "description": "Endast filer och objekt äldre än detta beaktas under genomsökningen av föräldralösa filer, vilket skyddar pågående uppladdningar. Minimum 1."
+      }
+    },
+    "buttons": {
+      "save": "Spara {group}",
+      "testSmtp": "Testa anslutningen",
+      "testing": "Testning..."
+    },
+    "errors": {
+      "loadFailed": "Det gick inte att läsa in inställningarna",
+      "updateFailed": "Det gick inte att uppdatera inställningarna",
+      "passwordAuthRequiresProvider": "Det går inte att inaktivera lösenordsautentisering utan att ha minst en aktiv autentiseringsleverantör",
+      "auditRetentionInvalid": "[TO_TRANSLATE] Audit retention must be 0 (keep forever) or at least 7 days",
+      "cleanupValueInvalid": "Värdet måste vara ett heltal på minst {min}",
+      "notifyDaysExceedsGrace": "Varningens ledtid bör inte överstiga respitperioden, annars skickas ingen varning",
+      "quotaThresholdsInvalid": "Ange kommaseparerade procenttal mellan 1 och 99, till exempel \"80,90\""
+    },
+    "messages": {
+      "noChanges": "Inga ändringar att spara",
+      "updateSuccess": "{group} inställningar uppdaterade framgångsrikt",
+      "smtpTestSuccess": "SMTP-anslutningen lyckades! Din e-postkonfiguration fungerar korrekt.",
+      "smtpTestFailed": "SMTP-anslutningen misslyckades: {error}",
+      "smtpTestGenericError": "Det gick inte att testa SMTP-anslutningen. Kontrollera dina inställningar och försök igen.",
+      "smtpNotEnabled": "SMTP är inte aktiverat. Vänligen aktivera SMTP först.",
+      "smtpMissingHostPort": "Vänligen fyll i SMTP-värd och port innan du testar.",
+      "smtpMissingAuth": "Vänligen fyll i SMTP-användarnamn och lösenord, eller aktivera alternativet \"Ingen autentisering\"."
+    },
+    "title": "Inställningar",
+    "breadcrumb": "Inställningar",
+    "pageTitle": "Inställningar",
+    "tooltips": {
+      "testSmtp": "Testar SMTP-anslutningen med de värden som för närvarande anges i formuläret. För att göra ändringar permanenta, kom ihåg att spara dina inställningar efter testet.",
+      "defaultPlaceholder": "Ange och tryck på Enter"
+    },
+    "redirectUri": {
+      "placeholder": "https://minwebbplats.com",
+      "previewLabel": "Komplett URL som kommer att sparas:"
+    },
+    "emailAdmin": {
+      "queueStatus": "Status för e-postkö",
+      "pending": "Väntande",
+      "sentLast24h": "Skickade (24h)",
+      "failed": "Misslyckade",
+      "digestQueue": "Sammanfattningskö",
+      "sendTest": "Skicka testmejl",
+      "testPlaceholder": "mottagare@exempel.se",
+      "testSending": "Skickar...",
+      "testSuccess": "Testmejl köades framgångsrikt",
+      "testError": "Det gick inte att skicka testmejlet"
+    }
+  },
+  "share": {
+    "errors": {
+      "invalidPassword": "Ogiltigt lösenord. Försök igen.",
+      "loadFailed": "Det gick inte att läsa in delningen",
+      "downloadFailed": "Det gick inte att ladda ned filen"
+    },
+    "messages": {
+      "downloadStarted": "Nedladdningen startade"
+    },
+    "password": {
+      "title": "Lösenordsskyddad del",
+      "protected": "Ange lösenordet för att komma åt de delade filerna.",
+      "incorrect": "Felaktigt lösenord. Försök igen.",
+      "label": "Lösenord",
+      "placeholder": "Ange delningslösenord",
+      "submit": "Överlämna"
+    },
+    "details": {
+      "untitled": "Namnlös dela",
+      "created": "Skapad: {date}",
+      "expires": "Upphör: {date}"
+    },
+    "downloadAll": "Ladda ner alla",
+    "notFound": {
+      "title": "Dela ej hittades",
+      "description": "Den här andelen kan ha tagits bort eller upphört att gälla."
+    },
+    "pageTitle": "Dela",
+    "metadata": {
+      "defaultDescription": "Dela filer säkert",
+      "filesShared": "{count, plural, =1 {1 fil delad} other {# filer delade}}"
+    },
+    "identification": {
+      "title": "Besökaridentifiering",
+      "subtitle": "Ange dina uppgifter för att komma åt denna delning",
+      "nameLabel": "Namn",
+      "emailLabel": "E-post",
+      "submit": "Fortsätt",
+      "error": "Det gick inte att skicka identifieringen. Försök igen.",
+      "optional": "Valfritt",
+      "nameRequired": "Namn är obligatoriskt",
+      "emailRequired": "E-post är obligatorisk",
+      "emailInvalid": "Ange en giltig e-postadress",
+      "metadataError": "Failed to load share information. Please try again.",
+      "rateLimited": "Too many attempts. Please try again later.",
+      "privacyNotice": "Dina åtkomster och nedladdningar kan vara synliga för avsändaren av denna delning."
+    }
+  },
+  "shareActions": {
+    "fileTitle": "Dela fil",
+    "folderTitle": "Dela mapp",
+    "linkTitle": "Skapa länk",
+    "linkDescriptionFile": "Skapa en anpassad länk för att dela filen",
+    "linkDescriptionFolder": "Skapa en anpassad länk för att dela mappen",
+    "aliasLabel": "Länkalias",
+    "aliasPlaceholder": "Ange anpassat alias",
+    "linkReady": "Din delningslänk är klar:",
+    "generateLink": "Skapa länk",
+    "copyLink": "Kopiera länk",
+    "deleteTitle": "Ta bort Share",
+    "deleteConfirmation": "Är du säker på att du vill ta bort den här delningen? Denna åtgärd kan inte ångras.",
+    "addDescriptionPlaceholder": "Lägg till beskrivning...",
+    "editTitle": "Redigera Dela",
+    "newPasswordLabel": "Nytt lösenord (låt vara tomt för att hålla det aktuellt)",
+    "newPasswordPlaceholder": "Ange nytt lösenord",
+    "manageFilesTitle": "Hantera filer",
+    "manageFilesDescription": "Välj filer och mappar som ska inkluderas i den här resursen",
+    "manageRecipientsTitle": "Hantera mottagare",
+    "itemsSelected": "{count} objekt valda",
+    "editSuccess": "Delningen har uppdaterats",
+    "editError": "Det gick inte att uppdatera delningen",
+    "editErrorMetadata": "Kunde inte uppdatera delningsdetaljer",
+    "editErrorPassword": "Kunde inte uppdatera delningslösenord",
+    "bulkDeleteConfirmation": "Är du säker på att du vill ta bort {count, plural, =1 {1 delning} other {# delningar}}? Denna åtgärd kan inte ångras.",
+    "bulkDeleteTitle": "Ta bort valda andelar",
+    "keepCurrentPasswordHint": "Lämna tomt för att behålla nuvarande lösenord",
+    "passwordRequired": "Lösenord krävs för det nya lösenordsskyddet"
+  },
+  "shareDetails": {
+    "title": "Dela detaljer",
+    "subtitle": "Visa och hantera information för den här andelen",
+    "basicInfo": "Grundläggande information",
+    "name": "Namn",
+    "description": "Beskrivning",
+    "shareLink": "Dela länk",
+    "dates": "Datum",
+    "security": "Säkerhet",
+    "files": "Filer",
+    "recipients": "Mottagare",
+    "views": "Visningar",
+    "created": "Skapad",
+    "expires": "Upphör att gälla",
+    "never": "Aldrig",
+    "untitled": "Namnlös dela",
+    "noDescription": "Ingen beskrivning",
+    "notAvailable": "N/A",
+    "invalidDate": "Ogiltigt datum",
+    "passwordProtected": "Lösenordsskyddad",
+    "publicAccess": "Allmän tillgång",
+    "maxViews": "Max antal visningar:",
+    "noLink": "Ingen länk genererad",
+    "generateLink": "Skapa länk",
+    "editLink": "Redigera länk",
+    "copyLink": "Kopiera länk",
+    "openLink": "Öppna länken",
+    "editSecurity": "Redigera säkerhet",
+    "editExpiration": "Redigera utgångsdatum",
+    "qrCode": "QR-kod",
+    "downloadQrCode": "Ladda ner QR-kod",
+    "clickToEnlargeQrCode": "Klicka för att förstora QR-koden",
+    "loadError": "Det gick inte att läsa in delningsinformation",
+    "activity": {
+      "title": "Aktivitet",
+      "noActivity": "Ingen aktivitet registrerad ännu.",
+      "access": "Visad",
+      "download": "Nedladdat",
+      "anonymous": "Anonym",
+      "loadMore": "Ladda mer",
+      "showingCount": "Visar {shown} av {total}",
+      "loadError": "Det gick inte att ladda aktivitetsdata.",
+      "filterAll": "Alla åtgärder",
+      "filterAccess": "Endast visningar",
+      "filterDownload": "Endast nedladdningar",
+      "filterAllVisitors": "Alla besökare",
+      "filterIdentified": "Identifierade",
+      "filterAnonymous": "Anonyma",
+      "you": "Du",
+      "source": {
+        "tracking_token": "Via mottagarlänk",
+        "cookie": "Självidentifierad",
+        "selfDeclaredHint": "Självdeklarerad identitet, ej verifierad",
+        "authenticated_user": "Registrerad användare"
+      }
+    },
+    "lastDownloaded": "Senast nedladdat",
+    "privacySummary": "Integritet",
+    "privacyNameField": "Besökarnamn:",
+    "privacyEmailField": "Besökar-e-post:",
+    "privacyNotifyOnDownload": "Nedladdningsaviseringar aktiverade",
+    "privacyInactivityAlert": "Inaktivitetsvarning efter {days} dagar",
+    "fieldValue": {
+      "OPTIONAL": "Valfritt",
+      "REQUIRED": "Obligatoriskt"
+    },
+    "recipientNotified": "Meddelad",
+    "recipientAccess": "{count, plural, one {# åtkomst} other {# åtkomster}}",
+    "recipientAccessWithLast": "{count, plural, one {# åtkomst} other {# åtkomster}} · senast {lastAccess}"
+  },
+  "shareExpiration": {
+    "title": "Dela utgångsinställningar",
+    "subtitle": "Konfigurera när den här andelen upphör",
+    "currentStatus": "Aktuell status",
+    "expires": "Upphör att gälla:",
+    "neverExpires": "Går aldrig ut",
+    "enableExpiration": "Aktivera utgångsdatum",
+    "expirationDate": "Utgångsdatum",
+    "validation": {
+      "dateRequired": "Välj ett utgångsdatum",
+      "dateMustBeFuture": "Sista utgångsdatum måste ligga i framtiden"
+    },
+    "success": {
+      "expirationSet": "Sista utgångsdatum har ställts in",
+      "expirationUpdated": "Sista utgångsdatum har uppdaterats",
+      "expirationRemoved": "Förfallodatumet har tagits bort - delningen är nu permanent"
+    },
+    "error": {
+      "updateFailed": "Det gick inte att uppdatera utgångsinställningarna"
+    },
+    "info": {
+      "title": "Om utgångsdatum:",
+      "willBeInaccessible": "Aktien blir otillgänglig efter detta datum",
+      "canBeChanged": "Du kan ändra eller ta bort utgångsdatumet när som helst",
+      "noExpiration": "Den här andelen kommer aldrig att upphöra att gälla och kommer att vara tillgänglig på obestämd tid."
+    }
+  },
+  "shareManager": {
+    "deleteSuccess": "Delningen har tagits bort",
+    "deleteError": "Det gick inte att ta bort delningen",
+    "updateSuccess": "Delningen har uppdaterats",
+    "updateError": "Det gick inte att uppdatera delningen",
+    "securityUpdateSuccess": "Säkerhetsinställningarna har uppdaterats",
+    "securityUpdateError": "Det gick inte att uppdatera säkerhetsinställningarna",
+    "expirationUpdateSuccess": "Inställningarna för utgångsdatum har uppdaterats",
+    "expirationUpdateError": "Det gick inte att uppdatera utgångsinställningarna",
+    "filesUpdateSuccess": "Filerna har uppdaterats",
+    "filesUpdateError": "Det gick inte att uppdatera filer",
+    "recipientsUpdateSuccess": "Mottagarna har uppdaterats",
+    "recipientsUpdateError": "Det gick inte att uppdatera mottagarna",
+    "linkGenerateSuccess": "Delningslänken har skapats",
+    "linkGenerateError": "Det gick inte att skapa delningslänk",
+    "notifyLoading": "Skickar aviseringar...",
+    "notifySuccess": "Mottagarna har meddelats",
+    "notifyError": "Det gick inte att meddela mottagarna",
+    "bulkDeleteError": "Det gick inte att ta bort delningar",
+    "bulkDeleteLoading": "Tar bort {count, plural, =1 {1 delning} other {# delningar}}...",
+    "bulkDeleteSuccess": "{count, plural, =1 {1 delning borttagen framgångsrikt} other {# delningar borttagna framgångsrikt}}",
+    "downloadSuccess": "Nedladdningen startade framgångsrikt",
+    "downloadError": "Det gick inte att ladda ned dela filer",
+    "noFilesToDownload": "Inga filer tillgängliga att ladda ner",
+    "creatingZip": "Skapar ZIP-fil...",
+    "zipDownloadSuccess": "ZIP-filen har laddats ned",
+    "zipDownloadError": "Det gick inte att skapa ZIP-fil",
+    "errors": {
+      "multipleDownloadNotSupported": "Nedladdning av flera delningar stöds inte ännu - ladda ner delningar individuellt"
+    },
+    "singleShareZipName": "{shareName}_files.zip",
+    "multipleSharesZipName": "{count}_shares_files.zip",
+    "defaultShareName": "Dela",
+    "pauseSuccess": "Delning pausad",
+    "pauseError": "Det gick inte att pausa delningen",
+    "resumeSuccess": "Delning återupptagen",
+    "resumeError": "Det gick inte att återuppta delningen. Om den har gått ut eller nått visningsgränsen, förläng den istället."
+  },
+  "shareMultipleFiles": {
+    "title": "Dela flera filer",
+    "shareNameLabel": "Dela namn",
+    "shareNamePlaceholder": "Ange delningsnamn",
+    "descriptionLabel": "Beskrivning",
+    "descriptionPlaceholder": "Ange en beskrivning (valfritt)",
+    "filesToShare": "Filer att dela",
+    "files": "filer",
+    "totalSize": "Total storlek: {size}",
+    "creating": "Skapar delning...",
+    "create": "Skapa Share",
+    "itemsToShare": "Objekt att dela ({count} {count, plural, =1 {objekt} other {objekt}})",
+    "defaultNameFiles": "{count, plural, one {# file} other {# files}}",
+    "defaultNameFolders": "{count, plural, one {# folder} other {# folders}}",
+    "defaultNameConnector": " and ",
+    "defaultNameSuffix": " shared",
+    "itemsBreakdown": "({fileCount, plural, one {# file} other {# files}}, {folderCount, plural, one {# folder} other {# folders}})"
+  },
+  "shareSecurity": {
+    "title": "Dela säkerhetsinställningar",
+    "subtitle": "Konfigurera lösenordsskydd och säkerhetsalternativ för den här resursen",
+    "currentStatus": "Aktuell status",
+    "passwordProtection": "Lösenordsskydd",
+    "password": "Lösenord",
+    "newPassword": "Nytt lösenord",
+    "passwordPlaceholder": "Ange ett säkert lösenord",
+    "existingPasswordMessage": "Den här resursen har redan ett lösenord. Om du vill uppdatera det, skriv in det nya lösenordet i fältet nedan och spara.",
+    "passwordRequirements": {
+      "title": "Lösenordskrav:",
+      "minLength": "Minst 2 tecken"
+    },
+    "info": {
+      "title": "Hur det fungerar:",
+      "withPassword": "Användare måste ange lösenordet för att komma åt den här resursen.",
+      "withoutPassword": "Alla med länken kan komma åt denna del utan lösenord."
+    },
+    "validation": {
+      "passwordRequired": "Lösenord krävs",
+      "passwordTooShort": "Lösenordet måste bestå av minst 2 tecken"
+    },
+    "success": {
+      "passwordSet": "Lösenordsskydd har aktiverats",
+      "passwordUpdated": "Lösenordet har uppdaterats",
+      "passwordRemoved": "Lösenordsskyddet har tagits bort"
+    },
+    "error": {
+      "updateFailed": "Det gick inte att uppdatera säkerhetsinställningarna"
+    }
+  },
+  "shares": {
+    "errors": {
+      "loadFailed": "Det gick inte att läsa in delningar",
+      "notifyFailed": "Det gick inte att meddela mottagarna",
+      "smtpConfigFailed": "Det gick inte att läsa in SMTP-konfigurationen"
+    },
+    "messages": {
+      "linkCopied": "Länken har kopierats till urklipp",
+      "recipientsNotified": "Mottagarna har meddelats"
+    },
+    "empty": {
+      "message": "Inga delningar har skapats ännu",
+      "createButton": "Skapa Share"
+    },
+    "header": {
+      "title": "Mina aktier",
+      "myShares": "Mina aktier"
+    },
+    "search": {
+      "title": "Alla aktier",
+      "createButton": "Skapa Share",
+      "placeholder": "Sök andelar...",
+      "results": "Hittade {filtered} av {total} delningar"
+    },
+    "pageTitle": "Aktier"
+  },
+  "sharesTable": {
+    "ariaLabel": "Delar tabell",
+    "never": "Aldrig",
+    "columns": {
+      "name": "NAMN",
+      "description": "BESKRIVNING",
+      "createdAt": "SKAPAD KL",
+      "expiresAt": "UTGÖR KL",
+      "status": "STATUS",
+      "security": "SÄKERHET",
+      "files": "FILER",
+      "recipients": "MOTTAGARE",
+      "actions": "ÅTGÄRDER"
+    },
+    "status": {
+      "neverExpires": "Går aldrig ut",
+      "active": "Aktiv",
+      "expired": "Utgått",
+      "paused": "Pausad",
+      "maxViewsReached": "Visningsgräns nådd",
+      "noLink": "Ingen länk",
+      "noLinkTooltip": "Den här delningen har ingen länk ännu och är inte tillgänglig. Skapa en länk för att dela den."
+    },
+    "security": {
+      "protected": "Skyddad",
+      "public": "Offentlig"
+    },
+    "filesCount": "filer",
+    "folderCount": "mappar",
+    "recipientsCount": "mottagare",
+    "actions": {
+      "menu": "Menyn Dela åtgärder",
+      "edit": "Redigera",
+      "manageFiles": "Hantera filer",
+      "manageRecipients": "Hantera mottagare",
+      "viewDetails": "Visa detaljer",
+      "generateLink": "Skapa länk",
+      "editLink": "Redigera länk",
+      "copyLink": "Kopiera länk",
+      "viewQrCode": "Se QR-koden",
+      "notifyRecipients": "Meddela mottagare",
+      "downloadShareFiles": "Ladda ner alla filer",
+      "delete": "Radera",
+      "pause": "Pausa",
+      "resume": "Återuppta",
+      "renew": "Förnya"
+    },
+    "bulkActions": {
+      "actions": "Åtgärder",
+      "download": "Ladda ner valt",
+      "delete": "Radera",
+      "selected": "{count, plural, =1 {1 delning vald} other {# delningar valda}}"
+    },
+    "selectAll": "Välj alla",
+    "selectShare": "Välj delning {shareName}"
+  },
+  "theme": {
+    "toggle": "Växla tema",
+    "light": "Ljus",
+    "dark": "Mörk",
+    "system": "System"
+  },
+  "twoFactor": {
+    "title": "Tvåfaktorsautentisering",
+    "description": "Lägg till ett extra lager av säkerhet till ditt konto",
+    "enabled": "Ditt konto är skyddat med tvåfaktorsautentisering",
+    "disabled": "Tvåfaktorsautentisering är inte aktiverad",
+    "status": {
+      "label": "Status:",
+      "enabled": "Aktiverad",
+      "disabled": "Inaktiverad"
+    },
+    "buttons": {
+      "enable2FA": "Aktivera 2FA",
+      "disable2FA": "Inaktivera 2FA"
+    },
+    "setup": {
+      "title": "Aktivera tvåfaktorsautentisering",
+      "description": "Skanna QR-koden med din autentiseringsapp och ange sedan verifieringskoden.",
+      "qrCode": "QR-kod",
+      "manualEntryKey": "Manuell inmatningsnyckel",
+      "verificationCode": "Verifieringskod",
+      "verificationCodePlaceholder": "Ange 6-siffrig kod",
+      "verificationCodeDescription": "Ange den sexsiffriga koden från din autentiseringsapp",
+      "verifyAndEnable": "Verifiera och aktivera",
+      "cancel": "Avboka",
+      "qrCodeAlt": "2FA QR-kod"
+    },
+    "disable": {
+      "title": "Inaktivera tvåfaktorsautentisering",
+      "description": "Ange ditt lösenord för att bekräfta att du inaktiverar tvåfaktorsautentisering.",
+      "password": "Lösenord",
+      "passwordPlaceholder": "Ange ditt lösenord",
+      "totpLabel": "Verifieringskod",
+      "totpHint": "Ange din 6-siffriga autentiseringskod eller en reservkod",
+      "confirm": "Bekräfta inaktivera",
+      "cancel": "Avboka",
+      "totpPlaceholder": "000 000"
+    },
+    "backupCodes": {
+      "title": "Säkerhetskopieringskoder",
+      "description": "Spara dessa reservkoder på ett säkert ställe. Du kan använda dem för att komma åt ditt konto om du tappar din autentiseringsenhet.",
+      "warning": "Viktig:",
+      "warningText": "Varje reservkod kan endast användas en gång. Håll dem säkra och dela dem inte med någon.",
+      "generateNew": "Generera nya säkerhetskopieringskoder",
+      "download": "Ladda ner säkerhetskopieringskoder",
+      "copyToClipboard": "Kopiera till Urklipp",
+      "savedMessage": "Jag har sparat mina säkerhetskopieringskoder",
+      "available": "{count} säkerhetskopieringskoder tillgängliga",
+      "instructions": [
+        "• Spara dessa koder på en säker plats",
+        "• Varje reservkod kan endast användas en gång",
+        "• Du kan generera nya koder när som helst"
+      ]
+    },
+    "verification": {
+      "title": "Tvåfaktorsautentisering",
+      "description": "Ange den sexsiffriga koden från din autentiseringsapp",
+      "backupDescription": "Ange en av dina reservkoder för att fortsätta",
+      "verificationCode": "Verifieringskod",
+      "backupCode": "Säkerhetskopieringskod",
+      "verificationCodePlaceholder": "000 000",
+      "backupCodePlaceholder": "XXXX-XXXX",
+      "verify": "Kontrollera",
+      "verifying": "Verifierar...",
+      "useBackupCode": "Använd reservkod istället",
+      "useAuthenticatorCode": "Använd autentiseringskod istället",
+      "rememberDevice": "Kom ihåg den här enheten i 30 dagar",
+      "rememberDeviceDescription": "Du behöver inte ange 2FA-koder på den här enheten på 30 dagar"
+    },
+    "trustedDevices": {
+      "title": "Betrodda enheter - 2FA",
+      "description": "Enheter som inte kräver 2FA-verifiering",
+      "noDevices": "Inga betrodda enheter",
+      "deviceName": "Anordning",
+      "addedOn": "Tillagd på",
+      "expiresOn": "Upphör att gälla",
+      "remove": "Ta bort",
+      "removeAll": "Ta bort alla",
+      "confirmRemove": "Är du säker på att du vill ta bort den här betrodda enheten?",
+      "confirmRemoveAll": "Är du säker på att du vill ta bort alla betrodda enheter?",
+      "deviceRemoved": "Betrodd enhet har tagits bort",
+      "allDevicesRemoved": "Alla betrodda enheter har tagits bort",
+      "loadFailed": "Det gick inte att läsa in betrodda enheter",
+      "removeFailed": "Det gick inte att ta bort betrodd enhet",
+      "removeAllFailed": "Det gick inte att ta bort alla betrodda enheter",
+      "loading": "Läser in betrodda enheter...",
+      "noDevicesDescription": "Enheter kommer att visas här när du väljer att lita på dem under 2FA-verifiering",
+      "tableHeaders": {
+        "device": "Anordning",
+        "added": "Tillagd",
+        "expires": "Upphör att gälla",
+        "lastUsed": "Senast använd",
+        "ipAddress": "IP-adress",
+        "actions": "Åtgärder"
+      },
+      "status": {
+        "never": "Aldrig",
+        "expired": "Utgått"
+      },
+      "modals": {
+        "removeDevice": {
+          "title": "Ta bort betrodd enhet",
+          "added": "Lade till:",
+          "ip": "IP:"
+        },
+        "removeAllDevices": {
+          "title": "Ta bort alla betrodda enheter",
+          "description": "Detta kommer att ta bort {count} betrodd{count, plural, =1 { enhet} other {a enheter}}. Du måste verifiera 2FA på alla enheter igen."
+        },
+        "buttons": {
+          "cancel": "Avboka",
+          "removing": "Tar bort...",
+          "removeDevice": "Ta bort enhet",
+          "removeAllDevices": "Ta bort alla enheter"
+        }
+      }
+    },
+    "messages": {
+      "enabledSuccess": "Tvåfaktorsautentisering har aktiverats!",
+      "disabledSuccess": "Tvåfaktorsautentisering har inaktiverats",
+      "backupCodesGenerated": "Nya reservkoder har genererats",
+      "backupCodesCopied": "Säkerhetskopieringskoder har kopierats till urklipp",
+      "setupFailed": "Det gick inte att generera 2FA-inställning",
+      "verificationFailed": "Ogiltig verifieringskod",
+      "disableFailed": "Det gick inte att inaktivera 2FA. Kontrollera ditt lösenord.",
+      "backupCodesFailed": "Det gick inte att generera reservkoder",
+      "backupCodesCopyFailed": "Det gick inte att kopiera reservkoder",
+      "statusLoadFailed": "Det gick inte att läsa in 2FA-status",
+      "enterVerificationCode": "Vänligen ange verifieringskoden",
+      "enterPassword": "Vänligen ange ditt lösenord",
+      "deviceTrusted": "Den här enheten har markerats som betrodd i 30 dagar"
+    },
+    "errors": {
+      "invalidVerificationCode": "Ogiltig verifieringskod",
+      "invalidTwoFactorCode": "Ogiltig tvåfaktorsautentiseringskod",
+      "twoFactorRequired": "Tvåfaktorsautentisering krävs",
+      "twoFactorAlreadyEnabled": "Tvåfaktorsautentisering är redan aktiverad",
+      "twoFactorNotEnabled": "Tvåfaktorsautentisering är inte aktiverad",
+      "passwordVerificationRequired": "Lösenordsverifiering krävs",
+      "invalidPassword": "Ogiltigt lösenord",
+      "userNotFound": "Användaren hittades inte"
+    },
+    "deviceNames": {
+      "unknownDevice": "Okänd enhet",
+      "browsers": {
+        "chrome": "Krom",
+        "firefox": "Firefox",
+        "safari": "Safari",
+        "edge": "Kant"
+      },
+      "platforms": {
+        "windows": " på Windows",
+        "macos": " på macOS",
+        "linux": " på Linux",
+        "iphone": " på iPhone",
+        "android": " på Android"
+      }
+    }
+  },
+  "uploadFile": {
+    "title": "Ladda upp fil",
+    "multipleTitle": "Ladda upp filer",
+    "selectFile": "Klicka för att välja en fil",
+    "selectMultipleFiles": "Klicka för att välja en eller flera filer",
+    "dragAndDrop": "eller dra och släpp filer här",
+    "filesQueued": "{count, plural, one {# fil köad för uppladdning} other {# filer köade för uppladdning}}",
+    "preview": "Förhandsvisning",
+    "uploadProgress": "Uppladdningsförlopp",
+    "upload": "Ladda upp",
+    "startUploads": "Starta uppladdningar",
+    "retry": "Försöka igen",
+    "finish": "Avsluta",
+    "success": "Filen har laddats upp",
+    "allSuccess": "{count, plural, =1 {Fil uppladdad framgångsrikt} other {# filer uppladdade framgångsrikt}}",
+    "partialSuccess": "{success} filer uppladdade framgångsrikt, {error} misslyckades",
+    "error": "Det gick inte att ladda upp filen",
+    "fileSizeExceeded": "Filstorleken överskrider gränsen på {maxsizemb}MB.",
+    "insufficientStorage": "Otillräckligt lagringsutrymme. Du har {availablespace}MB tillgängligt.",
+    "storageFull": "Otillräckligt lagringsutrymme. Tillgängligt: {available} GB, krävs: {required} GB.",
+    "unauthorized": "Obehörig: en giltig token krävs för att komma åt den här resursen.",
+    "globalDrop": {
+      "title": "Släpp filer för att ladda upp",
+      "description": "Släpp för att ladda upp dina filer"
+    },
+    "confirmCancel": {
+      "title": "Avbryt uppladdningar",
+      "messageSingle": "Det pågår en uppladdning.",
+      "messageMultiple": "Det pågår {count} uppladdningar.",
+      "warning": "Om du stänger nu kommer uppladdningar att avbrytas och alla framsteg kommer att gå förlorade.",
+      "continue": "Fortsätt uppladdningar",
+      "cancel": "Avbryt uppladdningar"
+    },
+    "pasteSuccess": "{count, plural, =1 {Bild klistrad och uppladdad framgångsrikt} other {# bilder klistrade och uppladdade framgångsrikt}}",
+    "errors": {
+      "addFileFailed": "Det gick inte att lägga till {name}: {error}",
+      "uploadFailed": "Uppladdningen misslyckades",
+      "networkError": "Kan inte nå servern. Kontrollera din anslutning.",
+      "storageUnavailable": "Lagringstjänsten är inte tillgänglig. Försök igen senare."
+    }
+  },
+  "groups": {
+    "header": {
+      "title": "Grupper",
+      "management": "Grupphantering",
+      "addGroup": "Skapa Grupp"
+    },
+    "table": {
+      "name": "Namn",
+      "description": "Beskrivning",
+      "members": "Medlemmar",
+      "maxFileSize": "Max Filstorlek",
+      "maxStorage": "Max Lagring",
+      "storageUsed": "Använt Lagringsutrymme",
+      "actions": "Åtgärder",
+      "inherited": "Ärvd",
+      "unlimited": "Obegränsat",
+      "empty": "Inga grupper ännu. Skapa en för att komma igång."
+    },
+    "form": {
+      "titleCreate": "Skapa Grupp",
+      "titleEdit": "Redigera Grupp",
+      "name": "Namn",
+      "namePlaceholder": "Ange gruppnamn",
+      "description": "Beskrivning",
+      "descriptionPlaceholder": "Valfri beskrivning",
+      "ldapDn": {
+        "label": "LDAP-grupp DN",
+        "placeholder": "t.ex. CN=Developers,OU=Groups,DC=corp,DC=local",
+        "description": "Distinguished Name för Active Directory-gruppen som ska mappas. Lämna tomt om du inte använder LDAP."
+      },
+      "quota": {
+        "title": "Lagringskvoter",
+        "maxFileSize": "Max Filstorlek",
+        "maxTotalStorage": "Max Total Lagring",
+        "inherit": "Ärv (globalt standard)",
+        "unlimited": "Obegränsat",
+        "custom": "Anpassad"
+      },
+      "create": "Skapa Grupp",
+      "save": "Spara Ändringar"
+    },
+    "delete": {
+      "title": "Ta Bort Grupp",
+      "confirmationWithMembers": "Den här gruppen har {count} medlem/medlemmar. De kommer att avkopplas och deras kvoter återgår till de globala standardvärdena.",
+      "confirmation": "Är du säker på att du vill ta bort den här gruppen?",
+      "confirm": "Ta Bort Grupp"
+    },
+    "detail": {
+      "title": "Gruppdetaljer",
+      "members": "Medlemmar",
+      "addMember": "Lägg Till Medlem",
+      "searchUsers": "Sök användare...",
+      "noMembers": "Inga medlemmar i den här gruppen.",
+      "remove": "Ta bort",
+      "moveWarning": "Den här användaren är för närvarande i gruppen \"{groupName}\". De kommer att flyttas till den här gruppen.",
+      "storageUsed": "Använt Lagringsutrymme",
+      "memberUser": "Användare",
+      "memberEmail": "E-post",
+      "memberStorage": "Lagring",
+      "selectUser": "Välj en användare...",
+      "add": "Lägg till",
+      "userInOtherGroup": "Den här användaren är för närvarande i gruppen \"{groupName}\". De kommer att flyttas."
+    },
+    "validation": {
+      "nameRequired": "Gruppnamn krävs"
+    },
+    "messages": {
+      "createSuccess": "Gruppen har skapats",
+      "updateSuccess": "Gruppen har uppdaterats",
+      "deleteSuccess": "Gruppen har tagits bort",
+      "memberAdded": "Medlem har lagts till i gruppen",
+      "memberRemoved": "Medlem har tagits bort från gruppen"
+    },
+    "errors": {
+      "submitFailed": "Det gick inte att {mode} gruppen",
+      "deleteFailed": "Det gick inte att ta bort gruppen",
+      "memberAddFailed": "Det gick inte att lägga till medlemmen",
+      "memberRemoveFailed": "Det gick inte att ta bort medlemmen"
+    },
+    "actions": {
+      "viewDetails": "Visa Detaljer",
+      "edit": "Redigera",
+      "delete": "Ta Bort"
+    }
+  },
+  "users": {
+    "modes": {
+      "create": "skapa",
+      "edit": "redigera"
+    },
+    "errors": {
+      "loadFailed": "Det gick inte att läsa in användare",
+      "submitFailed": "Det gick inte att {mode} användare",
+      "deleteFailed": "Det gick inte att ta bort användaren",
+      "statusUpdateFailed": "Det gick inte att uppdatera användarstatus"
+    },
+    "messages": {
+      "createSuccess": "Användaren skapades",
+      "updateSuccess": "Användaren har uppdaterats",
+      "deleteSuccess": "Användaren har raderats",
+      "activateSuccess": "Användaren har aktiverats",
+      "deactivateSuccess": "Användaren avaktiverades framgångsrikt"
+    },
+    "actions": {
+      "edit": "Redigera",
+      "activate": "Aktivera",
+      "deactivate": "Avaktivera",
+      "delete": "Radera"
+    },
+    "delete": {
+      "title": "Bekräfta Ta bort användare",
+      "confirmation": "Är du säker på att du vill ta bort användaren {firstName} {lastName}? Denna åtgärd kan inte ångras.",
+      "confirm": "Ta bort användare"
+    },
+    "form": {
+      "titleCreate": "Lägg till ny användare",
+      "titleEdit": "Redigera användare",
+      "firstName": "Förnamn",
+      "lastName": "Efternamn",
+      "username": "Användarnamn",
+      "email": "E-post",
+      "password": "Lösenord",
+      "newPassword": "Nytt lösenord (valfritt)",
+      "passwordPlaceholder": "Lämna tomt för att behålla nuvarande lösenord",
+      "role": "Roll",
+      "roleUser": "Användare",
+      "roleAdmin": "Administration",
+      "group": "Grupp",
+      "noGroup": "Ingen Grupp",
+      "groupSaveError": "Det gick inte att uppdatera grupptilldelningen",
+      "create": "Skapa",
+      "save": "Spara",
+      "quota": {
+        "title": "Lagringskvoter",
+        "maxFileSize": "Maximal filstorlek",
+        "maxTotalStorage": "Maximalt totalt lagringsutrymme",
+        "inherit": "Använd standard",
+        "unlimited": "Obegränsat",
+        "custom": "Anpassad",
+        "saveSuccess": "Kvoten uppdaterades",
+        "saveError": "Det gick inte att uppdatera kvoten",
+        "currentUsage": "Aktuell användning",
+        "effectiveMaxFileSize": "Effektiv maximal filstorlek",
+        "effectiveMaxStorage": "Effektivt maximalt totalt lagringsutrymme",
+        "usagePercent": "Användning",
+        "sourceUser": "Användaråsidosättning",
+        "sourceGroup": "Grupp",
+        "sourceGlobal": "Globalt standardvärde",
+        "sourceAdminDefault": "Administratörens standardvärde"
+      }
+    },
+    "status": {
+      "title": "Bekräfta statusändring",
+      "confirmation": "Är du säker på att du vill {action} användaren {firstName} {lastName}?",
+      "activate": "Aktivera",
+      "deactivate": "Avaktivera",
+      "user": "Användare"
+    },
+    "header": {
+      "title": "Användarhantering",
+      "addUser": "Lägg till användare",
+      "management": "Användarhantering"
+    },
+    "table": {
+      "user": "USER",
+      "userRole": "Användare",
+      "email": "E-POST",
+      "status": "STATUS",
+      "role": "ROLL",
+      "actions": "ÅTGÄRDER",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "admin": "Administration",
+      "source": "Källa",
+      "ldap": "LDAP",
+      "local": "Lokal"
+    },
+    "invite": {
+      "button": "Generera inbjudningslänk",
+      "title": "Generera användarinbjudningslänk",
+      "description": "Generera en engångslänk som låter någon skapa sitt eget konto. Länken upphör att gälla om 15 minuter.",
+      "generating": "Genererar...",
+      "generate": "Generera länk",
+      "generated": "Inbjudningslänken genererades framgångsrikt!",
+      "linkReady": "Inbjudningslänk klar",
+      "linkReadyDescription": "Dela denna länk med personen du vill bjuda in. De kommer att kunna skapa sitt eget konto som en vanlig användare.",
+      "copyLink": "Kopiera länk",
+      "linkCopied": "Inbjudningslänken kopierades till urklipp!",
+      "expiresIn": "Upphör om 15 minuter",
+      "close": "Stäng",
+      "emailLabel": "[TO_TRANSLATE] Email address (optional)",
+      "emailPlaceholder": "[TO_TRANSLATE] name@example.com",
+      "emailHelp": "[TO_TRANSLATE] Send the invite link directly by email, or leave it empty to copy the link manually.",
+      "send": "[TO_TRANSLATE] Send Invitation",
+      "sending": "[TO_TRANSLATE] Sending...",
+      "emailSentToast": "[TO_TRANSLATE] Invitation email sent!",
+      "emailSentNotice": "[TO_TRANSLATE] Invitation sent to {email}",
+      "errors": {
+        "generateFailed": "Det gick inte att generera inbjudningslänk",
+        "copyFailed": "Det gick inte att kopiera länken",
+        "invalidEmail": "[TO_TRANSLATE] Please enter a valid email address",
+        "sendFailed": "[TO_TRANSLATE] The invite link was generated, but the email could not be sent. Copy the link and share it manually."
+      }
+    }
+  },
+  "validation": {
+    "firstNameRequired": "Förnamn krävs",
+    "lastNameRequired": "Efternamn krävs",
+    "usernameLength": "Användarnamnet måste vara minst 3 tecken långt",
+    "usernameSpaces": "Användarnamnet får inte innehålla mellanslag",
+    "invalidEmail": "Vänligen ange en giltig e-postadress",
+    "passwordLength": "Lösenordet måste vara minst 12 tecken långt",
+    "passwordsMatch": "Lösenord måste matcha",
+    "emailRequired": "E-post krävs",
+    "emailOrUsernameRequired": "E-post eller användarnamn krävs",
+    "passwordRequired": "Lösenord krävs",
+    "passwordMinLength": "Lösenordet måste bestå av minst 6 tecken",
+    "nameRequired": "Namn krävs",
+    "required": "Detta fält är obligatoriskt",
+    "passwordMaxLength": "Password must not exceed 72 bytes",
+    "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+  },
+  "registerWithInvite": {
+    "title": "Skapa ditt konto",
+    "description": "Fyll i informationen nedan för att skapa ditt konto",
+    "labels": {
+      "firstName": "Förnamn",
+      "firstNamePlaceholder": "Ange ditt förnamn",
+      "lastName": "Efternamn",
+      "lastNamePlaceholder": "Ange ditt efternamn",
+      "username": "Användarnamn",
+      "usernamePlaceholder": "Välj ett användarnamn",
+      "email": "E-post",
+      "emailPlaceholder": "Ange din e-post",
+      "password": "Lösenord",
+      "passwordPlaceholder": "Välj ett lösenord",
+      "confirmPassword": "Bekräfta lösenord",
+      "confirmPasswordPlaceholder": "Bekräfta ditt lösenord"
+    },
+    "buttons": {
+      "creating": "Skapar konto...",
+      "createAccount": "Skapa konto"
+    },
+    "validation": {
+      "firstNameRequired": "Förnamn krävs",
+      "lastNameRequired": "Efternamn krävs",
+      "usernameMinLength": "Användarnamnet måste vara minst 3 tecken",
+      "invalidEmail": "Ogiltig e-post",
+      "passwordMinLength": "Lösenordet måste vara minst 12 tecken",
+      "passwordsMatch": "Lösenorden måste matcha",
+      "passwordMaxLength": "Password must not exceed 72 bytes",
+      "passwordComplexity": "Password must include at least 3 of: lowercase, uppercase, number, symbol"
+    },
+    "messages": {
+      "success": "Kontot skapades framgångsrikt! Omdirigerar till inloggning...",
+      "redirecting": "Omdirigerar till inloggning..."
+    },
+    "errors": {
+      "invalidToken": "Fel med inbjudningslänk",
+      "tokenUsed": "Denna inbjudningslänk har redan använts",
+      "tokenExpired": "Denna inbjudningslänk har gått ut",
+      "usernameExists": "Användarnamnet finns redan",
+      "emailExists": "E-postadressen finns redan",
+      "createFailed": "Det gick inte att skapa konto. Försök igen."
+    },
+    "pageTitle": "Skapa konto"
+  },
+  "filesTree": {
+    "noItems": "Inga objekt att visa"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Byt språk"
+  },
+  "ldap": {
+    "pageTitle": "LDAP / Active Directory",
+    "pageDescription": "Konfigurera LDAP-synkronisering för att importera användare från Active Directory",
+    "config": {
+      "title": "Konfiguration",
+      "description": "LDAP-serveranslutning och attributmappningsinställningar",
+      "autoSync": "Automatic synchronization",
+      "autoSyncHelp": "Periodically sync users from the directory at the interval below. Manual sync stays available either way.",
+      "connection": "Anslutning",
+      "serverUrl": "Server URL",
+      "useTls": "Använd TLS (LDAPS)",
+      "tlsSkipVerify": "Hoppa över TLS-verifiering",
+      "tlsSkipVerifyWarning": "Varning: Inaktivering av certifikatverifiering tillåter man-in-the-middle-attacker",
+      "bindDn": "Bind DN",
+      "bindPassword": "Bind-lösenord",
+      "bindPasswordPlaceholder": "Ange lösenord för att testa eller spara nytt lösenord",
+      "search": "Sökinställningar",
+      "searchBase": "Sökbas",
+      "syncGroupDn": "Synkronisera grupp DN",
+      "attributes": "Attributmappning",
+      "usernameAttr": "Användarnamnsattribut",
+      "emailAttr": "E-postattribut",
+      "displayNameAttr": "Attribut för visningsnamn",
+      "syncSettings": "Synkroniseringsinställningar",
+      "syncInterval": "Synkroniseringsintervall (minuter)",
+      "syncIntervalHelp": "Mellan 15 minuter och 7 dagar (10080 minuter)",
+      "appUrl": "Program-URL",
+      "appUrlHelp": "Används i välkomstmeddelanden som skickas till nya LDAP-användare",
+      "defaultLocaleLabel": "Default email language",
+      "defaultLocaleDescription": "Language for welcome and notification emails sent to users provisioned via LDAP. Only languages with translated emails are listed.",
+      "appUrlRequired": "Program-URL krävs när LDAP är aktiverat",
+      "bindPasswordRequired": "Bind-lösenord krävs för en ny konfiguration",
+      "members": "medlemmar",
+      "save": "Spara konfiguration",
+      "testConnection": "Testa anslutning",
+      "saveSuccess": "LDAP-konfiguration sparad",
+      "saveError": "Det gick inte att spara LDAP-konfiguration",
+      "testSuccess": "Anslutningstestet lyckades",
+      "testError": "Anslutningstestet misslyckades"
+    },
+    "groupMapping": {
+      "title": "Gruppmappning",
+      "description": "Lokala grupper mappade till Active Directory-grupper för kvottilldelning",
+      "manageGroups": "Hantera grupper",
+      "groupName": "Gruppnamn",
+      "adGroupDn": "AD-grupp DN",
+      "noMapping": "Ingen gruppmappning konfigurerad. Ange LDAP DNs i grupphantering för att mappa AD-grupper till lokala kvotgrupper."
+    },
+    "sync": {
+      "title": "Synkroniseringsåtgärder",
+      "description": "Manuell synkronisering och synkroniseringshistorik",
+      "syncNow": "Synkronisera nu",
+      "triggered": "LDAP-synkronisering startad",
+      "error": "Det gick inte att starta LDAP-synkronisering",
+      "lastSync": "Senaste synkronisering",
+      "nextSync": "Nästa synkronisering",
+      "noHistory": "Ingen synkroniseringshistorik ännu",
+      "date": "Datum",
+      "trigger": "Utlösare",
+      "duration": "Varaktighet",
+      "created": "Skapad",
+      "updated": "Uppdaterad",
+      "deactivated": "Avaktiverad",
+      "reactivated": "Återaktiverad",
+      "skipped": "Hoppades över",
+      "status": "Status",
+      "statusLabel": {
+        "success": "Lyckades",
+        "error": "Fel",
+        "partial": "Partiell",
+        "running": "Körs"
+      }
+    },
+    "syncDetail": {
+      "title": "Synkroniseringsinformation",
+      "details": "Hoppa över och felinformation",
+      "type": "Typ",
+      "username": "Användarnamn",
+      "email": "E-post",
+      "message": "Meddelande",
+      "detailType": {
+        "skip": "Hoppade över",
+        "error": "Fel"
+      }
+    },
+    "banner": {
+      "active": "LDAP/AD-synkronisering aktiv",
+      "disabled": "LDAP/AD-synkronisering inaktiverad",
+      "configure": "Konfigurera"
+    },
+    "warnings": {
+      "title": "Konfigurationsvarningar"
+    },
+    "time": {
+      "justNow": "just nu",
+      "minutesAgo": "för {minutes}m sedan",
+      "hoursAgo": "för {hours}h sedan",
+      "daysAgo": "för {days}d sedan"
+    },
+    "browse": {
+      "retry": "Retry",
+      "error": "Something went wrong. Please try again.",
+      "directory": {
+        "title": "Browse Directory",
+        "description": "Pick a base DN from the live directory tree.",
+        "buttonLabel": "Browse directory",
+        "useDetectedBase": "Use detected base",
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "loading": "Loading directory…",
+        "noRoots": "No naming contexts found.",
+        "noSubContainers": "No sub-containers"
+      },
+      "groups": {
+        "title": "Find Group",
+        "description": "Search the directory for a group to sync.",
+        "buttonLabel": "Search groups",
+        "placeholder": "Type to search groups…",
+        "prompt": "Start typing to search for a group.",
+        "searching": "Searching…",
+        "empty": "No groups match your search.",
+        "truncated": "Too many results — refine your search.",
+        "resultCount": "{count, plural, =0 {No groups found} one {# group found} other {# groups found}}"
+      }
+    }
+  },
+  "backgroundImages": {
+    "empty": "Inga bakgrundsbilder uppladdade. Ladda upp bilder för att aktivera anpassade bakgrunder för WeTransfer-stilade delningar.",
+    "add": "Lägg till bild",
+    "uploading": "Laddar upp...",
+    "uploadSuccess": "Bilden laddades upp framgångsrikt",
+    "uploadError": "Det gick inte att ladda upp bilden",
+    "deleteConfirm": "Är du säker på att du vill ta bort denna bakgrundsbild?",
+    "deleteSuccess": "Bilden raderades framgångsrikt",
+    "deleteError": "Det gick inte att ta bort bilden",
+    "untitled": "Namnlös",
+    "rename": "Klicka för att byta namn",
+    "renameSuccess": "Bilden döptes om framgångsrikt",
+    "renameError": "Det gick inte att byta namn på bilden",
+    "moveUp": "Flytta upp",
+    "moveDown": "Flytta ner",
+    "reorderError": "Det gick inte att ordna om bilderna"
+  },
+  "quickShare": {
+    "dropzone": {
+      "title": "Snabb delning",
+      "description": "Dra dina filer här för att dela snabbt",
+      "browse": "eller klicka för att bläddra",
+      "dragActive": "Släpp filer här"
+    },
+    "upload": {
+      "title": "Snabb delning",
+      "addMore": "Lägg till fler filer",
+      "dropToAdd": "Dra filer för att lägga till",
+      "namePlaceholder": "Delningsnamn",
+      "expiration": {
+        "label": "Upphör om",
+        "1day": "1 dag",
+        "7days": "7 dagar",
+        "30days": "30 dagar",
+        "never": "Aldrig"
+      },
+      "password": {
+        "label": "Lösenordsskydd",
+        "placeholder": "Ange lösenord"
+      },
+      "recipients": {
+        "label": "Mottagare",
+        "placeholder": "Lägg till e-postadresser",
+        "hint": "Tryck på Enter för att lägga till"
+      },
+      "share": "Dela",
+      "sharing": "Delar...",
+      "waitingUpload": "Laddar upp... delningen kommer att skapas automatiskt",
+      "defaultName": "{count, plural, one {# fil} other {# filer}}",
+      "error": "Det gick inte att skapa delning",
+      "uploadError": "Vissa filer gick inte att ladda upp",
+      "notifyError": "Delningen skapades men det gick inte att meddela mottagarna",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
+      "invalidEmail": "Ange en giltig e-postadress"
+    },
+    "confirmation": {
+      "title": "Delad!",
+      "copyLink": "Kopiera länk",
+      "copied": "Länken har kopierats!",
+      "summary": {
+        "files": "{count, plural, one {# fil} other {# filer}}",
+        "expires": "upphör om {duration}",
+        "noExpiry": "ingen utgång",
+        "password": "lösenordsskyddad",
+        "noPassword": "inget lösenord"
+      },
+      "newShare": "Ny delning",
+      "downloadQr": "Ladda ner QR-kod"
+    }
+  },
+  "notificationPreferences": {
+    "pageTitle": "Aviseringsinställningar",
+    "description": "Välj vilka e-postaviseringar du vill ta emot",
+    "type": "Aviseringstyp",
+    "category": "Kategori",
+    "frequency": "Frekvens",
+    "immediate": "Omedelbar",
+    "disabled": "Inaktiverad",
+    "alwaysEnabled": "Alltid aktiverad",
+    "save": "Spara inställningar",
+    "saveSuccess": "Aviseringsinställningar sparade",
+    "saveError": "Det gick inte att spara inställningarna",
+    "noChanges": "Inga ändringar att spara",
+    "types": {
+      "password_reset": "Återställning av lösenord",
+      "welcome": "Välkomstmeddelande",
+      "account_deactivated": "Konto inaktiverat",
+      "account_reactivated": "Konto återaktiverat",
+      "share_invitation": "Inbjudan till delning",
+      "share_accessed": "Delning öppnad",
+      "share_downloaded": "Fil nedladdad från delning",
+      "share_expiring": "Delning går snart ut",
+      "share_expired": "Delning har gått ut",
+      "share_max_views_reached": "Maximalt antal visningar nått",
+      "share_no_activity": "Ingen aktivitet på delning",
+      "reverse_share_invitation": "Inbjudan till mottagningslänk",
+      "reverse_share_uploaded": "Filer uppladdade till mottagningslänk",
+      "reverse_share_expiring": "Mottagningslänk går snart ut",
+      "reverse_share_expired": "Mottagningslänk har gått ut",
+      "quota_warning": "Kvotvarning",
+      "quota_exceeded": "Kvot överskriden",
+      "files_auto_deleted": "Filer automatiskt borttagna",
+      "share_auto_deleted": "Delning automatiskt borttagen",
+      "admin_user_registered": "Ny användare registrerad (administratör)",
+      "admin_quota_alert": "Kvotvarning för användare (administratör)",
+      "test_email": "Test-e-post",
+      "reverse_share_auto_deleted": "[TO_TRANSLATE] Reverse share auto-deleted",
+      "reverse_share_pending_deletion": "[TO_TRANSLATE] Reverse share pending deletion",
+      "share_pending_deletion": "[TO_TRANSLATE] Share pending deletion"
+    },
+    "descriptions": {
+      "share_accessed": "När någon öppnar en länk till dina delade filer",
+      "share_downloaded": "När någon laddar ned filer från din delning",
+      "share_expiring": "En påminnelse innan din delningslänk löper ut",
+      "share_expired": "När din delningslänk har löpt ut och inte längre är tillgänglig",
+      "share_pending_deletion": "När din utgångna delning är schemalagd för permanent radering",
+      "share_max_views_reached": "När din delning når det maximala antalet tillåtna visningar",
+      "share_no_activity": "När din delning inte haft några nedladdningar på ett tag",
+      "reverse_share_uploaded": "När någon laddar upp filer till din omvända delningslänk",
+      "reverse_share_expiring": "En påminnelse innan din omvända delningslänk löper ut",
+      "reverse_share_expired": "När din omvända delningslänk har löpt ut",
+      "reverse_share_pending_deletion": "När din utgångna omvända delning är schemalagd för radering",
+      "reverse_share_auto_deleted": "När din omvända delning har raderats automatiskt efter utgångsdatum",
+      "quota_warning": "När din lagringsanvändning närmar sig din kvotgräns",
+      "quota_exceeded": "När din lagringsanvändning har överskridit din kvotgräns",
+      "files_auto_deleted": "När filer har raderats automatiskt för att frigöra kvotsutrymme",
+      "share_auto_deleted": "När en delning har raderats automatiskt av rensningssystemet",
+      "admin_user_registered": "När en ny användare registrerar sig på plattformen (endast administratörer)",
+      "admin_quota_alert": "När en användares lagringsanvändning överskrider deras kvot (endast administratörer)"
+    },
+    "categories": {
+      "account": "Konto",
+      "shares": "Delningar",
+      "reverseShares": "Mottagningslänkar",
+      "quota": "Quotas",
+      "admin": "Administration",
+      "test": "Test"
+    },
+    "saving": "Sparar...",
+    "loadError": "Det gick inte att läsa in aviseringsinställningarna",
+    "retry": "Försök igen",
+    "unsavedChanges": "{count, plural, one {# osparad ändring} other {# osparade ändringar}}"
+  },
+  "admin": {
+    "tabs": {
+      "users": "[TO_TRANSLATE] Users",
+      "groups": "[TO_TRANSLATE] Groups",
+      "ldap": "[TO_TRANSLATE] LDAP",
+      "label": "[TO_TRANSLATE] User management"
+    }
+  }
+}
