@@ -2457,6 +2457,7 @@
       "error": "Failed to create share",
       "uploadError": "Some files failed to upload",
       "notifyError": "Share created but failed to notify recipients",
+      "notifySuccess": "{count, plural, one {# invitation sent} other {# invitations sent}}",
       "invalidEmail": "Please enter a valid email address"
     },
     "confirmation": {

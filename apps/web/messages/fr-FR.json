@@ -2276,6 +2276,7 @@
       "error": "Échec de la création du partage",
       "uploadError": "Certains fichiers n'ont pas pu être téléversés",
       "notifyError": "Partage créé mais impossible de notifier les destinataires",
+      "notifySuccess": "{count, plural, one {# invitation envoyée} other {# invitations envoyées}}",
       "invalidEmail": "Veuillez entrer une adresse email valide"
     },
     "confirmation": {

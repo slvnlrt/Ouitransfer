@@ -195,7 +195,9 @@ export function useQuickShare(options: UseQuickShareOptions = {}) {
       // Notify recipients if any (non-blocking)
       if (settings.recipients.length > 0) {
         try {
-          await notifyRecipients(shareId, {});
+          const result = await notifyRecipients(shareId, {});
+          const count = result.data.notifiedRecipients?.length ?? settings.recipients.length;
+          toast.success(t("quickShare.upload.notifySuccess", { count }));
         } catch {
           toast.error(t("quickShare.upload.notifyError"));
         }
