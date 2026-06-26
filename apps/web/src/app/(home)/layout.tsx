@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations } from "next-intl/server";
+
+import { GLOBAL_NAMESPACES, HOME_NAMESPACES, routeMessages } from "@/i18n/message-keys";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations();
@@ -9,6 +12,18 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function HomeLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+export default async function HomeLayout({ children }: { children: React.ReactNode }) {
+  const messages = await getMessages();
+
+  return (
+    <NextIntlClientProvider
+      messages={routeMessages(
+        messages as Record<string, unknown>,
+        GLOBAL_NAMESPACES,
+        HOME_NAMESPACES,
+      )}
+    >
+      {children}
+    </NextIntlClientProvider>
+  );
 }

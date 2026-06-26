@@ -13,7 +13,7 @@ import {
 } from "next/font/google";
 import { headers } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale } from "next-intl/server";
+import { getLocale, getMessages } from "next-intl/server";
 
 import "./globals.css";
 
@@ -23,6 +23,7 @@ import { Favicon } from "@/components/layout/favicon";
 import { DynamicToaster } from "@/components/ui/dynamic-toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/auth-context";
+import { GLOBAL_NAMESPACES, pickMessages } from "@/i18n/message-keys";
 import { RTL_LANGUAGES } from "@/lib/rtl-languages";
 import { QueryProvider } from "../providers/query-provider";
 import { ThemeColorProvider } from "../providers/theme-color-provider";
@@ -114,6 +115,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const messages = await getMessages();
   const isRTL = RTL_LANGUAGES.includes(locale as (typeof RTL_LANGUAGES)[number]);
 
   // Per-request CSP nonce set by the proxy (A7-03). Forwarded to next-themes so
@@ -129,7 +131,9 @@ export default async function RootLayout({
       <body
         className={`${outfit.variable} ${inter.variable} ${roboto.variable} ${openSans.variable} ${poppins.variable} ${nunito.variable} ${lato.variable} ${montserrat.variable} ${sourceSans.variable} ${raleway.variable} ${workSans.variable} font-sans antialiased`}
       >
-        <NextIntlClientProvider>
+        <NextIntlClientProvider
+          messages={pickMessages(messages as Record<string, unknown>, GLOBAL_NAMESPACES)}
+        >
           <QueryProvider>
             {/* SkipToContent needs NextIntlClientProvider (useTranslations).
                 Favicon needs QueryProvider (useAppInfo → useQueryClient).
