@@ -72,10 +72,13 @@ export const AUTH_NAMESPACES = [
  * DefaultFooter, error boundary.
  */
 export const PUBLIC_SHARE_NAMESPACES = [
+  "contextMenu",
   "errors",
+  "fileActions",
   "filePreview",
   "fileSelector",
   "files",
+  "filesTable",
   "folderActions",
   "footer",
   "languageSwitcher",
@@ -99,6 +102,7 @@ export const REVERSE_SHARE_NAMESPACES = [
   "languageSwitcher",
   "reverseShares",
   "theme",
+  "uploadFile",
 ] as const;
 
 /**
