@@ -338,33 +338,32 @@ optimizations/polish with no bugs:
 
 ---
 
-## TD-54 — next-intl sérialise toutes les traductions dans chaque page (RSC payload bloat)
+## TD-54 — next-intl sérialise toutes les traductions dans chaque page (RSC payload bloat) ✅ DONE
 
-**Context:**
-next-intl injecte l'intégralité du fichier de messages (~100 KB JSON) dans le RSC payload de
-chaque page, y compris les pages non authentifiées comme `/login`. Cela crée deux problèmes :
+**Resolved:** 2026-06-26
 
-1. **Performance** — chaque page embarque ~100 KB de traductions inutilisées dans la réponse HTML
-   initiale, au lieu des quelques KB réellement nécessaires par la page.
-2. **Divulgation de surface fonctionnelle** — un `curl` non authentifié sur `/login` expose
-   l'ensemble des clés de traduction (admin, audit, LDAP, quotas, etc.), révélant la surface
-   fonctionnelle complète de l'application à un visiteur anonyme.
+**Context:** `NextIntlClientProvider` dans le root layout héritait de toutes les traductions
+(~122 KB, 67 namespaces) via `i18n/request.ts`. Chaque page, y compris `/login`, embarquait la
+totalité dans son RSC payload — gaspillage de bande passante et divulgation de la surface
+fonctionnelle aux visiteurs anonymes.
 
-**Fix:**
-Configurer next-intl pour découper les messages par namespace/route. Deux approches possibles :
+**Fix appliqué (Option A) :**
+- Nouveau module `apps/web/src/i18n/message-keys.ts` : utilitaires `pickMessages()`/`routeMessages()`
+  et 5 groupes de namespaces vérifiés par traçage des composants (`GLOBAL`, `AUTH`,
+  `PUBLIC_SHARE`, `REVERSE_SHARE`, `HOME`).
+- Root layout : `NextIntlClientProvider messages={pickMessages(messages, GLOBAL_NAMESPACES)}` (~2 clés).
+- Layouts publics (login, forgot-password, reset-password, register-with-invite, /s/[alias],
+  /r/[alias], home, auth callbacks) : provider imbriqué avec les namespaces spécifiques à la route.
+- Layouts authentifiés (dashboard, files, admin, profile, notifications, customization, shares,
+  reverse-shares) : provider imbriqué avec tous les messages (pragmatique — trop de modals
+  cross-feature pour filtrer précisément, l'utilisateur est authentifié).
+- Review : 3 Critical (namespaces manquants + layout auth callbacks) + 2 Important, tous corrigés.
+- 424 tests web + type-check + lint clean.
 
-- **Option A (recommandée)** — Utiliser `getMessages()` avec filtrage par namespace dans chaque
-  layout/page : `const messages = await getMessages(); return pick(messages, ['common', 'login'])`.
-  Approche incrémentale, compatible avec la structure actuelle.
-- **Option B** — Restructurer les fichiers de messages en fichiers séparés par namespace
-  (`messages/en-US/common.json`, `messages/en-US/admin.json`, etc.) et charger dynamiquement.
-  Plus propre mais plus invasif.
-
-Dans les deux cas, les pages non authentifiées (`/login`, `/share/[id]`, `/quickshare/[id]`)
-ne devraient recevoir que les namespaces `common`, `login`/`share`/`quickShare`, et `errors`.
+**Résultat :** `/login` passe de ~122 KB à ~14 KB de traductions dans le RSC payload (~89%).
+Les pages publiques ne révèlent plus les namespaces admin/audit/LDAP/quotas.
 
 **Found during:** Analyse d'un curl non authentifié sur /login (juin 2026)
-**Severity:** Low — pas de données sensibles exposées (uniquement des labels UI), mais gaspillage
-de bande passante et divulgation inutile de la surface fonctionnelle
+**Severity:** Low — resolved
 
 ---
