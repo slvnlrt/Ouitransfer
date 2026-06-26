@@ -337,3 +337,34 @@ optimizations/polish with no bugs:
 **Severity:** Very low — all items are optimizations/polish, not defects
 
 ---
+
+## TD-54 — next-intl sérialise toutes les traductions dans chaque page (RSC payload bloat)
+
+**Context:**
+next-intl injecte l'intégralité du fichier de messages (~100 KB JSON) dans le RSC payload de
+chaque page, y compris les pages non authentifiées comme `/login`. Cela crée deux problèmes :
+
+1. **Performance** — chaque page embarque ~100 KB de traductions inutilisées dans la réponse HTML
+   initiale, au lieu des quelques KB réellement nécessaires par la page.
+2. **Divulgation de surface fonctionnelle** — un `curl` non authentifié sur `/login` expose
+   l'ensemble des clés de traduction (admin, audit, LDAP, quotas, etc.), révélant la surface
+   fonctionnelle complète de l'application à un visiteur anonyme.
+
+**Fix:**
+Configurer next-intl pour découper les messages par namespace/route. Deux approches possibles :
+
+- **Option A (recommandée)** — Utiliser `getMessages()` avec filtrage par namespace dans chaque
+  layout/page : `const messages = await getMessages(); return pick(messages, ['common', 'login'])`.
+  Approche incrémentale, compatible avec la structure actuelle.
+- **Option B** — Restructurer les fichiers de messages en fichiers séparés par namespace
+  (`messages/en-US/common.json`, `messages/en-US/admin.json`, etc.) et charger dynamiquement.
+  Plus propre mais plus invasif.
+
+Dans les deux cas, les pages non authentifiées (`/login`, `/share/[id]`, `/quickshare/[id]`)
+ne devraient recevoir que les namespaces `common`, `login`/`share`/`quickShare`, et `errors`.
+
+**Found during:** Analyse d'un curl non authentifié sur /login (juin 2026)
+**Severity:** Low — pas de données sensibles exposées (uniquement des labels UI), mais gaspillage
+de bande passante et divulgation inutile de la surface fonctionnelle
+
+---
