@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations } from "next-intl/server";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,6 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function NotificationsLayout({ children }: LayoutProps) {
-  return <>{children}</>;
+export default async function NotificationsLayout({ children }: LayoutProps) {
+  const messages = await getMessages();
+
+  return <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>;
 }
