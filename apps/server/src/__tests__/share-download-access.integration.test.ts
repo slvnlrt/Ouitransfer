@@ -13,6 +13,9 @@
 import type { FastifyInstance } from "fastify";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+// The mocked prisma (vi.mock below) — used to assert ShareVisit recording for B-34.
+import { prisma } from "../shared/prisma.js";
+
 // ── Hoisted prisma mock fns ───────────────────────────────────────────────────
 const {
   mockFileFindMany,
@@ -176,7 +179,7 @@ describe("R2 download/access hardening — integration", () => {
     return app.signCookie(jwt);
   }
 
-  async function downloadUrl(key: string, password?: string) {
+  async function downloadUrl(key: string, password?: string, intent?: "preview" | "download") {
     const { token, cookie } = await csrf();
     return app.inject({
       method: "POST",
@@ -186,7 +189,11 @@ describe("R2 download/access hardening — integration", () => {
         cookie: `_csrf=${cookie}`,
         "x-csrf-token": token,
       },
-      payload: { objectName: key, ...(password ? { password } : {}) },
+      payload: {
+        objectName: key,
+        ...(password ? { password } : {}),
+        ...(intent ? { intent } : {}),
+      },
     });
   }
 
@@ -266,6 +273,66 @@ describe("R2 download/access hardening — integration", () => {
       const res = await downloadUrl(shareFileToken);
       expect(res.statusCode).toBe(200);
       expect(res.json().url).toBeDefined();
+    });
+  });
+
+  // ── B-34 — a preview is a view, not a download ───────────────────────────────
+  describe("B-34 — preview vs download tracking", () => {
+    const visitCreate = vi.mocked(prisma.shareVisit.create);
+
+    beforeEach(() => {
+      // resolveDownloadTarget (token) + the lifecycle gate + resolveShareVisitContext all read these.
+      mockFileFindUnique.mockResolvedValue(fileRecord());
+      mockShareFindFirst.mockResolvedValue(
+        shareRecord({ creator: { email: null, locale: null, isActive: true }, alias: null }),
+      );
+    });
+
+    it("records a ShareVisit{action:'download'} and updates Share.lastDownloadedAt for a download", async () => {
+      const res = await downloadUrl(shareFileToken, undefined, "download");
+      expect(res.statusCode).toBe(200);
+
+      // Tracking is fire-and-forget — wait for it to settle.
+      await vi.waitFor(() => expect(visitCreate).toHaveBeenCalledTimes(1));
+      expect(visitCreate.mock.calls[0][0].data).toMatchObject({
+        action: "download",
+        fileId: FILE_A,
+      });
+      // The download path stamps Share.lastDownloadedAt.
+      await vi.waitFor(() =>
+        expect(mockShareUpdate).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({ lastDownloadedAt: expect.any(Date) }),
+          }),
+        ),
+      );
+    });
+
+    it("records a ShareVisit{action:'preview'} and does NOT touch download stats for a preview", async () => {
+      const res = await downloadUrl(shareFileToken, undefined, "preview");
+      expect(res.statusCode).toBe(200);
+
+      await vi.waitFor(() => expect(visitCreate).toHaveBeenCalledTimes(1));
+      expect(visitCreate.mock.calls[0][0].data).toMatchObject({
+        action: "preview",
+        fileId: FILE_A,
+      });
+
+      // A preview must never write download stats: no recipient downloadCount bump and no
+      // Share.lastDownloadedAt update (so remindNonDownloaders stays correct).
+      const recipientUpdate = vi.mocked(prisma.shareRecipient.update);
+      expect(recipientUpdate).not.toHaveBeenCalled();
+      const lastDownloadedUpdates = mockShareUpdate.mock.calls.filter(
+        (c) => (c[0]?.data as Record<string, unknown> | undefined)?.lastDownloadedAt !== undefined,
+      );
+      expect(lastDownloadedUpdates).toHaveLength(0);
+    });
+
+    it("defaults to download tracking when intent is omitted", async () => {
+      const res = await downloadUrl(shareFileToken);
+      expect(res.statusCode).toBe(200);
+      await vi.waitFor(() => expect(visitCreate).toHaveBeenCalledTimes(1));
+      expect(visitCreate.mock.calls[0][0].data).toMatchObject({ action: "download" });
     });
   });
 

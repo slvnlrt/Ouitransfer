@@ -2030,7 +2030,9 @@
         "cookie": "محدد ذاتياً",
         "selfDeclaredHint": "هوية معلنة ذاتياً، غير موثقة",
         "authenticated_user": "مستخدم مسجّل"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "آخر تحميل",
     "privacySummary": "الخصوصية",

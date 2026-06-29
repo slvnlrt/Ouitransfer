@@ -286,7 +286,12 @@ export const removeFolders = (
  */
 export const getShareVisits = (
   shareId: string,
-  params?: { action?: string; identified?: "true" | "false"; page?: number; limit?: number },
+  params?: {
+    action?: "access" | "preview" | "download";
+    identified?: "true" | "false";
+    page?: number;
+    limit?: number;
+  },
   options?: AxiosRequestConfig,
 ): Promise<GetShareVisitsResult> => {
   return apiInstance.get(`/api/shares/${shareId}/visits`, { params, ...options });

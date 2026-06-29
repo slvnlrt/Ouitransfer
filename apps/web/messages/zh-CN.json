@@ -2030,7 +2030,9 @@
         "cookie": "自我识别",
         "selfDeclaredHint": "自声明身份，未验证",
         "authenticated_user": "注册用户"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "最后下载",
     "privacySummary": "隐私",

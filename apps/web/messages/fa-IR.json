@@ -2034,7 +2034,9 @@
         "cookie": "خود-شناسایی‌شده",
         "selfDeclaredHint": "هویت خود‌اعلام‌شده، تایید‌نشده",
         "authenticated_user": "کاربر ثبت‌نام‌شده"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "آخرین دانلود",
     "privacySummary": "حریم خصوصی",

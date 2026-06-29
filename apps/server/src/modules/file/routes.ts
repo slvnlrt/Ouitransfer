@@ -240,23 +240,23 @@ async function resolveDownloadTarget(
 }
 
 /**
- * Shared download-tracking logic for share-based file downloads.
- * Verifies the file belongs to the share, checks if requester is the owner,
- * and if not: records a ShareVisit, updates lastDownloadedAt, and sends
- * a share_downloaded notification — all fire-and-forget.
+ * Resolves the shared context for recording a share-file ShareVisit (download OR preview):
+ *  - verifies the file belongs to the share,
+ *  - returns `null` for the share owner (their own access is never tracked) or when the file/share
+ *    don't match,
+ *  - resolves visitor + recipient identity with the access-flow precedence
+ *    (token → self_declared/cookie → authenticated_user → anonymous).
  *
  * @param requestUserId - The authenticated user's ID, or undefined for anonymous access.
- *   Passed from the route handler to avoid redundant `request.jwtVerify()` calls.
  * @param ancestorFolderIds - Pre-resolved ancestor folder IDs (from getAncestorFolderIds).
- *   Shared with checkFileAccess to avoid duplicate DB lookups.
  */
-async function trackShareDownload(
+async function resolveShareVisitContext(
   request: FastifyRequest,
   fileRecord: { id: string; name: string },
   shareId: string,
   requestUserId: string | undefined,
   ancestorFolderIds: string[],
-): Promise<void> {
+) {
   const trackingShareWhere =
     ancestorFolderIds.length > 0
       ? {
@@ -280,12 +280,11 @@ async function trackShareDownload(
     },
   });
 
-  if (!shareWithFile) return;
+  if (!shareWithFile) return null;
 
-  // Determine if the requester is the share owner
+  // The share owner's own access (download or preview) is never tracked.
   const isOwner = requestUserId !== undefined && requestUserId === shareWithFile.creatorId;
-
-  if (isOwner) return;
+  if (isOwner) return null;
 
   // Resolve visitor identity from the signed identification cookie (sv_{alias}).
   // The cookie is set during share access when the visitor identifies themselves.
@@ -301,7 +300,7 @@ async function trackShareDownload(
     }
   }
 
-  // Link this download to a ShareRecipient using the same resolver as the access flow:
+  // Link this visit to a ShareRecipient using the same resolver as the access flow:
   // cookie.recipientId (token-verified) → "token"; else cookie.email match → "self_declared".
   const resolvedRecipient = await resolveDownloadRecipient({ shareId, cookie: visitorCookie });
 
@@ -319,24 +318,69 @@ async function trackShareDownload(
     }
   }
 
-  // Authenticated fallback: if no token/cookie match was found but the downloader is a
-  // logged-in Ouitransfer user, record their verified identity. Precedence:
+  // Authenticated fallback: if no token/cookie match was found but the visitor is a logged-in
+  // Ouitransfer user, record their verified identity. Precedence:
   //   token → self_declared/cookie → authenticated_user → anonymous (null)
-  // Owner is already filtered out above (isOwner returns early).
-  let downloadUserId: string | undefined;
-  let downloadIdentificationSource: string | undefined = resolvedRecipient?.identificationSource;
+  // Owner is already filtered out above (returns null).
+  let userId: string | undefined;
+  let identificationSource: string | undefined = resolvedRecipient?.identificationSource;
   if (!resolvedRecipient?.recipientId && requestUserId) {
     const authenticatedUser = await prisma.user.findUnique({
       where: { id: requestUserId },
       select: { username: true, email: true },
     });
     if (authenticatedUser) {
-      downloadUserId = requestUserId;
-      downloadIdentificationSource = "authenticated_user";
+      userId = requestUserId;
+      identificationSource = "authenticated_user";
       visitorName = authenticatedUser.username;
       visitorEmail = authenticatedUser.email;
     }
   }
+
+  return {
+    shareWithFile,
+    visitorName,
+    visitorEmail,
+    userId,
+    identificationSource,
+    resolvedRecipient,
+  };
+}
+
+/**
+ * Shared download-tracking logic for share-based file downloads.
+ * Verifies the file belongs to the share, checks if requester is the owner,
+ * and if not: records a ShareVisit, updates lastDownloadedAt, and sends
+ * a share_downloaded notification — all fire-and-forget.
+ *
+ * @param requestUserId - The authenticated user's ID, or undefined for anonymous access.
+ *   Passed from the route handler to avoid redundant `request.jwtVerify()` calls.
+ * @param ancestorFolderIds - Pre-resolved ancestor folder IDs (from getAncestorFolderIds).
+ *   Shared with checkFileAccess to avoid duplicate DB lookups.
+ */
+async function trackShareDownload(
+  request: FastifyRequest,
+  fileRecord: { id: string; name: string },
+  shareId: string,
+  requestUserId: string | undefined,
+  ancestorFolderIds: string[],
+): Promise<void> {
+  const ctx = await resolveShareVisitContext(
+    request,
+    fileRecord,
+    shareId,
+    requestUserId,
+    ancestorFolderIds,
+  );
+  if (!ctx) return;
+  const {
+    shareWithFile,
+    visitorName,
+    visitorEmail,
+    userId: downloadUserId,
+    identificationSource: downloadIdentificationSource,
+    resolvedRecipient,
+  } = ctx;
 
   // Fire and forget — don't block the response.
   // Await visit insert before notification: if the visit record fails,
@@ -414,6 +458,49 @@ async function trackShareDownload(
       }
     }
   })().catch(() => {});
+}
+
+/**
+ * Records a share-file PREVIEW as a first-class ShareVisit{action:"preview"} (B-34).
+ *
+ * A preview is a *view*, not a download: it records the per-file view event (same visitor/recipient
+ * resolution and owner-skip guard as a download, via `resolveShareVisitContext`) but deliberately does
+ * NOT touch recipient download stats, `Share.lastDownloadedAt`, or send any notification — so
+ * `remindNonDownloaders` (which keys off `lastDownloadedAt == null`) stays correct. Fire-and-forget.
+ */
+async function trackShareFilePreview(
+  request: FastifyRequest,
+  fileRecord: { id: string; name: string },
+  shareId: string,
+  requestUserId: string | undefined,
+  ancestorFolderIds: string[],
+): Promise<void> {
+  const ctx = await resolveShareVisitContext(
+    request,
+    fileRecord,
+    shareId,
+    requestUserId,
+    ancestorFolderIds,
+  );
+  if (!ctx) return;
+  const { visitorName, visitorEmail, userId, identificationSource, resolvedRecipient } = ctx;
+
+  prisma.shareVisit
+    .create({
+      data: {
+        shareId,
+        fileId: fileRecord.id,
+        userId,
+        recipientId: resolvedRecipient?.recipientId,
+        visitorName,
+        visitorEmail,
+        ipAddress: request.ip,
+        userAgent: request.headers["user-agent"],
+        action: "preview",
+        identificationSource,
+      },
+    })
+    .catch((err) => getLogger().error({ err }, "Failed to create ShareVisit for preview"));
 }
 
 /**
@@ -1177,6 +1264,10 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         // callers.
         objectName: z.string().min(1, "The objectName is required"),
         password: z.string().optional().describe("Share password if required"),
+        // B-34: distinguishes a file PREVIEW (a view) from a real DOWNLOAD. The server resolves the
+        // share from the token either way; this only decides which ShareVisit event is recorded.
+        // Defaults to "download" so every existing caller is unchanged.
+        intent: z.enum(["preview", "download"]).optional().default("download"),
       }),
       response: {
         200: z.object({
@@ -1191,7 +1282,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      const { objectName: key, password } = request.body;
+      const { objectName: key, password, intent } = request.body;
 
       const {
         file: fileRecord,
@@ -1231,6 +1322,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         targetId: fileRecord.id,
         metadata: {
           method: "presigned-url",
+          intent,
           ...(shareId ? { shareId } : {}),
           ...(auditRecipient
             ? {
@@ -1241,15 +1333,26 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
-      // Track download for share-bound downloads (fire-and-forget).
+      // Record the share-bound activity (fire-and-forget). A preview is a per-file VIEW that never
+      // touches download stats; a download is a download (B-34).
       if (shareId) {
-        trackShareDownload(
-          request,
-          fileRecord,
-          shareId,
-          request.user?.userId,
-          ancestorFolderIds,
-        ).catch((err) => getLogger().error({ err }, "Failed to track share download"));
+        const track =
+          intent === "preview"
+            ? trackShareFilePreview(
+                request,
+                fileRecord,
+                shareId,
+                request.user?.userId,
+                ancestorFolderIds,
+              )
+            : trackShareDownload(
+                request,
+                fileRecord,
+                shareId,
+                request.user?.userId,
+                ancestorFolderIds,
+              );
+        track.catch((err) => getLogger().error({ err }, "Failed to track share file activity"));
       }
 
       return reply.send({ url, expiresIn: expires });

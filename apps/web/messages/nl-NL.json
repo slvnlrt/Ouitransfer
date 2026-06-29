@@ -2030,7 +2030,9 @@
         "cookie": "Zelf geïdentificeerd",
         "selfDeclaredHint": "Zelf opgegeven identiteit, niet geverifieerd",
         "authenticated_user": "Geregistreerde gebruiker"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "Laatst gedownload",
     "privacySummary": "Privacy",

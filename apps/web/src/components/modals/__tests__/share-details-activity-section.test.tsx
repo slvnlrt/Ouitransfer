@@ -57,6 +57,7 @@ function makeVisit(overrides: Partial<ShareVisit> = {}): ShareVisit {
     recipientId: null,
     shareId: "share-1",
     fileId: null,
+    fileName: null,
     recipient: null,
     identificationSource: "tracking_token",
     isOwner: false,

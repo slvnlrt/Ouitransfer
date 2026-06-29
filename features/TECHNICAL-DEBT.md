@@ -8,6 +8,29 @@ but must be addressed. Each item includes context and the fix needed.
 
 ---
 
+## TD-55 — Reverse-share file previews are not tracked as a distinct "preview" event
+
+**Context:** B-34 introduced a first-class per-file `ShareVisit{action:"preview"}` for **forward** shares
+(preview ≠ download). Reverse shares use a different endpoint (`getCachedReverseShareDownloadUrl`) and track
+*uploads* (`uploadedAt`), not downloads — so the B-34 "preview counts as download" symptom **cannot** occur
+there. But for consistency, an owner previewing an uploaded file in a reverse share records no per-file
+"viewed" activity. Low priority; no incorrectness, only a missing signal.
+
+**Fix needed:** If/when reverse shares gain a recipient-facing activity log, mirror the B-34 `intent`
+mechanism on the reverse-share download path.
+
+## TD-56 — Move share file-activity tracking off the presigned-URL request (dedicated endpoint)
+
+**Context:** B-34 records preview/download tracking as a side effect of **generating** the presigned URL
+(`POST /files/download-url`), gated by a client-declared `intent`. This works and the cache-coherence risk
+is closed (intent is in the cache key + the server branches on it), but it keeps tracking coupled to URL
+minting and leaves the action label client-declared (a minor spoof surface — a recipient can mislabel their
+own download as a preview, which only keeps *them* in the reminder set).
+
+**Fix needed (cleaner end-state):** a dedicated `POST /shares/:id/files/:fileId/(view|download)` tracking
+call, decoupled from URL minting, so tracking correctness never depends on cache identity and the server is
+the sole authority on what is recorded. Deferred from B-34 as not worth blocking that fix.
+
 ## TD-53 — Email health: stalled-queue blind spot (processing/pending false-negative) ✅ DONE
 
 **Resolved:** 2026-06-16

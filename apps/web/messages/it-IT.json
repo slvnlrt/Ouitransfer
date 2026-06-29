@@ -2030,7 +2030,9 @@
         "cookie": "Auto-identificato",
         "selfDeclaredHint": "Identità auto-dichiarata, non verificata",
         "authenticated_user": "Utente registrato"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "Ultimo download",
     "privacySummary": "Privacy",

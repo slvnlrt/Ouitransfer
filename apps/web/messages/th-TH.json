@@ -2034,7 +2034,9 @@
         "cookie": "ระบุตัวตนด้วยตนเอง",
         "selfDeclaredHint": "ตัวตนที่ประกาศเอง ยังไม่ได้ตรวจสอบ",
         "authenticated_user": "ผู้ใช้ที่ลงทะเบียนแล้ว"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "ดาวน์โหลดครั้งสุดท้าย",
     "privacySummary": "ความเป็นส่วนตัว",

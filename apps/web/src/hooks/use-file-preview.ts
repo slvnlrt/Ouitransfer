@@ -32,10 +32,12 @@ interface UseFilePreviewProps {
   isReverseShare?: boolean;
   sharePassword?: string;
   /**
-   * Share id, set only from the public share viewer. Forwarded on the explicit
-   * download (not on the preview fetch) so the server records a per-share
-   * ShareVisit "download" event. Previewing a file is a view, not a download,
-   * so the preview fetch deliberately omits it.
+   * Share id, set only from the public share viewer. Used to scope the client-side presigned-URL
+   * cache per share; it is NOT sent to the server (the opaque file token already binds the share).
+   *
+   * Preview vs download is distinguished by the `intent` the request carries (B-34): the preview fetch
+   * sends `intent:"preview"` so the server records a per-file ShareVisit "preview" (a view, not a
+   * download); the explicit download sends the default `"download"`.
    */
   shareId?: string;
 }
@@ -213,7 +215,9 @@ export function useFilePreview({
         const options = sharePassword
           ? { headers: { "x-share-password": sharePassword } }
           : undefined;
-        url = await getCachedDownloadUrl(file.objectName, options);
+        // B-34: a preview is a view — record it as a per-file "preview" event, never a download.
+        // (For all file types; `shareId` stays undefined here, used only for cache scoping.)
+        url = await getCachedDownloadUrl(file.objectName, options, undefined, "preview");
       }
 
       setState((prev) => ({ ...prev, downloadUrl: url }));

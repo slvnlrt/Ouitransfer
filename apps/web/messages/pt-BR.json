@@ -2034,7 +2034,9 @@
         "cookie": "Auto-identificado",
         "selfDeclaredHint": "Identidade auto-declarada, não verificada",
         "authenticated_user": "Usuário cadastrado"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "Último download",
     "privacySummary": "Privacidade",

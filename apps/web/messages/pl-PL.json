@@ -2030,7 +2030,9 @@
         "cookie": "Samo-zidentyfikowany",
         "selfDeclaredHint": "Tożsamość samodzielnie podana, niezweryfikowana",
         "authenticated_user": "Zarejestrowany użytkownik"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "Ostatnie pobranie",
     "privacySummary": "Prywatność",

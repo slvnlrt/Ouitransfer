@@ -2034,7 +2034,9 @@
         "cookie": "Självidentifierad",
         "selfDeclaredHint": "Självdeklarerad identitet, ej verifierad",
         "authenticated_user": "Registrerad användare"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "Senast nedladdat",
     "privacySummary": "Integritet",

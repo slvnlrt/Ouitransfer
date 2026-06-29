@@ -24,9 +24,14 @@ class DownloadUrlCache {
     objectName: string,
     options?: { headers?: { "x-share-password"?: string } },
     shareId?: string,
+    intent: "preview" | "download" = "download",
   ): string {
     const password = options?.headers?.["x-share-password"] || "";
-    const parts = [objectName, password, shareId].filter(Boolean);
+    // `intent` always carries a value (default "download"), so a preview and a download of the same
+    // file never share a cache entry — a real download after a preview still hits the server and is
+    // recorded as a download (B-34 / C-1 guard). The presigned URL is identical; only the server-side
+    // tracking side-effect differs, which is exactly why we must not reuse one for the other.
+    const parts = [objectName, password, shareId, intent].filter(Boolean);
     return parts.join("|");
   }
 
@@ -70,8 +75,9 @@ class DownloadUrlCache {
     objectName: string,
     options?: { headers?: { "x-share-password"?: string } },
     shareId?: string,
+    intent: "preview" | "download" = "download",
   ): Promise<string> {
-    const cacheKey = this.getCacheKey(objectName, options, shareId);
+    const cacheKey = this.getCacheKey(objectName, options, shareId, intent);
     const now = Date.now();
     const cached = this.cache.get(cacheKey);
 
@@ -81,7 +87,7 @@ class DownloadUrlCache {
 
     // Extract password from x-share-password header and pass it as body param
     const password = options?.headers?.["x-share-password"];
-    const response = await getDownloadUrl(objectName, password, shareId);
+    const response = await getDownloadUrl(objectName, password, intent);
     const url = response.data.url;
     const entry: CacheEntry = {
       url,

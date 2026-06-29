@@ -2030,7 +2030,9 @@
         "cookie": "자체 식별",
         "selfDeclaredHint": "자체 신고 신원, 미확인",
         "authenticated_user": "등록된 사용자"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "마지막 다운로드",
     "privacySummary": "개인정보",

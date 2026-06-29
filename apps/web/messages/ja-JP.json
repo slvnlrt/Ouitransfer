@@ -2030,7 +2030,9 @@
         "cookie": "自己識別",
         "selfDeclaredHint": "自己申告身分、未検証",
         "authenticated_user": "登録済みユーザー"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "最後にダウンロード",
     "privacySummary": "プライバシー",
