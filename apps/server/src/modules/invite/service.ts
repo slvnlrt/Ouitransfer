@@ -148,6 +148,7 @@ export class InviteService {
     username: string;
     email: string;
     password: string;
+    locale?: string;
   }): Promise<{ id: string; username: string; email: string; inviteTokenId: string }> {
     // Fast-fail with friendly errors before the expensive bcrypt hash below.
     // This is a pre-flight check only — the authoritative single-use guard is
@@ -217,6 +218,8 @@ export class InviteService {
           password: hashedPassword,
           isAdmin: false,
           isActive: true,
+          // Omitted when undefined so Prisma applies the column default ("en").
+          ...(data.locale ? { locale: data.locale } : {}),
         },
         select: {
           id: true,

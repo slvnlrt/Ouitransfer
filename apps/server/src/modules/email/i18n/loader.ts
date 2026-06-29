@@ -46,10 +46,11 @@ const missingLocales = new Set<string>();
  * Values are interpolated **without** HTML escaping — suitable for
  * plain-text contexts (email subjects, logs, etc.).
  *
- * Fallback chain:
- *   1. Requested locale
- *   2. English ("en")
- *   3. Throw — a key missing from en.json is a developer bug
+ * Fallback chain (see `localeCandidates`):
+ *   1. Requested locale (e.g. `fr-FR`)
+ *   2. Base language (e.g. `fr`)
+ *   3. English ("en")
+ *   4. Throw — a key missing from en.json is a developer bug
  *
  * Interpolation: replaces `{key}` placeholders with values from `params`.
  */
@@ -67,7 +68,8 @@ export async function t(
  * an HTML email body.
  *
  * The HTML markup in the locale template itself (e.g. `<strong>`) is preserved;
- * only the substituted *values* are escaped.
+ * only the substituted *values* are escaped. Shares the same locale fallback
+ * chain as `t()` (requested → base language → en → throw).
  */
 export async function tHtml(
   locale: string,
@@ -95,9 +97,9 @@ export async function createTranslationFn(
   locale: string,
   defaultParams?: Record<string, string>,
 ): Promise<TranslationFn> {
-  // Pre-load both the requested locale and English fallback so the returned
-  // synchronous TranslationFn can always resolve values without I/O.
-  await Promise.all([loadLocale(locale), loadLocale("en")]);
+  // Pre-load the full fallback chain (requested locale → base language → English)
+  // so the returned synchronous TranslationFn can always resolve values without I/O.
+  await Promise.all(localeCandidates(locale).map((candidate) => loadLocale(candidate)));
   return (dotPath: string, params?: Record<string, string>) => {
     const merged = defaultParams ? { ...defaultParams, ...params } : params;
     return resolveAndInterpolateSyncCached(locale, dotPath, merged, true);
@@ -118,7 +120,7 @@ export async function createPlainTranslationFn(
   locale: string,
   defaultParams?: Record<string, string>,
 ): Promise<TranslationFn> {
-  await Promise.all([loadLocale(locale), loadLocale("en")]);
+  await Promise.all(localeCandidates(locale).map((candidate) => loadLocale(candidate)));
   return (dotPath: string, params?: Record<string, string>) => {
     const merged = defaultParams ? { ...defaultParams, ...params } : params;
     return resolveAndInterpolateSyncCached(locale, dotPath, merged, false);
@@ -149,6 +151,32 @@ export async function validateI18nKeys(requiredKeys: string[]): Promise<void> {
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
 /**
+ * Builds the ordered locale fallback chain for a requested locale.
+ *
+ * The UI persists full BCP-47 tags (e.g. `fr-FR`), but email message files are
+ * keyed by base language (`fr.json`, `en.json`). Without a base-language step a
+ * French user (`fr-FR`) would silently receive English mail because no
+ * `fr-FR.json` exists. The chain is therefore:
+ *
+ *   requested locale → base language → "en"
+ *
+ * e.g. `fr-FR` → [`fr-FR`, `fr`, `en`], `en` → [`en`]. Duplicates are removed so
+ * `en` is never loaded twice. English is always the final element, so the caller
+ * can treat it as the guaranteed fallback (a key missing from en.json is a bug).
+ */
+function localeCandidates(locale: string): string[] {
+  const base = locale.split("-")[0];
+  const chain = [locale];
+  if (base && base !== locale) {
+    chain.push(base);
+  }
+  if (!chain.includes("en")) {
+    chain.push("en");
+  }
+  return chain;
+}
+
+/**
  * Async core resolve-and-interpolate implementation shared by `t()` and `tHtml()`.
  */
 async function resolveAndInterpolate(
@@ -157,28 +185,32 @@ async function resolveAndInterpolate(
   params: Record<string, string> | undefined,
   htmlEscape: boolean,
 ): Promise<string> {
-  // Try the requested locale first
-  const localeMessages = await loadLocale(locale);
-  const localeValue = localeMessages !== null ? resolvePath(localeMessages, dotPath) : undefined;
+  for (const candidate of localeCandidates(locale)) {
+    const messages = await loadLocale(candidate);
 
-  if (localeValue !== undefined) {
-    return interpolate(localeValue, params, htmlEscape);
+    // English is always the final candidate and the guaranteed fallback:
+    // a missing file or key at this point is a developer bug, so we throw.
+    if (candidate === "en") {
+      if (messages === null) {
+        throw new Error(`[i18n] Could not load en.json (messages directory not found)`);
+      }
+      const enValue = resolvePath(messages, dotPath);
+      if (enValue === undefined) {
+        throw new Error(
+          `[i18n] Missing translation key "${dotPath}" in en.json — this is a bug, add the key`,
+        );
+      }
+      return interpolate(enValue, params, htmlEscape);
+    }
+
+    const value = messages !== null ? resolvePath(messages, dotPath) : undefined;
+    if (value !== undefined) {
+      return interpolate(value, params, htmlEscape);
+    }
   }
 
-  // Fall back to English
-  const enMessages = await loadLocale("en");
-  if (enMessages === null) {
-    throw new Error(`[i18n] Could not load en.json (messages directory not found)`);
-  }
-
-  const enValue = resolvePath(enMessages, dotPath);
-  if (enValue === undefined) {
-    throw new Error(
-      `[i18n] Missing translation key "${dotPath}" in en.json — this is a bug, add the key`,
-    );
-  }
-
-  return interpolate(enValue, params, htmlEscape);
+  // Unreachable: localeCandidates() always ends with "en", handled above.
+  throw new Error(`[i18n] Could not resolve "${dotPath}" for locale "${locale}"`);
 }
 
 /**
@@ -192,26 +224,30 @@ function resolveAndInterpolateSyncCached(
   params: Record<string, string> | undefined,
   htmlEscape: boolean,
 ): string {
-  const localeMessages = cache.get(locale) ?? null;
-  const localeValue = localeMessages !== null ? resolvePath(localeMessages, dotPath) : undefined;
+  for (const candidate of localeCandidates(locale)) {
+    const messages = cache.get(candidate) ?? null;
 
-  if (localeValue !== undefined) {
-    return interpolate(localeValue, params, htmlEscape);
+    if (candidate === "en") {
+      if (messages === null) {
+        throw new Error(`[i18n] en.json not in cache — was createTranslationFn awaited?`);
+      }
+      const enValue = resolvePath(messages, dotPath);
+      if (enValue === undefined) {
+        throw new Error(
+          `[i18n] Missing translation key "${dotPath}" in en.json — this is a bug, add the key`,
+        );
+      }
+      return interpolate(enValue, params, htmlEscape);
+    }
+
+    const value = messages !== null ? resolvePath(messages, dotPath) : undefined;
+    if (value !== undefined) {
+      return interpolate(value, params, htmlEscape);
+    }
   }
 
-  const enMessages = cache.get("en") ?? null;
-  if (enMessages === null) {
-    throw new Error(`[i18n] en.json not in cache — was createTranslationFn awaited?`);
-  }
-
-  const enValue = resolvePath(enMessages, dotPath);
-  if (enValue === undefined) {
-    throw new Error(
-      `[i18n] Missing translation key "${dotPath}" in en.json — this is a bug, add the key`,
-    );
-  }
-
-  return interpolate(enValue, params, htmlEscape);
+  // Unreachable: localeCandidates() always ends with "en", handled above.
+  throw new Error(`[i18n] Could not resolve "${dotPath}" for locale "${locale}"`);
 }
 
 /**
@@ -222,8 +258,10 @@ function resolveAndInterpolateSyncCached(
  * locale is already in progress, the existing promise is returned instead
  * of starting a second concurrent file read.
  *
- * Fallback chain: requested locale → "en". No BCP-47 prefix matching
- * (e.g. de-DE → de). Only exact locale files are loaded.
+ * Loads ONLY the exact locale file requested — it does no prefix matching
+ * itself. The base-language and English fallback steps (e.g. `fr-FR` → `fr` →
+ * `en`) are owned by `localeCandidates()`, whose chain the resolvers walk by
+ * calling this function once per candidate.
  */
 async function loadLocale(locale: string): Promise<Record<string, unknown> | null> {
   // Reject anything that isn't a well-formed locale code before it reaches a

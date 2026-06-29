@@ -9,6 +9,7 @@
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { SUPPORTED_UI_LOCALES } from "@ouitransfer/shared/locales";
 import { describe, expect, it } from "vitest";
 
 const messagesDir = join(__dirname, "../../messages");
@@ -56,6 +57,15 @@ describe("locale key parity", () => {
   it("should find all 23 locale files", () => {
     expect(localeFiles.length).toBeGreaterThanOrEqual(23);
     expect(localeFiles).toContain("en-US.json");
+  });
+
+  // The shipped message files must match the canonical SUPPORTED_UI_LOCALES list
+  // exactly (the shared source of truth the server validates locale writes
+  // against). A message file with no entry in the list — or a listed locale with
+  // no message file — would let the UI and the API disagree about what's valid.
+  it("ships a message file for exactly the canonical supported UI locales", () => {
+    const fileLocales = localeFiles.map((f) => f.replace(/\.json$/, "")).sort();
+    expect(fileLocales).toEqual([...SUPPORTED_UI_LOCALES].sort());
   });
 
   it("no locale file should contain a UTF-8 BOM", () => {
