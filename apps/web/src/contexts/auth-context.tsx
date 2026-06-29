@@ -1,11 +1,24 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { createContext, useContext, useMemo } from "react";
 import { useAppInfoQuery } from "@/hooks/use-app-info-query";
 import { getCurrentUser } from "@/http/endpoints";
 import type { User } from "@/http/endpoints/auth/types";
 import { queryKeys } from "@/lib/query-keys";
+
+/**
+ * Whether a current-user probe error means the session is genuinely over
+ * (401/403) versus a transient connectivity failure (no response). Only the
+ * former should drop authenticated state; a network/timeout error must keep the
+ * cached state so a brief offline blip doesn't bounce the user to /login.
+ */
+function isAuthFailure(error: unknown): boolean {
+  if (!axios.isAxiosError(error)) return false;
+  const status = error.response?.status;
+  return status === 401 || status === 403;
+}
 
 export type AuthUser = Omit<User, "isAdmin">;
 
@@ -62,6 +75,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { user: null, isAuthenticated: null, isAdmin: null };
     }
 
+    // A 401/403 on the current-user probe means the session is genuinely gone.
+    // This MUST be checked before the `data?.user` branch below: React Query
+    // RETAINS the previous `data` across a failed refetch, so a stale user would
+    // otherwise keep `isAuthenticated === true` after the session expired (e.g. on
+    // tab return) — the infinite "/login" spinner that only a hard reload (which
+    // clears the cache) recovered from. Network/timeout errors are deliberately
+    // NOT treated as logout (offline ≠ logged out), matching the api.ts refresh
+    // interceptor, so we fall through and keep the cached state for those.
+    if (currentUserQuery.isError && isAuthFailure(currentUserQuery.error)) {
+      return { user: null, isAuthenticated: false, isAdmin: false };
+    }
+
     // Current user success
     if (currentUserQuery.data?.user) {
       const { isAdmin: isAdminFlag, ...userData } = currentUserQuery.data.user;
@@ -75,6 +100,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     appInfoQuery.isError,
     appInfoQuery.data,
     currentUserQuery.isLoading,
+    currentUserQuery.isError,
+    currentUserQuery.error,
     currentUserQuery.data,
   ]);
 

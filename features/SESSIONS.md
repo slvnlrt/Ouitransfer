@@ -1,5 +1,17 @@
 # Session Log
 
+## 2026-06-29 (B-32 — Infinite /login loading after session expiry)
+
+- Fixed the chronic infinite "Loading Please Wait" on `/login` after the session expired on tab
+  return. Root cause: `AuthProvider` derived `isAuthenticated` from `currentUserQuery.data?.user`
+  without checking `isError`; React Query retains stale `data` across a failed refetch, so a 401
+  on `getCurrentUser` left `isAuthenticated` stuck `true` → redirect bounce / spinner. Only a hard
+  reload (cache clear) recovered — which matched the user's repro exactly.
+- Fix in `auth-context.tsx`: a 401/403 on the current-user probe now forces unauthenticated before
+  the stale-data branch; network errors keep the cached state (offline ≠ logged out, mirroring the
+  `api.ts` interceptor). Two regression tests added. No timeout/ceiling reintroduced (that approach
+  was reverted in `123c76a`). Tracked as **B-32**; shipped on its own branch/PR (separate from B-31).
+
 ## 2026-06-29 (B-31 — Invitation email language)
 
 - Fixed invitation emails going out in English for non-English operators. Root cause was twofold: the
