@@ -213,6 +213,96 @@ describe("AuthProvider", () => {
     expect(result.current.isAdmin).toBe(false);
   });
 
+  it("drops the stale user and becomes unauthenticated when getCurrentUser later 401s", async () => {
+    // Regression: after the session expires (e.g. on tab return), getCurrentUser
+    // refetches and 401s, but React Query RETAINS the previous `data`. The
+    // provider must not keep isAuthenticated `true` off that stale user — that
+    // was the infinite "/login" spinner only a hard reload cleared.
+    const mockUser = {
+      id: "u1",
+      firstName: "John",
+      lastName: "Doe",
+      username: "johndoe",
+      email: "john@test.com",
+      isAdmin: false,
+      isActive: true,
+      image: null,
+      createdAt: "2024-01-01",
+      updatedAt: "2024-01-01",
+    };
+
+    mockGetAppInfo.mockResolvedValue({
+      data: { appName: "Test", appDescription: "", appLogo: "", firstUserAccess: false },
+    } as ReturnType<typeof getAppInfo> extends Promise<infer R> ? R : never);
+
+    const unauthorized = Object.assign(new Error("Request failed with status code 401"), {
+      isAxiosError: true,
+      response: { status: 401 },
+    });
+    mockGetCurrentUser
+      .mockResolvedValueOnce({ data: { user: mockUser } } as ReturnType<
+        typeof getCurrentUser
+      > extends Promise<infer R>
+        ? R
+        : never)
+      .mockRejectedValue(unauthorized);
+
+    const { result } = renderHook(() => useAuth(), { wrapper: createWrapper(queryClient) });
+
+    await waitFor(() => expect(result.current.isAuthenticated).toBe(true));
+
+    // Session expires → refetch 401s while the stale user is still cached.
+    await act(async () => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
+    });
+
+    await waitFor(() => expect(result.current.isAuthenticated).toBe(false));
+    expect(result.current.user).toBeNull();
+  });
+
+  it("keeps the cached user on a network-error refetch (offline ≠ logged out)", async () => {
+    // A no-response (network/timeout) error must NOT log the user out — mirrors the
+    // api.ts refresh interceptor's network_error handling. Without the 401-only
+    // discrimination this would wrongly bounce an offline user to /login.
+    const mockUser = {
+      id: "u1",
+      firstName: "John",
+      lastName: "Doe",
+      username: "johndoe",
+      email: "john@test.com",
+      isAdmin: false,
+      isActive: true,
+      image: null,
+      createdAt: "2024-01-01",
+      updatedAt: "2024-01-01",
+    };
+
+    mockGetAppInfo.mockResolvedValue({
+      data: { appName: "Test", appDescription: "", appLogo: "", firstUserAccess: false },
+    } as ReturnType<typeof getAppInfo> extends Promise<infer R> ? R : never);
+
+    const networkError = Object.assign(new Error("Network Error"), { isAxiosError: true });
+    mockGetCurrentUser
+      .mockResolvedValueOnce({ data: { user: mockUser } } as ReturnType<
+        typeof getCurrentUser
+      > extends Promise<infer R>
+        ? R
+        : never)
+      .mockRejectedValue(networkError);
+
+    const { result } = renderHook(() => useAuth(), { wrapper: createWrapper(queryClient) });
+
+    await waitFor(() => expect(result.current.isAuthenticated).toBe(true));
+
+    await act(async () => {
+      await queryClient.invalidateQueries({ queryKey: queryKeys.auth.currentUser() });
+    });
+
+    // Still authenticated: the cached user is retained through a transient blip.
+    expect(result.current.isAuthenticated).toBe(true);
+    expect(result.current.user?.id).toBe("u1");
+  });
+
   it("does not expose setter functions", () => {
     mockGetAppInfo.mockReturnValue(new Promise(() => {}));
 

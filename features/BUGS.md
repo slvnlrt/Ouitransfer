@@ -13,6 +13,29 @@ _None._
 
 ## Resolved (recent)
 
+### B-32: Infinite "Loading Please Wait" on /login after session expiry on tab return — RESOLVED
+
+- **Severity**: High — recurring UX dead-end; only a manual hard reload (F5) recovered
+- **File**: `apps/web/src/contexts/auth-context.tsx`
+- **Symptom**: After the tab sat idle long enough for the session to expire, returning to it
+  auto-logged-out and redirected to `/login`, but the page hung on the full-screen
+  "Loading Please Wait" spinner. A hard reload (F5) reached the login form correctly — proving
+  it was a stale **client** state, not a server/network problem. The mirror-direction symptom on
+  `/dashboard` was previously mitigated by `refetchOnWindowFocus: false` (commit `0386f85`), but
+  that only reduced refetches; it did not fix this underlying derivation.
+- **Root cause**: `AuthProvider` derived `isAuthenticated` from `currentUserQuery.data?.user`
+  **without consulting `isError`**. React Query *retains the previous `data`* across a failed
+  refetch, so when `getCurrentUser` refetched and returned **401** after expiry, the stale user
+  stayed in cache → `isAuthenticated` stayed `true` → `/login` showed the spinner and tried to
+  redirect to `/dashboard` (bounce) indefinitely. F5 cleared the cache → `false` → form.
+- **Fix**: Treat a **401/403** from the current-user probe as unauthenticated *before* the
+  `data?.user` branch, ignoring any retained stale data. Network/timeout errors (no response) are
+  deliberately NOT treated as logout (offline ≠ logged out), mirroring the `api.ts` refresh
+  interceptor — they keep the cached state. Two regression tests added (401 → drops stale user;
+  network error → keeps cached user). **No** request timeout / resolution ceiling was added (that
+  approach was deliberately reverted earlier in `123c76a`).
+- **Status**: Resolved (2026-06-29) — full web suite (426) green; type-check + lint clean.
+
 ### B-28: Share password update returns 404 — PATCH/PUT method mismatch
 
 - **Severity**: High (feature broken in production)

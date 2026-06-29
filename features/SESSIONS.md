@@ -1,6 +1,16 @@
 # Session Log
 
-## 2026-06-24 (5.5 — LDAP Directory Browser)
+## 2026-06-29 (B-32 — Infinite /login loading after session expiry)
+
+- Fixed the chronic infinite "Loading Please Wait" on `/login` after the session expired on tab
+  return. Root cause: `AuthProvider` derived `isAuthenticated` from `currentUserQuery.data?.user`
+  without checking `isError`; React Query retains stale `data` across a failed refetch, so a 401
+  on `getCurrentUser` left `isAuthenticated` stuck `true` → redirect bounce / spinner. Only a hard
+  reload (cache clear) recovered — which matched the user's repro exactly.
+- Fix in `auth-context.tsx`: a 401/403 on the current-user probe now forces unauthenticated before
+  the stale-data branch; network errors keep the cached state (offline ≠ logged out, mirroring the
+  `api.ts` interceptor). Two regression tests added. No timeout/ceiling reintroduced (that approach
+  was reverted in `123c76a`). Tracked as **B-32**; shipped on its own branch/PR (separate from B-31).
 
 - Built the LDAP directory browser so admins pick DNs from the live directory instead of typing
   them: **Base DN** via RootDSE auto-detect + a lazy container tree, **Sync Group** via a search box.
