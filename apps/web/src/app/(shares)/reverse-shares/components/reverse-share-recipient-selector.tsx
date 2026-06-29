@@ -1,7 +1,7 @@
 "use client";
 
 import { Bell, Check, Clock, Mail, Plus, Trash2, Upload, Users, X } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -19,6 +19,7 @@ import {
   removeReverseShareRecipients,
 } from "@/http/endpoints/reverse-shares";
 import type { ReverseShareRecipient } from "@/http/endpoints/reverse-shares/types";
+import { formatDateTime } from "@/lib/format-date-time";
 import { logger } from "@/lib/logger";
 import { isValidEmail } from "@/utils/email";
 
@@ -43,7 +44,7 @@ export function ReverseShareRecipientSelector({
   onSuccess,
 }: ReverseShareRecipientSelectorProps) {
   const t = useTranslations();
-  const format = useFormatter();
+  const locale = useLocale();
   // R-5: upload attribution is best-effort unless an uploader email is required.
   const isUploadApproximate = emailFieldRequired !== "REQUIRED";
   const { value: smtpEnabled, isLoading: isSmtpLoading } = useSecureConfigValue("smtpEnabled");
@@ -300,10 +301,7 @@ export function ReverseShareRecipientSelector({
                       if (hasUploaded) {
                         const uploadedTooltip =
                           t("recipientSelector.uploadedAt", {
-                            date: format.dateTime(new Date(recipient.uploadedAt as string), {
-                              dateStyle: "medium",
-                              timeStyle: "short",
-                            }),
+                            date: formatDateTime(recipient.uploadedAt as string, "table", locale),
                           }) + approximateHint;
                         return (
                           <Tooltip>

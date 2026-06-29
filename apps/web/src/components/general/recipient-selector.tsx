@@ -13,7 +13,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -32,6 +32,7 @@ import {
   removeRecipients,
 } from "@/http/endpoints";
 import type { ShareRecipient } from "@/http/endpoints/shares/types";
+import { formatDateTime } from "@/lib/format-date-time";
 import { isValidEmail } from "@/utils/email";
 
 interface RecipientSelectorProps {
@@ -48,7 +49,7 @@ export function RecipientSelector({
   onSuccess,
 }: RecipientSelectorProps) {
   const t = useTranslations();
-  const format = useFormatter();
+  const locale = useLocale();
   const { value: smtpEnabled, isLoading: isSmtpLoading } = useSecureConfigValue("smtpEnabled");
   const [recipients, setRecipients] = useState<ShareRecipient[]>(selectedRecipients ?? []);
   const [newRecipient, setNewRecipient] = useState("");
@@ -459,10 +460,7 @@ export function RecipientSelector({
                                     role="img"
                                     className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400"
                                     aria-label={t("recipientSelector.downloadedAt", {
-                                      date: format.dateTime(new Date(lastDownloadedAt), {
-                                        dateStyle: "medium",
-                                        timeStyle: "short",
-                                      }),
+                                      date: formatDateTime(lastDownloadedAt, "table", locale),
                                     })}
                                   >
                                     <Download className="h-3 w-3" aria-hidden="true" />
@@ -471,10 +469,7 @@ export function RecipientSelector({
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   {t("recipientSelector.downloadedAt", {
-                                    date: format.dateTime(new Date(lastDownloadedAt), {
-                                      dateStyle: "medium",
-                                      timeStyle: "short",
-                                    }),
+                                    date: formatDateTime(lastDownloadedAt, "table", locale),
                                   })}
                                 </TooltipContent>
                               </Tooltip>

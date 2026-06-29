@@ -29,6 +29,7 @@ vi.mock("next-intl", () => ({
     relativeTime: (date: Date) => date.toISOString(),
     number: (n: number) => String(n),
   }),
+  useLocale: () => "en-US",
 }));
 
 // SMTP off by default — keeps the notify controls out of the way; the badge logic
@@ -62,6 +63,7 @@ vi.mock("sonner", () => ({
 import { ReverseShareRecipientSelector } from "@/app/(shares)/reverse-shares/components/reverse-share-recipient-selector";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { ReverseShareRecipient } from "@/http/endpoints/reverse-shares/types";
+import { formatDateTime } from "@/lib/format-date-time";
 
 function makeRecipient(overrides: Partial<ReverseShareRecipient> = {}): ReverseShareRecipient {
   return {
@@ -111,7 +113,9 @@ describe("ReverseShareRecipientSelector upload-status badge", () => {
     const badge = screen.getByText("recipientSelector.uploaded");
     expect(badge).toBeInTheDocument();
     expect(screen.queryByText("recipientSelector.pending")).not.toBeInTheDocument();
-    expect(badge.getAttribute("aria-label")).toContain("2024-06-01");
+    expect(badge.getAttribute("aria-label")).toContain(
+      formatDateTime("2024-06-01T10:00:00Z", "table", "en-US"),
+    );
   });
 
   it("shows the Pending badge when notified but not yet uploaded", () => {
@@ -158,7 +162,9 @@ describe("ReverseShareRecipientSelector — R-5 approximate hint", () => {
 
     const badge = screen.getByText("recipientSelector.uploaded");
     expect(badge.getAttribute("aria-label")).toContain("recipientSelector.uploadApproximateHint");
-    expect(badge.getAttribute("aria-label")).toContain("2024-06-01");
+    expect(badge.getAttribute("aria-label")).toContain(
+      formatDateTime("2024-06-01T10:00:00Z", "table", "en-US"),
+    );
   });
 
   it("omits the approximate hint from the Uploaded badge tooltip when email is required", () => {
@@ -171,6 +177,8 @@ describe("ReverseShareRecipientSelector — R-5 approximate hint", () => {
     expect(badge.getAttribute("aria-label")).not.toContain(
       "recipientSelector.uploadApproximateHint",
     );
-    expect(badge.getAttribute("aria-label")).toContain("2024-06-01");
+    expect(badge.getAttribute("aria-label")).toContain(
+      formatDateTime("2024-06-01T10:00:00Z", "table", "en-US"),
+    );
   });
 });
