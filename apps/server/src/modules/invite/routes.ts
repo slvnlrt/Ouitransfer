@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createAdminPreValidation } from "../../middleware/admin-prevalidation.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
+import { getRequestUiLocale } from "../../utils/request-locale.js";
 import { logAuditEvent } from "../audit/service.js";
 import {
   CreateInviteTokenResponseSchema,
@@ -130,6 +131,8 @@ export const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
         username,
         email,
         password,
+        // Seed email-language preference from the locale the invitee registered under.
+        locale: getRequestUiLocale(request),
       });
 
       // Audit invite token use (fire-and-forget)

@@ -7,10 +7,11 @@ import { UnauthorizedError, ValidationError } from "../../utils/app-error.js";
 import { signAndSetCookies } from "../../utils/auth-cookies.js";
 import { ErrorResponseSchema } from "../../utils/error-response-schema.js";
 import { getLogger } from "../../utils/logger.js";
+import { getRequestUiLocale } from "../../utils/request-locale.js";
 import { logAuditEvent } from "../audit/service.js";
 import { createPasswordSchema } from "../auth/dto.js";
 import { AvatarService } from "./avatar.service.js";
-import { UpdateUserSchema } from "./dto.js";
+import { UpdateUserLocaleSchema, UpdateUserSchema } from "./dto.js";
 import { validatePasswordMiddleware } from "./middleware.js";
 import { UserService } from "./service.js";
 
@@ -127,7 +128,12 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      const result = await userService.register(request.body);
+      // Seed the new user's email-language preference from the locale they were
+      // browsing under (NEXT_LOCALE cookie / Accept-Language), so invitations and
+      // notifications they later send default to their own language rather than
+      // English. Undefined when no signal is present → Prisma applies the default.
+      const locale = getRequestUiLocale(request);
+      const result = await userService.register(request.body, locale);
       const { isFirstUser, ...user } = result;
 
       // Audit user creation (fire-and-forget)
@@ -430,6 +436,35 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
       const { id } = request.params;
       const updatedUser = await userService.updateUserImage(id, request.body.image);
       return reply.send(serializeUser(updatedUser));
+    },
+  });
+
+  // PATCH /users/me/locale — update the caller's own UI/email language preference
+  app.route({
+    method: "PATCH",
+    url: "/users/me/locale",
+    preValidation: jwtPreValidation,
+    schema: {
+      tags: ["User"],
+      operationId: "updateMyLocale",
+      summary: "Update Locale Preference",
+      description:
+        "Persist the authenticated user's preferred language. Used as the email language for messages sent to them and as the best-available language for invitations they send to external recipients.",
+      body: UpdateUserLocaleSchema,
+      response: {
+        200: z.object({ locale: z.string().describe("The persisted locale") }),
+        400: ErrorResponseSchema,
+        401: ErrorResponseSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      const userId = request.user?.userId;
+      if (!userId) {
+        throw new UnauthorizedError();
+      }
+
+      const result = await userService.updateLocale(userId, request.body.locale);
+      return reply.send(result);
     },
   });
 

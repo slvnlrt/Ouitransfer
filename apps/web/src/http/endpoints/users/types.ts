@@ -49,6 +49,10 @@ export interface UploadAvatarBody {
   file?: unknown;
 }
 
+export interface UpdateMyLocaleResponse {
+  locale: string;
+}
+
 export type ActivateUser200 = User;
 export type DeactivateUser200 = User;
 export type DeleteUser200 = User;
@@ -58,6 +62,7 @@ export type UploadAvatar200 = User;
 export type RegisterUser201 = UserWithMessageResponse;
 
 export type RegisterUserResult = AxiosResponse<RegisterUser201>;
+export type UpdateMyLocaleResult = AxiosResponse<UpdateMyLocaleResponse>;
 export type ListUsersResult = AxiosResponse<User[]>;
 export type UpdateUserResult = AxiosResponse<UpdateUser200>;
 export type DeleteUserResult = AxiosResponse<DeleteUser200>;

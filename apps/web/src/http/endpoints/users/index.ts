@@ -10,6 +10,7 @@ import type {
   RegisterUserBody,
   RegisterUserResult,
   RemoveAvatarResult,
+  UpdateMyLocaleResult,
   UpdateQuotaBody,
   UpdateUserBody,
   UpdateUserQuotaResult,
@@ -107,6 +108,19 @@ export const uploadAvatar = (
  */
 export const removeAvatar = (options?: AxiosRequestConfig): Promise<RemoveAvatarResult> => {
   return apiInstance.delete(`/api/users/avatar`, options);
+};
+
+/**
+ * Persist the authenticated user's preferred language. Used as the email language
+ * for messages sent to them and as the best-available language for invitations
+ * they send to external recipients.
+ * @summary Update Locale Preference
+ */
+export const updateMyLocale = (
+  locale: string,
+  options?: AxiosRequestConfig,
+): Promise<UpdateMyLocaleResult> => {
+  return apiInstance.patch(`/api/users/me/locale`, { locale }, options);
 };
 
 /**

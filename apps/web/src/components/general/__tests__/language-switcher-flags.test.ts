@@ -11,6 +11,7 @@
  */
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { SUPPORTED_UI_LOCALES } from "@ouitransfer/shared/locales";
 import { describe, expect, it } from "vitest";
 
 import { languages } from "../language-switcher";
@@ -36,5 +37,13 @@ describe("language switcher flag assets", () => {
     const malformed = Object.keys(languages).filter((locale) => !locale.split("-")[1]);
 
     expect(malformed).toEqual([]);
+  });
+
+  // The switcher's `languages` map (display names) and the canonical
+  // SUPPORTED_UI_LOCALES list (shared with the server) must not drift: a locale
+  // offered in the UI but absent from the shared list would be rejected by the
+  // server's PATCH /users/me/locale validation, and vice versa.
+  it("offers exactly the canonical set of supported UI locales", () => {
+    expect(Object.keys(languages).sort()).toEqual([...SUPPORTED_UI_LOCALES].sort());
   });
 });

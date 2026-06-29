@@ -1,5 +1,20 @@
 # Session Log
 
+## 2026-06-29 (B-31 — Invitation email language)
+
+- Fixed invitation emails going out in English for non-English operators. Root cause was twofold: the
+  language switcher never persisted `user.locale` (only the `NEXT_LOCALE` cookie, which drives the UI),
+  and the email i18n loader did no `fr-FR → fr` prefix matching.
+- Added canonical `@ouitransfer/shared/locales` (single source of truth: 23 UI locales + Accept-Language
+  resolver) and pointed `apps/web/src/i18n/request.ts` at it (drift-guarded by tests).
+- New self-service `PATCH /users/me/locale` (Zod-validated against `SUPPORTED_UI_LOCALES`); the switcher
+  persists the choice for authenticated users. `user.locale` is also seeded at registration (password +
+  invite paths) from the request cookie / `Accept-Language` via `utils/request-locale.ts`.
+- Email i18n loader now walks `requested → base language → en` in both async and pre-loaded-sync paths.
+- Tests: loader prefix-matching, shared locales unit, `PATCH /users/me/locale` integration, register-init
+  integration, plus drift guards (switcher ↔ shared, message files ↔ shared). Full suites green; lint clean.
+- Tracked as **B-31** in `features/BUGS.md`.
+
 ## 2026-06-24 (5.5 — LDAP Directory Browser)
 
 - Built the LDAP directory browser so admins pick DNs from the live directory instead of typing

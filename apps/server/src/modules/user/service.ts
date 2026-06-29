@@ -90,7 +90,7 @@ export class UserService {
     }
   }
 
-  async register(data: RegisterUserInput) {
+  async register(data: RegisterUserInput, locale?: string) {
     const existingUser = await this.userRepository.findUserByEmail(data.email);
     const existingUsername = await this.userRepository.findUserByUsername(data.username);
 
@@ -110,6 +110,12 @@ export class UserService {
       ...data,
       password: hashedPassword,
       isAdmin: isFirstUser,
+      // Seed the email-language preference from the locale the registrant was
+      // using (resolved from their cookie / Accept-Language at the route). Falls
+      // back to the schema default ("en") when the request carried no signal, so
+      // a user never receives English mail merely because they never opened the
+      // language switcher. Undefined → Prisma applies the column default.
+      locale,
     });
 
     // When the first user registers, mark setup as complete so the
@@ -356,5 +362,23 @@ export class UserService {
       include: { group: { select: { id: true, name: true } } },
     });
     return user;
+  }
+
+  /**
+   * Persists the caller's preferred UI locale. This is the language signal used
+   * when emailing the user — and, for invitations they send, the best-available
+   * signal for their external recipients (who have no account of their own). The
+   * value is a full BCP-47 tag (e.g. `fr-FR`); the email i18n loader maps it down
+   * to a base language and falls back to English when no translation exists.
+   *
+   * `locale` is validated against `SUPPORTED_UI_LOCALES` at the route boundary.
+   */
+  async updateLocale(userId: string, locale: string): Promise<{ locale: string }> {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { locale, updatedAt: new Date() },
+      select: { locale: true },
+    });
+    return { locale: user.locale };
   }
 }
