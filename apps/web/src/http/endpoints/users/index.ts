@@ -1,3 +1,4 @@
+import type { SupportedUiLocale } from "@ouitransfer/shared/locales";
 import type { AxiosRequestConfig } from "axios";
 
 import apiInstance from "@/config/api";
@@ -117,7 +118,7 @@ export const removeAvatar = (options?: AxiosRequestConfig): Promise<RemoveAvatar
  * @summary Update Locale Preference
  */
 export const updateMyLocale = (
-  locale: string,
+  locale: SupportedUiLocale,
   options?: AxiosRequestConfig,
 ): Promise<UpdateMyLocaleResult> => {
   return apiInstance.patch(`/api/users/me/locale`, { locale }, options);

@@ -1,4 +1,5 @@
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
+import type { SupportedUiLocale } from "@ouitransfer/shared/locales";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "../../shared/prisma.js";
@@ -371,13 +372,17 @@ export class UserService {
    *
    * `locale` is validated against `SUPPORTED_UI_LOCALES` at the route boundary.
    */
-  async updateLocale(userId: string, locale: string): Promise<{ locale: string }> {
-    const user = await prisma.user.update({
+  async updateLocale(
+    userId: string,
+    locale: SupportedUiLocale,
+  ): Promise<{ locale: SupportedUiLocale }> {
+    await prisma.user.update({
       where: { id: userId },
       // `updatedAt` is `@updatedAt` — Prisma stamps it automatically on update.
       data: { locale },
-      select: { locale: true },
     });
-    return { locale: user.locale };
+    // The persisted value is exactly the validated input, so echo it back with
+    // its narrow type rather than re-reading the (string-typed) column.
+    return { locale };
   }
 }

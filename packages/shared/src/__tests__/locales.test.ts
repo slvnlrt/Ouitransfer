@@ -61,6 +61,12 @@ describe("resolveUiLocaleFromAcceptLanguage", () => {
     expect(resolveUiLocaleFromAcceptLanguage("xx, fr;q=0.5, de;q=0.8")).toBe("de-DE");
   });
 
+  it("ignores explicitly-rejected ranges (q=0 means not acceptable)", () => {
+    expect(resolveUiLocaleFromAcceptLanguage("fr-FR;q=0")).toBeUndefined();
+    // q=0 on the higher-listed range must not win; the acceptable one does.
+    expect(resolveUiLocaleFromAcceptLanguage("fr-FR;q=0, de-DE;q=0.5")).toBe("de-DE");
+  });
+
   it("returns undefined when nothing matches", () => {
     expect(resolveUiLocaleFromAcceptLanguage("xx-XX, zz")).toBeUndefined();
     expect(resolveUiLocaleFromAcceptLanguage("")).toBeUndefined();

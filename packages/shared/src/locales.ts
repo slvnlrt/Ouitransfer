@@ -80,7 +80,9 @@ export function resolveUiLocaleFromAcceptLanguage(header: string): SupportedUiLo
       const q = qPart ? Number.parseFloat(qPart.replace(/q\s*=\s*/, "")) : 1;
       return { tag: tag.trim(), q: Number.isNaN(q) ? 0 : q };
     })
-    .filter((entry) => entry.tag.length > 0)
+    // Drop empty tags and explicitly-rejected ranges: per RFC 7231, `q=0` means
+    // "not acceptable", so a `fr-FR;q=0` must never resolve to `fr-FR`.
+    .filter((entry) => entry.tag.length > 0 && entry.q > 0)
     .sort((a, b) => b.q - a.q);
 
   for (const { tag } of entries) {

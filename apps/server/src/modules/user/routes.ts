@@ -128,11 +128,14 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     handler: async (request, reply) => {
-      // Seed the new user's email-language preference from the locale they were
+      // Seed the new user's email-language preference from the locale THEY were
       // browsing under (NEXT_LOCALE cookie / Accept-Language), so invitations and
       // notifications they later send default to their own language rather than
-      // English. Undefined when no signal is present → Prisma applies the default.
-      const locale = getRequestUiLocale(request);
+      // English. Only for self-setup (the unauthenticated first-user path): when an
+      // admin creates the account (`request.user` set), the request locale is the
+      // ADMIN's, not the new user's, so we leave it undefined and let Prisma apply
+      // the column default. Undefined when no signal is present → column default.
+      const locale = request.user?.userId ? undefined : getRequestUiLocale(request);
       const result = await userService.register(request.body, locale);
       const { isFirstUser, ...user } = result;
 
@@ -452,7 +455,10 @@ export const userRoutes: FastifyPluginAsyncZod = async (app) => {
         "Persist the authenticated user's preferred language. Used as the email language for messages sent to them and as the best-available language for invitations they send to external recipients.",
       body: UpdateUserLocaleSchema,
       response: {
-        200: z.object({ locale: z.string().describe("The persisted locale") }),
+        // Same shape as the request: the persisted value is always one of the
+        // supported locales, so reuse the schema to keep the contract + generated
+        // client types aligned.
+        200: UpdateUserLocaleSchema,
         400: ErrorResponseSchema,
         401: ErrorResponseSchema,
       },

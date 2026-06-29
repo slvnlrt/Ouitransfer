@@ -212,7 +212,13 @@ describe("A2-03 setup-bypass — POST /auth/register", () => {
     const res = await app.inject({
       method: "POST",
       url: "/auth/register",
-      headers: { cookie: adminCookie, "x-csrf-token": header },
+      // The admin is browsing in French, but that locale belongs to the ADMIN,
+      // not to the account being created — it must NOT be seeded onto the new user.
+      headers: {
+        cookie: `${adminCookie}; NEXT_LOCALE=fr-FR`,
+        "x-csrf-token": header,
+        "accept-language": "fr-FR",
+      },
       payload: { ...REGISTER_BODY, email: "grace@example.com", username: "grace" },
     });
 
@@ -222,6 +228,8 @@ describe("A2-03 setup-bypass — POST /auth/register", () => {
     // Not the first user → created as a non-admin by default.
     expect(body.user.isAdmin).toBe(false);
     expect(createdUser?.isAdmin).toBe(false);
+    // Admin-created account must NOT inherit the admin's request locale.
+    expect(createdUser?.locale).toBeUndefined();
   });
 
   // ── Email-language seeding from the request locale ──────────────────────────

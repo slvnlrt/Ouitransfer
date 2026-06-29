@@ -1,3 +1,4 @@
+import type { SupportedUiLocale } from "@ouitransfer/shared/locales";
 import type { AxiosResponse } from "axios";
 
 export interface User {
@@ -50,7 +51,7 @@ export interface UploadAvatarBody {
 }
 
 export interface UpdateMyLocaleResponse {
-  locale: string;
+  locale: SupportedUiLocale;
 }
 
 export type ActivateUser200 = User;
