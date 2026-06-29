@@ -1452,6 +1452,10 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
         },
       }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
 
+      // No `intent` here (unlike /files/download-url): this streamed path forces
+      // Content-Disposition: attachment (setForcedAttachmentHeaders) so it is structurally a
+      // DOWNLOAD — it can never render a preview inline. It is also not reached by the web client
+      // (which only ever uses the presigned-URL path). So it is always tracked as a download (B-34).
       if (shareId) {
         trackShareDownload(
           request,

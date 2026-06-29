@@ -82,8 +82,10 @@ Two product gaps the owner also raised:
   **nothing else** (no recipient download stats, no `Share.lastDownloadedAt`, no email). Fire-and-forget.
 - `FILE_DOWNLOAD` audit metadata: add `intent` (the server's resolved value) so previews aren't logged as
   downloads (resolves **M-3**).
-- Streamed `POST /files/download` (`~:1276`): add the same `intent` field for parity (not web-reachable;
-  defensive only).
+- Streamed `POST /files/download` (`~:1276`): **deliberately NOT given an `intent` field.** It forces
+  `Content-Disposition: attachment` (`setForcedAttachmentHeaders`) so it is structurally a download — it
+  can never render a preview inline — and it is not reached by the web client. Adding a "preview" branch
+  there would be semantically wrong, so it stays download-only with an explanatory comment at the call site.
 
 ### 2 — Server: expose the file name (and preview action) in the activity log
 `apps/server/src/modules/share/{routes,service}.ts`

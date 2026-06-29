@@ -186,6 +186,64 @@ describe("ShareDetailsActivitySection — VisitEntry", () => {
     });
   });
 
+  // B-34: three distinct activity rows. "access" is share-level (Eye, no file name),
+  // "preview" and "download" are file-level (FileSearch / Download, with a file name).
+  // The label key + presence of a file name must keep them unambiguous.
+  describe("B-34 — action rendering (access / preview / download)", () => {
+    it("renders the preview label and the file name for a preview visit", async () => {
+      mockGetShareVisits.mockResolvedValue(
+        mockVisitsResponse([
+          makeVisit({ action: "preview", fileId: "file-1", fileName: "report.pdf" }),
+        ]),
+      );
+
+      render(<ShareDetailsActivitySection shareId="share-1" />, { wrapper: createWrapper() });
+
+      expect(await screen.findByText("shareDetails.activity.preview")).toBeInTheDocument();
+      expect(screen.getByText("report.pdf")).toBeInTheDocument();
+      // A file-level preview must NOT be conflated with a share-level access row.
+      expect(screen.queryByText("shareDetails.activity.access")).not.toBeInTheDocument();
+    });
+
+    it("renders the download label and the file name for a download visit", async () => {
+      mockGetShareVisits.mockResolvedValue(
+        mockVisitsResponse([
+          makeVisit({ action: "download", fileId: "file-2", fileName: "archive.zip" }),
+        ]),
+      );
+
+      render(<ShareDetailsActivitySection shareId="share-1" />, { wrapper: createWrapper() });
+
+      expect(await screen.findByText("shareDetails.activity.download")).toBeInTheDocument();
+      expect(screen.getByText("archive.zip")).toBeInTheDocument();
+    });
+
+    it("renders the access label and NO file name for a share-level access visit", async () => {
+      mockGetShareVisits.mockResolvedValue(
+        mockVisitsResponse([makeVisit({ action: "access", fileId: null, fileName: null })]),
+      );
+
+      render(<ShareDetailsActivitySection shareId="share-1" />, { wrapper: createWrapper() });
+
+      expect(await screen.findByText("shareDetails.activity.access")).toBeInTheDocument();
+      // No file name paragraph for a share-level access.
+      expect(screen.queryByText("report.pdf")).not.toBeInTheDocument();
+      expect(screen.queryByText("shareDetails.activity.preview")).not.toBeInTheDocument();
+      expect(screen.queryByText("shareDetails.activity.download")).not.toBeInTheDocument();
+    });
+
+    it("omits the file name when a preview/download visit has a null fileName (deleted file)", async () => {
+      mockGetShareVisits.mockResolvedValue(
+        mockVisitsResponse([makeVisit({ action: "download", fileId: "file-3", fileName: null })]),
+      );
+
+      render(<ShareDetailsActivitySection shareId="share-1" />, { wrapper: createWrapper() });
+
+      // The action row still renders, just without a file-name line.
+      expect(await screen.findByText("shareDetails.activity.download")).toBeInTheDocument();
+    });
+  });
+
   describe("anonymous source", () => {
     it("renders the anonymous label and no source badge", async () => {
       mockGetShareVisits.mockResolvedValue(
