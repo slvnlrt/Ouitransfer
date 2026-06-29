@@ -36,6 +36,37 @@ _None._
   approach was deliberately reverted earlier in `123c76a`).
 - **Status**: Resolved (2026-06-29) — full web suite (426) green; type-check + lint clean.
 
+### B-31: Invitation emails sent in English despite the sender's UI being in another language — RESOLVED
+
+- **Severity**: Medium — wrong-language emails (share/reverse-share/user invitations) for every non-English operator
+- **Files**: `apps/web/src/components/general/language-switcher.tsx`, `apps/web/src/i18n/request.ts`,
+  `apps/server/src/modules/email/i18n/loader.ts`, `apps/server/src/modules/user/{dto,service,routes,repository}.ts`,
+  `apps/server/src/modules/invite/{service,routes}.ts`, `apps/server/src/utils/request-locale.ts`,
+  `packages/shared/src/locales.ts`
+- **Description**: An admin whose dashboard was in French still received the share-invitation email in English.
+  Two compounding root causes:
+  1. **`user.locale` was never persisted from the UI.** The language switcher only set the `NEXT_LOCALE`
+     cookie (which drives the UI) and called no API; no endpoint wrote `user.locale`, and `UpdateUserSchema`
+     had no `locale` field. So `user.locale` stayed at its `"en"` default for every normally-created user, and
+     the invitation paths (`share`/`reverse-share`/`invite` services, `locale: user?.locale ?? "en"`) resolved
+     to English.
+  2. **Format mismatch.** The UI uses full BCP-47 tags (`fr-FR`); email message files are keyed by base
+     language (`fr`, `en`) and the i18n loader did **no** prefix matching, so even a persisted `fr-FR` would
+     have fallen back to English.
+- **Fix**:
+  - New canonical `@ouitransfer/shared/locales` (single source of truth for the 23 UI locales + Accept-Language
+    resolution); `request.ts` and the server now consume it (drift-guarded by tests).
+  - New self-service `PATCH /users/me/locale` (Zod-validated against `SUPPORTED_UI_LOCALES`); the language
+    switcher persists the choice for authenticated users (fire-and-forget, skipped for anonymous share visitors).
+  - `user.locale` is also seeded at registration (both `/auth/register` and invite registration) from the
+    request's `NEXT_LOCALE` cookie / `Accept-Language`, so users never get English mail merely for never
+    opening the switcher.
+  - The email i18n loader now resolves `fr-FR → fr → en` (base-language fallback) in both the async and
+    pre-loaded-sync paths.
+- **Note**: existing accounts created before this fix keep `locale = "en"` until the user re-selects their
+  language once (now persisted) — acceptable as the app has no production users.
+- **Status**: Resolved (2026-06-29) — full server suite (1911) + web (426) + shared (24) green; lint clean.
+
 ### B-28: Share password update returns 404 — PATCH/PUT method mismatch
 
 - **Severity**: High (feature broken in production)

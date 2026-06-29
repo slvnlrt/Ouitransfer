@@ -133,6 +133,53 @@ describe("i18n loader", () => {
     expect(result).toBe("This email was sent by <strong>Acme</strong>");
   });
 
+  // ── BCP-47 prefix matching (UI locale → base language) ──────────────────────
+
+  it("t('fr-FR', ...) resolves to fr via base-language fallback (no fr-FR.json)", async () => {
+    // The UI persists full tags like 'fr-FR', but message files are keyed by base
+    // language. Without prefix matching this silently returned English (the bug).
+    setupFsMocks({ en: EN_MESSAGES, fr: FR_MESSAGES });
+
+    const result = await t("fr-FR", "common.footer", { appName: "Acme" });
+
+    expect(result).toBe("Cet e-mail a été envoyé par <strong>Acme</strong>");
+  });
+
+  it("t('fr-CA', ...) also resolves to fr (any region of a translated language)", async () => {
+    setupFsMocks({ en: EN_MESSAGES, fr: FR_MESSAGES });
+
+    const result = await t("fr-CA", "common.footer", { appName: "Acme" });
+
+    expect(result).toBe("Cet e-mail a été envoyé par <strong>Acme</strong>");
+  });
+
+  it("t('de-DE', ...) falls back to en when neither de-DE nor de exists", async () => {
+    setupFsMocks({ en: EN_MESSAGES });
+
+    const result = await t("de-DE", "common.footer", { appName: "Acme" });
+
+    expect(result).toBe("This email was sent by <strong>Acme</strong>");
+  });
+
+  it("t('fr-FR', missing-in-fr key) walks fr-FR → fr → en for the key", async () => {
+    // shareInvitation.subject exists only in en; the chain must reach English even
+    // though fr.json is found first (it just lacks this key).
+    setupFsMocks({ en: EN_MESSAGES, fr: FR_MESSAGES });
+
+    const result = await t("fr-FR", "shareInvitation.subject", { senderName: "Alice" });
+
+    expect(result).toBe("You have received a share from Alice");
+  });
+
+  it("createTranslationFn('fr-FR') preloads the base language for sync resolution", async () => {
+    setupFsMocks({ en: EN_MESSAGES, fr: FR_MESSAGES });
+
+    const tr = await createTranslationFn("fr-FR");
+    const result = tr("common.footer", { appName: "Acme" });
+
+    expect(result).toBe("Cet e-mail a été envoyé par <strong>Acme</strong>");
+  });
+
   it("t('en', 'nonexistent.key') throws Error (missing in en = bug)", async () => {
     setupFsMocks({ en: EN_MESSAGES });
 

@@ -1,8 +1,10 @@
 "use client";
 
+import type { SupportedUiLocale } from "@ouitransfer/shared/locales";
 import { Languages } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { useRef } from "react";
 import ReactCountryFlag from "react-country-flag";
 
 import { Button } from "@/components/ui/button";
@@ -12,6 +14,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/auth-context";
+import { updateMyLocale } from "@/http/endpoints";
+import { logger } from "@/lib/logger";
 import { RTL_LANGUAGES } from "@/lib/rtl-languages";
 
 /**
@@ -53,6 +58,11 @@ export function LanguageSwitcher() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
+  // Tracks the in-flight locale write so a rapid second selection can abort the
+  // first — otherwise a slower earlier PATCH could land last and persist a stale
+  // locale (the cookie/UI already reflect the newer choice).
+  const localeWriteRef = useRef<AbortController | null>(null);
 
   const changeLanguage = (fullLocale: string) => {
     const isRTL = RTL_LANGUAGES.includes(fullLocale as (typeof RTL_LANGUAGES)[number]);
@@ -61,6 +71,25 @@ export function LanguageSwitcher() {
     const secure = window.location.protocol === "https:" ? "; Secure" : "";
     // biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API not available without a polyfill; this is the correct native approach
     document.cookie = `${COOKIE_LANG_KEY}=${encodeURIComponent(fullLocale)}; Max-Age=${COOKIE_MAX_AGE}; Path=/; SameSite=Lax${secure}`;
+
+    // Persist the choice on the account so it becomes the user's email language
+    // (the cookie alone only drives the UI). Fire-and-forget: the UI switch must
+    // not wait on — or be blocked by — the request. Skipped for anonymous
+    // visitors (public share pages), who have no account to persist to.
+    // `fullLocale` is a key of `languages`, which is drift-guarded to equal
+    // SUPPORTED_UI_LOCALES, so the cast is sound.
+    if (isAuthenticated) {
+      localeWriteRef.current?.abort();
+      const controller = new AbortController();
+      localeWriteRef.current = controller;
+      updateMyLocale(fullLocale as SupportedUiLocale, { signal: controller.signal }).catch(
+        (err) => {
+          // A newer selection aborted this one — expected, not a failure.
+          if (controller.signal.aborted) return;
+          logger.warn("Failed to persist locale preference", { err });
+        },
+      );
+    }
 
     router.refresh();
   };

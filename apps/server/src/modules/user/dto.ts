@@ -1,3 +1,4 @@
+import { SUPPORTED_UI_LOCALES } from "@ouitransfer/shared/locales";
 import { z } from "zod";
 
 // A2-07: `isAdmin` is intentionally NOT part of the register DTO. Admin status
@@ -32,6 +33,15 @@ export const UpdateUserSchema = z.object({
 });
 
 export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;
+
+// Self-service locale preference update (PATCH /users/me/locale). Constrained to
+// the locales the app actually ships UI translations for — an unsupported value
+// would be stored but never resolve to a matching email translation. The email
+// i18n loader maps the stored UI locale down to its base language, so storing a
+// full BCP-47 tag (e.g. `fr-FR`) here is correct.
+export const UpdateUserLocaleSchema = z.object({
+  locale: z.enum(SUPPORTED_UI_LOCALES),
+});
 
 export const UserResponseSchema = z.object({
   id: z.string(),

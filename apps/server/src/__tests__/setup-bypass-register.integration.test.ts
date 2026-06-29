@@ -103,6 +103,9 @@ vi.mock("../modules/user/repository.js", () => ({
         tokenVersion: TOKEN_VERSION,
         maxFileSizeOverride: null,
         maxTotalStorageOverride: null,
+        // Captured so tests can assert the email-language seed forwarded from the
+        // request locale. UserResponseSchema.parse() strips this from the response.
+        locale: data.locale,
       };
       return createdUser;
     });
@@ -209,7 +212,13 @@ describe("A2-03 setup-bypass — POST /auth/register", () => {
     const res = await app.inject({
       method: "POST",
       url: "/auth/register",
-      headers: { cookie: adminCookie, "x-csrf-token": header },
+      // The admin is browsing in French, but that locale belongs to the ADMIN,
+      // not to the account being created — it must NOT be seeded onto the new user.
+      headers: {
+        cookie: `${adminCookie}; NEXT_LOCALE=fr-FR`,
+        "x-csrf-token": header,
+        "accept-language": "fr-FR",
+      },
       payload: { ...REGISTER_BODY, email: "grace@example.com", username: "grace" },
     });
 
@@ -219,5 +228,56 @@ describe("A2-03 setup-bypass — POST /auth/register", () => {
     // Not the first user → created as a non-admin by default.
     expect(body.user.isAdmin).toBe(false);
     expect(createdUser?.isAdmin).toBe(false);
+    // Admin-created account must NOT inherit the admin's request locale.
+    expect(createdUser?.locale).toBeUndefined();
+  });
+
+  // ── Email-language seeding from the request locale ──────────────────────────
+
+  it("seeds the new user's locale from the NEXT_LOCALE cookie", async () => {
+    userCount = 0;
+    const { header, cookie } = await csrf();
+
+    const res = await app.inject({
+      method: "POST",
+      url: "/auth/register",
+      headers: { cookie: `${cookie}; NEXT_LOCALE=fr-FR`, "x-csrf-token": header },
+      payload: REGISTER_BODY,
+    });
+
+    expect(res.statusCode).toBe(201);
+    expect(createdUser?.locale).toBe("fr-FR");
+  });
+
+  it("seeds locale from Accept-Language (base-language match) when no cookie is set", async () => {
+    userCount = 0;
+    const { header, cookie } = await csrf();
+
+    const res = await app.inject({
+      method: "POST",
+      url: "/auth/register",
+      headers: { cookie, "x-csrf-token": header, "accept-language": "fr-CA,fr;q=0.9" },
+      payload: REGISTER_BODY,
+    });
+
+    expect(res.statusCode).toBe(201);
+    // fr-CA isn't a shipped UI locale, but resolves to fr-FR by base language.
+    expect(createdUser?.locale).toBe("fr-FR");
+  });
+
+  it("leaves locale unset when the request carries no usable locale signal", async () => {
+    userCount = 0;
+    const { header, cookie } = await csrf();
+
+    const res = await app.inject({
+      method: "POST",
+      url: "/auth/register",
+      headers: { cookie, "x-csrf-token": header, "accept-language": "xx-XX" },
+      payload: REGISTER_BODY,
+    });
+
+    expect(res.statusCode).toBe(201);
+    // No signal → undefined so Prisma applies the column default ("en").
+    expect(createdUser?.locale).toBeUndefined();
   });
 });
