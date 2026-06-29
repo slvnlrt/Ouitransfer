@@ -46,14 +46,20 @@ Two product gaps the owner also raised:
    `intent: "preview" | "download"` to `POST /files/download-url` (default `"download"` → all existing
    callers unchanged). The server maps `intent` → which event it records. Intent is inherently
    client-side knowledge (preview vs download fetch the *same* bytes), so it cannot be made fully
-   server-authoritative; but the only consequence of a mislabel is preview-vs-download analytics
-   (low-stakes), and **recipient attribution stays server-side safeguarded** (token-only). ⇒ shrinks **I-3**
-   to a documented, low-stakes trade-off; a named `intent` enum is self-documenting (resolves **M-1**, the
-   `track`/`_shareId` vestigial-param smell).
-4. **Fix the cache-coherence bug by keying on intent.** `intent` is added to the **client presigned-URL
-   cache key**. A `preview` URL and a `download` URL cache as separate entries, so a real download after a
-   preview of the same file still makes a fresh request and records the download. ⇒ resolves **C-1**
-   (the Critical regression the prior plan introduced).
+   server-authoritative; but **recipient attribution stays server-side safeguarded** (token-only). The
+   single residual spoof (a recipient sending `intent:"preview"` on a real download): the download is then
+   recorded as a preview, `lastDownloadedAt` is **not** set, so the recipient *stays in the
+   `remindNonDownloaders` set* (`service.ts:1150` keys off `lastDownloadedAt == null`). i.e. spoofing only
+   over-reminds the spoofer; it can **never hide a real download from the owner**, so the owner's
+   "downloaded ⇒ it was downloaded" guarantee is intact. This is strictly better than v1 and acceptable.
+   A named `intent` enum is self-documenting (resolves **M-1**, the `track`/`_shareId` vestigial-param smell).
+4. **C-1 is closed primarily by the server `intent` branch — the cache key is a secondary guard.** Because
+   a preview now records `action:"preview"` and writes **no** download stats, a later real download is a
+   genuinely distinct server action regardless of cache identity. As belt-and-suspenders, `intent` is also
+   added to the **client presigned-URL cache key**, with a stable default of `"download"` in a fixed
+   position (so every key carries an intent segment and no two logically-equal requests split into two
+   keys — see task 3). ⇒ resolves **C-1** (the Critical regression the prior plan introduced) and the M-2
+   "correctness depends on cache identity" smell.
 5. **Preview lives in the activity log, not as a recipient badge.** Surface previews **only** in the
    per-file activity log (distinct from the recipient-row 👁 "accès" aggregate, so the two never visually
    collide). No new `ShareRecipient`/`Share` aggregate columns. Keeps the change small and the recipient
@@ -70,9 +76,10 @@ Two product gaps the owner also raised:
   - `"download"` (or default) + `shareId` → `trackShareDownload(...)` (unchanged).
   - `"preview"` + `shareId` → new `trackShareFilePreview(...)`.
 - New `trackShareFilePreview(request, fileRecord, shareId, userId, ancestorFolderIds)`: mirror
-  `trackShareDownload`'s recipient resolution + **owner-skip guard**, but create a
-  `ShareVisit{ action:"preview", fileId: fileRecord.id, … }` and **nothing else** (no recipient
-  download stats, no `Share.lastDownloadedAt`, no email). Fire-and-forget.
+  `trackShareDownload`'s recipient resolution + **owner-skip guard** (reproduce the same
+  share-creator/`isOwner` lookup it uses at `routes.ts:286-288` — the function must fetch the share to
+  know the creator), but create a `ShareVisit{ action:"preview", fileId: fileRecord.id, … }` and
+  **nothing else** (no recipient download stats, no `Share.lastDownloadedAt`, no email). Fire-and-forget.
 - `FILE_DOWNLOAD` audit metadata: add `intent` (the server's resolved value) so previews aren't logged as
   downloads (resolves **M-3**).
 - Streamed `POST /files/download` (`~:1276`): add the same `intent` field for parity (not web-reachable;
@@ -80,15 +87,26 @@ Two product gaps the owner also raised:
 
 ### 2 — Server: expose the file name (and preview action) in the activity log
 `apps/server/src/modules/share/{routes,service}.ts`
-- `/shares/:shareId/visits`: `include` the file name where `fileId != null` (LEFT JOIN `File`), add
-  `fileName: string | null` to the response; ensure `action` may be `"preview"`; extend the `action`
-  query filter enum to `access | preview | download`.
+- **No Prisma `include`/relation exists**: `ShareVisit.fileId` is a bare `String?` with no `file` relation
+  (and `File` has no back-relation), so the file name must be resolved by a **manual batch lookup** (keeps
+  the "no migration" property). After the page's `shareVisit.findMany`, collect the non-null `fileId`s,
+  run one `prisma.file.findMany({ where: { id: { in: fileIds } }, select: { id: true, name: true } })`
+  (one query per page, ≤ `limit` ids — NOT an N+1), build a `Map<id, name>`, and attach
+  `fileName: string | null` to each visit. **Deleted/expired files → `fileName: null`** (the UI renders a
+  graceful fallback, e.g. the action without a name).
+- Add `fileName: string | null` to the `/visits` response schema; ensure `action` may be `"preview"`;
+  extend the `action` query-filter enum to `access | preview | download`.
 
 ### 3 — Client HTTP layer: thread `intent` (body + cache key)
 - `apps/web/src/http/endpoints/files/index.ts` — `getDownloadUrl(...)`: add `intent?: "preview" | "download"`;
   when `intent === "preview"`, set `body.intent = "preview"`. Refresh the misleading `_shareId` JSDoc.
 - `apps/web/src/lib/download-url-cache.ts` — `getCachedDownloadUrl(objectName, options?, shareId?, intent?)`:
-  accept `intent`, forward to `getDownloadUrl`, **and include it in `getCacheKey`** (the C-1 fix; comment why).
+  accept `intent`, forward to `getDownloadUrl`, **and include it in `getCacheKey`**. `getCacheKey` currently
+  does `[objectName, password, shareId].filter(Boolean).join("|")`; **default `intent` to `"download"`**
+  inside the key builder and place it in a fixed final position — e.g.
+  `[objectName, password, shareId, intent].filter(Boolean)` where `intent` is never empty — so every key
+  carries a stable intent segment and two logically-equal download calls (one omitting intent, one passing
+  the default) can't split into two keys / double-presign. Comment why (secondary C-1 guard).
 
 ### 4 — Client: send `intent:"preview"` from the preview path only
 `apps/web/src/hooks/use-file-preview.ts`
@@ -98,13 +116,19 @@ Two product gaps the owner also raised:
 
 ### 5 — Client: render previews + file names in the activity log
 `apps/web/src/components/modals/share-details/share-details-activity-section.tsx` (+ `http/endpoints/shares/types.ts`)
-- Types: `ShareVisit.action: "access" | "preview" | "download"`; add `fileName: string | null`.
+- Types: `ShareVisit.action: "access" | "preview" | "download"`; add `fileName: string | null`. Also widen
+  the client `ActionFilter` type (`activity-section.tsx:101`, currently `"all" | "access" | "download"`)
+  and the web `getShareVisits` `action` param to include `"preview"`, and the **server** querystring enum
+  (`share/routes.ts:1143`, currently `["access","download"]`) to `access | preview | download`.
 - `VisitEntry`: render `"preview"` with a **distinct** icon+label from share `"access"` — e.g. access →
-  "A consulté le partage" (Eye), preview → "A consulté le fichier {fileName}" (a file-with-eye icon),
-  download → "A téléchargé {fileName}" (Download). Show `fileName` on download rows too.
+  "A consulté le partage" (Eye, share-level, no file), preview → "A consulté le fichier {fileName}"
+  (a file-with-eye icon, file-level), download → "A téléchargé {fileName}" (Download). Show `fileName` on
+  download rows too; when `fileName` is null (deleted file), fall back to the action label without a name.
 - Add **"Aperçu"** to the action filter (4-way: tous / accès / aperçu / téléchargement).
-- New i18n keys for the preview label + filter, in en-US + fr-FR (and the other 21 locales per project i18n
-  discipline; en/fr translated, rest fall back per existing convention).
+- New i18n keys for the preview label + filter must be added to **all 23 locale files** (en-US + fr-FR
+  authored; the other 21 via the translation sync workflow / `[TO_TRANSLATE]` markers — NOT runtime
+  fallback), matching the existing `shareDetails.activity.*` keys which are already present in all 23.
+  Run `pnpm --filter web translations:check` (CLAUDE.md rule 5 — preserve i18n).
 
 ### 6 — Tests
 - **Server integration (`app.inject`)** — extend `apps/server/src/__tests__/share-download-access.integration.test.ts`:
@@ -116,7 +140,9 @@ Two product gaps the owner also raised:
 - **C-1 regression test** — preview a file (`intent:"preview"`) then download the **same** file
   (`intent:"download"`) → the download is still recorded (separate cache key; download stats bumped once).
 - **Client unit** — `use-file-preview`: `loadPreview` passes `intent:"preview"` (any type); `handleDownload`
-  never passes `intent:"preview"`. `download-url-cache`: preview vs download produce different cache keys.
+  never passes `intent:"preview"`. `download-url-cache`: for the same `objectName`+`shareId`, a `preview`
+  call and a `download` call (including the **default/omitted-intent** download case) produce **different**
+  cache keys, and every key carries a stable intent segment.
 - Full suites + type-check + lint.
 
 ### 7 — Docs
@@ -131,6 +157,11 @@ Two product gaps the owner also raised:
   per-file aggregation query. Not in this change.
 - **Reverse shares**: different endpoint (`getCachedReverseShareDownloadUrl`); they track *uploads*, not
   downloads — the B-34 symptom cannot occur there. Tracked as a follow-up in TECHNICAL-DEBT.
+- **Cleaner long-term design (TECHNICAL-DEBT note):** the strictly superior end-state is a dedicated
+  `POST /shares/:id/files/:fileId/(view|download)` tracking call that removes the presigned-URL cache from
+  the tracking-correctness path entirely (tracking no longer piggybacks on URL minting). Not taken here —
+  v2's server `intent` branch already makes correctness independent of cache identity — but recorded in
+  `TECHNICAL-DEBT.md` as the future refactor direction.
 
 ## Review-finding resolution map
 - **C-1** (cache coherence) → `intent` in the cache key (task 3).
@@ -147,9 +178,14 @@ Two product gaps the owner also raised:
 
 ## Risk
 Low–medium. Default `intent:"download"` preserves all current download behavior; only the preview path
-opts into the new event. No schema migration. The one behavioral change visible to owners: previews now
-appear as a distinct "Aperçu" activity instead of inflating "Téléchargé", and the activity log shows which
-file each download/preview concerns.
+opts into the new event. No schema migration (file name resolved by batch lookup, task 2). The one
+behavioral change visible to owners: previews now appear as a distinct "Aperçu" activity instead of
+inflating "Téléchargé", and the activity log shows which file each download/preview concerns.
+
+**Intended behavior to note (not a bug):** re-opening the same preview within the presigned-URL cache
+window is a cache hit (no second event); re-opening across windows/sessions records another `"preview"`
+row. For an activity *log* this is correct (each is a distinct viewing event) — it is not a download
+counter. "Viewed once" semantics would require a per-recipient aggregate, which is explicitly out of scope.
 
 ## Validation checklist
 - [ ] Preview of any type (`.zip`, `.png`, `.txt`) → recipient NOT marked "Téléchargé"; an "Aperçu" row
