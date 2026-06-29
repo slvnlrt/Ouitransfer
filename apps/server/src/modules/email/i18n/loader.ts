@@ -46,10 +46,11 @@ const missingLocales = new Set<string>();
  * Values are interpolated **without** HTML escaping — suitable for
  * plain-text contexts (email subjects, logs, etc.).
  *
- * Fallback chain:
- *   1. Requested locale
- *   2. English ("en")
- *   3. Throw — a key missing from en.json is a developer bug
+ * Fallback chain (see `localeCandidates`):
+ *   1. Requested locale (e.g. `fr-FR`)
+ *   2. Base language (e.g. `fr`)
+ *   3. English ("en")
+ *   4. Throw — a key missing from en.json is a developer bug
  *
  * Interpolation: replaces `{key}` placeholders with values from `params`.
  */
@@ -67,7 +68,8 @@ export async function t(
  * an HTML email body.
  *
  * The HTML markup in the locale template itself (e.g. `<strong>`) is preserved;
- * only the substituted *values* are escaped.
+ * only the substituted *values* are escaped. Shares the same locale fallback
+ * chain as `t()` (requested → base language → en → throw).
  */
 export async function tHtml(
   locale: string,
@@ -256,8 +258,10 @@ function resolveAndInterpolateSyncCached(
  * locale is already in progress, the existing promise is returned instead
  * of starting a second concurrent file read.
  *
- * Fallback chain: requested locale → "en". No BCP-47 prefix matching
- * (e.g. de-DE → de). Only exact locale files are loaded.
+ * Loads ONLY the exact locale file requested — it does no prefix matching
+ * itself. The base-language and English fallback steps (e.g. `fr-FR` → `fr` →
+ * `en`) are owned by `localeCandidates()`, whose chain the resolvers walk by
+ * calling this function once per candidate.
  */
 async function loadLocale(locale: string): Promise<Record<string, unknown> | null> {
   // Reject anything that isn't a well-formed locale code before it reaches a

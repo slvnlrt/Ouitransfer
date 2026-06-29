@@ -355,10 +355,8 @@ export class UserService {
   async updateUserImage(userId: string, imageUrl: string | null) {
     const user = await prisma.user.update({
       where: { id: userId },
-      data: {
-        image: imageUrl,
-        updatedAt: new Date(),
-      },
+      // `updatedAt` is `@updatedAt` — Prisma stamps it automatically on update.
+      data: { image: imageUrl },
       include: { group: { select: { id: true, name: true } } },
     });
     return user;
@@ -376,7 +374,8 @@ export class UserService {
   async updateLocale(userId: string, locale: string): Promise<{ locale: string }> {
     const user = await prisma.user.update({
       where: { id: userId },
-      data: { locale, updatedAt: new Date() },
+      // `updatedAt` is `@updatedAt` — Prisma stamps it automatically on update.
+      data: { locale },
       select: { locale: true },
     });
     return { locale: user.locale };
