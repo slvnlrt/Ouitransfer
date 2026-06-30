@@ -42,6 +42,25 @@ _None._
 - **Status**: Resolved (2026-06-29) — spec/plan + two Opus design reviews under
   `features/{plans,reviews}/b-34-…`. Server + web suites green; type-check + lint clean.
 
+### B-33: Recipient download/upload tooltips showed UTC time instead of the user's local time — RESOLVED
+
+- **Severity**: Low — cosmetic but misleading (off-by-timezone, e.g. −2h)
+- **Files**: `apps/web/src/components/modals/share-details/share-details-recipients-list.tsx`,
+  `apps/web/src/components/general/recipient-selector.tsx`,
+  `apps/web/src/app/(shares)/reverse-shares/components/reverse-share-recipient-selector.tsx`
+- **Symptom**: In the "manage recipients" view, hovering the "Téléchargé" badge showed
+  "Téléchargé le {date} à {heure}" with the time in **UTC**, while every other date in the UI is
+  rendered in the user's local timezone. Same issue on the reverse-share "Uploaded" tooltip.
+- **Root cause**: These tooltips used next-intl's `useFormatter().dateTime(...)`, which renders in the
+  provider's configured timezone (UTC on the server) rather than the browser's local zone. The rest of
+  the app uses the canonical `formatDateTime(dateString, "table", locale)` util (`lib/format-date-time.ts`),
+  which uses `Intl.DateTimeFormat(locale, …)` with no `timeZone` → the browser's local time.
+- **Fix**: Switched all four occurrences (downloaded ×3, uploaded ×1) to `formatDateTime(..., "table", locale)`,
+  aligning both timezone AND format with the rest of the UI. `useFormatter` kept only where still needed
+  (the access `relativeTime`). Updated the two component tests to add the `useLocale` mock and assert via
+  the same formatter (TZ/format-robust).
+- **Status**: Resolved (2026-06-29) — full web suite (428) green; type-check + lint clean.
+
 ### B-32: Infinite "Loading Please Wait" on /login after session expiry on tab return — RESOLVED
 
 - **Severity**: High — recurring UX dead-end; only a manual hard reload (F5) recovered

@@ -31,6 +31,7 @@ vi.mock("next-intl", () => ({
     relativeTime: (date: Date) => date.toISOString(),
     number: (n: number) => String(n),
   }),
+  useLocale: () => "en-US",
 }));
 
 // Mutable SMTP flag so individual tests can enable/disable SMTP-gated controls.
@@ -61,6 +62,7 @@ vi.mock("sonner", () => ({
 import { RecipientSelector } from "@/components/general/recipient-selector";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { ShareRecipient } from "@/http/endpoints/shares/types";
+import { formatDateTime } from "@/lib/format-date-time";
 
 function makeRecipient(overrides: Partial<ShareRecipient> = {}): ShareRecipient {
   return {
@@ -116,8 +118,12 @@ describe("RecipientSelector download-status badge", () => {
     expect(screen.queryByText("recipientSelector.pending")).not.toBeInTheDocument();
 
     // The formatted date is interpolated into the aria-label of the badge trigger.
+    // Assert via the same local-time formatter the component uses (TZ/format-robust,
+    // and guards the B-33 fix: the tooltip must render local time, not UTC).
     const badge = screen.getByText("recipientSelector.downloaded");
-    expect(badge.getAttribute("aria-label")).toContain("2024-06-01");
+    expect(badge.getAttribute("aria-label")).toContain(
+      formatDateTime("2024-06-01T10:00:00Z", "table", "en-US"),
+    );
   });
 
   it("shows the Pending badge when notified but not yet downloaded", () => {

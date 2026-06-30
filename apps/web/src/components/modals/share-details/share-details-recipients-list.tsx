@@ -1,11 +1,12 @@
 "use client";
 
 import { Check, Clock, Download, Eye, Mail, Pencil } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Share, ShareRecipient } from "@/http/endpoints/shares/types";
+import { formatDateTime } from "@/lib/format-date-time";
 
 interface ShareDetailsRecipientsListProps {
   recipients: ShareRecipient[];
@@ -20,6 +21,7 @@ export function ShareDetailsRecipientsList({
 }: ShareDetailsRecipientsListProps) {
   const t = useTranslations();
   const format = useFormatter();
+  const locale = useLocale();
 
   // Nothing to show and no way to edit (non-owner with no recipients): render nothing,
   // matching the previous inline behavior. Owners always get the section (with a manage
@@ -84,10 +86,10 @@ export function ShareDetailsRecipientsList({
                         </TooltipTrigger>
                         <TooltipContent>
                           {t("recipientSelector.downloadedAt", {
-                            date: format.dateTime(new Date(lastDownloadedAt), {
-                              dateStyle: "medium",
-                              timeStyle: "short",
-                            }),
+                            // formatDateTime renders in the browser's local timezone
+                            // (like the rest of the UI); next-intl's format.dateTime
+                            // used the configured/UTC zone here (B-33).
+                            date: formatDateTime(lastDownloadedAt, "table", locale),
                           })}
                         </TooltipContent>
                       </Tooltip>

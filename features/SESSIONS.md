@@ -19,6 +19,15 @@
 - Tests: server preview-vs-download tracking, cache C-1 guard, preview-intent hook test. Tracked as
   **B-34**; plan + two reviews under `features/{plans,reviews}/b-34-…`.
 
+## 2026-06-29 (B-33 — Recipient tooltips showed UTC instead of local time)
+
+- The "Téléchargé"/"Uploaded" tooltips in the manage-recipients views rendered the time in UTC while
+  the rest of the UI shows local time. Cause: next-intl `useFormatter().dateTime()` renders in the
+  configured (server/UTC) timezone; the app's canonical `formatDateTime(…, locale)` util uses
+  `Intl.DateTimeFormat` with no `timeZone` → browser-local. Switched all four occurrences (3 download +
+  1 reverse-share upload) to `formatDateTime(…, "table", locale)`. Tests updated (useLocale mock +
+  formatter-based assertions). Tracked as **B-33**. Full web suite (428) green; lint clean.
+
 ## 2026-06-29 (B-32 — Infinite /login loading after session expiry)
 
 - Fixed the chronic infinite "Loading Please Wait" on `/login` after the session expired on tab
