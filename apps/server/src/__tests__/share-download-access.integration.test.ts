@@ -318,6 +318,17 @@ describe("R2 download/access hardening — integration", () => {
         fileId: FILE_A,
       });
 
+      // Drain the fire-and-forget continuation before the negative assertions below. The download
+      // branch runs shareRecipient.update / share.update AFTER `await prisma.shareVisit.create(...)`,
+      // i.e. on later microtasks. If a preview ever regressed to the download branch, observing only
+      // the create call would not yet have run those writes — flush them so "no download stats"
+      // actually proves their absence rather than racing ahead of them.
+      const createResult = visitCreate.mock.results[0];
+      if (createResult?.type === "return") {
+        await createResult.value;
+      }
+      await new Promise((resolve) => setImmediate(resolve));
+
       // A preview must never write download stats: no recipient downloadCount bump and no
       // Share.lastDownloadedAt update (so remindNonDownloaders stays correct).
       const recipientUpdate = vi.mocked(prisma.shareRecipient.update);

@@ -216,8 +216,12 @@ export function useFilePreview({
           ? { headers: { "x-share-password": sharePassword } }
           : undefined;
         // B-34: a preview is a view — record it as a per-file "preview" event, never a download.
-        // (For all file types; `shareId` stays undefined here, used only for cache scoping.)
-        url = await getCachedDownloadUrl(file.objectName, options, undefined, "preview");
+        // Pass `shareId` (for all file types) so the preview cache is scoped per share, exactly like
+        // the download path: previewing the same object under a different share must mint a fresh URL
+        // and record that share's own preview visit, not reuse the first share's cached URL. `shareId`
+        // only keys the client cache; it is never sent to the server (the opaque file token already
+        // binds the share).
+        url = await getCachedDownloadUrl(file.objectName, options, shareId, "preview");
       }
 
       setState((prev) => ({ ...prev, downloadUrl: url }));
@@ -254,6 +258,7 @@ export function useFilePreview({
     file.objectName,
     fileType,
     sharePassword,
+    shareId,
     loadVideoPreview,
     loadAudioPreview,
     loadPdfPreview,

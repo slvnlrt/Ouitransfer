@@ -112,7 +112,11 @@ Two product gaps the owner also raised:
 
 ### 4 — Client: send `intent:"preview"` from the preview path only
 `apps/web/src/hooks/use-file-preview.ts`
-- `loadPreview` (non-reverse branch, `~:216`): pass `intent: "preview"` (for ALL types — no getFileType check).
+- `loadPreview` (non-reverse branch, `~:216`): pass `intent: "preview"` (for ALL types — no getFileType check),
+  and forward `shareId` so the preview cache is scoped per share — identical to the download path. (Initial
+  draft passed `undefined`; corrected after review: leaving it unscoped collapses previews of the same object
+  across two shares into one cache entry and silently drops the second share's preview visit. `shareId` only
+  keys the client cache; it is never sent to the server.) Add `shareId` to `loadPreview`'s dependency array.
 - `handleDownload` and every other download call site: unchanged (default `"download"`).
 - Replace the misleading comment block (`:34-40`) with the real mechanism.
 

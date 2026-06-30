@@ -5,8 +5,9 @@
  *
  * Verifies that opening the preview requests the presigned URL with intent
  * "preview" (so the server records a per-file ShareVisit "preview", not a
- * download), and that shareId is not forwarded from the preview path (it is
- * cache-scope only).
+ * download), and that it forwards the shareId so the preview cache is scoped
+ * per share (consistent with the download path; shareId is cache-scope only and
+ * never sent to the server).
  *
  * It also verifies the explicit download path requests the URL with the default
  * (download) intent — never "preview" — and forwards the shareId for cache scoping.
@@ -78,11 +79,11 @@ describe("useFilePreview — B-34 intent wiring", () => {
 
     await waitFor(() => expect(mockGetCachedDownloadUrl).toHaveBeenCalled());
 
-    // loadPreview must pass intent "preview"; shareId stays undefined (cache-scope only).
+    // loadPreview must pass intent "preview" and forward shareId for per-share cache scoping.
     expect(mockGetCachedDownloadUrl).toHaveBeenCalledWith(
       file.objectName,
       undefined,
-      undefined,
+      "share-1",
       "preview",
     );
 
