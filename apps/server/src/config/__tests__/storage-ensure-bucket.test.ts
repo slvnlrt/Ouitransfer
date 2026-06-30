@@ -98,6 +98,13 @@ describe("ensureBucket — actual function from storage.config.ts", () => {
   describe("when S3 is configured", () => {
     beforeEach(() => {
       for (const [k, v] of Object.entries({ ...BASE_ENV, ...S3_ENV })) vi.stubEnv(k, v);
+      // Pin internal storage explicitly. `isExternalS3`/`isInternalStorage` are read from
+      // `env.ENABLE_S3` at module-import time, and these tests exercise the internal-storage
+      // lifecycle path. Without an explicit baseline they depend on ENABLE_S3 being absent — but a
+      // stray "true" (e.g. from the external-S3 test in this file leaking through env-restore
+      // timing, or any future test) flips them to the external path and they fail with the bucket
+      // lifecycle never applied. The external-S3 test overrides this to "true" in its own body.
+      vi.stubEnv("ENABLE_S3", "false");
     });
 
     it("logs bucket exists when HeadBucket succeeds", async () => {
