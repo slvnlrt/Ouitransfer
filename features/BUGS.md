@@ -13,6 +13,35 @@ _None._
 
 ## Resolved (recent)
 
+### B-34: A file PREVIEW counted as a download in shares — RESOLVED
+
+- **Severity**: Low–Medium — wrong tracking; a recipient who only previewed a file showed as "Téléchargé",
+  and `remindNonDownloaders` then skipped them.
+- **Files**: `apps/server/src/modules/file/routes.ts`, `apps/server/src/modules/share/routes.ts`,
+  `apps/web/src/{lib/download-url-cache.ts,http/endpoints/files/index.ts,http/endpoints/shares/{index,types}.ts,
+  hooks/use-file-preview.ts,components/modals/share-details/share-details-activity-section.tsx}`, all 23 locale files.
+- **Root cause**: download tracking fired at presigned-URL **generation** time. The opaque per-share file
+  token (`st1_…`) binds `{shareId,fileId}`, so the server resolved the share for BOTH preview and download
+  (`if (shareId) trackShareDownload(...)`), bumping recipient `downloadCount`/`lastDownloadedAt`. The client
+  never sent an intent, so the server couldn't tell a view from a download. (The frontend `shareId` arg was
+  only a cache-scope key, never sent — the prior "preview omits shareId" comment was misleading.)
+- **Fix (first-class "viewed" event, per two Opus design reviews)**: a preview is recorded as its own
+  `ShareVisit{action:"preview", fileId}` and never touches download stats. The client declares an explicit
+  `intent: "preview" | "download"` on `POST /files/download-url` (default `"download"` → existing callers
+  unchanged); the preview path (`loadPreview`) sends `"preview"` for **all** file types (no client
+  previewability oracle). `intent` is also in the presigned-URL cache key (default `"download"`, fixed
+  position) so a real download after a preview of the same file still hits the server (C-1 guard). The
+  activity log gained a distinct **"Aperçu"** row (file-level, with the **file name**) clearly separate from
+  the share-level "Consulté", and now shows the file name on download rows too — answering "which file?".
+  `/shares/:id/visits` resolves file names via a batch lookup (no `ShareVisit→File` relation, so no
+  migration) and accepts `?action=preview`. The `FILE_DOWNLOAD` audit records the server-resolved `intent`.
+- **Design notes / deferred**: the residual spoof (a recipient sending `intent:"preview"` on a real
+  download) only keeps the spoofer in the reminder set — it can never hide a real download from the owner.
+  No per-recipient "viewed" aggregate badge (previews live in the activity log). Reverse-shares and a cleaner
+  dedicated `view|download` tracking endpoint are tracked in `TECHNICAL-DEBT.md`.
+- **Status**: Resolved (2026-06-29) — spec/plan + two Opus design reviews under
+  `features/{plans,reviews}/b-34-…`. Server + web suites green; type-check + lint clean.
+
 ### B-32: Infinite "Loading Please Wait" on /login after session expiry on tab return — RESOLVED
 
 - **Severity**: High — recurring UX dead-end; only a manual hard reload (F5) recovered

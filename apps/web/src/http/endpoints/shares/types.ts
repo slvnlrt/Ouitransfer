@@ -269,13 +269,15 @@ export interface GetShareByAliasParams {
 // ── Share visits ────────────────────────────────────────────────────────
 export interface ShareVisit {
   id: string;
-  action: string;
+  action: "access" | "preview" | "download";
   visitorName: string | null;
   visitorEmail: string | null;
   createdAt: string;
   recipientId: string | null;
   shareId: string;
   fileId: string | null;
+  /** File name for download/preview rows; null for access rows or deleted files (B-34). */
+  fileName: string | null;
   recipient: { email: string; name: string | null } | null;
   identificationSource: "tracking_token" | "cookie" | "anonymous" | "authenticated_user";
   isOwner: boolean;

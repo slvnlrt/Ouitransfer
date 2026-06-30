@@ -2034,7 +2034,9 @@
         "cookie": "Αυτοταυτοποίηση",
         "selfDeclaredHint": "Αυτοδήλωτη ταυτότητα, μη επαληθευμένη",
         "authenticated_user": "Εγγεγραμμένος χρήστης"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "Τελευταία Λήψη",
     "privacySummary": "Απόρρητο",

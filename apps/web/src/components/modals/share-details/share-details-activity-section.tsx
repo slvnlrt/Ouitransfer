@@ -1,7 +1,7 @@
 "use client";
 
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { AlertTriangle, Download, Eye } from "lucide-react";
+import { AlertTriangle, Download, Eye, FileSearch } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
@@ -38,22 +38,33 @@ const SOURCE_LABEL_KEY = {
 function VisitEntry({ visit }: VisitEntryProps) {
   const t = useTranslations();
   const format = useFormatter();
-  const isDownload = visit.action === "download";
   const hasIdentity = !!(visit.visitorName || visit.visitorEmail);
+
+  // Three distinct activities: share-level access (Eye, no file), file-level preview
+  // (FileSearch, with file name) and file-level download (Download, with file name). The icon +
+  // label + the presence of a file name keep "consulted the share" and "viewed a file" unambiguous.
+  const ActionIcon =
+    visit.action === "download" ? Download : visit.action === "preview" ? FileSearch : Eye;
+  const actionLabelKey =
+    visit.action === "download"
+      ? "shareDetails.activity.download"
+      : visit.action === "preview"
+        ? "shareDetails.activity.preview"
+        : "shareDetails.activity.access";
 
   return (
     <div className="flex items-start gap-3 py-2">
       <div className="mt-0.5 flex-shrink-0 rounded-full bg-muted p-1.5">
-        {isDownload ? (
-          <Download className="h-3.5 w-3.5 text-muted-foreground" />
-        ) : (
-          <Eye className="h-3.5 w-3.5 text-muted-foreground" />
-        )}
+        <ActionIcon className="h-3.5 w-3.5 text-muted-foreground" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-foreground">
-          {isDownload ? t("shareDetails.activity.download") : t("shareDetails.activity.access")}
-        </p>
+        <p className="text-sm font-medium text-foreground">{t(actionLabelKey)}</p>
+        {/* File name for preview/download rows (B-34); null for access or a deleted file. */}
+        {visit.fileName && (
+          <p className="text-xs text-muted-foreground truncate" title={visit.fileName}>
+            {visit.fileName}
+          </p>
+        )}
         <div className="flex items-center gap-1.5">
           {hasIdentity ? (
             <p className="text-xs text-muted-foreground truncate">
@@ -98,7 +109,7 @@ function VisitEntry({ visit }: VisitEntryProps) {
   );
 }
 
-type ActionFilter = "all" | "access" | "download";
+type ActionFilter = "all" | "access" | "preview" | "download";
 type IdentityFilter = "all" | "identified" | "anonymous";
 
 export function ShareDetailsActivitySection({ shareId }: ShareDetailsActivitySectionProps) {
@@ -167,6 +178,7 @@ export function ShareDetailsActivitySection({ shareId }: ShareDetailsActivitySec
           <SelectContent>
             <SelectItem value="all">{t("shareDetails.activity.filterAll")}</SelectItem>
             <SelectItem value="access">{t("shareDetails.activity.filterAccess")}</SelectItem>
+            <SelectItem value="preview">{t("shareDetails.activity.filterPreview")}</SelectItem>
             <SelectItem value="download">{t("shareDetails.activity.filterDownload")}</SelectItem>
           </SelectContent>
         </Select>

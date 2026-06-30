@@ -2030,7 +2030,9 @@
         "cookie": "Самоопределяемый",
         "selfDeclaredHint": "Самозаявленная идентичность, не проверена",
         "authenticated_user": "Зарегистрированный пользователь"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "Последняя загрузка",
     "privacySummary": "Конфиденциальность",

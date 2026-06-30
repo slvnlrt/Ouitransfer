@@ -91,19 +91,25 @@ export const listFiles = (
  * token for public share downloads (R2 — A4-08), or the raw object name for the owner's own
  * files. The server resolves it to the real key and authorizes against the bound share.
  *
- * `shareId` is no longer sent to the server (the token already binds the share); it is kept in the
- * signature only so the client-side presigned-URL cache can scope entries per share.
+ * `intent` (B-34) distinguishes a file PREVIEW (a view) from a real DOWNLOAD so the server records the
+ * right per-file ShareVisit. Only a non-default `"preview"` is sent on the wire; the server defaults to
+ * `"download"`. (The share binding comes from the token, never from the client.)
  * @summary Get Download URL
  */
 export const getDownloadUrl = (
   objectName: string,
   password?: string,
-  _shareId?: string,
+  intent?: "preview" | "download",
   options?: AxiosRequestConfig,
 ): Promise<GetDownloadUrlResult> => {
-  const body: { objectName: string; password?: string } = { objectName };
+  const body: { objectName: string; password?: string; intent?: "preview" | "download" } = {
+    objectName,
+  };
   if (password) {
     body.password = password;
+  }
+  if (intent && intent !== "download") {
+    body.intent = intent;
   }
   return apiInstance.post(`/api/files/download-url`, body, options);
 };

@@ -2030,7 +2030,9 @@
         "cookie": "Kendi tanımlandı",
         "selfDeclaredHint": "Kendi beyan edilen kimlik, doğrulanmamış",
         "authenticated_user": "Kayıtlı kullanıcı"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "Son İndirilen",
     "privacySummary": "Gizlilik",

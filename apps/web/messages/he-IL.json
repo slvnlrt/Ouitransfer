@@ -2034,7 +2034,9 @@
         "cookie": "מזוהה-עצמי",
         "selfDeclaredHint": "זהות מוצהרת עצמית, לא מאומת",
         "authenticated_user": "משתמש רשום"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "הורדה אחרונה",
     "privacySummary": "פרטיות",

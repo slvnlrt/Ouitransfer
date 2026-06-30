@@ -48,17 +48,22 @@ function mockS3ClientModule(mockSend: ReturnType<typeof vi.fn>) {
 describe("ensureBucket — actual function from storage.config.ts", () => {
   let mockLoggerInfo: ReturnType<typeof vi.fn>;
   let mockLoggerError: ReturnType<typeof vi.fn>;
+  let mockLoggerWarn: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     mockLoggerInfo = vi.fn();
     mockLoggerError = vi.fn();
-    // Mock getLogger() so ensureBucket() can use structured logging without
-    // requiring a real Fastify app instance.
+    mockLoggerWarn = vi.fn();
+    // Mock getLogger() ONCE here so ensureBucket() can use structured logging without a real
+    // Fastify app. `warn` is a describe-scoped spy (not an inline vi.fn) so the lifecycle test can
+    // assert on it: re-mocking logger.js a SECOND time inside that test's body raced with this one
+    // under load — the body's mock did not always win, so getLogger().warn hit this spy instead and
+    // the assertion saw 0 calls (intermittent CI failure). One mock, one spy, no race.
     vi.doMock("../../utils/logger.js", () => ({
       getLogger: () => ({
         info: mockLoggerInfo,
         error: mockLoggerError,
-        warn: vi.fn(),
+        warn: mockLoggerWarn,
       }),
       setLogger: vi.fn(),
     }));
@@ -98,6 +103,13 @@ describe("ensureBucket — actual function from storage.config.ts", () => {
   describe("when S3 is configured", () => {
     beforeEach(() => {
       for (const [k, v] of Object.entries({ ...BASE_ENV, ...S3_ENV })) vi.stubEnv(k, v);
+      // Pin internal storage explicitly. `isExternalS3`/`isInternalStorage` are read from
+      // `env.ENABLE_S3` at module-import time, and these tests exercise the internal-storage
+      // lifecycle path. Without an explicit baseline they depend on ENABLE_S3 being absent — but a
+      // stray "true" (e.g. from the external-S3 test in this file leaking through env-restore
+      // timing, or any future test) flips them to the external path and they fail with the bucket
+      // lifecycle never applied. The external-S3 test overrides this to "true" in its own body.
+      vi.stubEnv("ENABLE_S3", "false");
     });
 
     it("logs bucket exists when HeadBucket succeeds", async () => {
@@ -241,16 +253,11 @@ describe("ensureBucket — actual function from storage.config.ts", () => {
       const mockSend = vi.fn().mockResolvedValueOnce({}).mockRejectedValueOnce(lifecycleError);
       mockS3ClientModule(mockSend);
 
-      const mockLoggerWarn = vi.fn();
-      vi.doMock("../../utils/logger.js", () => ({
-        getLogger: () => ({ info: mockLoggerInfo, error: mockLoggerError, warn: mockLoggerWarn }),
-        setLogger: vi.fn(),
-      }));
-
       const { ensureBucket } = await import("../../config/storage.config.js");
 
       // Must resolve (not throw) despite the lifecycle failure.
       await expect(ensureBucket()).resolves.toBeUndefined();
+      // Asserts on the describe-scoped warn spy (set up once in beforeEach).
       expect(mockLoggerWarn).toHaveBeenCalledWith(
         expect.objectContaining({ bucket: "test-bucket", err: lifecycleError }),
         expect.stringContaining("Could not apply multipart-upload lifecycle rule"),

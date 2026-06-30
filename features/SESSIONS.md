@@ -1,5 +1,24 @@
 # Session Log
 
+## 2026-06-29 (B-34 — File preview counted as a download)
+
+- A file preview in a public share marked the recipient "Téléchargé" for every type, because tracking
+  fired at presigned-URL generation and the per-share token already binds `shareId` server-side (so the
+  client `intent` was the missing signal). Two Opus design reviews steered the solution away from a
+  client `track` boolean (cache-coherence bug + view/download conflation) to a **first-class
+  `ShareVisit{action:"preview", fileId}` event** that never touches download stats.
+- Server: extracted `resolveShareVisitContext` (shared owner-guard + visitor/recipient resolution),
+  added `trackShareFilePreview`, and an `intent` field on `/files/download-url` (default "download")
+  branching preview vs download; `FILE_DOWNLOAD` audit now carries `intent`. `/shares/:id/visits` resolves
+  the file name via a batch lookup (no `ShareVisit→File` relation → no migration) and accepts
+  `?action=preview`.
+- Client: `intent` threaded through `getDownloadUrl` + the presigned-URL cache **key** (default
+  "download", fixed position → C-1 guard); `loadPreview` sends "preview" for all types; the activity log
+  renders a distinct "Aperçu" row with the file name (and shows the file name on download rows).
+- i18n: `shareDetails.activity.{preview,filterPreview}` in all 23 locales (en/fr authored, rest synced).
+- Tests: server preview-vs-download tracking, cache C-1 guard, preview-intent hook test. Tracked as
+  **B-34**; plan + two reviews under `features/{plans,reviews}/b-34-…`.
+
 ## 2026-06-29 (B-32 — Infinite /login loading after session expiry)
 
 - Fixed the chronic infinite "Loading Please Wait" on `/login` after the session expired on tab

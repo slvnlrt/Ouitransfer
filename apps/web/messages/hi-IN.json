@@ -2030,7 +2030,9 @@
         "cookie": "स्व-पहचानी गई",
         "selfDeclaredHint": "स्व-घोषित पहचान, सत्यापित नहीं",
         "authenticated_user": "पंजीकृत उपयोगकर्ता"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "अंतिम डाउनलोड",
     "privacySummary": "गोपनीयता",

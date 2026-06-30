@@ -2034,7 +2034,9 @@
         "cookie": "Tự xác định",
         "selfDeclaredHint": "Danh tính tự khai báo, chưa được xác minh",
         "authenticated_user": "Người dùng đã đăng ký"
-      }
+      },
+      "filterPreview": "[TO_TRANSLATE] Previews only",
+      "preview": "[TO_TRANSLATE] Previewed"
     },
     "lastDownloaded": "Tải xuống lần cuối",
     "privacySummary": "Quyền riêng tư",

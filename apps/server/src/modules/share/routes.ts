@@ -1140,7 +1140,10 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         shareId: z.string().describe("The share ID"),
       }),
       querystring: z.object({
-        action: z.enum(["access", "download"]).optional().describe("Filter by visit action"),
+        action: z
+          .enum(["access", "preview", "download"])
+          .optional()
+          .describe("Filter by visit action"),
         identified: z
           .enum(["true", "false"])
           .optional()
@@ -1161,6 +1164,12 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
               visitorEmail: z.string().nullable(),
               action: z.string(),
               fileId: z.string().nullable(),
+              fileName: z
+                .string()
+                .nullable()
+                .describe(
+                  "Name of the file for download/preview rows; null for access or deleted files",
+                ),
               createdAt: z.string().datetime(),
               recipient: z
                 .object({
@@ -1238,6 +1247,24 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         prisma.shareVisit.count({ where }),
       ]);
 
+      // B-34: resolve file names for download/preview rows. `ShareVisit.fileId` has no Prisma
+      // relation, so batch-fetch the names in a single query (≤ `limit` ids — NOT an N+1).
+      // A deleted/expired file resolves to `null` (the UI falls back to the action without a name).
+      const fileIds = [
+        ...new Set(visits.map((v) => v.fileId).filter((id): id is string => id != null)),
+      ];
+      const fileNameById =
+        fileIds.length > 0
+          ? new Map(
+              (
+                await prisma.file.findMany({
+                  where: { id: { in: fileIds } },
+                  select: { id: true, name: true },
+                })
+              ).map((f) => [f.id, f.name]),
+            )
+          : new Map<string, string>();
+
       // Derive the response identificationSource for each visit. Prefer the source recorded
       // at write time (8.3): since lot C now sets `recipientId` for self-declared email matches
       // too, `recipientId != null` alone no longer implies a token-verified arrival. The stored
@@ -1253,6 +1280,7 @@ export const shareRoutes: FastifyPluginAsyncZod = async (app) => {
         ({ ipAddress: _ip, userAgent: _ua, userId: visitUserId, ...visit }) => ({
           ...visit,
           createdAt: visit.createdAt.toISOString(),
+          fileName: visit.fileId ? (fileNameById.get(visit.fileId) ?? null) : null,
           isOwner: visitUserId != null && visitUserId === share.creatorId,
           identificationSource:
             visit.identificationSource === "token"
