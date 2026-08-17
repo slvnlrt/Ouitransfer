@@ -4,7 +4,7 @@
  * Accepts:
  * - "true" / "false" → boolean
  * - "loopback", "linklocal", "uniquelocal" → string (Fastify keywords)
- * - A numeric string like "1" → number (hop count)
+ * - A numeric string like "1" → false (hop-count trust is unsafe and no longer supported)
  * - A comma-separated list → string[] (CIDR ranges or keywords)
  * - A single CIDR or keyword → string passthrough
  *
@@ -16,11 +16,12 @@
  * (e.g. "172.18.0.0/16") over "true". The default (`loopback`) is the safe choice
  * for the direct-port compose, which publishes 3333 to the host.
  */
-export function parseTrustProxy(value: string): boolean | number | string | string[] {
+export function parseTrustProxy(value: string): boolean | string | string[] {
   if (value === "true") return true;
   if (value === "false") return false;
-  // Numeric hop count (e.g. "1" = trust 1 proxy hop)
-  if (/^\d+$/.test(value)) return Number(value);
+  // Fastify 5.12 disables hop-count-only trust because it cannot validate the
+  // immediate peer and would let direct clients spoof X-Forwarded-* values.
+  if (/^\d+$/.test(value)) return false;
   if (value.includes(",")) return value.split(",").map((s) => s.trim());
   return value; // "loopback", "linklocal", "uniquelocal", or single CIDR
 }

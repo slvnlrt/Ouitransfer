@@ -220,8 +220,13 @@ describe("Refresh token service", () => {
       ).where.OR;
       expect(orClause).toHaveLength(2);
 
-      const expiredCutoff = (orClause[0].expiresAt?.lt as Date).getTime();
-      const revokedCutoff = (orClause[1].revokedAt?.lt as Date).getTime();
+      const expiredAt = orClause[0].expiresAt?.lt;
+      const revokedAt = orClause[1].revokedAt?.lt;
+      if (!expiredAt || !revokedAt) {
+        throw new Error("Expected expiration and revocation cutoffs");
+      }
+      const expiredCutoff = expiredAt.getTime();
+      const revokedCutoff = revokedAt.getTime();
       const oneDayAgo = 24 * 60 * 60 * 1000;
 
       expect(expiredCutoff).toBeGreaterThanOrEqual(before - oneDayAgo - 1000);

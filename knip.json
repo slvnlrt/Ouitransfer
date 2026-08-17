@@ -5,7 +5,7 @@
     "apps/server/src/modules/email/transport.ts": ["exports"]
   },
   "exclude": ["duplicates", "unresolved"],
-  "ignoreBinaries": ["python3"],
+  "ignoreBinaries": ["openssl", "python3"],
   "ignoreDependencies": ["vitest", "@commitlint/types"],
   "ignoreWorkspaces": ["packages/config"],
   "workspaces": {
