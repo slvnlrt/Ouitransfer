@@ -71,7 +71,7 @@
     "file-type": "^22.0.1",
     "jose": "catalog:",
     "ldapts": "^8.2.0",
-    "nodemailer": "^8.0.11",
+    "nodemailer": "~9.1.1",
     "otpauth": "^9.5.1",
     "prisma": "^7.9.1",
     "qrcode": "catalog:",
@@ -83,7 +83,7 @@
     "@types/bcryptjs": "2.4.6",
     "@types/better-sqlite3": "7.6.13",
     "@types/node": "catalog:",
-    "@types/nodemailer": "8.0.1",
+    "@types/nodemailer": "8.0.2",
     "@types/qrcode": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
