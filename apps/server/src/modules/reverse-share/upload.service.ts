@@ -255,40 +255,7 @@ export class ReverseShareUploadService {
       size: uploadSize,
     });
 
-    // 8.3 lot D: best-effort per-recipient upload tracking. Fire-and-forget —
-    // a self-declared uploaderEmail matching a known recipient bumps that
-    // recipient's stats. Never blocks or breaks the upload.
-    this.trackRecipientUpload(reverseShareId, fileData.uploaderEmail);
-
-    // B1 threshold warnings: evaluate the owner's usage transition after the
-    // file exists. Fire-and-forget — never blocks the upload, never throws.
-    // When the upload lands the owner in the overage zone (allowed but over the
-    // limit), evaluateAndNotifyQuota emits quota_exceeded + admin_quota_alert
-    // once, deduped by quotaExceededSince.
-    if (usedBefore !== null) {
-      void quotaService.evaluateAndNotifyQuota(reverseShare.creatorId, {
-        oldUsed: usedBefore,
-        newUsed: usedBefore + uploadSize,
-      });
-    }
-
-    if (context) {
-      logAuditEvent({
-        action: "REVERSE_SHARE_UPLOAD",
-        ipAddress: context.ipAddress,
-        userAgent: context.userAgent,
-        targetType: "reverse_share",
-        targetId: reverseShareId,
-        metadata: {
-          fileName: fileData.name,
-          fileSize: fileData.size,
-          uploaderEmail: fileData.uploaderEmail ?? undefined,
-          uploaderName: fileData.uploaderName ?? undefined,
-        },
-      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
-    }
-
-    this.addFileToUploadSession(reverseShare, fileData);
+    this.recordCompletedUpload(reverseShare, fileData, uploadSize, usedBefore, context);
 
     return this.formatFileResponse(file);
   }
@@ -384,37 +351,7 @@ export class ReverseShareUploadService {
       size: uploadSize,
     });
 
-    // 8.3 lot D: best-effort per-recipient upload tracking. Fire-and-forget —
-    // a self-declared uploaderEmail matching a known recipient bumps that
-    // recipient's stats. Never blocks or breaks the upload.
-    this.trackRecipientUpload(reverseShare.id, fileData.uploaderEmail);
-
-    // B1 threshold warnings: evaluate the owner's usage transition after the
-    // file exists. Fire-and-forget — never blocks the upload, never throws.
-    if (usedBefore !== null) {
-      void quotaService.evaluateAndNotifyQuota(reverseShare.creatorId, {
-        oldUsed: usedBefore,
-        newUsed: usedBefore + uploadSize,
-      });
-    }
-
-    if (context) {
-      logAuditEvent({
-        action: "REVERSE_SHARE_UPLOAD",
-        ipAddress: context.ipAddress,
-        userAgent: context.userAgent,
-        targetType: "reverse_share",
-        targetId: reverseShare.id,
-        metadata: {
-          fileName: fileData.name,
-          fileSize: fileData.size,
-          uploaderEmail: fileData.uploaderEmail ?? undefined,
-          uploaderName: fileData.uploaderName ?? undefined,
-        },
-      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
-    }
-
-    this.addFileToUploadSession(reverseShare, fileData);
+    this.recordCompletedUpload(reverseShare, fileData, uploadSize, usedBefore, context);
 
     return this.formatFileResponse(file);
   }
@@ -595,6 +532,45 @@ export class ReverseShareUploadService {
       createdAt: newFileRecord.createdAt.toISOString(),
       updatedAt: newFileRecord.updatedAt.toISOString(),
     };
+  }
+
+  /**
+   * Apply the post-registration effects shared by simple and multipart uploads.
+   * The database row must already exist before this method is called.
+   */
+  recordCompletedUpload(
+    reverseShare: Pick<ReverseShareWithCreator, "id" | "creatorId" | "name">,
+    fileData: UploadToReverseShareInput,
+    uploadSize: bigint,
+    usedBefore: bigint | null,
+    context?: { ipAddress: string; userAgent?: string },
+  ): void {
+    this.trackRecipientUpload(reverseShare.id, fileData.uploaderEmail);
+
+    if (usedBefore !== null) {
+      void quotaService.evaluateAndNotifyQuota(reverseShare.creatorId, {
+        oldUsed: usedBefore,
+        newUsed: usedBefore + uploadSize,
+      });
+    }
+
+    if (context) {
+      logAuditEvent({
+        action: "REVERSE_SHARE_UPLOAD",
+        ipAddress: context.ipAddress,
+        userAgent: context.userAgent,
+        targetType: "reverse_share",
+        targetId: reverseShare.id,
+        metadata: {
+          fileName: fileData.name,
+          fileSize: fileData.size,
+          uploaderEmail: fileData.uploaderEmail ?? undefined,
+          uploaderName: fileData.uploaderName ?? undefined,
+        },
+      }).catch((err) => getLogger().error({ err }, "Failed to log audit event"));
+    }
+
+    this.addFileToUploadSession(reverseShare, fileData);
   }
 
   /**

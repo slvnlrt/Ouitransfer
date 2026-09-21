@@ -298,6 +298,13 @@ export const completeMultipartUploadByAlias = (
     uploadId: string;
     objectName: string;
     parts: Array<{ PartNumber: number; ETag: string }>;
+    name: string;
+    description?: string;
+    extension: string;
+    mimeType?: string;
+    size: number;
+    uploaderEmail?: string;
+    uploaderName?: string;
   },
   params?: { password?: string },
   options?: AxiosRequestConfig,

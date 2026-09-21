@@ -260,6 +260,7 @@ export type GetMultipartPartUrlByAliasResult = AxiosResponse<GetMultipartPartUrl
 export interface CompleteMultipartUpload200 {
   message: string;
   objectName: string;
+  fileId: string;
 }
 export type CompleteMultipartUploadByAliasResult = AxiosResponse<CompleteMultipartUpload200>;
 

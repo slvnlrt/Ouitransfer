@@ -34,6 +34,9 @@ const {
   mockTransaction,
   mockTxFileCount,
   mockTxFileCreate,
+  mockRecipientUpdateMany,
+  mockLogAuditEvent,
+  mockEvaluateAndNotifyQuota,
 } = vi.hoisted(() => ({
   mockAliasFindUnique: vi.fn(),
   mockReverseShareFileCount: vi.fn(),
@@ -51,6 +54,9 @@ const {
   mockTransaction: vi.fn(),
   mockTxFileCount: vi.fn(),
   mockTxFileCreate: vi.fn(),
+  mockRecipientUpdateMany: vi.fn(),
+  mockLogAuditEvent: vi.fn(),
+  mockEvaluateAndNotifyQuota: vi.fn(),
 }));
 
 vi.mock("../../../shared/prisma.js", () => ({
@@ -59,6 +65,7 @@ vi.mock("../../../shared/prisma.js", () => ({
     reverseShare: { findUnique: vi.fn() },
     reverseShareAlias: { findUnique: mockAliasFindUnique },
     reverseShareFile: { count: mockReverseShareFileCount, create: vi.fn() },
+    reverseShareRecipient: { updateMany: mockRecipientUpdateMany },
     // The atomic create-at-complete path runs inside prisma.$transaction(cb).
     $transaction: mockTransaction,
   },
@@ -84,7 +91,7 @@ vi.mock("../../../modules/quota/service.js", () => ({
     resolveEffectiveLimits: mockResolveEffectiveLimits,
     calculateStorageUsed: mockCalculateStorageUsed,
     isReverseUploadAllowed: mockIsReverseUploadAllowed,
-    evaluateAndNotifyQuota: vi.fn().mockResolvedValue(undefined),
+    evaluateAndNotifyQuota: mockEvaluateAndNotifyQuota,
   },
 }));
 
@@ -94,7 +101,7 @@ vi.mock("../../../utils/logger.js", () => ({
 }));
 
 vi.mock("../../audit/service.js", () => ({
-  logAuditEvent: vi.fn().mockResolvedValue(undefined),
+  logAuditEvent: mockLogAuditEvent,
 }));
 
 vi.mock("../../file/service.js", () => ({
@@ -158,6 +165,16 @@ function makeReverseShare(overrides: Record<string, unknown> = {}) {
 const VALID_KEY = `reverse-shares/${RS_ID}/1700000000000-11111111-2222-3333-4444-555555555555-doc.txt`;
 const CROSS_NS_KEY = "victim-user-id/secret.pdf";
 
+const COMPLETE_FILE_DATA = {
+  name: "Original document.txt",
+  description: "Uploaded from the reverse share",
+  extension: "txt",
+  mimeType: "text/plain",
+  size: 10,
+  uploaderName: "External uploader",
+  uploaderEmail: "external@example.com",
+};
+
 describe("Reverse-share multipart security — integration (A3-01 / A3-05)", () => {
   let app: FastifyInstance;
 
@@ -188,6 +205,9 @@ describe("Reverse-share multipart security — integration (A3-01 / A3-05)", () 
       reverseShare: makeReverseShare(),
     });
     mockReverseShareFileCount.mockResolvedValue(0);
+    mockRecipientUpdateMany.mockResolvedValue({ count: 1 });
+    mockLogAuditEvent.mockResolvedValue(undefined);
+    mockEvaluateAndNotifyQuota.mockResolvedValue(undefined);
     mockResolveEffectiveLimits.mockResolvedValue({ maxFileSize: 0n, maxTotalStorage: 0n }); // unlimited owner
     mockCalculateStorageUsed.mockResolvedValue(0n);
     mockGetConfigValue.mockResolvedValue("true");
@@ -214,7 +234,12 @@ describe("Reverse-share multipart security — integration (A3-01 / A3-05)", () 
     ["part-url", { uploadId: "u1", objectName: CROSS_NS_KEY, partNumber: "1" }],
     [
       "complete",
-      { uploadId: "u1", objectName: CROSS_NS_KEY, parts: [{ PartNumber: 1, ETag: "e" }] },
+      {
+        uploadId: "u1",
+        objectName: CROSS_NS_KEY,
+        parts: [{ PartNumber: 1, ETag: "e" }],
+        ...COMPLETE_FILE_DATA,
+      },
     ],
     ["abort", { uploadId: "u1", objectName: CROSS_NS_KEY }],
     ["list-parts", { uploadId: "u1", objectName: CROSS_NS_KEY }],
@@ -316,7 +341,12 @@ describe("Reverse-share multipart security — integration (A3-01 / A3-05)", () 
     const res = await app.inject({
       method: "POST",
       url: `/reverse-shares/alias/${ALIAS}/multipart/complete`,
-      payload: { uploadId: "u1", objectName: VALID_KEY, parts: [{ PartNumber: 1, ETag: "e" }] },
+      payload: {
+        uploadId: "u1",
+        objectName: VALID_KEY,
+        parts: [{ PartNumber: 1, ETag: "e" }],
+        ...COMPLETE_FILE_DATA,
+      },
     });
 
     expect(res.statusCode).toBe(400);
@@ -326,13 +356,44 @@ describe("Reverse-share multipart security — integration (A3-01 / A3-05)", () 
     expect(mockTxFileCreate).not.toHaveBeenCalled();
   });
 
-  // ── A3-05 / A4-04: complete creates the ReverseShareFile row (quota accounting) ──
-
-  it("creates the ReverseShareFile row at completion for a valid upload", async () => {
+  it("aborts before completion when the declared extension mismatches the object key", async () => {
     const res = await app.inject({
       method: "POST",
       url: `/reverse-shares/alias/${ALIAS}/multipart/complete`,
-      payload: { uploadId: "u1", objectName: VALID_KEY, parts: [{ PartNumber: 1, ETag: "e" }] },
+      payload: {
+        uploadId: "u1",
+        objectName: VALID_KEY,
+        parts: [{ PartNumber: 1, ETag: "e" }],
+        ...COMPLETE_FILE_DATA,
+        extension: "pdf",
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(mockAbortMultipart).toHaveBeenCalledWith(VALID_KEY, "u1");
+    expect(mockCompleteMultipart).not.toHaveBeenCalled();
+  });
+
+  // ── A3-05 / A4-04: complete creates the ReverseShareFile row (quota accounting) ──
+
+  it("creates the ReverseShareFile row at completion for a valid upload", async () => {
+    mockResolveEffectiveLimits.mockResolvedValue({ maxFileSize: 0n, maxTotalStorage: 100n });
+    mockCalculateStorageUsed.mockResolvedValue(20n);
+    mockIsReverseUploadAllowed.mockReturnValue(true);
+    mockGetConfigValue.mockImplementation(async (key: string) => {
+      if (key === "reverseShareMaxOverageFactor") return "3";
+      if (key === "reverseShareAbsoluteMaxBytes") return "0";
+      return "true";
+    });
+    const res = await app.inject({
+      method: "POST",
+      url: `/reverse-shares/alias/${ALIAS}/multipart/complete`,
+      payload: {
+        uploadId: "u1",
+        objectName: VALID_KEY,
+        parts: [{ PartNumber: 1, ETag: "e" }],
+        ...COMPLETE_FILE_DATA,
+      },
     });
 
     expect(res.statusCode).toBe(200);
@@ -344,6 +405,42 @@ describe("Reverse-share multipart security — integration (A3-01 / A3-05)", () 
     expect(createArg.data.objectName).toBe(VALID_KEY);
     expect(createArg.data.reverseShareId).toBe(RS_ID);
     expect(createArg.data.size).toBe(BigInt(10));
+    expect(createArg.data.name).toBe(COMPLETE_FILE_DATA.name);
+    expect(createArg.data.description).toBe(COMPLETE_FILE_DATA.description);
+    expect(res.json().fileId).toBe("rf-1");
+    await vi.waitFor(() => expect(mockRecipientUpdateMany).toHaveBeenCalledTimes(2));
+    expect(mockLogAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "REVERSE_SHARE_UPLOAD",
+        targetId: RS_ID,
+        metadata: expect.objectContaining({ fileName: COMPLETE_FILE_DATA.name }),
+      }),
+    );
+    expect(mockEvaluateAndNotifyQuota).toHaveBeenCalledWith(CREATOR_ID, {
+      oldUsed: 20n,
+      newUsed: 30n,
+    });
+  });
+
+  it("deletes the completed object when atomic DB registration fails", async () => {
+    mockTransaction.mockRejectedValueOnce(new Error("database unavailable"));
+
+    const res = await app.inject({
+      method: "POST",
+      url: `/reverse-shares/alias/${ALIAS}/multipart/complete`,
+      payload: {
+        uploadId: "u1",
+        objectName: VALID_KEY,
+        parts: [{ PartNumber: 1, ETag: "e" }],
+        ...COMPLETE_FILE_DATA,
+      },
+    });
+
+    expect(res.statusCode).toBe(500);
+    expect(mockDeleteObject).toHaveBeenCalledWith(VALID_KEY);
+    expect(mockRecipientUpdateMany).not.toHaveBeenCalled();
+    expect(mockLogAuditEvent).not.toHaveBeenCalled();
+    expect(mockEvaluateAndNotifyQuota).not.toHaveBeenCalled();
   });
 
   // ── A3-05: atomic maxFiles re-check at completion (TOCTOU) ─────────────────
@@ -363,7 +460,12 @@ describe("Reverse-share multipart security — integration (A3-01 / A3-05)", () 
     const res = await app.inject({
       method: "POST",
       url: `/reverse-shares/alias/${ALIAS}/multipart/complete`,
-      payload: { uploadId: "u1", objectName: VALID_KEY, parts: [{ PartNumber: 1, ETag: "e" }] },
+      payload: {
+        uploadId: "u1",
+        objectName: VALID_KEY,
+        parts: [{ PartNumber: 1, ETag: "e" }],
+        ...COMPLETE_FILE_DATA,
+      },
     });
 
     expect(res.statusCode).toBe(403);

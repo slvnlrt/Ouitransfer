@@ -29,7 +29,7 @@ import { ReverseShareUploadService } from "./upload.service.js";
 
 const reverseShareService = new ReverseShareService();
 const uploadService = new ReverseShareUploadService();
-const multipartService = new ReverseShareMultipartService();
+const multipartService = new ReverseShareMultipartService(uploadService);
 
 const preValidation = createJwtPreValidation();
 
@@ -1128,7 +1128,7 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
       params: z.object({
         alias: z.string().describe("Alias of the reverse share"),
       }),
-      body: z.object({
+      body: UploadToReverseShareSchema.omit({ objectName: true }).extend({
         uploadId: z.string().min(1).describe("The multipart upload ID"),
         objectName: z.string().min(1).describe("The object name"),
         parts: z
@@ -1143,13 +1143,12 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
           .string()
           .optional()
           .describe("Password for accessing password-protected reverse shares"),
-        uploaderEmail: z.email().optional().describe("Optional self-declared uploader email"),
-        uploaderName: z.string().optional().describe("Optional self-declared uploader name"),
       }),
       response: {
         200: z.object({
           message: z.string().describe("Success message"),
           objectName: z.string().describe("The completed object name"),
+          fileId: z.string().describe("The registered reverse-share file ID"),
         }),
         400: ErrorResponseSchema,
         401: ErrorResponseSchema,
@@ -1161,14 +1160,18 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     handler: async (request, reply) => {
       const { alias } = request.params;
-      const { uploadId, objectName, parts, password, uploaderEmail, uploaderName } = request.body;
+      const { uploadId, objectName, parts, password, ...fileData } = request.body;
       const result = await multipartService.completeMultipartUploadByAlias(
         alias,
         uploadId,
         objectName,
         parts,
+        fileData,
         password,
-        { uploaderEmail, uploaderName },
+        {
+          ipAddress: request.ip,
+          userAgent: request.headers["user-agent"],
+        },
       );
       return reply.status(200).send(result);
     },

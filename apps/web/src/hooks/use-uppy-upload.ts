@@ -14,6 +14,12 @@ function getUppyObjectName(file: UppyFile<Meta, Body>): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
+/** Read the DB file ID returned when multipart completion also registers the file. */
+function getUppyRegisteredFileId(file: UppyFile<Meta, Body>): string | undefined {
+  const value = file.meta.registeredFileId;
+  return typeof value === "string" ? value : undefined;
+}
+
 /** Matches Uppy's UploadResultWithSignal (key may be undefined for non-multipart) */
 type UppyUploadResult = {
   uploadId?: string;
@@ -51,7 +57,8 @@ export interface CustomMultipartFunctions {
     uploadId: string,
     objectName: string,
     parts: Array<{ PartNumber: number; ETag: string }>,
-  ) => Promise<void>;
+    file: File,
+  ) => Promise<{ fileId: string }>;
   abortMultipartUpload: (uploadId: string, objectName: string) => Promise<void>;
   listParts: (
     uploadId: string,
@@ -384,11 +391,13 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
 
           if (customMultipartRef.current) {
             // Use custom multipart functions (e.g., for reverse shares)
-            await customMultipartRef.current.completeMultipartUpload(
+            const { fileId } = await customMultipartRef.current.completeMultipartUpload(
               uploadId,
               objectName || key,
               completedParts,
+              file.data as File,
             );
+            uppy.setFileMeta(file.id, { registeredFileId: fileId });
           } else {
             // Use default authenticated multipart upload
             await completeMultipartUpload({
@@ -492,9 +501,9 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
       const objectName = getUppyObjectName(file);
 
       try {
-        // Call registration callback and capture returned file ID
-        let registeredFileId: string | undefined;
-        if (onAfterUploadRef.current) {
+        // Multipart completion may already have registered the file atomically.
+        let registeredFileId = getUppyRegisteredFileId(file);
+        if (!registeredFileId && onAfterUploadRef.current) {
           const result = await onAfterUploadRef.current(
             file.id,
             file.data as File,

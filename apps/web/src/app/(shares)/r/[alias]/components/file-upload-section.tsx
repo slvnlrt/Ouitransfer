@@ -149,12 +149,26 @@ export function FileUploadSection({
           uploadId: string,
           objectName: string,
           parts: Array<{ PartNumber: number; ETag: string }>,
+          file: File,
         ) => {
-          await completeMultipartUploadByAlias(
+          const extension = file.name.split(".").pop() || "";
+          const response = await completeMultipartUploadByAlias(
             alias,
-            { uploadId, objectName, parts },
+            {
+              uploadId,
+              objectName,
+              parts,
+              name: file.name,
+              description: description || undefined,
+              extension,
+              mimeType: file.type || undefined,
+              size: file.size,
+              uploaderEmail: uploaderEmail || undefined,
+              uploaderName: uploaderName || undefined,
+            },
             password ? { password } : undefined,
           );
+          return { fileId: response.data.fileId };
         },
         abortMultipartUpload: async (uploadId: string, objectName: string) => {
           await abortMultipartUploadByAlias(
