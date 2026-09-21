@@ -177,7 +177,7 @@ Ces interfaces sont **désactivées par défaut** en production et ne sont enreg
 | GET | `/embed/:token` | Public | Intégrer un fichier média via un jeton signé |
 | POST | `/files/embed-token` | User | Générer un jeton d'intégration signé pour un fichier dans un partage (expiration 24 heures) |
 
-**Téléversement multipart** (pour les fichiers volumineux ≥100 Mo) :
+**Téléversement multipart** (pour les fichiers ≥50 Mio) :
 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
@@ -189,7 +189,9 @@ Ces interfaces sont **désactivées par défaut** en production et ne sont enreg
 
 **Flux de téléversement :** Obtenez une URL présignée → téléversez le fichier directement vers S3 → enregistrez les métadonnées du fichier via `POST /files`. Le point de terminaison `POST /files/check` est une vérification préalable qui valide le fichier par rapport aux quotas sans créer d'enregistrement.
 
-**Limites de débit :** URL présignée de téléversement : 30 par minute. URL de téléchargement / téléchargement : 20 par minute chacun.
+Le planificateur multipart vise `max(64 Mio, arrondi supérieur(taille du fichier / 10 000))` pour chaque partie ; la dernière partie peut être plus petite. Chaque objet reste ainsi limité à 10 000 parties.
+
+**Limites de débit (par IP) :** URL présignée de téléversement en une requête : 30 par minute. URL de signature d'une partie multipart, pour les téléversements authentifiés comme pour les partages inversés : 1 000 par minute. URL de téléchargement / téléchargement : 20 par minute chacun.
 
 ---
 
@@ -243,7 +245,7 @@ Les partages inversés permettent aux utilisateurs authentifiés de créer des l
 | POST | `/reverse-shares/:id/check-password` | Public | Vérifier le mot de passe d'un partage inversé |
 | GET | `/reverse-shares/alias/:alias/metadata` | Public | Obtenir les métadonnées pour les aperçus Open Graph |
 
-**Téléversement multipart** (public, pour les gros fichiers vers des partages inversés) :
+**Téléversement multipart** (public, pour les fichiers ≥50 Mio envoyés vers des partages inversés) :
 
 | Méthode | Chemin | Auth | Description |
 |---------|--------|------|-------------|
@@ -485,4 +487,4 @@ En cas de dépassement de la limite, le serveur retourne `429 Too Many Requests`
 
 ### Limites de taille des requêtes
 
-L'API impose une limite de taille de corps de **50 Mo** sur les requêtes non-multipart. Les téléversements de fichiers contournent cette limite en utilisant des URLs présignées S3 ; le contenu du fichier va directement vers S3, pas via le serveur API.
+L'API impose une limite de taille de corps de **50 Mio** sur les requêtes non-multipart. Les téléversements de fichiers contournent cette limite en utilisant des URLs présignées S3 ; le contenu du fichier va directement vers S3, pas via le serveur API.

@@ -216,6 +216,20 @@ S3_FORCE_PATH_STYLE=false
 - Use container name as bucket name
 - Configure appropriate access policies
 
+## Large multipart uploads
+
+Files smaller than 50 MiB use a single presigned PUT request. Files of 50 MiB or more use S3 multipart upload automatically:
+
+- The planned part size is `max(64 MiB, ceil(file size / 10,000))`; the final part may be smaller.
+- This scaling keeps every object at or below 10,000 parts.
+- A 10 GiB file therefore uses about 160 parts instead of thousands of small requests.
+
+Multipart transport does not impose a separate Ouitransfer file-size cap. The effective maximum is the smallest applicable limit among the user's configured file/storage quotas, any reverse-share limit, and the object or multipart limits of the selected S3-compatible provider.
+
+Each part receives a new presigned URL shortly before it is uploaded. `PRESIGNED_URL_EXPIRATION` applies to that individual request, not to the total duration of the complete multipart upload. The part-signing API is limited to 1,000 requests per minute and IP; this is a request-rate safeguard, not a file-size limit.
+
+> **Provider compatibility:** S3-compatible services may enforce different maximum object sizes, part sizes, or multipart behavior. Check your provider's documentation when configuring very large transfers.
+
 ## Presigned URL configuration
 
 OUITRANSFER uses presigned URLs to provide secure, temporary access to files. These URLs have a configurable expiration time to balance security and usability.

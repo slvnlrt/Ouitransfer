@@ -43,7 +43,7 @@ Toggle on to configure upload constraints:
 | **Allowed file types** | All types | Restrict uploads to specific extensions (e.g., `jpg`, `png`, `pdf`). Enter extensions as tags. |
 
 <Callout type="info">
-  File limits are enforced on the server side. Even if a visitor bypasses the client-side validation, uploads that exceed the configured limits are rejected.
+  File limits are enforced on the server side. Even if a visitor bypasses the client-side validation, uploads that exceed the configured limits are rejected. "No limit" means that the link itself adds no cap; the owner's reverse-share storage policy and the storage provider's object limits still apply. Files of 50 MiB or more automatically use multipart upload.
 </Callout>
 
 ### Visitor identification

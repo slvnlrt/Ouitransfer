@@ -216,6 +216,20 @@ S3_FORCE_PATH_STYLE=false
 - Utilisez le nom du conteneur comme nom de bucket
 - Configurez les politiques d'accès appropriées
 
+## Téléversements multipart de gros fichiers
+
+Les fichiers de moins de 50 Mio utilisent une seule requête PUT présignée. Les fichiers d'au moins 50 Mio utilisent automatiquement le téléversement multipart S3 :
+
+- La taille cible d'une partie est `max(64 Mio, arrondi supérieur(taille du fichier / 10 000))` ; la dernière partie peut être plus petite.
+- Cet ajustement maintient chaque objet à 10 000 parties ou moins.
+- Un fichier de 10 Gio utilise ainsi environ 160 parties au lieu de milliers de petites requêtes.
+
+Le transport multipart n'impose aucun plafond de taille Ouitransfer supplémentaire. La taille maximale effective correspond à la plus petite limite applicable parmi les quotas de fichier et de stockage configurés pour l'utilisateur, l'éventuelle limite du partage inversé et les limites d'objet ou de multipart du fournisseur compatible S3 choisi.
+
+Chaque partie reçoit une nouvelle URL présignée juste avant son téléversement. `PRESIGNED_URL_EXPIRATION` s'applique à cette requête individuelle, et non à la durée totale du téléversement multipart complet. L'API de signature des parties est limitée à 1 000 requêtes par minute et par IP ; il s'agit d'une protection sur le débit des requêtes, pas d'une limite de taille de fichier.
+
+> **Compatibilité du fournisseur :** les services compatibles S3 peuvent appliquer des tailles maximales d'objet ou de partie, ainsi que des comportements multipart différents. Consultez la documentation de votre fournisseur pour configurer les transferts très volumineux.
+
 ## Configuration des URLs présignées
 
 OUITRANSFER utilise des URLs présignées pour fournir un accès temporaire et sécurisé aux fichiers. Ces URLs ont une durée d'expiration configurable pour équilibrer sécurité et facilité d'utilisation.

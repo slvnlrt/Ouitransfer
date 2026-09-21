@@ -177,7 +177,7 @@ These UIs are **off by default** in production and only registered when you opt 
 | GET | `/embed/:token` | Public | Embed media file via signed token |
 | POST | `/files/embed-token` | User | Generate signed embed token for a file in a share (24-hour expiry) |
 
-**Multipart upload** (for large files ≥100 MB):
+**Multipart upload** (for files ≥50 MiB):
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
@@ -189,7 +189,9 @@ These UIs are **off by default** in production and only registered when you opt 
 
 **Upload flow:** Get a presigned URL → upload the file directly to S3 → register the file metadata via `POST /files`. The `POST /files/check` endpoint is a pre-flight check that validates the file against quotas without creating a record.
 
-**Rate limits:** Presigned upload URL: 30 per minute. Download URL / download: 20 per minute each.
+The multipart planner targets `max(64 MiB, ceil(file size / 10,000))` for each part; the final part may be smaller. This keeps every object at or below 10,000 parts.
+
+**Rate limits (per IP):** Single-request presigned upload URL: 30 per minute. Multipart part-signing URL, for both authenticated uploads and reverse shares: 1,000 per minute. Download URL / download: 20 per minute each.
 
 ---
 
@@ -243,7 +245,7 @@ Reverse shares allow authenticated users to create upload links that anyone (eve
 | POST | `/reverse-shares/:id/check-password` | Public | Verify reverse share password |
 | GET | `/reverse-shares/alias/:alias/metadata` | Public | Get metadata for Open Graph previews |
 
-**Multipart upload** (public, for large file uploads to reverse shares):
+**Multipart upload** (public, for files ≥50 MiB uploaded to reverse shares):
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
@@ -485,4 +487,4 @@ When rate-limited, the server returns `429 Too Many Requests` with a `retryAfter
 
 ### Request size limits
 
-The API enforces a **50 MB** body size limit on non-multipart requests. File uploads bypass this limit by using S3 presigned URLs; the file content goes directly to S3, not through the API server.
+The API enforces a **50 MiB** body size limit on non-multipart requests. File uploads bypass this limit by using S3 presigned URLs; the file content goes directly to S3, not through the API server.

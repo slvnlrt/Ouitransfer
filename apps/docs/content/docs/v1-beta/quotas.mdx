@@ -56,6 +56,12 @@ Navigate to **Admin → Settings** to configure the global defaults:
 
 These settings apply to every regular user who does not have a per-user override or a group override. Admin accounts are not affected unless explicitly overridden.
 
+Fresh installations start with a **1 GiB maximum file size** and **10 GiB maximum total storage per regular user**. Administrators can change either value at any time; setting a value to `0` removes that limit.
+
+### Large-file uploads
+
+Files of 50 MiB or more are uploaded automatically as S3 multipart objects. This transport does not add another Ouitransfer file-size cap: the effective maximum remains the configured max file size and total-storage quota, together with any reverse-share limit and the object-size limits of the selected storage provider. See [S3 Providers](/docs/v1-beta/s3-providers#large-multipart-uploads) for the multipart details.
+
 ## Per-user overrides
 
 Navigate to **Admin → User Management**, then open a user's **Edit** dialog. The **Quota** section at the bottom of the form lets you configure that user's overrides:
@@ -87,7 +93,7 @@ Key points:
 - Files received through a **reverse share** owned by the user *do* count; they are stored under the user's account once accepted.
 
 <Callout type="info">
-  To automatically clean up incomplete multipart upload fragments, configure an `AbortIncompleteMultipartUpload` lifecycle policy on your S3-compatible bucket. This is not handled by the application.
+  Internal storage receives an automatic seven-day `AbortIncompleteMultipartUpload` lifecycle backstop. The optional orphan sweep can also abort stale multipart uploads, including on external S3 storage. For an external bucket, configure an equivalent provider-side lifecycle rule as an additional safeguard. See [Automatic Cleanup](/docs/v1-beta/automatic-cleanup#multipart-upload-backstop-internal-storage).
 </Callout>
 
 ## Blocking behavior
@@ -98,12 +104,12 @@ Key points:
 | Upload a file | No | Checked against both max file size and max total storage |
 | Create a share | Yes | **Allowed**: shares don't consume new storage |
 | Create a reverse share | Yes | **Allowed** (with an in-app warning) |
-| Third party uploads to a reverse share | Yes | **Allowed**: external uploaders are never blocked |
+| Third party uploads to a reverse share | Yes | **Allowed up to the configured reverse-share soft-overage ceiling**, then blocked |
 
-The rationale for not blocking third-party uploads to a reverse share: the creator may be over quota, but blocking external clients would break the service contract. The creator's own next direct upload will be blocked, giving them an incentive to free space.
+Reverse-share uploads use the soft-enforcement policy configured by the administrator. By default, an inbound upload may exceed the owner's normal quota up to the configured overage factor and optional absolute cap. Beyond that ceiling, the upload is blocked. See [Automatic Cleanup: Reverse share soft enforcement](/docs/v1-beta/automatic-cleanup#reverse-share-soft-enforcement).
 
 <Callout type="info">
-  Quota checks are optimistic. Two simultaneous uploads may each pass the check individually but together exceed the limit. The slight overage is acceptable; the next upload will be blocked. File sizes are typically megabytes while quotas are gigabytes, so overruns are negligible.
+  Quota checks are optimistic. Two simultaneous uploads may each pass the check individually but exceed the limit when combined; the next upload is then blocked. The possible overage depends on the size and concurrency of the active uploads, so monitor high-volume deployments that accept very large files.
 </Callout>
 
 ## Quota indicator

@@ -56,6 +56,12 @@ Accédez à **Admin → Paramètres** pour configurer les valeurs par défaut gl
 
 Ces paramètres s'appliquent à tout utilisateur ordinaire ne disposant ni de dérogation par utilisateur ni de dérogation de groupe. Les comptes administrateur ne sont pas concernés, sauf dérogation explicite.
 
+Une installation neuve utilise une **taille maximale de 1 Gio par fichier** et un **stockage total maximal de 10 Gio par utilisateur ordinaire**. Les administrateurs peuvent modifier ces deux valeurs à tout moment ; la valeur `0` supprime la limite concernée.
+
+### Téléversements de gros fichiers
+
+Les fichiers d'au moins 50 Mio sont automatiquement téléversés sous forme d'objets multipart S3. Ce mécanisme de transport n'ajoute aucun autre plafond de taille Ouitransfer : la taille maximale effective reste déterminée par la taille maximale de fichier et le quota de stockage configurés, ainsi que par l'éventuelle limite du partage inversé et les limites d'objet du fournisseur de stockage choisi. Consultez [Fournisseurs S3](/docs/v1-beta/s3-providers#téléversements-multipart-de-gros-fichiers) pour les détails du multipart.
+
 ## Dérogations par utilisateur
 
 Accédez à **Admin → Gestion des utilisateurs**, puis ouvrez le dialogue **Modifier** d'un utilisateur. La section **Quota** en bas du formulaire vous permet de configurer les dérogations de cet utilisateur :
@@ -87,7 +93,7 @@ Points importants :
 - Les fichiers reçus via un **partage inversé** appartenant à l'utilisateur *sont* comptabilisés ; ils sont stockés sous son compte une fois acceptés.
 
 <Callout type="info">
-  Pour nettoyer automatiquement les fragments de téléversement multipart incomplets, configurez une politique de cycle de vie `AbortIncompleteMultipartUpload` sur votre compartiment S3-compatible. Cela n'est pas géré par l'application.
+  Le stockage interne reçoit automatiquement une règle de secours `AbortIncompleteMultipartUpload` de sept jours. Le balayage optionnel des orphelins peut également abandonner les téléversements multipart obsolètes, y compris sur un stockage S3 externe. Pour un bucket externe, configurez une règle de cycle de vie équivalente côté fournisseur comme protection supplémentaire. Consultez [Nettoyage automatique](/docs/v1-beta/automatic-cleanup#filet-de-sécurité-pour-les-téléversements-multipart-stockage-interne).
 </Callout>
 
 ## Comportement de blocage
@@ -98,12 +104,12 @@ Points importants :
 | Téléverser un fichier | Non | Vérifié par rapport à la taille maximale de fichier et au stockage total maximal |
 | Créer un partage | Oui | **Autorisé** : les partages ne consomment pas de nouveau stockage |
 | Créer un partage inversé | Oui | **Autorisé** (avec un avertissement dans l'application) |
-| Téléversements tiers vers un partage inversé | Oui | **Autorisé** : les téléverseurs externes ne sont jamais bloqués |
+| Téléversements tiers vers un partage inversé | Oui | **Autorisés jusqu'au plafond souple configuré pour les partages inversés**, puis bloqués |
 
-La raison pour laquelle les téléversements tiers vers un partage inversé ne sont pas bloqués : le créateur peut être en dépassement de quota, mais bloquer les clients externes romprait le contrat de service. Le prochain téléversement direct du créateur sera bloqué, l'incitant à libérer de l'espace.
+Les téléversements vers les partages inversés utilisent la politique d'application souple configurée par l'administrateur. Par défaut, un téléversement entrant peut dépasser le quota normal du propriétaire jusqu'au facteur de dépassement et au plafond absolu optionnel configurés. Au-delà de ce plafond, le téléversement est bloqué. Consultez [Nettoyage automatique : Application souple pour les partages inversés](/docs/v1-beta/automatic-cleanup#application-souple-pour-les-partages-inversés).
 
 <Callout type="info">
-  Les vérifications de quota sont optimistes. Deux téléversements simultanés peuvent chacun passer la vérification individuellement tout en dépassant ensemble la limite. Le léger dépassement est acceptable ; le téléversement suivant sera bloqué. Les fichiers font généralement quelques mégaoctets tandis que les quotas sont en gigaoctets, les dépassements sont donc négligeables.
+  Les vérifications de quota sont optimistes. Deux téléversements simultanés peuvent chacun passer la vérification tout en dépassant ensemble la limite ; le téléversement suivant est alors bloqué. Le dépassement possible dépend de la taille et de la concurrence des téléversements actifs : surveillez les déploiements à fort volume qui acceptent de très gros fichiers.
 </Callout>
 
 ## Indicateur de quota
