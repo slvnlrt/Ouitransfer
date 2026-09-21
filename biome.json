@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.12/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -15,7 +15,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "suspicious": {
         "noExplicitAny": "error",
         "noImplicitAnyLet": "error"
@@ -51,6 +51,7 @@
       "!apps/web/src/components/ui",
       "!apps/docs/src/components/ui",
       "!apps/docs/src/components/magicui",
+      "!apps/web/public/flags",
       "!packages/*/dist"
     ]
   }

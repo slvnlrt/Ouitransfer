@@ -11,9 +11,6 @@ import type { FileItem, FolderItem } from "./files-table-types";
 import { useEditableItem } from "./use-editable-item";
 import { useSelectionManager } from "./use-selection-manager";
 
-// Re-export types for consumers that import File/Folder from this module
-export type { FileItem as File, FolderItem as Folder } from "./files-table-types";
-
 interface FilesTableProps {
   files: FileItem[];
   folders?: FolderItem[];

@@ -10,10 +10,10 @@ describe("parseTrustProxy", () => {
     expect(parseTrustProxy("false")).toBe(false);
   });
 
-  it("returns a number for a numeric string", () => {
-    expect(parseTrustProxy("1")).toBe(1);
-    expect(parseTrustProxy("0")).toBe(0);
-    expect(parseTrustProxy("3")).toBe(3);
+  it("fails closed for a numeric hop count", () => {
+    expect(parseTrustProxy("1")).toBe(false);
+    expect(parseTrustProxy("0")).toBe(false);
+    expect(parseTrustProxy("3")).toBe(false);
   });
 
   it("returns a string for Fastify keyword values", () => {

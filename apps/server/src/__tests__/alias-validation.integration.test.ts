@@ -96,20 +96,19 @@ describe("alias validation (integration)", () => {
       expect(mockShareFindUnique).not.toHaveBeenCalled();
     });
 
-    it.each([
-      "abcdefgh",
-      "my-share",
-      "Xy7Kp2Qr9Z",
-    ])("accepts %j (passes validation, 404 from handler)", async (alias) => {
-      const res = await app.inject({
-        method: "POST",
-        url: "/shares/share-1/alias",
-        headers: await userHeaders(),
-        payload: { alias },
-      });
-      expect(res.statusCode).toBe(404);
-      expect(mockShareFindUnique).toHaveBeenCalled();
-    });
+    it.each(["abcdefgh", "my-share", "Xy7Kp2Qr9Z"])(
+      "accepts %j (passes validation, 404 from handler)",
+      async (alias) => {
+        const res = await app.inject({
+          method: "POST",
+          url: "/shares/share-1/alias",
+          headers: await userHeaders(),
+          payload: { alias },
+        });
+        expect(res.statusCode).toBe(404);
+        expect(mockShareFindUnique).toHaveBeenCalled();
+      },
+    );
   });
 
   describe("POST /reverse-shares/:reverseShareId/alias", () => {
@@ -124,19 +123,18 @@ describe("alias validation (integration)", () => {
       expect(mockReverseShareFindUnique).not.toHaveBeenCalled();
     });
 
-    it.each([
-      "abcdefgh",
-      "my-drops",
-      "Xy7Kp2Qr9Z",
-    ])("accepts %j (passes validation, 404 from handler)", async (alias) => {
-      const res = await app.inject({
-        method: "POST",
-        url: "/reverse-shares/rs-1/alias",
-        headers: await userHeaders(),
-        payload: { alias },
-      });
-      expect(res.statusCode).toBe(404);
-      expect(mockReverseShareFindUnique).toHaveBeenCalled();
-    });
+    it.each(["abcdefgh", "my-drops", "Xy7Kp2Qr9Z"])(
+      "accepts %j (passes validation, 404 from handler)",
+      async (alias) => {
+        const res = await app.inject({
+          method: "POST",
+          url: "/reverse-shares/rs-1/alias",
+          headers: await userHeaders(),
+          payload: { alias },
+        });
+        expect(res.statusCode).toBe(404);
+        expect(mockReverseShareFindUnique).toHaveBeenCalled();
+      },
+    );
   });
 });

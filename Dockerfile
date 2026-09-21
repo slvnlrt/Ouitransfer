@@ -12,8 +12,8 @@
 # ==============================================================================
 
 # === SHARED BUILD BASE ===
-FROM node:24.16.0-alpine AS base
-RUN corepack enable && corepack prepare pnpm@11.5.0 --activate
+FROM node:24.19.0-alpine AS base
+RUN corepack enable && corepack prepare pnpm@11.21.0 --activate
 # pnpm 11 verifies dependency sync before exec/run and triggers a full implicit
 # `pnpm install` when any workspace member has stale/missing node_modules.
 # In Docker builds only the target package is installed (--filter), so the check
@@ -79,7 +79,7 @@ RUN node node_modules/prisma/build/index.js generate
 
 
 # === SERVER PRODUCTION IMAGE ===
-FROM node:24.16.0-alpine AS server-runner
+FROM node:24.19.0-alpine AS server-runner
 
 RUN apk add --no-cache gcompat curl openssl su-exec
 
@@ -149,7 +149,7 @@ RUN pnpm run build
 
 
 # === WEB PRODUCTION IMAGE ===
-FROM node:24.16.0-alpine AS web-runner
+FROM node:24.19.0-alpine AS web-runner
 
 RUN apk add --no-cache curl
 
@@ -211,7 +211,7 @@ RUN pnpm run build
 
 
 # === DOCS PRODUCTION IMAGE ===
-FROM node:24.16.0-alpine AS docs-runner
+FROM node:24.19.0-alpine AS docs-runner
 
 RUN apk add --no-cache curl
 
