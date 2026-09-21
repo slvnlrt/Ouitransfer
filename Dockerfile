@@ -104,6 +104,9 @@ RUN mkdir -p /app/server/prisma /app/server/uploads /app/server/temp-uploads \
 # Application code from pnpm deploy (flat node_modules, no pnpm symlinks)
 WORKDIR /app/ouitransfer-app
 COPY --from=server-builder --chown=ouitransfer:nodejs /app/deploy ./
+# pnpm 11.21 deploy no longer materializes injected workspace packages in the
+# standalone tree. Copy the built runtime package explicitly.
+COPY --from=shared-builder --chown=ouitransfer:nodejs /app/packages/shared ./node_modules/@ouitransfer/shared
 
 # Server startup script
 COPY --chown=ouitransfer:nodejs infra/server-start.sh /app/server-start.sh
