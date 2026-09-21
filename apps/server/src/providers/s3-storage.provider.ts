@@ -96,7 +96,6 @@ export class S3StorageProvider implements StorageProvider {
 
     return await getSignedUrl(client, command, {
       expiresIn: expires,
-      unsignableHeaders: new Set(["x-amz-checksum-crc32"]),
     });
   }
 
@@ -257,7 +256,6 @@ export class S3StorageProvider implements StorageProvider {
 
     const url = await getSignedUrl(client, command, {
       expiresIn: expires,
-      unsignableHeaders: new Set(["x-amz-checksum-crc32"]),
     });
     return url;
   }

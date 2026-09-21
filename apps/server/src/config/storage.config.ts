@@ -127,6 +127,9 @@ export function createPublicS3Client(): S3Client | null {
       secretAccessKey: storageConfig.secretKey,
     },
     forcePathStyle: storageConfig.forcePathStyle,
+    // Keep presigned browser uploads free of optional body checksums that cannot
+    // be calculated until the browser sends the actual PUT payload.
+    requestChecksumCalculation: "WHEN_REQUIRED",
     requestHandler: new NodeHttpHandler({
       httpsAgent: new https.Agent({
         rejectUnauthorized: rejectUnauthorized,
