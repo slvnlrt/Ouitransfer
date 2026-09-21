@@ -1485,7 +1485,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
       operationId: "createMultipartUpload",
       summary: "Create Multipart Upload",
       description:
-        "Initializes a multipart upload for large files (≥100MB). Returns uploadId for subsequent part uploads.",
+        "Initializes a multipart upload for large files (≥50 MiB). Returns uploadId for subsequent part uploads.",
       body: z.object({
         filename: z.string().min(1).describe("The filename without extension"),
         extension: z.string().min(1).describe("The file extension"),
@@ -1526,6 +1526,7 @@ export const fileRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "GET",
     url: "/files/multipart/part-url",
+    config: { rateLimit: { max: 1000, timeWindow: "1 minute" } },
     preValidation,
     schema: {
       tags: ["File"],

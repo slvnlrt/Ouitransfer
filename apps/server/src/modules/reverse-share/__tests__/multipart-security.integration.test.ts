@@ -242,6 +242,31 @@ describe("Reverse-share multipart security — integration (A3-01 / A3-05)", () 
     expect(mockGetPresignedPartUrl).toHaveBeenCalledWith(VALID_KEY, "u1", 1, expect.any(Number));
   });
 
+  it("uses the multipart signing quota beyond the global request quota", async () => {
+    const statuses: number[] = [];
+    let rateLimitHeader: string | number | string[] | undefined;
+
+    for (let partNumber = 1; partNumber <= 101; partNumber += 1) {
+      const response = await app.inject({
+        method: "POST",
+        url: `/reverse-shares/alias/${ALIAS}/multipart/part-url`,
+        payload: {
+          uploadId: "multipart-rate-upload",
+          objectName: VALID_KEY,
+          partNumber: String(partNumber),
+        },
+        remoteAddress: "10.99.0.3",
+      });
+      statuses.push(response.statusCode);
+      rateLimitHeader = response.headers["x-ratelimit-limit"];
+    }
+
+    expect(statuses).toHaveLength(101);
+    expect(statuses.every((status) => status === 200)).toBe(true);
+    expect(rateLimitHeader).toBe("1000");
+    expect(mockGetPresignedPartUrl).toHaveBeenCalledTimes(101);
+  });
+
   // ── A3-05: create pre-checks owner quota (over-budget owner blocked) ───────
 
   it("blocks create when the owner is already over a hard quota", async () => {

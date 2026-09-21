@@ -1015,7 +1015,7 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
       operationId: "createMultipartUploadByAlias",
       summary: "Create Multipart Upload for Reverse Share (Public)",
       description:
-        "Initializes a multipart upload for large files (≥100MB) to a reverse share. Returns uploadId for subsequent part uploads.",
+        "Initializes a multipart upload for large files (≥50 MiB) to a reverse share. Returns uploadId for subsequent part uploads.",
       params: z.object({
         alias: z.string().describe("Alias of the reverse share"),
       }),
@@ -1061,7 +1061,10 @@ export const reverseShareRoutes: FastifyPluginAsyncZod = async (app) => {
   app.route({
     method: "POST",
     url: "/reverse-shares/alias/:alias/multipart/part-url",
-    config: { csrfExempt: true },
+    config: {
+      csrfExempt: true,
+      rateLimit: { max: 1000, timeWindow: "1 minute" },
+    },
     schema: {
       tags: ["Reverse Share"],
       operationId: "getMultipartPartUrlByAlias",

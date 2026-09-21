@@ -24,7 +24,7 @@ type UppyUploadResult = {
 import { ErrorCodes } from "@ouitransfer/shared/error-codes";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { UPLOAD_CONFIG } from "@/config/upload-config";
+import { getMultipartChunkSize, UPLOAD_CONFIG } from "@/config/upload-config";
 import {
   abortMultipartUpload,
   completeMultipartUpload,
@@ -160,19 +160,18 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
       },
     });
 
-    // Setup AWS S3 plugin with conditional multipart support
-    // Files <100MB: Use simple PUT upload
-    // Files ≥100MB: Use multipart chunked upload
+    // Files below 50 MiB use a simple PUT. Multipart uploads use at least
+    // 64 MiB per part and scale up to stay within the S3 10,000-part limit.
     uppy.use(AwsS3, {
-      limit: 3, // Allow 3 concurrent part uploads (reduced for stability)
-      getChunkSize: () => 5 * 1024 * 1024, // 5MB chunk size (reduced for better performance)
+      limit: 3,
+      getChunkSize: getMultipartChunkSize,
       shouldUseMultipart: (file: UppyFile<Meta, Body>) => {
         const fileSize = file.size || 0;
         const useMultipart = fileSize >= UPLOAD_CONFIG.MULTIPART_THRESHOLD;
         return useMultipart;
       },
 
-      // For simple uploads (<100MB)
+      // For simple uploads (<50 MiB)
       async getUploadParameters(file: UppyFile<Meta, Body>): Promise<AwsS3UploadParameters> {
         try {
           // 1. Validate file if validation callback is provided
@@ -228,7 +227,7 @@ export function useUppyUpload(options: UseUppyUploadOptions) {
         }
       },
 
-      // For multipart uploads (≥100MB)
+      // For multipart uploads (≥50 MiB)
       async createMultipartUpload(file: UppyFile<Meta, Body>) {
         try {
           // 1. Validate file

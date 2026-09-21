@@ -2,6 +2,13 @@
  * Upload configuration for the application
  * Centralizes all upload-related settings
  */
+export const MIN_MULTIPART_CHUNK_SIZE = 64 * 1024 * 1024;
+export const MAX_MULTIPART_PARTS = 10_000;
+
+export function getMultipartChunkSize({ size }: { size: number }): number {
+  return Math.max(MIN_MULTIPART_CHUNK_SIZE, Math.ceil(size / MAX_MULTIPART_PARTS));
+}
+
 export const UPLOAD_CONFIG = {
   /**
    * Size threshold for multipart upload (50MB)

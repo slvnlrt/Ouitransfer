@@ -94,6 +94,7 @@ vi.mock("../modules/auth/token-version.js", () => ({
 vi.mock("../modules/file/service.js", () => ({
   FileService: class MockFileService {
     getPresignedPutUrl = vi.fn().mockResolvedValue("https://s3.example.com/presigned");
+    getPresignedPartUrl = vi.fn().mockResolvedValue("https://s3.example.com/presigned-part");
     getObjectHead = vi.fn().mockResolvedValue(Buffer.from("plain text content"));
     // A3-08: register HEAD-reconciles the declared size against the real object
     // size. Echo back the declared size so the happy-path test is not blocked.
@@ -411,5 +412,34 @@ describe("POST /files — file validation integration (Item 5)", () => {
     expect(res.statusCode).toBe(400);
     const body = res.json();
     expect(body.error.toLowerCase()).toContain("size");
+  });
+
+  it("uses the multipart signing quota beyond the global request quota", async () => {
+    const userId = "multipart-rate-user";
+    const token = signTestToken(userId);
+    const statuses: number[] = [];
+    let rateLimitHeader: string | number | string[] | undefined;
+
+    for (let partNumber = 1; partNumber <= 101; partNumber += 1) {
+      const response = await app.inject({
+        method: "GET",
+        url: "/files/multipart/part-url",
+        query: {
+          uploadId: "multipart-rate-upload",
+          objectName: `${userId}/large-file.bin`,
+          partNumber: String(partNumber),
+        },
+        remoteAddress: "10.99.0.2",
+        headers: {
+          cookie: `token=${token}`,
+        },
+      });
+      statuses.push(response.statusCode);
+      rateLimitHeader = response.headers["x-ratelimit-limit"];
+    }
+
+    expect(statuses).toHaveLength(101);
+    expect(statuses.every((status) => status === 200)).toBe(true);
+    expect(rateLimitHeader).toBe("1000");
   });
 });
