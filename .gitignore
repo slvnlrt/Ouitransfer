@@ -65,3 +65,6 @@ apps/server/src/generated/
 
 # Superpowers brainstorm session artifacts
 .superpowers/
+
+# Local Git worktrees
+.worktrees/
