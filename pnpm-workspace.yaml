@@ -48,7 +48,7 @@ catalog:
 
   # ── Dev tooling (shared across 2+ apps) ──────────────────────
   typescript: "^5.9.3"
-  vitest: "^4.1.12"
+  vitest: "^5.0.5"
   tailwindcss: "4.3.3"
   "@tailwindcss/postcss": "4.3.3"
   "@types/node": "22.20.5"
