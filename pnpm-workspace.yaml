@@ -32,7 +32,7 @@ minimumReleaseAge: 0
 
 catalog:
   # ── Runtime (shared across 2+ apps) ──────────────────────────
-  motion: "^12.43.0"
+  motion: "^14.5.0"
   jose: "^5.10.0"
   next: "16.4.2"
   react: "19.3.1"
