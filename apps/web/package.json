@@ -12,7 +12,7 @@
     "typescript"
   ],
   "license": "Apache-2.0",
-  "packageManager": "pnpm@11.28.6",
+  "packageManager": "pnpm@11.28.9",
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
-    "@hookform/resolvers": "^5.9.1",
+    "@hookform/resolvers": "^5.9.2",
     "@ouitransfer/shared": "workspace:*",
     "@radix-ui/react-aspect-ratio": "^1.2.0",
     "@radix-ui/react-avatar": "^1.3.1",
@@ -55,11 +55,11 @@
     "@radix-ui/react-switch": "^1.4.1",
     "@radix-ui/react-tabs": "^1.2.1",
     "@radix-ui/react-tooltip": "^1.4.1",
-    "@tanstack/react-query": "^5.104.3",
-    "@tanstack/react-query-devtools": "^5.104.3",
+    "@tanstack/react-query": "^5.105.0",
+    "@tanstack/react-query-devtools": "^5.105.0",
     "@uppy/aws-s3": "^4.3.2",
     "@uppy/core": "^4.5.3",
-    "axios": "^1.20.0",
+    "axios": "^1.21.0",
     "class-variance-authority": "catalog:",
     "clsx": "catalog:",
     "input-otp": "^1.5.0",
@@ -75,7 +75,7 @@
     "react-country-flag": "^3.1.0",
     "react-dom": "catalog:",
     "react-dropzone": "^14.4.1",
-    "react-hook-form": "^7.90.0",
+    "react-hook-form": "^7.91.0",
     "react-icons": "^5.7.0",
     "react-image-crop": "^11.1.2",
     "react-qr-code": "^2.2.0",
@@ -85,7 +85,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^16.4.2",
+    "@next/bundle-analyzer": "^16.4.3",
     "@tailwindcss/postcss": "catalog:",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.3",
