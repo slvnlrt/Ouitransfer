@@ -3,14 +3,14 @@ packages:
   - "packages/*"
 
 overrides:
-  "fast-uri@^3.0.0": "3.1.8"
+  "fast-uri@^3.0.0": "3.1.9"
   fast-xml-builder: ">=1.3.1"
   fast-xml-parser: ">=5.11.2"
   # solid-js@1.9.15 pins ~1.5.4; patched seroval requires 1.6.3 or later.
-  seroval: ^1.6.9
-  seroval-plugins: ^1.6.9
+  seroval: ^1.7.3
+  seroval-plugins: ^1.7.3
   # Keep Fastify's transitive security fixes on lockfile regeneration.
-  fast-jwt: ^6.3.5
+  fast-jwt: ^6.3.6
   "@fastify/proxy-addr": ^5.1.2
 
 allowBuilds:
@@ -34,7 +34,7 @@ catalog:
   # ── Runtime (shared across 2+ apps) ──────────────────────────
   motion: "^12.43.0"
   jose: "^5.10.0"
-  next: "16.4.2"
+  next: "16.4.3"
   react: "19.3.1"
   react-dom: "19.3.1"
   zod: "^4.6.7"
