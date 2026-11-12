@@ -95,7 +95,7 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "^6.2.1",
     "axios-mock-adapter": "^2.1.0",
-    "jsdom": "^29.1.1",
+    "jsdom": "^31.0.0",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
